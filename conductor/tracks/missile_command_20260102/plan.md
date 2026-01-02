@@ -1,7 +1,7 @@
 # Plan: Missile Command MVP
 
 ## Phase 1: Foundation and Project Setup
-- [~] Task: Initialize Next.js 15 project with TypeScript, Tailwind, and shadcn/ui
+- [x] Task: Initialize Next.js 15 project with TypeScript, Tailwind, and shadcn/ui [commit: 8cd4ad5]
 - [ ] Task: Set up Zustand store for game state (vocabulary, score, health)
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Foundation and Project Setup' (Protocol in workflow.md)
 
