@@ -21,7 +21,7 @@ Creating the visual structure and individual UI elements.
 - [x] Task: Implement a `Sprite` component that handles UV mapping/positioning for the 3×3 pose sheet and supports horizontal flipping. (cb20ef3)
 - [x] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation & Components' (Protocol in workflow.md). (7f3445f)
 
-## Phase 3: Combat Mechanics & Vocabulary Integration
+## Phase 3: Combat Mechanics & Vocabulary Integration [checkpoint: 1c50c60]
 Wiring the typing logic and word difficulty mapping into the battle system.
 
 - [x] Task: Implement the word selection algorithm (mapping known/new words to attack power). (4163a12)
@@ -29,7 +29,7 @@ Wiring the typing logic and word difficulty mapping into the battle system.
 - [x] Task: Implement pose-switching logic (e.g., switch to 'Hurt' on damage, 'Attack' on success). (13d51a7)
 - [x] Task: Implement enemy AI (simple automated attack logic during enemy turn). (46a9920)
 - [x] Task: Add attack animations and screen shake effects using Framer Motion. (2485aee)
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Combat Mechanics & Vocabulary Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Combat Mechanics & Vocabulary Integration' (Protocol in workflow.md). (1c50c60)
 
 ## Phase 4: XP, Results & App Integration
 Finalizing the game loop and connecting it to the main application.
