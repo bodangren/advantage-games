@@ -7,6 +7,7 @@ import { useRPGBattleStore } from '@/store/useRPGBattleStore'
 import { selectBattleActions, WordPerformance } from '@/lib/rpgBattleWordSelection'
 import { calculateRpgBattleXp } from '@/lib/rpgBattleXp'
 import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
+import { selectRandomEnemySprite, selectRandomHeroSprite } from '@/lib/rpgBattleSprites'
 import { ActionMenu } from '@/components/rpg-battle/ActionMenu'
 import { BattleScene } from '@/components/rpg-battle/BattleScene'
 import { BattleLog } from '@/components/rpg-battle/BattleLog'
@@ -57,12 +58,16 @@ export default function RpgBattlePage() {
   const [showResults, setShowResults] = useState(false)
   const [resultXp, setResultXp] = useState(1)
   const [resultAccuracy, setResultAccuracy] = useState(0)
+  const [heroSprite, setHeroSprite] = useState(() => selectRandomHeroSprite())
+  const [enemySprite, setEnemySprite] = useState(() => selectRandomEnemySprite())
   const { playSound } = useSound()
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setVocabulary(SAMPLE_VOCABULARY)
     initializeBattle()
+    setHeroSprite(selectRandomHeroSprite())
+    setEnemySprite(selectRandomEnemySprite())
   }, [initializeBattle, setVocabulary])
 
   useEffect(() => {
@@ -201,6 +206,8 @@ export default function RpgBattlePage() {
     setShowResults(false)
     setResultXp(1)
     setResultAccuracy(0)
+    setHeroSprite(selectRandomHeroSprite())
+    setEnemySprite(selectRandomEnemySprite())
     initializeBattle()
   }
 
@@ -248,7 +255,7 @@ export default function RpgBattlePage() {
               }
               player={
                 <Sprite
-                  src="/games/rpg-battle/hero_male_pose_sheet_3x3.png"
+                  src={heroSprite}
                   pose={playerPose}
                   alt="Hero"
                   size={140}
@@ -257,7 +264,7 @@ export default function RpgBattlePage() {
               }
               enemy={
                 <Sprite
-                  src="/games/rpg-battle/enemy_slime_pose_sheet_3x3.png"
+                  src={enemySprite}
                   pose={enemyPose}
                   alt="Enemy"
                   size={140}
