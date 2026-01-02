@@ -11,3 +11,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## [~] Track: Transform into "Magic Defense": RPG theme, restructuring, and gameplay tuning.
 *Link: [./conductor/tracks/magic_defense_refactor_20260102/](./conductor/tracks/magic_defense_refactor_20260102/)*
+
+---
+
+## [~] Track: RPG Battle Vocabulary Game
+*Link: [./conductor/tracks/rpg_battle_20260102/](./conductor/tracks/rpg_battle_20260102/)*
