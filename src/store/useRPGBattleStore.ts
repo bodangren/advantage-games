@@ -40,13 +40,14 @@ export interface RPGBattleState {
   setStatus: (status: BattleStatus) => void
   damagePlayer: (amount: number) => void
   damageEnemy: (amount: number) => void
+  enemyAttack: (damage?: number) => void
   submitAnswer: (input: string, expected: string, attackPower?: BattleAttackPower) => boolean
   addLogEntry: (text: string, type: BattleLogEntry['type']) => void
 }
 
 let revealTimeout: ReturnType<typeof setTimeout> | null = null
 
-export const useRPGBattleStore = create<RPGBattleState>((set) => ({
+export const useRPGBattleStore = create<RPGBattleState>((set, get) => ({
   playerHealth: 100,
   playerMaxHealth: 100,
   enemyHealth: 100,
@@ -102,6 +103,14 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
       playerPose: nextStatus === 'victory' ? 'victory' : state.playerPose,
     }
   }),
+
+  enemyAttack: (damage = 8) => {
+    const { status, turn, damagePlayer } = get()
+    if (status !== 'playing' || turn !== 'enemy') return
+
+    set({ enemyPose: 'basic-attack', turn: 'player' })
+    damagePlayer(damage)
+  },
 
   submitAnswer: (input, expected, attackPower = 'basic') => {
     const normalizedInput = input.trim().toLowerCase()

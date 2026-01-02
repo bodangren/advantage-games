@@ -146,4 +146,29 @@ describe('useRPGBattleStore', () => {
     submitAnswer('Correct', 'Correct', 'basic')
     expect(useRPGBattleStore.getState().playerPose).toBe('basic-attack')
   })
+
+  it('should execute enemy attack on enemy turn', () => {
+    const { initializeBattle, setTurn, enemyAttack } = useRPGBattleStore.getState()
+    initializeBattle()
+    setTurn('enemy')
+
+    enemyAttack(12)
+
+    const state = useRPGBattleStore.getState()
+    expect(state.playerHealth).toBe(88)
+    expect(state.turn).toBe('player')
+    expect(state.enemyPose).toBe('basic-attack')
+  })
+
+  it('should ignore enemy attack when not in enemy turn', () => {
+    const { initializeBattle, setTurn, enemyAttack } = useRPGBattleStore.getState()
+    initializeBattle()
+    setTurn('player')
+
+    enemyAttack(12)
+
+    const state = useRPGBattleStore.getState()
+    expect(state.playerHealth).toBe(100)
+    expect(state.enemyPose).toBe('idle')
+  })
 })
