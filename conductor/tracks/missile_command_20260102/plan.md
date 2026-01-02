@@ -11,7 +11,7 @@
 - [x] Task: Create Input Controller for player typing and translation matching [commit: 86aa185]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Core Game Components' (Protocol in workflow.md)
 
-## Phase 3: Game Logic and Feedback
+## Phase 3: Game Logic and Feedback [checkpoint: 743e701]
 - [x] Task: Implement collision detection (missile hitting base) and health system [commit: ca60ea3]
 - [x] Task: Add visual and audio feedback for correct/incorrect answers (Framer Motion + SFX) [commit: 0aab580]
 - [x] Task: Implement adaptive difficulty (speed scaling based on performance) [commit: 4923e5d]
