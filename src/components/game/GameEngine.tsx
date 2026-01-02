@@ -11,6 +11,7 @@ import { Castle as CastleIcon, Wand2 } from 'lucide-react'
 import { Enemy } from './Enemy'
 import { Explosion } from './Explosion'
 import { MagicBolt } from './MagicBolt'
+import { HUD } from './HUD'
 
 interface ActiveMissile extends VocabularyItem {
   id: string
@@ -26,19 +27,12 @@ interface ActiveExplosion {
 interface ActiveBolt {
   id: string
   targetX: number
-  targetY: number // We'll need to estimate Y or just shoot to top? Enemy moves.
-  // Actually, we can just shoot to the current estimated Y or just use a fixed "hit" Y if we can't track it easily.
-  // Or, we can just shoot to the enemy's X and a fixed Y (like 50% or wherever it is).
-  // Since framer motion handles the enemy movement, JS doesn't know exact Y.
-  // Let's approximate or just shoot to 'top' but that looks weird if enemy is low.
-  // We can pass a `y` to Enemy too but that complicates the animation (needs to update).
-  // Simple approach: Shoot to the enemy's X and a fixed Y (e.g. 50%) or try to estimate based on time? Too complex.
-  // Let's shoot to the enemy's X at roughly 50% height for now, or just off screen top?
-  // Let's try shooting to targetX and Y=20 (near top).
+  targetY: number
+  targetEnemyId: string
 }
 
 export function GameEngine() {
-  const { vocabulary, status, health, decreaseHealth, increaseScore, incrementAttempts } = useGameStore()
+  const { vocabulary, status, health, score, correctAnswers, totalAttempts, decreaseHealth, increaseScore, incrementAttempts } = useGameStore()
   const { playSound } = useSound()
   const [activeMissiles, setActiveMissiles] = useState<ActiveMissile[]>([])
   const [explosions, setExplosions] = useState<ActiveExplosion[]>([])
@@ -47,6 +41,8 @@ export function GameEngine() {
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0)
   const [spawnRate, setSpawnRate] = useState(5000)
   const [missileDuration, setMissileDuration] = useState(15)
+
+  const accuracy = totalAttempts > 0 ? correctAnswers / totalAttempts : 0
 
   const spawnMissile = useCallback(() => {
     if (status !== 'playing' || vocabulary.length === 0) return
@@ -100,10 +96,6 @@ export function GameEngine() {
       
       // Spawn Bolt
       const boltId = nanoid()
-      // We pass the callback to the component or handle state change?
-      // Since `onAnimationComplete` is on the component, we can just pass a handler there?
-      // But we need to know WHICH enemy to kill. 
-      // Let's store the targetEnemyId in the bolt state
       setBolts(prev => [...prev, {
         id: boltId,
         targetX: matchingMissile.x,
@@ -136,6 +128,8 @@ export function GameEngine() {
       feedback === 'correct' ? 'bg-green-900/20' : 
       feedback === 'incorrect' ? 'bg-red-900/20' : ''
     }`}>
+      <HUD score={score} accuracy={accuracy} />
+
       <AnimatePresence>
         {activeMissiles.map((missile) => (
           <Enemy
@@ -193,10 +187,6 @@ export function GameEngine() {
         </motion.div>
 
         {/* Center Wizard (Dies last, visible if health >= 1) */}
-        {/* We keep the avatar separate above, but maybe this castle represents him? 
-            Let's keep the castle visual for consistency or make this one distinct?
-            The spec said "Wizard can be the center 'castle'".
-            Let's keep the castle icon but maybe gold? */}
         <motion.div
           animate={{ 
             opacity: health >= 1 ? 1 : 0,
