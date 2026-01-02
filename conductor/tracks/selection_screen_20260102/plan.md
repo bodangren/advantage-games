@@ -11,7 +11,7 @@ This plan adds a mandatory pre-battle selection flow for hero, location, and ene
 
 ## Phase 2: Selection UI (Modal Flow)
 - [x] Task: Add RPG battle location backgrounds and stage new art assets needed for upcoming updates. [commit: 948e22b]
-- [ ] Task: Build modal-based selection UI for hero, location, and enemy.
+- [x] Task: Build modal-based selection UI for hero, location, and enemy. [commit: 5dd74bf]
 - [ ] Task: Gate battle start until all selections are confirmed; no back navigation.
 - [ ] Task: Add component tests for selection UI behavior (step locking and confirmation).
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Selection UI' (Protocol in workflow.md)
