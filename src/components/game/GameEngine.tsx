@@ -28,8 +28,8 @@ export function GameEngine() {
   const [explosions, setExplosions] = useState<ActiveExplosion[]>([])
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0)
-  const [spawnRate, setSpawnRate] = useState(3000)
-  const [missileDuration, setMissileDuration] = useState(10)
+  const [spawnRate, setSpawnRate] = useState(5000)
+  const [missileDuration, setMissileDuration] = useState(15)
 
   const spawnMissile = useCallback(() => {
     if (status !== 'playing' || vocabulary.length === 0) return
