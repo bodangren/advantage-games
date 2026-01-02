@@ -24,5 +24,11 @@ export const useGameStore = create<GameState>((set) => ({
   setVocabulary: (vocab) => set({ vocabulary: vocab }),
   resetGame: () => set({ score: 0, health: 3, status: 'playing' }),
   increaseScore: (amount) => set((state) => ({ score: state.score + amount })),
-  decreaseHealth: () => set((state) => ({ health: state.health - 1 })),
+  decreaseHealth: () => set((state) => {
+    const newHealth = state.health - 1
+    return { 
+      health: newHealth,
+      status: newHealth <= 0 ? 'game-over' : state.status
+    }
+  }),
 }))
