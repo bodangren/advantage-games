@@ -6,7 +6,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Foundation and Project Setup' (Protocol in workflow.md)
 
 ## Phase 2: Core Game Components
-- [ ] Task: Create Start Screen component with vocabulary list display
+- [x] Task: Create Start Screen component with vocabulary list display [commit: 0733a14]
 - [ ] Task: Implement Missile component with Framer Motion for descending animation
 - [ ] Task: Create Input Controller for player typing and translation matching
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Game Components' (Protocol in workflow.md)
