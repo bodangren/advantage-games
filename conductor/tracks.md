@@ -14,5 +14,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: RPG Battle Vocabulary Game
+## [x] Track: RPG Battle Vocabulary Game
 *Link: [./conductor/tracks/rpg_battle_20260102/](./conductor/tracks/rpg_battle_20260102/)*
+
+---
+
+## [ ] Track: RPG Battle Selection Scene
+*Link: [./conductor/tracks/selection_screen_20260102/](./conductor/tracks/selection_screen_20260102/)*
