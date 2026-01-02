@@ -11,9 +11,12 @@ export function InputController({ onSubmit }: InputControllerProps) {
   const [inputValue, setInputValue] = useState('')
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      onSubmit(inputValue.trim())
-      setInputValue('')
+    if (e.key === ' ' || e.code === 'Space') {
+      e.preventDefault() // Prevent space from being added to input
+      if (inputValue.trim().length > 0) {
+        onSubmit(inputValue.trim())
+        setInputValue('')
+      }
     }
   }
 
@@ -24,7 +27,7 @@ export function InputController({ onSubmit }: InputControllerProps) {
         value={inputValue}
         onChange={(e) => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Type translation..."
+        placeholder="Type translation and press Space..."
         className="text-lg h-12 text-center focus-visible:ring-primary"
         autoFocus
       />

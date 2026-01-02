@@ -10,13 +10,13 @@ describe('InputController', () => {
     expect(input.value).toBe('Manzana')
   })
 
-  it('calls onSubmit and clears input on Enter', () => {
+  it('calls onSubmit and clears input on Space', () => {
     const onSubmit = jest.fn()
     render(<InputController onSubmit={onSubmit} />)
-    const input = screen.getByPlaceholderText(/type translation/i) as HTMLInputElement
+    const input = screen.getByPlaceholderText(/type.*space/i) as HTMLInputElement
     
     fireEvent.change(input, { target: { value: 'Manzana' } })
-    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' })
+    fireEvent.keyDown(input, { key: ' ', code: 'Space' })
     
     expect(onSubmit).toHaveBeenCalledWith('Manzana')
     expect(input.value).toBe('')
