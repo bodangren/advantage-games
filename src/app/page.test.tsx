@@ -9,11 +9,15 @@ jest.mock('next/link', () => {
 })
 
 describe('MainMenu', () => {
-  it('renders the title and game option', () => {
+  it('renders the title and game options', () => {
     render(<MainMenu />)
     
     expect(screen.getByText(/Vocab Arcade/i)).toBeInTheDocument()
     expect(screen.getByText(/Magic Defense/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Play Now/i })).toHaveAttribute('href', '/games/magic-defense')
+    expect(screen.getByText(/RPG Battle/i)).toBeInTheDocument()
+
+    const links = screen.getAllByRole('link', { name: /Play Now/i })
+    const hrefs = links.map((link) => link.getAttribute('href'))
+    expect(hrefs).toEqual(expect.arrayContaining(['/games/magic-defense', '/games/rpg-battle']))
   })
 })

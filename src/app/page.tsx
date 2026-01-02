@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Wand2 } from 'lucide-react'
+import { Shield, Wand2 } from 'lucide-react'
 
 export default function MainMenu() {
   return (
@@ -31,6 +31,23 @@ export default function MainMenu() {
             </CardHeader>
             <CardContent>
               <Link href="/games/magic-defense" passHref legacyBehavior>
+                <Button className="w-full" size="lg">Play Now</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow border-2 hover:border-primary/50 cursor-pointer group">
+            <CardHeader>
+              <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <Shield className="w-7 h-7 text-primary" />
+              </div>
+              <CardTitle className="text-2xl">RPG Battle</CardTitle>
+              <CardDescription>
+                Duel monsters by typing the correct translations!
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/games/rpg-battle" passHref legacyBehavior>
                 <Button className="w-full" size="lg">Play Now</Button>
               </Link>
             </CardContent>
