@@ -9,6 +9,11 @@ Defend your castles from falling words by typing their correct translations!
 
 ![Magic Defense Gameplay](public/gameplay.png)
 
+### RPG Battle
+Fight mosters
+
+![RPG Battle Gameplay](public/rpg-battle)
+
 ## 🛠️ Developer Guide
 
 ### Game Interface Standard
