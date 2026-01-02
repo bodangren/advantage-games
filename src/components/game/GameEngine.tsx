@@ -240,7 +240,7 @@ export function GameEngine() {
         </motion.div>
       </div>
 
-      <div className="absolute bottom-16 left-0 right-0">
+      <div className="absolute top-20 left-0 right-0 z-20">
         <InputController onSubmit={checkAnswer} />
       </div>
     </div>

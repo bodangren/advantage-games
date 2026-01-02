@@ -20,7 +20,7 @@ export function InputController({ onSubmit }: InputControllerProps) {
   }
 
   return (
-    <div className="w-full max-w-md mx-auto p-4 bg-background/80 backdrop-blur-md rounded-b-xl border-b shadow-2xl">
+    <div className="w-full max-w-md mx-auto p-4 bg-background/80 backdrop-blur-md rounded-xl border shadow-2xl">
       <Input
         type="text"
         value={inputValue}
