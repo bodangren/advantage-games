@@ -5,16 +5,16 @@ import { GameContainer } from '@/components/game/GameContainer'
 import { useGameStore } from '@/store/useGameStore'
 
 const SAMPLE_VOCAB = [
-  { term: 'Apple', translation: 'Manzana' },
-  { term: 'Bread', translation: 'Pan' },
-  { term: 'House', translation: 'Casa' },
-  { term: 'Dog', translation: 'Perro' },
-  { term: 'Water', translation: 'Agua' },
-  { term: 'Book', translation: 'Libro' },
-  { term: 'Friend', translation: 'Amigo' },
-  { term: 'City', translation: 'Ciudad' },
-  { term: 'School', translation: 'Escuela' },
-  { term: 'Sun', translation: 'Sol' },
+  { term: 'สวัสดี', translation: 'Hello' },
+  { term: 'ขอบคุณ', translation: 'Thank you' },
+  { term: 'ใช่', translation: 'Yes' },
+  { term: 'ไม่ใช่', translation: 'No' },
+  { term: 'สบายดีไหม', translation: 'How are you' },
+  { term: 'แมว', translation: 'Cat' },
+  { term: 'หมา', translation: 'Dog' },
+  { term: 'น้ำ', translation: 'Water' },
+  { term: 'ข้าว', translation: 'Rice' },
+  { term: 'รัก', translation: 'Love' },
 ]
 
 export default function Home() {
