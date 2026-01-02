@@ -5,7 +5,7 @@ This plan adds a mandatory pre-battle selection flow for hero, location, and ene
 ## Phase 1: Data Model & Selection State
 - [x] Task: Define selection configuration for heroes, locations, and enemies (labels, assets, multipliers). [commit: e3bc010]
 - [x] Task: Extend RPGBattle store to track selection step state and enforce the selection order. [commit: 39577c5]
-- [ ] Task: Reset selection state on battle start/rematch.
+- [x] Task: Reset selection state on battle start/rematch. [commit: 38f0ba3]
 - [ ] Task: Add unit tests for selection state transitions and resets.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Data Model & Selection State' (Protocol in workflow.md)
 
