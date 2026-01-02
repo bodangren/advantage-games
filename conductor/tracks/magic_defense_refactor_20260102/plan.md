@@ -23,7 +23,9 @@
 
 ## Phase 4: Final Polish (New)
 - [x] Task: Revert shooting mechanic to Enter key [commit: 2e7d5f7]
-- [ ] Task: Update XP formula to `Score * Accuracy` (remove 1/10 factor)
-- [ ] Task: Move InputController to top of screen
-- [ ] Task: Change background to green (grass)
+- [x] Task: Update XP formula to `Score * Accuracy` (remove 1/10 factor) [commit: d77f8f1]
+- [x] Task: Fix XP calculation usage in GameContainer (argument mismatch causing 0 XP) [commit: e02b010]
+- [x] Task: Move InputController to top of screen [commit: e8d9415]
+- [x] Task: Fix XP calculation to `Correct Answers * Accuracy` [commit: 6afbfdf]
+- [x] Task: Change background to green (grass) [commit: 1314652]
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Polish' (Protocol in workflow.md)
