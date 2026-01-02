@@ -8,7 +8,7 @@
 
 ## Phase 2: RPG Theming and Assets
 - [x] Task: Update GameEngine to render Castles (Health) and Magician avatar [commit: 7cb6ab1]
-- [ ] Task: Replace Missile component with "Enemy" component (Skull/Meteor visual)
+- [x] Task: Replace Missile component with "Enemy" component (Skull/Meteor visual) [commit: ef16aa7]
 - [ ] Task: Implement explosion animations using Framer Motion
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: RPG Theming and Assets' (Protocol in workflow.md)
 
