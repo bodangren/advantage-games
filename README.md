@@ -12,7 +12,7 @@ Defend your castles from falling words by typing their correct translations!
 ### RPG Battle
 Fight mosters
 
-![RPG Battle Gameplay](public/rpg-battle)
+![RPG Battle Gameplay](public/rpg-battle.png)
 
 ## 🛠️ Developer Guide
 
