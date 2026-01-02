@@ -41,7 +41,7 @@ export interface RPGBattleState {
   selectedEnemyId: BattleEnemyId | null
   
   // Actions
-  initializeBattle: () => void
+  initializeBattle: (options?: { enemyMaxHealth?: number }) => void
   setTurn: (turn: BattleTurn) => void
   setStatus: (status: BattleStatus) => void
   damagePlayer: (amount: number) => void
@@ -76,21 +76,25 @@ export const useRPGBattleStore = create<RPGBattleState>((set, get) => ({
   selectedLocationId: null,
   selectedEnemyId: null,
 
-  initializeBattle: () => set({
-    playerHealth: 100,
-    playerMaxHealth: 100,
-    enemyHealth: 100,
-    enemyMaxHealth: 100,
-    turn: 'player',
-    status: 'playing',
-    battleLog: [{ text: 'A wild monster appears!', type: 'system' }],
-    streak: 0,
-    xpEarned: 0,
-    inputLocked: false,
-    revealedTranslation: null,
-    playerPose: 'idle',
-    enemyPose: 'idle'
-  }),
+  initializeBattle: (options = {}) => {
+    const enemyMaxHealth = options.enemyMaxHealth ?? 100
+
+    return set({
+      playerHealth: 100,
+      playerMaxHealth: 100,
+      enemyHealth: enemyMaxHealth,
+      enemyMaxHealth,
+      turn: 'player',
+      status: 'playing',
+      battleLog: [{ text: 'A wild monster appears!', type: 'system' }],
+      streak: 0,
+      xpEarned: 0,
+      inputLocked: false,
+      revealedTranslation: null,
+      playerPose: 'idle',
+      enemyPose: 'idle'
+    })
+  },
 
   setTurn: (turn) => set({ turn }),
   setStatus: (status) => set({ status }),

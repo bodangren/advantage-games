@@ -8,6 +8,7 @@ import { selectBattleActions, WordPerformance } from '@/lib/rpgBattleWordSelecti
 import { calculateRpgBattleXp } from '@/lib/rpgBattleXp'
 import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
 import { battleEnemies, battleHeroes, battleLocations } from '@/lib/rpgBattleSelection'
+import { rollEnemyDamage, scaleBattleXp, scaleEnemyHealth } from '@/lib/rpgBattleScaling'
 import { ActionMenu } from '@/components/rpg-battle/ActionMenu'
 import { BattleScene } from '@/components/rpg-battle/BattleScene'
 import { BattleLog } from '@/components/rpg-battle/BattleLog'
@@ -22,7 +23,6 @@ import { AnimatePresence, motion } from 'framer-motion'
 const ACTION_COUNT = 3
 const BASIC_DAMAGE = 10
 const POWER_DAMAGE = 18
-const ENEMY_DAMAGE = 8
 const MAX_TURNS = 12
 
 export default function RpgBattlePage() {
@@ -72,6 +72,12 @@ export default function RpgBattlePage() {
   const { playSound } = useSound()
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const selectedEnemy = useMemo(
+    () => battleEnemies.find((enemy) => enemy.id === selectedEnemyId),
+    [selectedEnemyId]
+  )
+  const enemyMultiplier = selectedEnemy?.multiplier ?? 1
+
   useEffect(() => {
     setVocabulary(SAMPLE_VOCABULARY)
     resetSelection()
@@ -84,12 +90,12 @@ export default function RpgBattlePage() {
     }
 
     const heroSelection = battleHeroes.find((hero) => hero.id === selectedHeroId) ?? battleHeroes[0]
-    const enemySelection = battleEnemies.find((enemy) => enemy.id === selectedEnemyId) ?? battleEnemies[0]
+    const enemySelection = selectedEnemy ?? battleEnemies[0]
 
     setHeroSprite(heroSelection.sprite)
     setEnemySprite(enemySelection.sprite)
-    initializeBattle()
-  }, [initializeBattle, selectedEnemyId, selectedHeroId, selectionStep])
+    initializeBattle({ enemyMaxHealth: scaleEnemyHealth(enemySelection.multiplier) })
+  }, [initializeBattle, selectedEnemy, selectedEnemyId, selectedHeroId, selectionStep])
 
   useEffect(() => {
     setLongestStreak((prev) => Math.max(prev, streak))
@@ -119,13 +125,14 @@ export default function RpgBattlePage() {
     if (status === 'victory' || status === 'defeat') {
       const accuracy = totalAttempts > 0 ? totalCorrect / totalAttempts : 0
       setResultAccuracy(accuracy)
-      setResultXp(calculateRpgBattleXp({
+      const baseXp = calculateRpgBattleXp({
         playerHealth,
         playerMaxHealth,
         turnsTaken: Math.max(1, turnsTaken),
         maxTurns: MAX_TURNS,
         longestStreak,
-      }))
+      })
+      setResultXp(scaleBattleXp(baseXp, enemyMultiplier))
       setShowResults(false)
       resultsTimeoutRef.current = setTimeout(() => {
         setShowResults(true)
@@ -169,9 +176,10 @@ export default function RpgBattlePage() {
   }
 
   const triggerEnemyTurn = () => {
+    const damage = rollEnemyDamage(enemyMultiplier)
     setTurn('enemy')
     setTimeout(() => {
-      enemyAttack(ENEMY_DAMAGE)
+      enemyAttack(damage)
       setTurnsTaken((prev) => prev + 1)
       setFlashTone('player')
       setFlashKey((prev) => prev + 1)

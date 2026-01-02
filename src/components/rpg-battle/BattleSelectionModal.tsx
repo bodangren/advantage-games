@@ -4,6 +4,7 @@ import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Sprite } from '@/components/rpg-battle/Sprite'
+import { BASE_XP_CAP, scaleBattleXp, scaleEnemyHealth } from '@/lib/rpgBattleScaling'
 import {
   BattleEnemyOption,
   BattleHeroOption,
@@ -28,12 +29,9 @@ interface SelectionOptionButtonProps {
   onSelect: () => void
 }
 
-const BASE_ENEMY_HEALTH = 100
-const BASE_XP_CAP = 10
-
 const formatEnemyStats = (multiplier: number) => {
-  const hp = Math.round(BASE_ENEMY_HEALTH * multiplier)
-  const xp = Math.round(BASE_XP_CAP * multiplier)
+  const hp = scaleEnemyHealth(multiplier)
+  const xp = scaleBattleXp(BASE_XP_CAP, multiplier)
   return `HP ${hp} | XP up to ${xp}`
 }
 

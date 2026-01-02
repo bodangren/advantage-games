@@ -29,6 +29,15 @@ describe('useRPGBattleStore', () => {
     expect(state.battleLog[0].text).toBe('A wild monster appears!')
   })
 
+  it('should initialize battle with scaled enemy health', () => {
+    const { initializeBattle } = useRPGBattleStore.getState()
+    initializeBattle({ enemyMaxHealth: 150 })
+
+    const state = useRPGBattleStore.getState()
+    expect(state.enemyMaxHealth).toBe(150)
+    expect(state.enemyHealth).toBe(150)
+  })
+
   it('should add log entries correctly', () => {
     const { addLogEntry } = useRPGBattleStore.getState()
     addLogEntry('Test message', 'player')
