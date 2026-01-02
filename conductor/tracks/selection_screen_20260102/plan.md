@@ -18,10 +18,10 @@ This plan adds a mandatory pre-battle selection flow for hero, location, and ene
 - [~] Task: Conductor - User Manual Verification 'Phase 2: Selection UI' (Protocol in workflow.md)
 
 ## Phase 3: Enemy Scaling (HP, Damage, XP)
-- [ ] Task: Apply enemy multiplier to base enemy HP and initialize scaled current/max values.
-- [ ] Task: Update enemy damage calculation to scale the upper bound by the multiplier.
-- [ ] Task: Multiply base XP by the enemy multiplier and round to nearest integer.
-- [ ] Task: Add unit tests for HP scaling, damage range scaling, and XP scaling.
+- [x] Task: Apply enemy multiplier to base enemy HP and initialize scaled current/max values. [commit: 63794be]
+- [x] Task: Update enemy damage calculation to scale the upper bound by the multiplier. [commit: 63794be]
+- [x] Task: Multiply base XP by the enemy multiplier and round to nearest integer. [commit: 63794be]
+- [x] Task: Add unit tests for HP scaling, damage range scaling, and XP scaling. [commit: 63794be]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Enemy Scaling' (Protocol in workflow.md)
 
 ## Phase 4: Backgrounds & Responsive Behavior
