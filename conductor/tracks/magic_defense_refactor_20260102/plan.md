@@ -17,6 +17,6 @@
 - [x] Task: Implement new XP formula: `(Score / 10) * Accuracy` [commit: 0de5b00]
 - [x] Task: Implement Space Bar shooting mechanic in InputController [commit: 8996b39]
 - [x] Task: Implement Magic Bolt animation (Wizard -> Enemy) [commit: 8ae72e7]
-- [ ] Task: Update Health Visuals to destroy Right -> Left -> Center
+- [x] Task: Update Health Visuals to destroy Right -> Left -> Center [commit: e3e0a9e]
 - [ ] Task: Implement HUD for Score and Accuracy
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Tuning and Logic' (Protocol in workflow.md)
