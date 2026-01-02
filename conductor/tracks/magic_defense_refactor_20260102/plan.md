@@ -12,7 +12,7 @@
 - [x] Task: Implement explosion animations using Framer Motion [commit: ce9887c]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: RPG Theming and Assets' (Protocol in workflow.md) [commit: 0b5efe7]
 
-## Phase 3: Tuning and Logic (In Progress)
+## Phase 3: Tuning and Logic (Completed)
 - [x] Task: Tune difficulty: Slower initial spawn rate (5000ms) and longer fall duration (15s) [commit: 0de5b00]
 - [x] Task: Implement new XP formula: `(Score / 10) * Accuracy` [commit: 0de5b00]
 - [x] Task: Implement Space Bar shooting mechanic in InputController [commit: 8996b39]
@@ -20,3 +20,10 @@
 - [x] Task: Update Health Visuals to destroy Right -> Left -> Center [commit: e3e0a9e]
 - [x] Task: Implement HUD for Score and Accuracy [commit: aeb6fee]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Tuning and Logic' (Protocol in workflow.md)
+
+## Phase 4: Final Polish (New)
+- [x] Task: Revert shooting mechanic to Enter key [commit: 2e7d5f7]
+- [ ] Task: Update XP formula to `Score * Accuracy` (remove 1/10 factor)
+- [ ] Task: Move InputController to top of screen
+- [ ] Task: Change background to green (grass)
+- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Polish' (Protocol in workflow.md)
