@@ -9,7 +9,7 @@
 - [x] Task: Create Start Screen component with vocabulary list display [commit: 0733a14]
 - [x] Task: Implement Missile component with Framer Motion for descending animation [commit: 1da6afd]
 - [x] Task: Create Input Controller for player typing and translation matching [commit: 86aa185]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Game Components' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Core Game Components' (Protocol in workflow.md)
 
 ## Phase 3: Game Logic and Feedback
 - [ ] Task: Implement collision detection (missile hitting base) and health system
