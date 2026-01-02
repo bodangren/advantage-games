@@ -34,7 +34,7 @@ Wiring the typing logic and word difficulty mapping into the battle system.
 ## Phase 4: XP, Results & App Integration
 Finalizing the game loop and connecting it to the main application.
 
-- [ ] Task: Implement XP calculation logic based on efficiency and streaks.
+- [x] Task: Implement XP calculation logic based on efficiency and streaks. (22c224c)
 - [ ] Task: Create the `BattleResults` screen (Victory/Defeat summary).
 - [ ] Task: Integrate the RPG Battle game into the Next.js app router (`/games/rpg-battle`).
 - [ ] Task: Add final polish (sound effects, transitions, responsive fixes).
