@@ -11,7 +11,7 @@ export function GameContainer() {
   const { status, vocabulary, score, correctAnswers, totalAttempts, resetGame } = useGameStore()
 
   const accuracy = totalAttempts > 0 ? correctAnswers / totalAttempts : 0
-  const xp = calculateXP(correctAnswers, totalAttempts, 0)
+  const xp = calculateXP(score, correctAnswers, totalAttempts)
 
   if (status === 'idle') {
     return <StartScreen vocabulary={vocabulary} onStart={resetGame} />
