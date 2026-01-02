@@ -19,5 +19,5 @@
 
 ## Phase 4: Scoring and XP
 - [x] Task: Implement XP calculation logic based on accuracy and speed [commit: cd29d56]
-- [ ] Task: Create Game Over / Results Screen displaying XP and stats
+- [x] Task: Create Game Over / Results Screen displaying XP and stats [commit: d56a091]
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Scoring and XP' (Protocol in workflow.md)
