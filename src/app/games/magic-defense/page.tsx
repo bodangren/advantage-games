@@ -3,25 +3,13 @@
 import { useEffect } from 'react'
 import { GameContainer } from '@/components/game/GameContainer'
 import { useGameStore } from '@/store/useGameStore'
-
-const SAMPLE_VOCAB = [
-  { term: 'สวัสดี', translation: 'Hello' },
-  { term: 'ขอบคุณ', translation: 'Thank you' },
-  { term: 'ใช่', translation: 'Yes' },
-  { term: 'ไม่ใช่', translation: 'No' },
-  { term: 'สบายดีไหม', translation: 'How are you' },
-  { term: 'แมว', translation: 'Cat' },
-  { term: 'หมา', translation: 'Dog' },
-  { term: 'น้ำ', translation: 'Water' },
-  { term: 'ข้าว', translation: 'Rice' },
-  { term: 'รัก', translation: 'Love' },
-]
+import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
 
 export default function MagicDefensePage() {
   const setVocabulary = useGameStore((state) => state.setVocabulary)
 
   useEffect(() => {
-    setVocabulary(SAMPLE_VOCAB)
+    setVocabulary(SAMPLE_VOCABULARY)
   }, [setVocabulary])
 
   return (

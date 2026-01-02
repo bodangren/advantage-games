@@ -73,6 +73,7 @@ export function ActionMenu({
           value={value}
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
+          autoFocus={!disabled}
           className="h-11"
         />
         <Button type="submit" disabled={disabled || !isReady} className="sm:w-28">

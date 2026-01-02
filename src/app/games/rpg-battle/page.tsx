@@ -1,10 +1,12 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
-import { useGameStore, VocabularyItem } from '@/store/useGameStore'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
+import { useGameStore } from '@/store/useGameStore'
 import { useRPGBattleStore } from '@/store/useRPGBattleStore'
 import { selectBattleActions, WordPerformance } from '@/lib/rpgBattleWordSelection'
 import { calculateRpgBattleXp } from '@/lib/rpgBattleXp'
+import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
 import { ActionMenu } from '@/components/rpg-battle/ActionMenu'
 import { BattleScene } from '@/components/rpg-battle/BattleScene'
 import { BattleLog } from '@/components/rpg-battle/BattleLog'
@@ -14,16 +16,6 @@ import { BattleResults } from '@/components/rpg-battle/BattleResults'
 import { BattleEffects } from '@/components/rpg-battle/BattleEffects'
 import { useSound } from '@/hooks/useSound'
 import { AnimatePresence, motion } from 'framer-motion'
-
-const SAMPLE_VOCAB: VocabularyItem[] = [
-  { term: 'Sword', translation: 'Espada' },
-  { term: 'Shield', translation: 'Escudo' },
-  { term: 'Fire', translation: 'Fuego' },
-  { term: 'Ice', translation: 'Hielo' },
-  { term: 'Wind', translation: 'Viento' },
-  { term: 'Earth', translation: 'Tierra' },
-  { term: 'Water', translation: 'Agua' },
-]
 
 const ACTION_COUNT = 3
 const BASIC_DAMAGE = 10
@@ -62,10 +54,14 @@ export default function RpgBattlePage() {
   const [shakeKey, setShakeKey] = useState(0)
   const [flashKey, setFlashKey] = useState(0)
   const [flashTone, setFlashTone] = useState<'player' | 'enemy'>('enemy')
+  const [showResults, setShowResults] = useState(false)
+  const [resultXp, setResultXp] = useState(1)
+  const [resultAccuracy, setResultAccuracy] = useState(0)
   const { playSound } = useSound()
+  const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
-    setVocabulary(SAMPLE_VOCAB)
+    setVocabulary(SAMPLE_VOCABULARY)
     initializeBattle()
   }, [initializeBattle, setVocabulary])
 
@@ -87,6 +83,46 @@ export default function RpgBattlePage() {
       { totalCorrect: 0, totalAttempts: 0 }
     )
   }, [performance])
+
+  useEffect(() => {
+    if (resultsTimeoutRef.current) {
+      clearTimeout(resultsTimeoutRef.current)
+      resultsTimeoutRef.current = null
+    }
+
+    if (status === 'victory' || status === 'defeat') {
+      const accuracy = totalAttempts > 0 ? totalCorrect / totalAttempts : 0
+      setResultAccuracy(accuracy)
+      setResultXp(calculateRpgBattleXp({
+        playerHealth,
+        playerMaxHealth,
+        turnsTaken: Math.max(1, turnsTaken),
+        maxTurns: MAX_TURNS,
+        longestStreak,
+      }))
+      setShowResults(false)
+      resultsTimeoutRef.current = setTimeout(() => {
+        setShowResults(true)
+      }, 1200)
+    } else {
+      setShowResults(false)
+    }
+
+    return () => {
+      if (resultsTimeoutRef.current) {
+        clearTimeout(resultsTimeoutRef.current)
+        resultsTimeoutRef.current = null
+      }
+    }
+  }, [
+    status,
+    longestStreak,
+    playerHealth,
+    playerMaxHealth,
+    totalAttempts,
+    totalCorrect,
+    turnsTaken,
+  ])
 
   const menuActions = useMemo(
     () => actions.map((action) => ({ id: action.id, label: action.term, power: action.power })),
@@ -155,14 +191,6 @@ export default function RpgBattlePage() {
     }
   }
 
-  const xp = calculateRpgBattleXp({
-    playerHealth,
-    playerMaxHealth,
-    turnsTaken: Math.max(1, turnsTaken),
-    maxTurns: MAX_TURNS,
-    longestStreak,
-  })
-
   const handleRestart = () => {
     setInputValue('')
     setPerformance({})
@@ -174,18 +202,24 @@ export default function RpgBattlePage() {
   return (
     <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-5xl space-y-6">
-        <header className="text-center space-y-2">
+        <header className="space-y-2 text-center">
+          <div className="flex items-center justify-between text-sm">
+            <Link href="/" className="text-muted-foreground hover:text-foreground">
+              Back to Home
+            </Link>
+            <span className="text-muted-foreground">Turn: {turn === 'player' ? 'Player' : 'Enemy'}</span>
+          </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-primary">RPG Battle</h1>
           <p className="text-muted-foreground">
             Type the correct translation to unleash your spells.
           </p>
         </header>
 
-        {status === 'victory' || status === 'defeat' ? (
+        {showResults && (status === 'victory' || status === 'defeat') ? (
           <BattleResults
             outcome={status}
-            xp={xp}
-            accuracy={totalAttempts > 0 ? totalCorrect / totalAttempts : 0}
+            xp={resultXp}
+            accuracy={resultAccuracy}
             onRestart={handleRestart}
           />
         ) : (
