@@ -14,7 +14,8 @@ This plan adds a mandatory pre-battle selection flow for hero, location, and ene
 - [x] Task: Build modal-based selection UI for hero, location, and enemy. [commit: 5dd74bf]
 - [x] Task: Gate battle start until all selections are confirmed; no back navigation. [commit: 4a68ff1]
 - [x] Task: Add component tests for selection UI behavior (step locking and confirmation). [commit: 5dd74bf]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Selection UI' (Protocol in workflow.md)
+- [x] Task: Show selection images and explicit HP/XP values in the selection modal. [commit: 215f5c6]
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Selection UI' (Protocol in workflow.md)
 
 ## Phase 3: Enemy Scaling (HP, Damage, XP)
 - [ ] Task: Apply enemy multiplier to base enemy HP and initialize scaled current/max values.
