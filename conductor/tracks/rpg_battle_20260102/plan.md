@@ -10,7 +10,7 @@ Focuses on defining the state machine and turn-based mechanics using Zustand.
 - [x] Task: Implement health management logic (damage calculation and death checks). (233fde1)
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Game State & Core Logic' (Protocol in workflow.md). (14ed2b3)
 
-## Phase 2: UI Foundation & Components
+## Phase 2: UI Foundation & Components [checkpoint: 7f3445f]
 Creating the visual structure and individual UI elements.
 
 - [x] Task: Create the `BattleScene` layout (2D side-view container). (c2116fb)
@@ -19,7 +19,7 @@ Creating the visual structure and individual UI elements.
 - [x] Task: Implement the `BattleLog` component to track combat history. (b881dbc)
 - [x] Task: Create simple sprites/placeholders for Player and Enemy using the 3×3 grid layout. (d5b0da2)
 - [x] Task: Implement a `Sprite` component that handles UV mapping/positioning for the 3×3 pose sheet and supports horizontal flipping. (cb20ef3)
-- [~] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation & Components' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation & Components' (Protocol in workflow.md). (7f3445f)
 
 ## Phase 3: Combat Mechanics & Vocabulary Integration
 Wiring the typing logic and word difficulty mapping into the battle system.
