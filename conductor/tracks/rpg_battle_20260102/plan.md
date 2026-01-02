@@ -39,4 +39,5 @@ Finalizing the game loop and connecting it to the main application.
 - [x] Task: Integrate the RPG Battle game into the Next.js app router (`/games/rpg-battle`). (8eacce0)
 - [x] Task: Add final polish (sound effects, transitions, responsive fixes). (094f0cf)
 - [x] Task: Centralize sample vocabulary and address RPG battle UX issues (autofocus, nav, victory delay, XP snapshot). (a46b232)
+- [x] Task: Reset battle effects on restart and retain word difficulty across rematches. (cb6adfb)
 - [~] Task: Conductor - User Manual Verification 'Phase 4: XP & Finalization' (Protocol in workflow.md)
