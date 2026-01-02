@@ -124,9 +124,9 @@ export function GameEngine() {
   if (status !== 'playing') return null
 
   return (
-    <div className={`relative w-full h-[600px] bg-slate-900 overflow-hidden border-x-4 border-slate-800 shadow-inner rounded-lg transition-colors duration-300 ${
-      feedback === 'correct' ? 'bg-green-900/20' : 
-      feedback === 'incorrect' ? 'bg-red-900/20' : ''
+    <div className={`relative w-full h-[600px] bg-green-900 overflow-hidden border-x-4 border-slate-800 shadow-inner rounded-lg transition-colors duration-300 ${
+      feedback === 'correct' ? 'bg-green-800' : 
+      feedback === 'incorrect' ? 'bg-red-900/50' : ''
     }`}>
       <HUD score={score} accuracy={accuracy} />
 
