@@ -53,4 +53,32 @@ describe('ActionMenu', () => {
     fireEvent.click(screen.getByRole('button', { name: /cast/i }))
     expect(onSubmit).toHaveBeenCalledWith('Fuego')
   })
+
+  it('focuses the input when it becomes enabled', () => {
+    const onChange = jest.fn()
+    const { rerender } = render(
+      <ActionMenu
+        actions={actions}
+        value=""
+        onChange={onChange}
+        onSubmit={jest.fn()}
+        disabled
+      />
+    )
+
+    const input = screen.getByLabelText('Action input') as HTMLInputElement
+    expect(input).not.toBe(document.activeElement)
+
+    rerender(
+      <ActionMenu
+        actions={actions}
+        value=""
+        onChange={onChange}
+        onSubmit={jest.fn()}
+        disabled={false}
+      />
+    )
+
+    expect(input).toBe(document.activeElement)
+  })
 })

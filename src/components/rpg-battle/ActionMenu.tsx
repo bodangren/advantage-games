@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
@@ -29,6 +29,13 @@ export function ActionMenu({
 }: ActionMenuProps) {
   const trimmedValue = value.trim()
   const isReady = trimmedValue.length > 0
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (!disabled) {
+      inputRef.current?.focus()
+    }
+  }, [disabled])
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -74,6 +81,7 @@ export function ActionMenu({
           onChange={(event) => onChange(event.target.value)}
           disabled={disabled}
           autoFocus={!disabled}
+          ref={inputRef}
           className="h-11"
         />
         <Button type="submit" disabled={disabled || !isReady} className="sm:w-28">
