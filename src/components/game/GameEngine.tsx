@@ -169,29 +169,74 @@ export function GameEngine() {
         />
       ))}
       
-      {/* ... castles and wizard ... */}
+      {/* Bases/Castles at the bottom */}
       <div className="absolute bottom-0 w-full flex justify-around p-4 items-end pointer-events-none">
-        {[0, 1, 2].map((index) => (
-          <motion.div
-            key={index}
-            animate={{ 
-              opacity: health > index ? 1 : 0,
-              scale: health > index ? 1 : 0.5,
-              y: health > index ? 0 : 20
-            }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col items-center"
-          >
-            <CastleIcon className="w-16 h-16 text-slate-400 fill-slate-700 shadow-lg" />
-            <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
-               <motion.div 
-                 initial={{ width: '100%' }}
-                 animate={{ width: health > index ? '100%' : '0%' }}
-                 className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
-               />
-            </div>
-          </motion.div>
-        ))}
+        {/* Left Castle (Dies 2nd, so visible if health >= 2) */}
+        <motion.div
+          animate={{ 
+            opacity: health >= 2 ? 1 : 0,
+            scale: health >= 2 ? 1 : 0.5,
+            y: health >= 2 ? 0 : 20,
+            filter: health >= 2 ? 'none' : 'grayscale(100%) brightness(0.5)'
+          }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <CastleIcon className="w-16 h-16 text-slate-400 fill-slate-700 shadow-lg" />
+          <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+             <motion.div 
+               initial={{ width: '100%' }}
+               animate={{ width: health >= 2 ? '100%' : '0%' }}
+               className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+             />
+          </div>
+        </motion.div>
+
+        {/* Center Wizard (Dies last, visible if health >= 1) */}
+        {/* We keep the avatar separate above, but maybe this castle represents him? 
+            Let's keep the castle visual for consistency or make this one distinct?
+            The spec said "Wizard can be the center 'castle'".
+            Let's keep the castle icon but maybe gold? */}
+        <motion.div
+          animate={{ 
+            opacity: health >= 1 ? 1 : 0,
+            scale: health >= 1 ? 1 : 0.5,
+            y: health >= 1 ? 0 : 20,
+            filter: health >= 1 ? 'none' : 'grayscale(100%) brightness(0.5)'
+          }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <CastleIcon className="w-20 h-20 text-yellow-500 fill-yellow-900/50 shadow-lg" />
+          <div className="w-24 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+             <motion.div 
+               initial={{ width: '100%' }}
+               animate={{ width: health >= 1 ? '100%' : '0%' }}
+               className="h-full bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]" 
+             />
+          </div>
+        </motion.div>
+
+        {/* Right Castle (Dies 1st, visible if health >= 3) */}
+        <motion.div
+          animate={{ 
+            opacity: health >= 3 ? 1 : 0,
+            scale: health >= 3 ? 1 : 0.5,
+            y: health >= 3 ? 0 : 20,
+            filter: health >= 3 ? 'none' : 'grayscale(100%) brightness(0.5)'
+          }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <CastleIcon className="w-16 h-16 text-slate-400 fill-slate-700 shadow-lg" />
+          <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+             <motion.div 
+               initial={{ width: '100%' }}
+               animate={{ width: health >= 3 ? '100%' : '0%' }}
+               className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+             />
+          </div>
+        </motion.div>
       </div>
 
       {/* Magician Avatar */}
