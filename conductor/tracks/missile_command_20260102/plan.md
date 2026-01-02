@@ -18,6 +18,6 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Game Logic and Feedback' (Protocol in workflow.md)
 
 ## Phase 4: Scoring and XP
-- [ ] Task: Implement XP calculation logic based on accuracy and speed
+- [x] Task: Implement XP calculation logic based on accuracy and speed [commit: cd29d56]
 - [ ] Task: Create Game Over / Results Screen displaying XP and stats
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Scoring and XP' (Protocol in workflow.md)
