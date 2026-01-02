@@ -21,6 +21,8 @@ export interface RPGBattleState {
   
   // Actions
   initializeBattle: () => void
+  setTurn: (turn: BattleTurn) => void
+  setStatus: (status: BattleStatus) => void
   addLogEntry: (text: string, type: BattleLogEntry['type']) => void
 }
 
@@ -46,6 +48,9 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
     streak: 0,
     xpEarned: 0
   }),
+
+  setTurn: (turn) => set({ turn }),
+  setStatus: (status) => set({ status }),
 
   addLogEntry: (text, type) => set((state) => ({
     battleLog: [...state.battleLog, { text, type }]
