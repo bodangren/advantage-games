@@ -2,6 +2,12 @@
 
 import { useCallback } from 'react'
 
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext
+  }
+}
+
 export function useSound() {
   const playSound = useCallback((type: 'success' | 'error' | 'missile-hit') => {
     // In a real browser environment, we would load and play audio files.
@@ -9,7 +15,7 @@ export function useSound() {
     // to generate simple beep sounds if possible, or just log.
     
     try {
-      const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext)
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext
       if (!AudioContextClass) return
 
       const ctx = new AudioContextClass()

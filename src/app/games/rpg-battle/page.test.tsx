@@ -2,9 +2,11 @@ import { render, screen } from '@testing-library/react'
 import RpgBattlePage from './page'
 
 jest.mock('next/link', () => {
-  return ({ children, href }: { children: React.ReactNode; href: string }) => {
+  const Link = ({ children, href }: { children: React.ReactNode; href: string }) => {
     return <a href={href}>{children}</a>
   }
+  Link.displayName = 'Link'
+  return Link
 })
 
 describe('RpgBattlePage', () => {

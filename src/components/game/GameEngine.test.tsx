@@ -1,4 +1,4 @@
-import { render, screen, act } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { GameEngine } from './GameEngine'
 import { useGameStore } from '@/store/useGameStore'
 

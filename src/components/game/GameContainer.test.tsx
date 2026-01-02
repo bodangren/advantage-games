@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { GameContainer } from './GameContainer'
 import { useGameStore } from '@/store/useGameStore'
 
