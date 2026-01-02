@@ -6,16 +6,17 @@ import { Skull } from 'lucide-react'
 
 interface EnemyProps {
   id: string
+  x: number
   term: string
   duration: number
   onReachBottom: (id: string) => void
   isDying?: boolean
 }
 
-export function Enemy({ id, term, duration, onReachBottom, isDying = false }: EnemyProps) {
+export function Enemy({ id, x, term, duration, onReachBottom, isDying = false }: EnemyProps) {
   return (
     <motion.div
-      initial={{ top: -50, left: `${Math.random() * 80 + 10}%`, opacity: 1, scale: 1 }}
+      initial={{ top: -50, left: `${x}%`, opacity: 1, scale: 1 }}
       animate={isDying ? { 
         scale: 2, 
         opacity: 0,

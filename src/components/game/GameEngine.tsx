@@ -10,9 +10,11 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Castle as CastleIcon, Wand2 } from 'lucide-react'
 import { Enemy } from './Enemy'
 import { Explosion } from './Explosion'
+import { MagicBolt } from './MagicBolt'
 
 interface ActiveMissile extends VocabularyItem {
   id: string
+  x: number
 }
 
 interface ActiveExplosion {
@@ -21,11 +23,26 @@ interface ActiveExplosion {
   y: number
 }
 
+interface ActiveBolt {
+  id: string
+  targetX: number
+  targetY: number // We'll need to estimate Y or just shoot to top? Enemy moves.
+  // Actually, we can just shoot to the current estimated Y or just use a fixed "hit" Y if we can't track it easily.
+  // Or, we can just shoot to the enemy's X and a fixed Y (like 50% or wherever it is).
+  // Since framer motion handles the enemy movement, JS doesn't know exact Y.
+  // Let's approximate or just shoot to 'top' but that looks weird if enemy is low.
+  // We can pass a `y` to Enemy too but that complicates the animation (needs to update).
+  // Simple approach: Shoot to the enemy's X and a fixed Y (e.g. 50%) or try to estimate based on time? Too complex.
+  // Let's shoot to the enemy's X at roughly 50% height for now, or just off screen top?
+  // Let's try shooting to targetX and Y=20 (near top).
+}
+
 export function GameEngine() {
   const { vocabulary, status, health, decreaseHealth, increaseScore, incrementAttempts } = useGameStore()
   const { playSound } = useSound()
   const [activeMissiles, setActiveMissiles] = useState<ActiveMissile[]>([])
   const [explosions, setExplosions] = useState<ActiveExplosion[]>([])
+  const [bolts, setBolts] = useState<ActiveBolt[]>([])
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0)
   const [spawnRate, setSpawnRate] = useState(5000)
@@ -38,6 +55,7 @@ export function GameEngine() {
     const newMissile: ActiveMissile = {
       ...randomVocab,
       id: nanoid(),
+      x: Math.random() * 80 + 10,
     }
 
     setActiveMissiles((prev) => [...prev, newMissile])
@@ -56,6 +74,20 @@ export function GameEngine() {
     setActiveMissiles((prev) => prev.filter((m) => m.id !== id))
   }, [decreaseHealth, playSound, incrementAttempts])
 
+  const handleBoltComplete = useCallback((boltId: string, enemyId: string, enemyX: number) => {
+    setBolts(prev => prev.filter(b => b.id !== boltId))
+    
+    // Trigger explosion
+    setExplosions(prev => [...prev, { 
+      id: nanoid(), 
+      x: enemyX, 
+      y: 50 // Approximate Y since we don't track it perfectly
+    }])
+    
+    // Remove enemy
+    setActiveMissiles((prev) => prev.filter((m) => m.id !== enemyId))
+  }, [])
+
   const checkAnswer = useCallback((answer: string) => {
     const matchingMissile = activeMissiles.find(
       (m) => m.translation.toLowerCase() === answer.toLowerCase()
@@ -66,10 +98,17 @@ export function GameEngine() {
       setFeedback('correct')
       setConsecutiveCorrect((prev) => prev + 1)
       
-      setExplosions(prev => [...prev, { 
-        id: nanoid(), 
-        x: Math.random() * 80 + 10, 
-        y: Math.random() * 40 + 10 
+      // Spawn Bolt
+      const boltId = nanoid()
+      // We pass the callback to the component or handle state change?
+      // Since `onAnimationComplete` is on the component, we can just pass a handler there?
+      // But we need to know WHICH enemy to kill. 
+      // Let's store the targetEnemyId in the bolt state
+      setBolts(prev => [...prev, {
+        id: boltId,
+        targetX: matchingMissile.x,
+        targetY: 20, // Aim high
+        targetEnemyId: matchingMissile.id
       }])
 
       if ((consecutiveCorrect + 1) % 3 === 0) {
@@ -79,7 +118,6 @@ export function GameEngine() {
 
       increaseScore(10)
       setTimeout(() => setFeedback(null), 500)
-      setActiveMissiles((prev) => prev.filter((m) => m.id !== matchingMissile.id))
       return true
     } else {
       playSound('error')
@@ -103,12 +141,24 @@ export function GameEngine() {
           <Enemy
             key={missile.id}
             id={missile.id}
+            x={missile.x}
             term={missile.term}
             duration={missileDuration}
             onReachBottom={handleReachBottom}
           />
         ))}
       </AnimatePresence>
+
+      {bolts.map((bolt) => (
+        <MagicBolt 
+          key={bolt.id}
+          startX={50}
+          startY={80} // Wizard position
+          targetX={bolt.targetX}
+          targetY={bolt.targetY}
+          onComplete={() => handleBoltComplete(bolt.id, bolt.targetEnemyId, bolt.targetX)}
+        />
+      ))}
 
       {explosions.map((exp) => (
         <Explosion 
@@ -119,7 +169,7 @@ export function GameEngine() {
         />
       ))}
       
-      {/* Bases/Castles at the bottom */}
+      {/* ... castles and wizard ... */}
       <div className="absolute bottom-0 w-full flex justify-around p-4 items-end pointer-events-none">
         {[0, 1, 2].map((index) => (
           <motion.div

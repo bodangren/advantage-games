@@ -6,6 +6,7 @@ describe('Enemy', () => {
     render(
       <Enemy 
         id="1" 
+        x={50}
         term="Apple" 
         duration={5} 
         onReachBottom={jest.fn()} 
