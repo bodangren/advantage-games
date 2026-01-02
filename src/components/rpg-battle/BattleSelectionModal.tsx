@@ -3,6 +3,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Sprite } from '@/components/rpg-battle/Sprite'
 import {
   BattleEnemyOption,
   BattleHeroOption,
@@ -23,22 +24,32 @@ interface BattleSelectionModalProps {
 interface SelectionOptionButtonProps {
   label: string
   description?: string
+  preview?: React.ReactNode
   onSelect: () => void
 }
 
-const formatMultiplier = (multiplier: number) => {
-  const value = Number.isInteger(multiplier) ? multiplier.toFixed(0) : multiplier.toFixed(1)
-  return `HP/XP x${value}`
+const BASE_ENEMY_HEALTH = 100
+const BASE_XP_CAP = 10
+
+const formatEnemyStats = (multiplier: number) => {
+  const hp = Math.round(BASE_ENEMY_HEALTH * multiplier)
+  const xp = Math.round(BASE_XP_CAP * multiplier)
+  return `HP ${hp} | XP up to ${xp}`
 }
 
-function SelectionOptionButton({ label, description, onSelect }: SelectionOptionButtonProps) {
+function SelectionOptionButton({ label, description, preview, onSelect }: SelectionOptionButtonProps) {
   return (
     <Button
       type="button"
       variant="outline"
-      className="h-auto w-full flex-col items-start gap-1 rounded-xl px-4 py-3 text-left"
+      className="h-auto w-full flex-col items-start gap-2 rounded-xl px-4 py-3 text-left"
       onClick={onSelect}
     >
+      {preview ? (
+        <div className="flex w-full items-center justify-center rounded-lg bg-muted/60 p-2">
+          {preview}
+        </div>
+      ) : null}
       <span className="text-sm font-semibold text-foreground">{label}</span>
       {description ? (
         <span className="text-xs text-muted-foreground">{description}</span>
@@ -94,6 +105,14 @@ export function BattleSelectionModal({
                 <SelectionOptionButton
                   key={hero.id}
                   label={hero.label}
+                  preview={(
+                    <Sprite
+                      src={hero.sprite}
+                      pose="idle"
+                      alt={`${hero.label} hero`}
+                      size={72}
+                    />
+                  )}
                   onSelect={() => onSelectHero(hero.id)}
                 />
               ))}
@@ -106,6 +125,14 @@ export function BattleSelectionModal({
                 <SelectionOptionButton
                   key={location.id}
                   label={location.label}
+                  preview={(
+                    <div
+                      role="img"
+                      aria-label={location.label}
+                      className="h-16 w-full rounded-md bg-cover bg-center"
+                      style={{ backgroundImage: `url(${location.background})` }}
+                    />
+                  )}
                   onSelect={() => onSelectLocation(location.id)}
                 />
               ))}
@@ -118,7 +145,15 @@ export function BattleSelectionModal({
                 <SelectionOptionButton
                   key={enemy.id}
                   label={enemy.label}
-                  description={formatMultiplier(enemy.multiplier)}
+                  description={formatEnemyStats(enemy.multiplier)}
+                  preview={(
+                    <Sprite
+                      src={enemy.sprite}
+                      pose="idle"
+                      alt={`${enemy.label} enemy`}
+                      size={72}
+                    />
+                  )}
                   onSelect={() => onSelectEnemy(enemy.id)}
                 />
               ))}

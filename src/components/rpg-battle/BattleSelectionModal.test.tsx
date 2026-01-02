@@ -21,8 +21,10 @@ describe('BattleSelectionModal', () => {
     )
 
     expect(screen.getByRole('heading', { name: /choose your hero/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Male' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Female' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Male hero' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Female hero' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Male hero Male' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Female hero Female' })).toBeInTheDocument()
     expect(screen.queryByText('Forest Clearing')).not.toBeInTheDocument()
   })
 
@@ -35,7 +37,8 @@ describe('BattleSelectionModal', () => {
     )
 
     expect(screen.getByRole('heading', { name: /choose a location/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Forest Clearing' })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: 'Forest Clearing' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /forest clearing/i })).toBeInTheDocument()
     expect(screen.queryByText('Male')).not.toBeInTheDocument()
   })
 
@@ -54,6 +57,8 @@ describe('BattleSelectionModal', () => {
     fireEvent.click(elementalButton)
 
     expect(onSelectEnemy).toHaveBeenCalledWith('elemental')
+    expect(screen.getByRole('img', { name: /elemental enemy/i })).toBeInTheDocument()
+    expect(screen.getByText('HP 200 | XP up to 20')).toBeInTheDocument()
   })
 
   it('does not render when the step is ready', () => {

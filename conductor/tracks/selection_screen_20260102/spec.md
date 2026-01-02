@@ -8,17 +8,19 @@ Add a pre-battle selection flow to RPG Battle that lets players choose their her
 ### 1. Selection Flow
 - **Order:** Character -> Location -> Enemy -> Start battle.
 - **UI Pattern:** Modal-based flow inside `/games/rpg-battle` (no route change).
-- **No Preview:** Selection cards do not show in-battle previews.
+- **Selection Visuals:** Each option includes a static thumbnail image (hero sprite, location background, enemy sprite).
 - **No Back Out:** Once the player confirms a step, they cannot return to earlier steps.
 - **Per-Battle Reset:** Selection state resets at the start of each battle or rematch.
 
 ### 2. Character Selection
 - **Options:** Male hero, Female hero.
 - **Gameplay Impact:** Cosmetic only (no stat or ability differences).
+- **Visuals:** Show the hero sprite for each option.
 
 ### 3. Location Selection
 - **Options:** Forest Clearing, Ruined Road, Magic Arena, Throne Hall.
 - **Gameplay Impact:** Cosmetic only (background and mood).
+- **Visuals:** Show a background thumbnail for each location.
 - **Mobile Portrait Behavior:** Show a centered slice of the background (no distortion). Use center-crop behavior so the middle of the image remains visible.
 
 ### 4. Enemy Selection
@@ -28,6 +30,7 @@ Add a pre-battle selection flow to RPG Battle that lets players choose their her
   - Goblin: 1.0
   - Spectre: 1.5
   - Elemental: 2.0
+- **Selection Stats:** Display the computed HP and XP values (e.g., HP 50/100/150/200 and XP up to 5/10/15/20).
 
 ### 5. Stat Scaling
 - **Enemy HP:** Base enemy HP is multiplied by the selected enemy multiplier.
