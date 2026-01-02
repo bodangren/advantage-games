@@ -12,6 +12,8 @@ import { HealthBar } from '@/components/rpg-battle/HealthBar'
 import { Sprite } from '@/components/rpg-battle/Sprite'
 import { BattleResults } from '@/components/rpg-battle/BattleResults'
 import { BattleEffects } from '@/components/rpg-battle/BattleEffects'
+import { useSound } from '@/hooks/useSound'
+import { AnimatePresence, motion } from 'framer-motion'
 
 const SAMPLE_VOCAB: VocabularyItem[] = [
   { term: 'Sword', translation: 'Espada' },
@@ -43,6 +45,7 @@ export default function RpgBattlePage() {
     playerPose,
     enemyPose,
     inputLocked,
+    revealedTranslation,
     streak,
     initializeBattle,
     setTurn,
@@ -59,6 +62,7 @@ export default function RpgBattlePage() {
   const [shakeKey, setShakeKey] = useState(0)
   const [flashKey, setFlashKey] = useState(0)
   const [flashTone, setFlashTone] = useState<'player' | 'enemy'>('enemy')
+  const { playSound } = useSound()
 
   useEffect(() => {
     setVocabulary(SAMPLE_VOCAB)
@@ -111,6 +115,7 @@ export default function RpgBattlePage() {
       setFlashKey((prev) => prev + 1)
       setShakeKey((prev) => prev + 1)
       addLogEntry('Enemy strikes back!', 'enemy')
+      playSound('missile-hit')
     }, 600)
   }
 
@@ -126,6 +131,7 @@ export default function RpgBattlePage() {
       const nextEnemyHealth = Math.max(0, enemyHealth - damage)
 
       submitAnswer(value, matched.translation, matched.power)
+      playSound('success')
       updatePerformance(matched.term, true)
       addLogEntry(`You cast ${matched.term}!`, 'player')
       damageEnemy(damage)
@@ -143,6 +149,7 @@ export default function RpgBattlePage() {
 
     if (fallback) {
       submitAnswer(value, fallback.translation)
+      playSound('error')
       updatePerformance(fallback.term, false)
       addLogEntry(`Incorrect! The spell was ${fallback.translation}.`, 'system')
     }
@@ -218,13 +225,28 @@ export default function RpgBattlePage() {
                 />
               }
               actionMenu={
-                <ActionMenu
-                  actions={menuActions}
-                  value={inputValue}
-                  onChange={setInputValue}
-                  onSubmit={handleSubmit}
-                  disabled={inputLocked || turn !== 'player' || status !== 'playing'}
-                />
+                <div className="space-y-2">
+                  <ActionMenu
+                    actions={menuActions}
+                    value={inputValue}
+                    onChange={setInputValue}
+                    onSubmit={handleSubmit}
+                    disabled={inputLocked || turn !== 'player' || status !== 'playing'}
+                  />
+                  <AnimatePresence>
+                    {revealedTranslation ? (
+                      <motion.p
+                        key={revealedTranslation}
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="text-sm font-semibold text-amber-600"
+                      >
+                        Correct answer: {revealedTranslation}
+                      </motion.p>
+                    ) : null}
+                  </AnimatePresence>
+                </div>
               }
               battleLog={<BattleLog entries={battleLog} />}
             />
