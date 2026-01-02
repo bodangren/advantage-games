@@ -193,9 +193,14 @@ export default function RpgBattlePage() {
 
   const handleRestart = () => {
     setInputValue('')
-    setPerformance({})
     setTurnsTaken(0)
     setLongestStreak(0)
+    setFlashKey(0)
+    setShakeKey(0)
+    setFlashTone('enemy')
+    setShowResults(false)
+    setResultXp(1)
+    setResultAccuracy(0)
     initializeBattle()
   }
 
