@@ -2,12 +2,12 @@
 
 This plan adds a mandatory pre-battle selection flow for hero, location, and enemy, and applies enemy multipliers to HP, damage range, and XP.
 
-## Phase 1: Data Model & Selection State
+## Phase 1: Data Model & Selection State [checkpoint: 6a47620]
 - [x] Task: Define selection configuration for heroes, locations, and enemies (labels, assets, multipliers). [commit: e3bc010]
 - [x] Task: Extend RPGBattle store to track selection step state and enforce the selection order. [commit: 39577c5]
 - [x] Task: Reset selection state on battle start/rematch. [commit: 38f0ba3]
 - [x] Task: Add unit tests for selection state transitions and resets. [commit: 38f0ba3]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Data Model & Selection State' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Data Model & Selection State' (Protocol in workflow.md) [commit: 6a47620]
 
 ## Phase 2: Selection UI (Modal Flow)
 - [ ] Task: Build modal-based selection UI for hero, location, and enemy.
