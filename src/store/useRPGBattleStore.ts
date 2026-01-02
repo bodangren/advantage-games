@@ -18,6 +18,8 @@ export interface RPGBattleState {
   battleLog: BattleLogEntry[]
   streak: number
   xpEarned: number
+  inputLocked: boolean
+  revealedTranslation: string | null
   
   // Actions
   initializeBattle: () => void
@@ -25,8 +27,11 @@ export interface RPGBattleState {
   setStatus: (status: BattleStatus) => void
   damagePlayer: (amount: number) => void
   damageEnemy: (amount: number) => void
+  submitAnswer: (input: string, expected: string) => boolean
   addLogEntry: (text: string, type: BattleLogEntry['type']) => void
 }
+
+let revealTimeout: ReturnType<typeof setTimeout> | null = null
 
 export const useRPGBattleStore = create<RPGBattleState>((set) => ({
   playerHealth: 100,
@@ -38,6 +43,8 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
   battleLog: [],
   streak: 0,
   xpEarned: 0,
+  inputLocked: false,
+  revealedTranslation: null,
 
   initializeBattle: () => set({
     playerHealth: 100,
@@ -48,7 +55,9 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
     status: 'playing',
     battleLog: [{ text: 'A wild monster appears!', type: 'system' }],
     streak: 0,
-    xpEarned: 0
+    xpEarned: 0,
+    inputLocked: false,
+    revealedTranslation: null
   }),
 
   setTurn: (turn) => set({ turn }),
@@ -67,6 +76,34 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
 
     return { enemyHealth: nextHealth, status: nextStatus }
   }),
+
+  submitAnswer: (input, expected) => {
+    const normalizedInput = input.trim().toLowerCase()
+    const normalizedExpected = expected.trim().toLowerCase()
+    const isCorrect = normalizedInput === normalizedExpected
+
+    if (revealTimeout) {
+      clearTimeout(revealTimeout)
+      revealTimeout = null
+    }
+
+    if (isCorrect) {
+      set((state) => ({
+        inputLocked: false,
+        revealedTranslation: null,
+        streak: state.streak + 1,
+      }))
+      return true
+    }
+
+    set({ inputLocked: true, revealedTranslation: expected, streak: 0 })
+    revealTimeout = setTimeout(() => {
+      set({ inputLocked: false, revealedTranslation: null })
+      revealTimeout = null
+    }, 2000)
+
+    return false
+  },
 
   addLogEntry: (text, type) => set((state) => ({
     battleLog: [...state.battleLog, { text, type }]

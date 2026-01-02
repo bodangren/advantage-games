@@ -79,4 +79,32 @@ describe('useRPGBattleStore', () => {
     expect(useRPGBattleStore.getState().enemyHealth).toBe(0)
     expect(useRPGBattleStore.getState().status).toBe('victory')
   })
+
+  it('should reveal the correct translation for 2 seconds on incorrect input', () => {
+    jest.useFakeTimers()
+    const { initializeBattle, submitAnswer } = useRPGBattleStore.getState()
+    initializeBattle()
+
+    const result = submitAnswer('wrong', 'Correct')
+    expect(result).toBe(false)
+    expect(useRPGBattleStore.getState().inputLocked).toBe(true)
+    expect(useRPGBattleStore.getState().revealedTranslation).toBe('Correct')
+    expect(useRPGBattleStore.getState().streak).toBe(0)
+
+    jest.advanceTimersByTime(2000)
+    expect(useRPGBattleStore.getState().inputLocked).toBe(false)
+    expect(useRPGBattleStore.getState().revealedTranslation).toBeNull()
+    jest.useRealTimers()
+  })
+
+  it('should keep input unlocked and increment streak on correct input', () => {
+    const { initializeBattle, submitAnswer } = useRPGBattleStore.getState()
+    initializeBattle()
+
+    const result = submitAnswer('correct', 'Correct')
+    expect(result).toBe(true)
+    expect(useRPGBattleStore.getState().inputLocked).toBe(false)
+    expect(useRPGBattleStore.getState().revealedTranslation).toBeNull()
+    expect(useRPGBattleStore.getState().streak).toBe(1)
+  })
 })
