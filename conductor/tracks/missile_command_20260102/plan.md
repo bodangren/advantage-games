@@ -17,7 +17,7 @@
 - [x] Task: Implement adaptive difficulty (speed scaling based on performance) [commit: 4923e5d]
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Game Logic and Feedback' (Protocol in workflow.md)
 
-## Phase 4: Scoring and XP
+## Phase 4: Scoring and XP [checkpoint: 7c1422f]
 - [x] Task: Implement XP calculation logic based on accuracy and speed [commit: cd29d56]
 - [x] Task: Create Game Over / Results Screen displaying XP and stats [commit: d56a091]
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Scoring and XP' (Protocol in workflow.md)
