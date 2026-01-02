@@ -13,14 +13,27 @@ interface ActiveMissile extends VocabularyItem {
   id: string
 }
 
+import { useInterval } from '@/hooks/useInterval'
+import { useSound } from '@/hooks/useSound'
+import { nanoid } from 'nanoid'
+import { InputController } from './InputController'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Castle as CastleIcon, Wand2 } from 'lucide-react'
+
+interface ActiveMissile extends VocabularyItem {
+  id: string
+}
+
 export function GameEngine() {
-  const { vocabulary, status, decreaseHealth, increaseScore, incrementAttempts } = useGameStore()
+  const { vocabulary, status, health, decreaseHealth, increaseScore, incrementAttempts } = useGameStore()
   const { playSound } = useSound()
   const [activeMissiles, setActiveMissiles] = useState<ActiveMissile[]>([])
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0)
   const [spawnRate, setSpawnRate] = useState(3000)
   const [missileDuration, setMissileDuration] = useState(10)
+
+  // ... rest of the logic remains similar but we'll use health from store for castles ...
 
   const spawnMissile = useCallback(() => {
     if (status !== 'playing' || vocabulary.length === 0) return
@@ -39,9 +52,8 @@ export function GameEngine() {
   const handleReachBottom = useCallback((id: string) => {
     playSound('missile-hit')
     setConsecutiveCorrect(0)
-    // Reset or slow down difficulty on miss?
     setSpawnRate((prev) => Math.min(prev + 200, 3000))
-    setMissileDuration((prev) => Math.min(prev + 0.5, 10))
+    setMissileDuration((prev) => Math.min(prev + 0.5, 15))
     
     incrementAttempts()
     decreaseHealth()
@@ -49,7 +61,6 @@ export function GameEngine() {
   }, [decreaseHealth, playSound, incrementAttempts])
 
   const checkAnswer = useCallback((answer: string) => {
-    // Find the oldest missile that matches the answer
     const matchingMissile = activeMissiles.find(
       (m) => m.translation.toLowerCase() === answer.toLowerCase()
     )
@@ -59,13 +70,12 @@ export function GameEngine() {
       setFeedback('correct')
       setConsecutiveCorrect((prev) => prev + 1)
       
-      // Increase difficulty every 3 correct answers
       if ((consecutiveCorrect + 1) % 3 === 0) {
         setSpawnRate((prev) => Math.max(prev - 200, 1000))
-        setMissileDuration((prev) => Math.max(prev - 0.5, 3))
+        setMissileDuration((prev) => Math.max(prev - 0.5, 5))
       }
 
-      increaseScore(10) // Base score per missile
+      increaseScore(10)
       setTimeout(() => setFeedback(null), 500)
       setActiveMissiles((prev) => prev.filter((m) => m.id !== matchingMissile.id))
       return true
@@ -98,15 +108,39 @@ export function GameEngine() {
         ))}
       </AnimatePresence>
       
-      {/* Bases at the bottom */}
-      <div className="absolute bottom-0 w-full flex justify-around p-2">
-        <motion.div 
-          animate={feedback === 'incorrect' ? { x: [-5, 5, -5, 5, 0] } : {}}
-          className="flex justify-around w-full"
+      {/* Bases/Castles at the bottom */}
+      <div className="absolute bottom-0 w-full flex justify-around p-4 items-end pointer-events-none">
+        {[0, 1, 2].map((index) => (
+          <motion.div
+            key={index}
+            animate={{ 
+              opacity: health > index ? 1 : 0,
+              scale: health > index ? 1 : 0.5,
+              y: health > index ? 0 : 20
+            }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center"
+          >
+            <CastleIcon className="w-16 h-16 text-slate-400 fill-slate-700 shadow-lg" />
+            <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+               <motion.div 
+                 initial={{ width: '100%' }}
+                 animate={{ width: health > index ? '100%' : '0%' }}
+                 className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+               />
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Magician Avatar */}
+      <div className="absolute bottom-32 left-1/2 -translate-x-1/2 pointer-events-none">
+        <motion.div
+          animate={feedback === 'correct' ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] } : {}}
+          className="relative"
         >
-          <div className="w-16 h-8 bg-blue-500 rounded-t-lg shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-          <div className="w-16 h-8 bg-blue-500 rounded-t-lg shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
-          <div className="w-16 h-8 bg-blue-500 rounded-t-lg shadow-[0_0_15px_rgba(59,130,246,0.5)]" />
+          <div className="absolute -inset-4 bg-primary/20 rounded-full blur-xl animate-pulse" />
+          <Wand2 className="w-12 h-12 text-primary relative z-10" />
         </motion.div>
       </div>
 
