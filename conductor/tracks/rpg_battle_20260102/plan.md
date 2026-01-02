@@ -19,7 +19,7 @@ Creating the visual structure and individual UI elements.
 - [x] Task: Implement the `BattleLog` component to track combat history. (b881dbc)
 - [x] Task: Create simple sprites/placeholders for Player and Enemy using the 3×3 grid layout. (d5b0da2)
 - [x] Task: Implement a `Sprite` component that handles UV mapping/positioning for the 3×3 pose sheet and supports horizontal flipping. (cb20ef3)
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation & Components' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation & Components' (Protocol in workflow.md)
 
 ## Phase 3: Combat Mechanics & Vocabulary Integration
 Wiring the typing logic and word difficulty mapping into the battle system.
