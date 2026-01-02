@@ -2,6 +2,17 @@ import { create } from 'zustand'
 
 export type BattleStatus = 'idle' | 'playing' | 'victory' | 'defeat'
 export type BattleTurn = 'player' | 'enemy'
+export type BattlePose =
+  | 'idle'
+  | 'casting'
+  | 'basic-attack'
+  | 'power-attack'
+  | 'hurt'
+  | 'miss'
+  | 'defend'
+  | 'victory'
+  | 'defeat'
+export type BattleAttackPower = 'basic' | 'power'
 
 export interface BattleLogEntry {
   text: string
@@ -20,6 +31,8 @@ export interface RPGBattleState {
   xpEarned: number
   inputLocked: boolean
   revealedTranslation: string | null
+  playerPose: BattlePose
+  enemyPose: BattlePose
   
   // Actions
   initializeBattle: () => void
@@ -27,7 +40,7 @@ export interface RPGBattleState {
   setStatus: (status: BattleStatus) => void
   damagePlayer: (amount: number) => void
   damageEnemy: (amount: number) => void
-  submitAnswer: (input: string, expected: string) => boolean
+  submitAnswer: (input: string, expected: string, attackPower?: BattleAttackPower) => boolean
   addLogEntry: (text: string, type: BattleLogEntry['type']) => void
 }
 
@@ -45,6 +58,8 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
   xpEarned: 0,
   inputLocked: false,
   revealedTranslation: null,
+  playerPose: 'idle',
+  enemyPose: 'idle',
 
   initializeBattle: () => set({
     playerHealth: 100,
@@ -57,7 +72,9 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
     streak: 0,
     xpEarned: 0,
     inputLocked: false,
-    revealedTranslation: null
+    revealedTranslation: null,
+    playerPose: 'idle',
+    enemyPose: 'idle'
   }),
 
   setTurn: (turn) => set({ turn }),
@@ -67,17 +84,26 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
     const nextHealth = Math.max(0, state.playerHealth - amount)
     const nextStatus = state.status === 'playing' && nextHealth <= 0 ? 'defeat' : state.status
 
-    return { playerHealth: nextHealth, status: nextStatus }
+    return {
+      playerHealth: nextHealth,
+      status: nextStatus,
+      playerPose: nextStatus === 'defeat' ? 'defeat' : 'hurt',
+    }
   }),
 
   damageEnemy: (amount) => set((state) => {
     const nextHealth = Math.max(0, state.enemyHealth - amount)
     const nextStatus = state.status === 'playing' && nextHealth <= 0 ? 'victory' : state.status
 
-    return { enemyHealth: nextHealth, status: nextStatus }
+    return {
+      enemyHealth: nextHealth,
+      status: nextStatus,
+      enemyPose: nextStatus === 'victory' ? 'defeat' : 'hurt',
+      playerPose: nextStatus === 'victory' ? 'victory' : state.playerPose,
+    }
   }),
 
-  submitAnswer: (input, expected) => {
+  submitAnswer: (input, expected, attackPower = 'basic') => {
     const normalizedInput = input.trim().toLowerCase()
     const normalizedExpected = expected.trim().toLowerCase()
     const isCorrect = normalizedInput === normalizedExpected
@@ -92,11 +118,17 @@ export const useRPGBattleStore = create<RPGBattleState>((set) => ({
         inputLocked: false,
         revealedTranslation: null,
         streak: state.streak + 1,
+        playerPose: attackPower === 'power' ? 'power-attack' : 'basic-attack',
       }))
       return true
     }
 
-    set({ inputLocked: true, revealedTranslation: expected, streak: 0 })
+    set({
+      inputLocked: true,
+      revealedTranslation: expected,
+      streak: 0,
+      playerPose: 'miss',
+    })
     revealTimeout = setTimeout(() => {
       set({ inputLocked: false, revealedTranslation: null })
       revealTimeout = null

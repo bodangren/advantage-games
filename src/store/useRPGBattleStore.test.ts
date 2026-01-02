@@ -107,4 +107,43 @@ describe('useRPGBattleStore', () => {
     expect(useRPGBattleStore.getState().revealedTranslation).toBeNull()
     expect(useRPGBattleStore.getState().streak).toBe(1)
   })
+
+  it('should update player pose on damage and defeat', () => {
+    const { initializeBattle, damagePlayer } = useRPGBattleStore.getState()
+    initializeBattle()
+
+    damagePlayer(5)
+    expect(useRPGBattleStore.getState().playerPose).toBe('hurt')
+
+    damagePlayer(500)
+    expect(useRPGBattleStore.getState().status).toBe('defeat')
+    expect(useRPGBattleStore.getState().playerPose).toBe('defeat')
+  })
+
+  it('should update enemy and player poses on enemy damage and victory', () => {
+    const { initializeBattle, damageEnemy } = useRPGBattleStore.getState()
+    initializeBattle()
+
+    damageEnemy(5)
+    expect(useRPGBattleStore.getState().enemyPose).toBe('hurt')
+
+    damageEnemy(500)
+    expect(useRPGBattleStore.getState().status).toBe('victory')
+    expect(useRPGBattleStore.getState().enemyPose).toBe('defeat')
+    expect(useRPGBattleStore.getState().playerPose).toBe('victory')
+  })
+
+  it('should update player pose based on answer result', () => {
+    const { initializeBattle, submitAnswer } = useRPGBattleStore.getState()
+    initializeBattle()
+
+    submitAnswer('wrong', 'Correct')
+    expect(useRPGBattleStore.getState().playerPose).toBe('miss')
+
+    submitAnswer('Correct', 'Correct', 'power')
+    expect(useRPGBattleStore.getState().playerPose).toBe('power-attack')
+
+    submitAnswer('Correct', 'Correct', 'basic')
+    expect(useRPGBattleStore.getState().playerPose).toBe('basic-attack')
+  })
 })
