@@ -13,7 +13,7 @@ Focuses on defining the state machine and turn-based mechanics using Zustand.
 ## Phase 2: UI Foundation & Components
 Creating the visual structure and individual UI elements.
 
-- [ ] Task: Create the `BattleScene` layout (2D side-view container).
+- [x] Task: Create the `BattleScene` layout (2D side-view container). (c2116fb)
 - [ ] Task: Implement the `HealthBar` component with animated health changes.
 - [ ] Task: Implement the `ActionMenu` component with the typing input field.
 - [ ] Task: Implement the `BattleLog` component to track combat history.
