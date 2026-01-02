@@ -14,7 +14,7 @@
 ## Phase 3: Game Logic and Feedback
 - [x] Task: Implement collision detection (missile hitting base) and health system [commit: ca60ea3]
 - [x] Task: Add visual and audio feedback for correct/incorrect answers (Framer Motion + SFX) [commit: 0aab580]
-- [ ] Task: Implement adaptive difficulty (speed scaling based on performance)
+- [x] Task: Implement adaptive difficulty (speed scaling based on performance) [commit: 4923e5d]
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Game Logic and Feedback' (Protocol in workflow.md)
 
 ## Phase 4: Scoring and XP
