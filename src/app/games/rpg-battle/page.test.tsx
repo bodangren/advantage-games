@@ -1,5 +1,6 @@
-import { render, screen } from '@testing-library/react'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import RpgBattlePage from './page'
+import { useRPGBattleStore } from '@/store/useRPGBattleStore'
 
 jest.mock('next/link', () => {
   const Link = ({ children, href }: { children: React.ReactNode; href: string }) => {
@@ -10,6 +11,16 @@ jest.mock('next/link', () => {
 })
 
 describe('RpgBattlePage', () => {
+  beforeEach(() => {
+    useRPGBattleStore.setState({
+      status: 'idle',
+      selectionStep: 'hero',
+      selectedHeroId: null,
+      selectedLocationId: null,
+      selectedEnemyId: null,
+    })
+  })
+
   it('renders the RPG battle shell', () => {
     render(<RpgBattlePage />)
 
@@ -17,5 +28,27 @@ describe('RpgBattlePage', () => {
     expect(screen.getByText('Actions')).toBeInTheDocument()
     expect(screen.getByText('Battle Log')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /back to home/i })).toHaveAttribute('href', '/')
+  })
+
+  it('shows the selection modal before the battle starts', () => {
+    render(<RpgBattlePage />)
+
+    expect(screen.getByRole('heading', { name: /choose your hero/i })).toBeInTheDocument()
+    expect(useRPGBattleStore.getState().status).toBe('idle')
+  })
+
+  it('starts the battle once selections are complete', async () => {
+    render(<RpgBattlePage />)
+
+    act(() => {
+      const { selectHero, selectLocation, selectEnemy } = useRPGBattleStore.getState()
+      selectHero('male')
+      selectLocation('forest-clearing')
+      selectEnemy('slime')
+    })
+
+    await waitFor(() => {
+      expect(useRPGBattleStore.getState().status).toBe('playing')
+    })
   })
 })

@@ -7,7 +7,7 @@ import { useRPGBattleStore } from '@/store/useRPGBattleStore'
 import { selectBattleActions, WordPerformance } from '@/lib/rpgBattleWordSelection'
 import { calculateRpgBattleXp } from '@/lib/rpgBattleXp'
 import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
-import { selectRandomEnemySprite, selectRandomHeroSprite } from '@/lib/rpgBattleSprites'
+import { battleEnemies, battleHeroes, battleLocations } from '@/lib/rpgBattleSelection'
 import { ActionMenu } from '@/components/rpg-battle/ActionMenu'
 import { BattleScene } from '@/components/rpg-battle/BattleScene'
 import { BattleLog } from '@/components/rpg-battle/BattleLog'
@@ -15,6 +15,7 @@ import { HealthBar } from '@/components/rpg-battle/HealthBar'
 import { Sprite } from '@/components/rpg-battle/Sprite'
 import { BattleResults } from '@/components/rpg-battle/BattleResults'
 import { BattleEffects } from '@/components/rpg-battle/BattleEffects'
+import { BattleSelectionModal } from '@/components/rpg-battle/BattleSelectionModal'
 import { useSound } from '@/hooks/useSound'
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -39,13 +40,20 @@ export default function RpgBattlePage() {
     enemyPose,
     inputLocked,
     revealedTranslation,
+    selectionStep,
+    selectedHeroId,
+    selectedEnemyId,
     streak,
     initializeBattle,
+    setStatus,
     setTurn,
     damageEnemy,
     enemyAttack,
     submitAnswer,
     addLogEntry,
+    selectHero,
+    selectLocation,
+    selectEnemy,
     resetSelection,
   } = useRPGBattleStore()
 
@@ -59,18 +67,29 @@ export default function RpgBattlePage() {
   const [showResults, setShowResults] = useState(false)
   const [resultXp, setResultXp] = useState(1)
   const [resultAccuracy, setResultAccuracy] = useState(0)
-  const [heroSprite, setHeroSprite] = useState(() => selectRandomHeroSprite())
-  const [enemySprite, setEnemySprite] = useState(() => selectRandomEnemySprite())
+  const [heroSprite, setHeroSprite] = useState(() => battleHeroes[0].sprite)
+  const [enemySprite, setEnemySprite] = useState(() => battleEnemies[0].sprite)
   const { playSound } = useSound()
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setVocabulary(SAMPLE_VOCABULARY)
     resetSelection()
+    setStatus('idle')
+  }, [resetSelection, setStatus, setVocabulary])
+
+  useEffect(() => {
+    if (selectionStep !== 'ready' || !selectedHeroId || !selectedEnemyId) {
+      return
+    }
+
+    const heroSelection = battleHeroes.find((hero) => hero.id === selectedHeroId) ?? battleHeroes[0]
+    const enemySelection = battleEnemies.find((enemy) => enemy.id === selectedEnemyId) ?? battleEnemies[0]
+
+    setHeroSprite(heroSelection.sprite)
+    setEnemySprite(enemySelection.sprite)
     initializeBattle()
-    setHeroSprite(selectRandomHeroSprite())
-    setEnemySprite(selectRandomEnemySprite())
-  }, [initializeBattle, resetSelection, setVocabulary])
+  }, [initializeBattle, selectedEnemyId, selectedHeroId, selectionStep])
 
   useEffect(() => {
     setLongestStreak((prev) => Math.max(prev, streak))
@@ -208,10 +227,8 @@ export default function RpgBattlePage() {
     setShowResults(false)
     setResultXp(1)
     setResultAccuracy(0)
+    setStatus('idle')
     resetSelection()
-    setHeroSprite(selectRandomHeroSprite())
-    setEnemySprite(selectRandomEnemySprite())
-    initializeBattle()
   }
 
   return (
@@ -302,6 +319,15 @@ export default function RpgBattlePage() {
           </BattleEffects>
         )}
       </div>
+      <BattleSelectionModal
+        step={selectionStep}
+        heroes={battleHeroes}
+        locations={battleLocations}
+        enemies={battleEnemies}
+        onSelectHero={selectHero}
+        onSelectLocation={selectLocation}
+        onSelectEnemy={selectEnemy}
+      />
     </main>
   )
 }
