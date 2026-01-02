@@ -25,7 +25,7 @@ Creating the visual structure and individual UI elements.
 Wiring the typing logic and word difficulty mapping into the battle system.
 
 - [x] Task: Implement the word selection algorithm (mapping known/new words to attack power). (4163a12)
-- [ ] Task: Implement typing verification logic with the 2-second error feedback loop.
+- [x] Task: Implement typing verification logic with the 2-second error feedback loop. (c541f83)
 - [ ] Task: Implement pose-switching logic (e.g., switch to 'Hurt' on damage, 'Attack' on success).
 - [ ] Task: Implement enemy AI (simple automated attack logic during enemy turn).
 - [ ] Task: Add attack animations and screen shake effects using Framer Motion.
