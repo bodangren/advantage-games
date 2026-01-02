@@ -38,22 +38,22 @@ export const battleLocations: BattleLocationOption[] = [
   {
     id: 'forest-clearing',
     label: 'Forest Clearing',
-    background: '/games/rpg-battle/locations/forest-clearing.png',
+    background: '/games/rpg-battle/background_forest_clearing.png',
   },
   {
     id: 'ruined-road',
     label: 'Ruined Road',
-    background: '/games/rpg-battle/locations/ruined-road.png',
+    background: '/games/rpg-battle/background_ruined_road.png',
   },
   {
     id: 'magic-arena',
     label: 'Magic Arena',
-    background: '/games/rpg-battle/locations/magic-arena.png',
+    background: '/games/rpg-battle/background_magic_arena.png',
   },
   {
     id: 'throne-hall',
     label: 'Throne Hall',
-    background: '/games/rpg-battle/locations/throne-hall.png',
+    background: '/games/rpg-battle/background_throne_hall.png',
   },
 ]
 
