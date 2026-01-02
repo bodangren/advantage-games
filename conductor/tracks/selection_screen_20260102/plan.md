@@ -23,6 +23,7 @@ This plan adds a mandatory pre-battle selection flow for hero, location, and ene
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Enemy Scaling' (Protocol in workflow.md)
 
 ## Phase 4: Backgrounds & Responsive Behavior
+- [x] Task: Add RPG battle location backgrounds and stage new art assets needed for upcoming updates. [commit: 948e22b]
 - [ ] Task: Wire location selection to background assets.
 - [ ] Task: Ensure mobile portrait view uses a centered background slice (center-crop).
 - [ ] Task: Add UI tests for background selection mapping (desktop + mobile styles where feasible).
