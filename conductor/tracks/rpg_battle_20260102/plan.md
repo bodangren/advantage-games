@@ -28,7 +28,7 @@ Wiring the typing logic and word difficulty mapping into the battle system.
 - [x] Task: Implement typing verification logic with the 2-second error feedback loop. (c541f83)
 - [x] Task: Implement pose-switching logic (e.g., switch to 'Hurt' on damage, 'Attack' on success). (13d51a7)
 - [x] Task: Implement enemy AI (simple automated attack logic during enemy turn). (46a9920)
-- [ ] Task: Add attack animations and screen shake effects using Framer Motion.
+- [x] Task: Add attack animations and screen shake effects using Framer Motion. (2485aee)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Combat Mechanics & Vocabulary Integration' (Protocol in workflow.md)
 
 ## Phase 4: XP, Results & App Integration
