@@ -7,7 +7,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Structural Refactor' (Protocol in workflow.md)
 
 ## Phase 2: RPG Theming and Assets
-- [ ] Task: Update GameEngine to render Castles (Health) and Magician avatar
+- [x] Task: Update GameEngine to render Castles (Health) and Magician avatar [commit: 7cb6ab1]
 - [ ] Task: Replace Missile component with "Enemy" component (Skull/Meteor visual)
 - [ ] Task: Implement explosion animations using Framer Motion
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: RPG Theming and Assets' (Protocol in workflow.md)
