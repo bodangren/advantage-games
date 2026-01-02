@@ -36,6 +36,6 @@ Finalizing the game loop and connecting it to the main application.
 
 - [x] Task: Implement XP calculation logic based on efficiency and streaks. (22c224c)
 - [x] Task: Create the `BattleResults` screen (Victory/Defeat summary). (990bb4c)
-- [ ] Task: Integrate the RPG Battle game into the Next.js app router (`/games/rpg-battle`).
+- [x] Task: Integrate the RPG Battle game into the Next.js app router (`/games/rpg-battle`). (8eacce0)
 - [ ] Task: Add final polish (sound effects, transitions, responsive fixes).
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: XP & Finalization' (Protocol in workflow.md)
