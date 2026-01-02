@@ -12,7 +12,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Core Game Components' (Protocol in workflow.md)
 
 ## Phase 3: Game Logic and Feedback
-- [ ] Task: Implement collision detection (missile hitting base) and health system
+- [x] Task: Implement collision detection (missile hitting base) and health system [commit: ca60ea3]
 - [ ] Task: Add visual and audio feedback for correct/incorrect answers (Framer Motion + SFX)
 - [ ] Task: Implement adaptive difficulty (speed scaling based on performance)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Game Logic and Feedback' (Protocol in workflow.md)
