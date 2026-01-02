@@ -13,6 +13,10 @@ describe('useRPGBattleStore', () => {
     expect(state.battleLog).toEqual([])
     expect(state.streak).toBe(0)
     expect(state.xpEarned).toBe(0)
+    expect(state.selectionStep).toBe('hero')
+    expect(state.selectedHeroId).toBeNull()
+    expect(state.selectedLocationId).toBeNull()
+    expect(state.selectedEnemyId).toBeNull()
   })
 
   it('should initialize battle correctly', () => {
@@ -170,5 +174,35 @@ describe('useRPGBattleStore', () => {
     const state = useRPGBattleStore.getState()
     expect(state.playerHealth).toBe(100)
     expect(state.enemyPose).toBe('idle')
+  })
+
+  it('should enforce selection order', () => {
+    const { selectHero, selectLocation, selectEnemy } = useRPGBattleStore.getState()
+    useRPGBattleStore.setState({
+      selectionStep: 'hero',
+      selectedHeroId: null,
+      selectedLocationId: null,
+      selectedEnemyId: null,
+    })
+
+    selectLocation('forest-clearing')
+    expect(useRPGBattleStore.getState().selectedLocationId).toBeNull()
+    expect(useRPGBattleStore.getState().selectionStep).toBe('hero')
+
+    selectHero('female')
+    expect(useRPGBattleStore.getState().selectedHeroId).toBe('female')
+    expect(useRPGBattleStore.getState().selectionStep).toBe('location')
+
+    selectEnemy('slime')
+    expect(useRPGBattleStore.getState().selectedEnemyId).toBeNull()
+    expect(useRPGBattleStore.getState().selectionStep).toBe('location')
+
+    selectLocation('magic-arena')
+    expect(useRPGBattleStore.getState().selectedLocationId).toBe('magic-arena')
+    expect(useRPGBattleStore.getState().selectionStep).toBe('enemy')
+
+    selectEnemy('elemental')
+    expect(useRPGBattleStore.getState().selectedEnemyId).toBe('elemental')
+    expect(useRPGBattleStore.getState().selectionStep).toBe('ready')
   })
 })

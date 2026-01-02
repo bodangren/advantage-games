@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { BattleEnemyId, BattleHeroId, BattleLocationId } from '@/lib/rpgBattleSelection'
 
 export type BattleStatus = 'idle' | 'playing' | 'victory' | 'defeat'
 export type BattleTurn = 'player' | 'enemy'
@@ -13,6 +14,7 @@ export type BattlePose =
   | 'victory'
   | 'defeat'
 export type BattleAttackPower = 'basic' | 'power'
+export type BattleSelectionStep = 'hero' | 'location' | 'enemy' | 'ready'
 
 export interface BattleLogEntry {
   text: string
@@ -33,6 +35,10 @@ export interface RPGBattleState {
   revealedTranslation: string | null
   playerPose: BattlePose
   enemyPose: BattlePose
+  selectionStep: BattleSelectionStep
+  selectedHeroId: BattleHeroId | null
+  selectedLocationId: BattleLocationId | null
+  selectedEnemyId: BattleEnemyId | null
   
   // Actions
   initializeBattle: () => void
@@ -43,6 +49,9 @@ export interface RPGBattleState {
   enemyAttack: (damage?: number) => void
   submitAnswer: (input: string, expected: string, attackPower?: BattleAttackPower) => boolean
   addLogEntry: (text: string, type: BattleLogEntry['type']) => void
+  selectHero: (heroId: BattleHeroId) => void
+  selectLocation: (locationId: BattleLocationId) => void
+  selectEnemy: (enemyId: BattleEnemyId) => void
 }
 
 let revealTimeout: ReturnType<typeof setTimeout> | null = null
@@ -61,6 +70,10 @@ export const useRPGBattleStore = create<RPGBattleState>((set, get) => ({
   revealedTranslation: null,
   playerPose: 'idle',
   enemyPose: 'idle',
+  selectionStep: 'hero',
+  selectedHeroId: null,
+  selectedLocationId: null,
+  selectedEnemyId: null,
 
   initializeBattle: () => set({
     playerHealth: 100,
@@ -148,5 +161,32 @@ export const useRPGBattleStore = create<RPGBattleState>((set, get) => ({
 
   addLogEntry: (text, type) => set((state) => ({
     battleLog: [...state.battleLog, { text, type }]
-  }))
+  })),
+
+  selectHero: (heroId) => set((state) => {
+    if (state.selectionStep !== 'hero') return {}
+
+    return {
+      selectedHeroId: heroId,
+      selectionStep: 'location',
+    }
+  }),
+
+  selectLocation: (locationId) => set((state) => {
+    if (state.selectionStep !== 'location') return {}
+
+    return {
+      selectedLocationId: locationId,
+      selectionStep: 'enemy',
+    }
+  }),
+
+  selectEnemy: (enemyId) => set((state) => {
+    if (state.selectionStep !== 'enemy') return {}
+
+    return {
+      selectedEnemyId: enemyId,
+      selectionStep: 'ready',
+    }
+  }),
 }))
