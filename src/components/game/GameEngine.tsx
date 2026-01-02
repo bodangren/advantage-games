@@ -18,7 +18,9 @@ export function GameEngine() {
   const { playSound } = useSound()
   const [activeMissiles, setActiveMissiles] = useState<ActiveMissile[]>([])
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
-  const [spawnRate, setSpawnRate] = useState(3000) // 3 seconds initially
+  const [consecutiveCorrect, setConsecutiveCorrect] = useState(0)
+  const [spawnRate, setSpawnRate] = useState(3000)
+  const [missileDuration, setMissileDuration] = useState(10)
 
   const spawnMissile = useCallback(() => {
     if (status !== 'playing' || vocabulary.length === 0) return
@@ -36,6 +38,11 @@ export function GameEngine() {
 
   const handleReachBottom = useCallback((id: string) => {
     playSound('missile-hit')
+    setConsecutiveCorrect(0)
+    // Reset or slow down difficulty on miss?
+    setSpawnRate((prev) => Math.min(prev + 200, 3000))
+    setMissileDuration((prev) => Math.min(prev + 0.5, 10))
+    
     decreaseHealth()
     setActiveMissiles((prev) => prev.filter((m) => m.id !== id))
   }, [decreaseHealth, playSound])
@@ -49,16 +56,25 @@ export function GameEngine() {
     if (matchingMissile) {
       playSound('success')
       setFeedback('correct')
+      setConsecutiveCorrect((prev) => prev + 1)
+      
+      // Increase difficulty every 3 correct answers
+      if ((consecutiveCorrect + 1) % 3 === 0) {
+        setSpawnRate((prev) => Math.max(prev - 200, 1000))
+        setMissileDuration((prev) => Math.max(prev - 0.5, 3))
+      }
+
       setTimeout(() => setFeedback(null), 500)
       setActiveMissiles((prev) => prev.filter((m) => m.id !== matchingMissile.id))
       return true
     } else {
       playSound('error')
       setFeedback('incorrect')
+      setConsecutiveCorrect(0)
       setTimeout(() => setFeedback(null), 500)
       return false
     }
-  }, [activeMissiles, playSound])
+  }, [activeMissiles, playSound, consecutiveCorrect])
 
   if (status !== 'playing') return null
 
@@ -73,7 +89,7 @@ export function GameEngine() {
             key={missile.id}
             id={missile.id}
             term={missile.term}
-            duration={10} // 10 seconds to reach bottom initially
+            duration={missileDuration}
             onReachBottom={handleReachBottom}
           />
         ))}
