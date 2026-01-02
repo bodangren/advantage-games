@@ -205,4 +205,26 @@ describe('useRPGBattleStore', () => {
     expect(useRPGBattleStore.getState().selectedEnemyId).toBe('elemental')
     expect(useRPGBattleStore.getState().selectionStep).toBe('ready')
   })
+
+  it('should reset selection state', () => {
+    const { resetSelection, selectHero, selectLocation, selectEnemy } = useRPGBattleStore.getState()
+    useRPGBattleStore.setState({
+      selectionStep: 'hero',
+      selectedHeroId: null,
+      selectedLocationId: null,
+      selectedEnemyId: null,
+    })
+
+    selectHero('male')
+    selectLocation('ruined-road')
+    selectEnemy('spectre')
+
+    resetSelection()
+
+    const state = useRPGBattleStore.getState()
+    expect(state.selectionStep).toBe('hero')
+    expect(state.selectedHeroId).toBeNull()
+    expect(state.selectedLocationId).toBeNull()
+    expect(state.selectedEnemyId).toBeNull()
+  })
 })

@@ -52,6 +52,7 @@ export interface RPGBattleState {
   selectHero: (heroId: BattleHeroId) => void
   selectLocation: (locationId: BattleLocationId) => void
   selectEnemy: (enemyId: BattleEnemyId) => void
+  resetSelection: () => void
 }
 
 let revealTimeout: ReturnType<typeof setTimeout> | null = null
@@ -188,5 +189,12 @@ export const useRPGBattleStore = create<RPGBattleState>((set, get) => ({
       selectedEnemyId: enemyId,
       selectionStep: 'ready',
     }
+  }),
+
+  resetSelection: () => set({
+    selectionStep: 'hero',
+    selectedHeroId: null,
+    selectedLocationId: null,
+    selectedEnemyId: null,
   }),
 }))

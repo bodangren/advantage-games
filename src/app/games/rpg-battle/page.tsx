@@ -46,6 +46,7 @@ export default function RpgBattlePage() {
     enemyAttack,
     submitAnswer,
     addLogEntry,
+    resetSelection,
   } = useRPGBattleStore()
 
   const [inputValue, setInputValue] = useState('')
@@ -65,10 +66,11 @@ export default function RpgBattlePage() {
 
   useEffect(() => {
     setVocabulary(SAMPLE_VOCABULARY)
+    resetSelection()
     initializeBattle()
     setHeroSprite(selectRandomHeroSprite())
     setEnemySprite(selectRandomEnemySprite())
-  }, [initializeBattle, setVocabulary])
+  }, [initializeBattle, resetSelection, setVocabulary])
 
   useEffect(() => {
     setLongestStreak((prev) => Math.max(prev, streak))
@@ -206,6 +208,7 @@ export default function RpgBattlePage() {
     setShowResults(false)
     setResultXp(1)
     setResultAccuracy(0)
+    resetSelection()
     setHeroSprite(selectRandomHeroSprite())
     setEnemySprite(selectRandomEnemySprite())
     initializeBattle()
