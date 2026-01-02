@@ -1,6 +1,6 @@
 # Plan: Magic Defense Refactor
 
-## Phase 1: Structural Refactor
+## Phase 1: Structural Refactor [checkpoint: 211b45c]
 - [x] Task: Create `src/app/games/magic-defense` and move game components [commit: 6ec4b3a]
 - [x] Task: Create Main Menu page with navigation to Magic Defense [commit: 2d118de]
 - [x] Task: Update `useGameStore` to support game resets and navigation [commit: 36e1430]
