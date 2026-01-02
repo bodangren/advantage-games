@@ -2,13 +2,13 @@
 
 This plan outlines the steps to build a 2D side-view turn-based RPG vocabulary game. The development follows a Test-Driven Development (TDD) approach, focusing on a robust state machine and a responsive user interface.
 
-## Phase 1: Game State & Core Logic
+## Phase 1: Game State & Core Logic [checkpoint: 14ed2b3]
 Focuses on defining the state machine and turn-based mechanics using Zustand.
 
 - [x] Task: Define `RPGBattleStore` state and types (Zustand). (bef34fd)
 - [x] Task: Implement `useRPGBattleStore` actions for turn management (Player/Enemy turn transitions). (d460fdb)
 - [x] Task: Implement health management logic (damage calculation and death checks). (233fde1)
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Game State & Core Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Game State & Core Logic' (Protocol in workflow.md). (14ed2b3)
 
 ## Phase 2: UI Foundation & Components
 Creating the visual structure and individual UI elements.
