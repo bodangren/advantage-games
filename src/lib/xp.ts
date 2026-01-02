@@ -3,6 +3,6 @@ export function calculateXP(score: number, correctAnswers: number, totalAttempts
   
   const accuracy = correctAnswers / totalAttempts
   
-  // Formula: (Score / 10) * Accuracy
-  return Math.floor((score / 10) * accuracy)
+  // Formula: Score * Accuracy
+  return Math.floor(score * accuracy)
 }
