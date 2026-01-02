@@ -14,7 +14,7 @@ interface ActiveMissile extends VocabularyItem {
 }
 
 export function GameEngine() {
-  const { vocabulary, status, decreaseHealth } = useGameStore()
+  const { vocabulary, status, decreaseHealth, increaseScore, incrementAttempts } = useGameStore()
   const { playSound } = useSound()
   const [activeMissiles, setActiveMissiles] = useState<ActiveMissile[]>([])
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
@@ -43,9 +43,10 @@ export function GameEngine() {
     setSpawnRate((prev) => Math.min(prev + 200, 3000))
     setMissileDuration((prev) => Math.min(prev + 0.5, 10))
     
+    incrementAttempts()
     decreaseHealth()
     setActiveMissiles((prev) => prev.filter((m) => m.id !== id))
-  }, [decreaseHealth, playSound])
+  }, [decreaseHealth, playSound, incrementAttempts])
 
   const checkAnswer = useCallback((answer: string) => {
     // Find the oldest missile that matches the answer
@@ -64,6 +65,7 @@ export function GameEngine() {
         setMissileDuration((prev) => Math.max(prev - 0.5, 3))
       }
 
+      increaseScore(10) // Base score per missile
       setTimeout(() => setFeedback(null), 500)
       setActiveMissiles((prev) => prev.filter((m) => m.id !== matchingMissile.id))
       return true
@@ -71,10 +73,11 @@ export function GameEngine() {
       playSound('error')
       setFeedback('incorrect')
       setConsecutiveCorrect(0)
+      incrementAttempts()
       setTimeout(() => setFeedback(null), 500)
       return false
     }
-  }, [activeMissiles, playSound, consecutiveCorrect])
+  }, [activeMissiles, playSound, consecutiveCorrect, increaseScore, incrementAttempts])
 
   if (status !== 'playing') return null
 
