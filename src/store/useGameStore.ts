@@ -17,6 +17,7 @@ export interface GameState {
   increaseScore: (amount: number) => void
   decreaseHealth: () => void
   incrementAttempts: () => void
+  quitGame: () => void
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -28,6 +29,7 @@ export const useGameStore = create<GameState>((set) => ({
   totalAttempts: 0,
   setVocabulary: (vocab) => set({ vocabulary: vocab }),
   resetGame: () => set({ score: 0, health: 3, status: 'playing', correctAnswers: 0, totalAttempts: 0 }),
+  quitGame: () => set({ score: 0, health: 3, status: 'idle', correctAnswers: 0, totalAttempts: 0 }),
   increaseScore: (amount) => set((state) => ({ 
     score: state.score + amount,
     correctAnswers: state.correctAnswers + 1,
