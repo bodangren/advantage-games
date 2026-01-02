@@ -16,7 +16,7 @@ Creating the visual structure and individual UI elements.
 - [x] Task: Create the `BattleScene` layout (2D side-view container). (c2116fb)
 - [x] Task: Implement the `HealthBar` component with animated health changes. (8fced3f)
 - [x] Task: Implement the `ActionMenu` component with the typing input field. (fd61135)
-- [ ] Task: Implement the `BattleLog` component to track combat history.
+- [x] Task: Implement the `BattleLog` component to track combat history. (b881dbc)
 - [ ] Task: Create simple sprites/placeholders for Player and Enemy using the 3×3 grid layout.
 - [ ] Task: Implement a `Sprite` component that handles UV mapping/positioning for the 3×3 pose sheet and supports horizontal flipping.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: UI Foundation & Components' (Protocol in workflow.md)
