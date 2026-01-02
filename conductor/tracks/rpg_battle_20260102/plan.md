@@ -41,4 +41,5 @@ Finalizing the game loop and connecting it to the main application.
 - [x] Task: Centralize sample vocabulary and address RPG battle UX issues (autofocus, nav, victory delay, XP snapshot). (a46b232)
 - [x] Task: Reset battle effects on restart and retain word difficulty across rematches. (cb6adfb)
 - [x] Task: Randomize hero and enemy sprites at battle start. (2b75212)
+- [x] Task: Ensure action input focuses after rematch. (a11aa44)
 - [~] Task: Conductor - User Manual Verification 'Phase 4: XP & Finalization' (Protocol in workflow.md)
