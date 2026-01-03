@@ -8,9 +8,9 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Housekeeping & Deployment Prep' (Protocol in workflow.md) [commit: 9ecfc83]
 
 ## Phase 2: Dragon Flight Core Logic
-- [ ] Task: Define Dragon Flight state/types and gate selection logic (timer, attempts, accuracy, dragon count).
-- [ ] Task: Implement boss fight resolution and XP calculation using `src/lib/xp.ts`.
-- [ ] Task: Add unit tests for gate selection, dragon count adjustments, boss outcome, and XP output.
+- [x] Task: Define Dragon Flight state/types and gate selection logic (timer, attempts, accuracy, dragon count). [commit: 0b6d7c7]
+- [x] Task: Implement boss fight resolution and XP calculation using `src/lib/xp.ts`. [commit: 0b6d7c7]
+- [x] Task: Add unit tests for gate selection, dragon count adjustments, boss outcome, and XP output. [commit: 0b6d7c7]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Dragon Flight Core Logic' (Protocol in workflow.md)
 
 ## Phase 3: Dragon Flight UI & Interaction
