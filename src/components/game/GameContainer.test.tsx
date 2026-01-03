@@ -35,8 +35,9 @@ describe('GameContainer', () => {
       score: 0,
       correctAnswers: 0,
       totalAttempts: 0,
+      castles: { left: 3, center: 3, right: 3 },
       resetGame: jest.fn(),
-      decreaseHealth: jest.fn(),
+      damageCastle: jest.fn(),
       increaseScore: jest.fn(),
       incrementAttempts: jest.fn(),
     })

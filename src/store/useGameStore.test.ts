@@ -1,21 +1,58 @@
 import { useGameStore } from './useGameStore'
 
+const initialCastles = {
+  left: 3,
+  center: 3,
+  right: 3,
+}
+
+const resetStoreState = () => {
+  useGameStore.setState({
+    vocabulary: [],
+    score: 0,
+    castles: { ...initialCastles },
+    status: 'idle',
+    correctAnswers: 0,
+    totalAttempts: 0,
+  })
+}
+
 describe('useGameStore', () => {
-  it('should initialize with default values', () => {
-    // Placeholder
+  beforeEach(() => {
+    resetStoreState()
   })
 
   it('should have correct initial state defined in store', () => {
-     // This accesses the state as defined in the file (persisted from import)
-     // unless I manually changed it.
-     // To ensure I'm testing the "raw" store, I'll rely on it not being modified yet 
-     // or use a separate test file that doesn't modify it. 
-     // But simpler: just assert 0.
-     const { score, health, status, vocabulary } = useGameStore.getState()
-     
+     const { score, castles, status, vocabulary } = useGameStore.getState()
+      
      expect(score).toBe(0)
-     expect(health).toBe(3)
+     expect(castles).toEqual(initialCastles)
      expect(status).toBe('idle')
      expect(vocabulary).toEqual([])
+  })
+
+  it('reduces castle HP and ends the game when all castles are destroyed', () => {
+    const { damageCastle } = useGameStore.getState()
+
+    damageCastle('left')
+    damageCastle('left')
+    damageCastle('left')
+
+    expect(useGameStore.getState().castles.left).toBe(0)
+    expect(useGameStore.getState().status).toBe('idle')
+
+    damageCastle('right')
+    damageCastle('right')
+    damageCastle('right')
+
+    expect(useGameStore.getState().castles.right).toBe(0)
+    expect(useGameStore.getState().status).toBe('idle')
+
+    damageCastle('center')
+    damageCastle('center')
+    damageCastle('center')
+
+    expect(useGameStore.getState().castles.center).toBe(0)
+    expect(useGameStore.getState().status).toBe('game-over')
   })
 })

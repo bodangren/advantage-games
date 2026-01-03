@@ -123,3 +123,50 @@
     @apply bg-background text-foreground;
   }
 }
+
+@keyframes enemy-walk {
+  0%,
+  32% {
+    background-position: 0% 0%;
+  }
+  33%,
+  65% {
+    background-position: 50% 0%;
+  }
+  66%,
+  99% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+@keyframes enemy-die {
+  0% {
+    background-position: 0% 50%;
+  }
+  20% {
+    background-position: 50% 50%;
+  }
+  40% {
+    background-position: 100% 50%;
+  }
+  60% {
+    background-position: 0% 100%;
+  }
+  80% {
+    background-position: 50% 100%;
+  }
+  100% {
+    background-position: 100% 100%;
+  }
+}
+
+.enemy-walk {
+  animation: enemy-walk 0.75s steps(1, end) infinite;
+}
+
+.enemy-die {
+  animation: enemy-die 1s step-end forwards;
+}

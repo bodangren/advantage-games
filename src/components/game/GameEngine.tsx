@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
-import { useGameStore, VocabularyItem } from '@/store/useGameStore'
+import React, { useState, useCallback, useRef } from 'react'
+import { useGameStore, VocabularyItem, CastleId, MAX_CASTLE_HP } from '@/store/useGameStore'
 import { useInterval } from '@/hooks/useInterval'
 import { useSound } from '@/hooks/useSound'
 import { nanoid } from 'nanoid'
@@ -16,6 +16,9 @@ import { HUD } from './HUD'
 interface ActiveMissile extends VocabularyItem {
   id: string
   x: number
+  targetX: number
+  targetCastleId: CastleId
+  state: 'falling' | 'targeted' | 'dying'
 }
 
 interface ActiveExplosion {
@@ -26,27 +29,78 @@ interface ActiveExplosion {
 
 interface ActiveBolt {
   id: string
+  startX: number
   targetX: number
   targetY: number
   targetEnemyId: string
 }
 
 const CASTLE_SHEET = '/games/magic-defense/castles_3x2_sheet.png'
-const CASTLE_COLUMNS = 3
-const CASTLE_ROWS = 2
+const CASTLE_COLUMNS = 2
+const CASTLE_ROWS = 3
+const CASTLE_SHEET_WIDTH = 1536
+const CASTLE_SHEET_HEIGHT = 1024
+const CASTLE_SPRITE_WIDTH = 768
+const CASTLE_SPRITE_HEIGHT = 341
+const CASTLE_SCALE = 0.25
+const CASTLE_RENDER_WIDTH = CASTLE_SPRITE_WIDTH * CASTLE_SCALE
+const CASTLE_RENDER_HEIGHT = CASTLE_SPRITE_HEIGHT * CASTLE_SCALE
+const CASTLE_BAR_HEIGHT = 8
 const BACKGROUND_IMAGE = '/games/magic-defense/background.png'
+const CASTLE_POSITIONS: Record<CastleId, number> = {
+  left: 20,
+  center: 50,
+  right: 80,
+}
 
 const getCastleSpriteStyle = (column: number, row: number) => ({
   backgroundImage: `url(${CASTLE_SHEET})`,
-  backgroundSize: `${CASTLE_COLUMNS * 100}% ${CASTLE_ROWS * 100}%`,
+  backgroundSize: `${CASTLE_SHEET_WIDTH}px ${CASTLE_SHEET_HEIGHT}px`,
   backgroundPosition: `${(column / (CASTLE_COLUMNS - 1)) * 100}% ${(row / (CASTLE_ROWS - 1)) * 100}%`,
   backgroundRepeat: 'no-repeat',
 })
 
+const getCastleRowForHp = (hp: number) => {
+  if (hp >= MAX_CASTLE_HP) return 0
+  if (hp === 2) return 1
+  return 2
+}
+
+const getNearestAliveCastleId = (x: number, castles: Record<CastleId, number>): CastleId => {
+  const entries = (Object.entries(CASTLE_POSITIONS) as [CastleId, number][])
+    .filter(([castleId]) => castles[castleId] > 0)
+  if (entries.length === 0) return 'center'
+
+  return entries.reduce((closest, [castleId, position]) => {
+    const closestDistance = Math.abs(x - CASTLE_POSITIONS[closest])
+    const currentDistance = Math.abs(x - position)
+    return currentDistance < closestDistance ? castleId : closest
+  }, entries[0][0])
+}
+
+const getRandomAliveCastleId = (castles: Record<CastleId, number>): CastleId => {
+  const aliveCastles = (Object.keys(castles) as CastleId[]).filter(
+    (castleId) => castles[castleId] > 0
+  )
+  if (aliveCastles.length === 0) return 'center'
+
+  return aliveCastles[Math.floor(Math.random() * aliveCastles.length)]
+}
+
+const getCastleMotion = (hp: number) => ({
+  opacity: hp > 0 ? 1 : 0.2,
+  scale: hp > 0 ? 1 : 0.85,
+  y: hp > 0 ? 0 : 20,
+  filter: hp > 0 ? 'none' : 'grayscale(100%) brightness(0.4)',
+})
+
+const getHealthPercent = (hp: number) => `${Math.max(hp, 0) / MAX_CASTLE_HP * 100}%`
+
 export function GameEngine() {
-  const { vocabulary, status, health, score, correctAnswers, totalAttempts, decreaseHealth, increaseScore, incrementAttempts } = useGameStore()
+  const { vocabulary, status, castles, score, correctAnswers, totalAttempts, damageCastle, increaseScore, incrementAttempts } = useGameStore()
   const { playSound } = useSound()
   const [activeMissiles, setActiveMissiles] = useState<ActiveMissile[]>([])
+  const handledHitsRef = useRef<Set<string>>(new Set())
   const [explosions, setExplosions] = useState<ActiveExplosion[]>([])
   const [bolts, setBolts] = useState<ActiveBolt[]>([])
   const [feedback, setFeedback] = useState<'correct' | 'incorrect' | null>(null)
@@ -55,32 +109,46 @@ export function GameEngine() {
   const [missileDuration, setMissileDuration] = useState(15)
 
   const accuracy = totalAttempts > 0 ? correctAnswers / totalAttempts : 0
+  const leftCastleRow = getCastleRowForHp(castles.left)
+  const centerCastleRow = getCastleRowForHp(castles.center)
+  const rightCastleRow = getCastleRowForHp(castles.right)
 
   const spawnMissile = useCallback(() => {
     if (status !== 'playing' || vocabulary.length === 0) return
 
     const randomVocab = vocabulary[Math.floor(Math.random() * vocabulary.length)]
+    const startX = Math.random() * 25 + 37.5
+    const targetCastleId = getNearestAliveCastleId(startX, castles)
     const newMissile: ActiveMissile = {
       ...randomVocab,
       id: nanoid(),
-      x: Math.random() * 80 + 10,
+      x: startX,
+      targetCastleId,
+      targetX: CASTLE_POSITIONS[targetCastleId],
+      state: 'falling',
     }
 
     setActiveMissiles((prev) => [...prev, newMissile])
-  }, [status, vocabulary])
+  }, [status, vocabulary, castles])
 
   useInterval(spawnMissile, status === 'playing' ? spawnRate : null)
 
   const handleReachBottom = useCallback((id: string) => {
+    if (handledHitsRef.current.has(id)) return
+    handledHitsRef.current.add(id)
+
+    const target = activeMissiles.find((missile) => missile.id === id)
+    if (!target) return
+
     playSound('missile-hit')
     setConsecutiveCorrect(0)
     setSpawnRate((prev) => Math.min(prev + 200, 3000))
     setMissileDuration((prev) => Math.min(prev + 0.5, 15))
     
     incrementAttempts()
-    decreaseHealth()
-    setActiveMissiles((prev) => prev.filter((m) => m.id !== id))
-  }, [decreaseHealth, playSound, incrementAttempts])
+    damageCastle(getNearestAliveCastleId(target.targetX, castles))
+    setActiveMissiles((prev) => prev.filter((missile) => missile.id !== id))
+  }, [activeMissiles, damageCastle, playSound, incrementAttempts, castles])
 
   const handleBoltComplete = useCallback((boltId: string, enemyId: string, enemyX: number) => {
     setBolts(prev => prev.filter(b => b.id !== boltId))
@@ -92,25 +160,39 @@ export function GameEngine() {
       y: 50 // Approximate Y since we don't track it perfectly
     }])
     
-    // Remove enemy
-    setActiveMissiles((prev) => prev.filter((m) => m.id !== enemyId))
+    // Start death animation on hit
+    setActiveMissiles((prev) => prev.map((missile) => (
+      missile.id === enemyId ? { ...missile, state: 'dying' } : missile
+    )))
+  }, [])
+
+  const handleDeathComplete = useCallback((enemyId: string) => {
+    setActiveMissiles((prev) => prev.filter((missile) => missile.id !== enemyId))
   }, [])
 
   const checkAnswer = useCallback((answer: string) => {
     const matchingMissile = activeMissiles.find(
-      (m) => m.translation.toLowerCase() === answer.toLowerCase()
+      (m) => m.state === 'falling' && m.translation.toLowerCase() === answer.toLowerCase()
     )
 
     if (matchingMissile) {
       playSound('success')
       setFeedback('correct')
       setConsecutiveCorrect((prev) => prev + 1)
+
+      setActiveMissiles((prev) => prev.map((missile) => (
+        missile.id === matchingMissile.id ? { ...missile, state: 'targeted' } : missile
+      )))
       
+      const casterId = getRandomAliveCastleId(castles)
+      const casterX = CASTLE_POSITIONS[casterId]
+
       // Spawn Bolt
       const boltId = nanoid()
       setBolts(prev => [...prev, {
         id: boltId,
-        targetX: matchingMissile.x,
+        startX: casterX,
+        targetX: matchingMissile.targetX,
         targetY: 20, // Aim high
         targetEnemyId: matchingMissile.id
       }])
@@ -131,7 +213,7 @@ export function GameEngine() {
       setTimeout(() => setFeedback(null), 500)
       return false
     }
-  }, [activeMissiles, playSound, consecutiveCorrect, increaseScore, incrementAttempts])
+  }, [activeMissiles, playSound, consecutiveCorrect, increaseScore, incrementAttempts, castles])
 
   if (status !== 'playing') return null
 
@@ -163,9 +245,12 @@ export function GameEngine() {
               key={missile.id}
               id={missile.id}
               x={missile.x}
+              targetX={missile.targetX}
               term={missile.term}
               duration={missileDuration}
+              state={missile.state}
               onReachBottom={handleReachBottom}
+              onDeathComplete={handleDeathComplete}
             />
           ))}
         </AnimatePresence>
@@ -173,7 +258,7 @@ export function GameEngine() {
         {bolts.map((bolt) => (
           <MagicBolt 
             key={bolt.id}
-            startX={50}
+            startX={bolt.startX}
             startY={80} // Wizard position
             targetX={bolt.targetX}
             targetY={bolt.targetY}
@@ -191,77 +276,110 @@ export function GameEngine() {
         ))}
         
         {/* Bases/Castles at the bottom */}
-        <div className="absolute bottom-0 w-full flex justify-around p-4 items-end pointer-events-none">
-          {/* Left Castle (Dies 2nd, so visible if health >= 2) */}
+        <div className="absolute bottom-0 w-full flex justify-around p-2 items-end pointer-events-none">
+          {/* Left Castle */}
           <motion.div
-            animate={{ 
-              opacity: health >= 2 ? 1 : 0,
-              scale: health >= 2 ? 1 : 0.5,
-              y: health >= 2 ? 0 : 20,
-              filter: health >= 2 ? 'none' : 'grayscale(100%) brightness(0.5)'
-            }}
+            animate={getCastleMotion(castles.left)}
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center"
           >
             <div
-              className="h-16 w-16"
-              style={getCastleSpriteStyle(0, 0)}
+              style={{
+                width: `${CASTLE_RENDER_WIDTH}px`,
+                height: `${CASTLE_RENDER_HEIGHT}px`,
+              }}
               aria-hidden="true"
-            />
-            <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+            >
+              <div
+                style={{
+                  ...getCastleSpriteStyle(0, leftCastleRow),
+                  width: `${CASTLE_SPRITE_WIDTH}px`,
+                  height: `${CASTLE_SPRITE_HEIGHT}px`,
+                  transform: `scale(${CASTLE_SCALE})`,
+                  transformOrigin: 'top left',
+                }}
+                aria-hidden="true"
+              />
+            </div>
+            <div
+              className="bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700"
+              style={{ width: `${CASTLE_RENDER_WIDTH}px`, height: `${CASTLE_BAR_HEIGHT}px` }}
+            >
                <motion.div 
                  initial={{ width: '100%' }}
-                 animate={{ width: health >= 2 ? '100%' : '0%' }}
+                 animate={{ width: getHealthPercent(castles.left) }}
                  className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
                />
             </div>
           </motion.div>
 
-          {/* Center Wizard (Dies last, visible if health >= 1) */}
+          {/* Center Castle */}
           <motion.div
-            animate={{ 
-              opacity: health >= 1 ? 1 : 0,
-              scale: health >= 1 ? 1 : 0.5,
-              y: health >= 1 ? 0 : 20,
-              filter: health >= 1 ? 'none' : 'grayscale(100%) brightness(0.5)'
-            }}
+            animate={getCastleMotion(castles.center)}
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center"
           >
             <div
-              className="h-20 w-20"
-              style={getCastleSpriteStyle(1, 0)}
+              style={{
+                width: `${CASTLE_RENDER_WIDTH}px`,
+                height: `${CASTLE_RENDER_HEIGHT}px`,
+              }}
               aria-hidden="true"
-            />
-            <div className="w-24 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+            >
+              <div
+                style={{
+                  ...getCastleSpriteStyle(1, centerCastleRow),
+                  width: `${CASTLE_SPRITE_WIDTH}px`,
+                  height: `${CASTLE_SPRITE_HEIGHT}px`,
+                  transform: `scale(${CASTLE_SCALE})`,
+                  transformOrigin: 'top left',
+                }}
+                aria-hidden="true"
+              />
+            </div>
+            <div
+              className="bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700"
+              style={{ width: `${CASTLE_RENDER_WIDTH}px`, height: `${CASTLE_BAR_HEIGHT}px` }}
+            >
                <motion.div 
                  initial={{ width: '100%' }}
-                 animate={{ width: health >= 1 ? '100%' : '0%' }}
+                 animate={{ width: getHealthPercent(castles.center) }}
                  className="h-full bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]" 
                />
             </div>
           </motion.div>
 
-          {/* Right Castle (Dies 1st, visible if health >= 3) */}
+          {/* Right Castle */}
           <motion.div
-            animate={{ 
-              opacity: health >= 3 ? 1 : 0,
-              scale: health >= 3 ? 1 : 0.5,
-              y: health >= 3 ? 0 : 20,
-              filter: health >= 3 ? 'none' : 'grayscale(100%) brightness(0.5)'
-            }}
+            animate={getCastleMotion(castles.right)}
             transition={{ duration: 0.5 }}
             className="flex flex-col items-center"
           >
             <div
-              className="h-16 w-16"
-              style={getCastleSpriteStyle(2, 0)}
+              style={{
+                width: `${CASTLE_RENDER_WIDTH}px`,
+                height: `${CASTLE_RENDER_HEIGHT}px`,
+              }}
               aria-hidden="true"
-            />
-            <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+            >
+              <div
+                style={{
+                  ...getCastleSpriteStyle(0, rightCastleRow),
+                  width: `${CASTLE_SPRITE_WIDTH}px`,
+                  height: `${CASTLE_SPRITE_HEIGHT}px`,
+                  transform: `scale(${CASTLE_SCALE})`,
+                  transformOrigin: 'top left',
+                }}
+                aria-hidden="true"
+              />
+            </div>
+            <div
+              className="bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700"
+              style={{ width: `${CASTLE_RENDER_WIDTH}px`, height: `${CASTLE_BAR_HEIGHT}px` }}
+            >
                <motion.div 
                  initial={{ width: '100%' }}
-                 animate={{ width: health >= 3 ? '100%' : '0%' }}
+                 animate={{ width: getHealthPercent(castles.right) }}
                  className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
                />
             </div>

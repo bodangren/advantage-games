@@ -18,11 +18,11 @@ describe('GameEngine', () => {
     mockUseGameStore.mockReturnValue({
       vocabulary: [{ term: 'Apple', translation: 'Manzana' }],
       status: 'playing',
-      health: 3,
+      castles: { left: 3, center: 3, right: 3 },
       score: 0,
       correctAnswers: 0,
       totalAttempts: 0,
-      decreaseHealth: jest.fn(),
+      damageCastle: jest.fn(),
       increaseScore: jest.fn(),
       incrementAttempts: jest.fn(),
     })
@@ -37,27 +37,27 @@ describe('GameEngine', () => {
     })
   })
 
-  it('decreases health when a missile reaches bottom', () => {
-    const decreaseHealth = jest.fn()
+  it('damages a castle when a missile reaches bottom', () => {
+    const damageCastle = jest.fn()
     mockUseGameStore.mockReturnValue({
       vocabulary: [{ term: 'Apple', translation: 'Manzana' }],
       status: 'playing',
-      health: 3,
+      castles: { left: 3, center: 3, right: 3 },
       score: 0,
       correctAnswers: 0,
       totalAttempts: 0,
-      decreaseHealth,
+      damageCastle,
       increaseScore: jest.fn(),
       incrementAttempts: jest.fn(),
     })
 
     render(<GameEngine />)
     
-    // GameEngine spawns missiles on interval. 
-    // For unit testing the logic of 'handleReachBottom', 
+    // GameEngine spawns missiles on interval.
+    // For unit testing the logic of 'handleReachBottom',
     // we should ideally export or expose the internal handlers if possible,
     // or rely on component children interaction.
-    // However, since we mocked the store and passed it down, 
-    // we can check if decreaseHealth is called when the underlying logic is triggered.
+    // However, since we mocked the store and passed it down,
+    // we can check if damageCastle is called when the underlying logic is triggered.
   })
 })
