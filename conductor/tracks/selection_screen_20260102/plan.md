@@ -24,8 +24,8 @@ This plan adds a mandatory pre-battle selection flow for hero, location, and ene
 - [x] Task: Add unit tests for HP scaling, damage range scaling, and XP scaling. [commit: 63794be]
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Enemy Scaling' (Protocol in workflow.md) [commit: 63e5e1a]
 
-## Phase 4: Backgrounds & Responsive Behavior
+## Phase 4: Backgrounds & Responsive Behavior [checkpoint: 6acab48]
 - [x] Task: Wire location selection to background assets. [commit: 67e4582]
 - [x] Task: Ensure mobile portrait view uses a centered background slice (center-crop). [commit: 67e4582]
 - [x] Task: Add UI tests for background selection mapping (desktop + mobile styles where feasible). [commit: 67e4582]
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Backgrounds & Responsive Behavior' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Backgrounds & Responsive Behavior' (Protocol in workflow.md) [commit: 6acab48]
