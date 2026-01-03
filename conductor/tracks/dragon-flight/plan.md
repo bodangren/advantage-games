@@ -14,11 +14,11 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Dragon Flight Core Logic' (Protocol in workflow.md) [commit: a2a0541]
 
 ## Phase 3: Dragon Flight UI & Interaction
-- [ ] Task: Build the Dragon Flight scene layout (prompt, gates, timer, dragon count).
-- [ ] Task: Implement keyboard and touch input with success/failure feedback.
-- [ ] Task: Add the boss fight/results screen UI and animation polish (Framer Motion).
-- [ ] Task: Add component tests for key UI states (running, boss, results).
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Dragon Flight UI & Interaction' (Protocol in workflow.md)
+- [x] Task: Build the Dragon Flight scene layout (prompt, gates, timer, dragon count). [commit: 61d06d8]
+- [x] Task: Implement keyboard and touch input with success/failure feedback. [commit: 61d06d8]
+- [x] Task: Add the boss fight/results screen UI and animation polish (Framer Motion). [commit: 61d06d8]
+- [x] Task: Add component tests for key UI states (running, boss, results). [commit: 61d06d8]
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Dragon Flight UI & Interaction' (Protocol in workflow.md)
 
 ## Phase 4: App Integration & Final Polish
 - [ ] Task: Add the `/games/dragon-flight` route and integrate with `useGameStore` and XP completion flow.
