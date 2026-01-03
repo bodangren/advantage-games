@@ -82,6 +82,7 @@ describe('DragonFlightGame', () => {
     expect(screen.getByText('Apple')).toBeInTheDocument()
     expect(screen.getByTestId('dragon-flight')).toHaveAttribute('data-status', 'running')
     expect(screen.getByTestId('dragon-flight-dragon-count')).toHaveTextContent('1')
+    expect(screen.getByRole('progressbar', { name: /run timer/i })).toBeInTheDocument()
 
     randomSpy.mockRestore()
   })

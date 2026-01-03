@@ -400,6 +400,9 @@ export function DragonFlightGame({
   }, [state.status, vocabulary])
 
   const gateLabels = getGateLabels(state.round)
+  const remainingRatio = state.durationMs > 0
+    ? Math.max(0, 1 - state.elapsedMs / state.durationMs)
+    : 0
 
   const statusLabel = showResults ? 'results' : state.status
 
@@ -479,11 +482,18 @@ export function DragonFlightGame({
         </div>
 
         <div className='absolute left-6 right-6 top-20'>
-          <div className='h-2 w-full overflow-hidden rounded-full bg-white/10'>
+          <div
+            className='h-2 w-full overflow-hidden rounded-full bg-white/10'
+            role='progressbar'
+            aria-label='Run timer'
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(remainingRatio * 100)}
+          >
             <motion.div
               className='h-full rounded-full bg-gradient-to-r from-emerald-400 via-sky-400 to-indigo-400'
               initial={{ width: '100%' }}
-              animate={{ width: `${Math.max(0, 1 - state.elapsedMs / state.durationMs) * 100}%` }}
+              animate={{ width: `${remainingRatio * 100}%` }}
               transition={{ duration: 0.2, ease: 'linear' }}
               data-testid='dragon-flight-timer'
             />
