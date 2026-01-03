@@ -21,12 +21,15 @@ export interface GameState {
   status: 'idle' | 'playing' | 'game-over'
   correctAnswers: number
   totalAttempts: number
+  lastXp: number
+  lastAccuracy: number
   setVocabulary: (vocab: VocabularyItem[]) => void
   resetGame: () => void
   increaseScore: (amount: number) => void
   damageCastle: (castleId: CastleId) => void
   incrementAttempts: () => void
   quitGame: () => void
+  setLastResult: (xp: number, accuracy: number) => void
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -36,6 +39,8 @@ export const useGameStore = create<GameState>((set) => ({
   status: 'idle',
   correctAnswers: 0,
   totalAttempts: 0,
+  lastXp: 0,
+  lastAccuracy: 0,
   setVocabulary: (vocab) => set({ vocabulary: vocab }),
   resetGame: () => set({
     score: 0,
@@ -69,4 +74,5 @@ export const useGameStore = create<GameState>((set) => ({
     }
   }),
   incrementAttempts: () => set((state) => ({ totalAttempts: state.totalAttempts + 1 })),
+  setLastResult: (xp, accuracy) => set({ lastXp: xp, lastAccuracy: accuracy }),
 }))

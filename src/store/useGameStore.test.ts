@@ -14,6 +14,8 @@ const resetStoreState = () => {
     status: 'idle',
     correctAnswers: 0,
     totalAttempts: 0,
+    lastXp: 0,
+    lastAccuracy: 0,
   })
 }
 
@@ -29,6 +31,16 @@ describe('useGameStore', () => {
      expect(castles).toEqual(initialCastles)
      expect(status).toBe('idle')
      expect(vocabulary).toEqual([])
+  })
+
+  it('stores the latest XP result', () => {
+    const { setLastResult } = useGameStore.getState()
+
+    setLastResult(7, 0.7)
+
+    const { lastXp, lastAccuracy } = useGameStore.getState()
+    expect(lastXp).toBe(7)
+    expect(lastAccuracy).toBe(0.7)
   })
 
   it('reduces castle HP and ends the game when all castles are destroyed', () => {
