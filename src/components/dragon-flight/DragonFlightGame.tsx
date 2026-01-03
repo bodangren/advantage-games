@@ -26,6 +26,7 @@ type DragonFlightAssets = {
   gates: HTMLImageElement
   boss: HTMLImageElement
   player: HTMLImageElement
+  playerCamera: HTMLImageElement
   army: HTMLImageElement
   parallaxTop: HTMLImageElement
   parallaxMiddle: HTMLImageElement
@@ -102,6 +103,7 @@ const ASSETS = {
   gates: withBasePath('/games/dragon-flight/gates-3x3-sheet-facing-up.png'),
   boss: withBasePath('/games/dragon-flight/boss-3x3-sheet-facing-up.png'),
   player: withBasePath('/games/dragon-flight/player-3x3-sheet-facing-down.png'),
+  playerCamera: withBasePath('/games/dragon-flight/player-3x3-sheet-facing-camera.png'),
   army: withBasePath('/games/dragon-flight/dragon-army-3x3-sheet-facing-up.png'),
   parallaxTop: withBasePath('/games/dragon-flight/parallax-top-tiling.png'),
   parallaxMiddle: withBasePath('/games/dragon-flight/parallax-middle-tiling.png'),
@@ -164,6 +166,7 @@ const buildAssets = async (): Promise<DragonFlightAssets> => {
     gates,
     boss,
     player,
+    playerCamera,
     army,
     parallaxTop,
     parallaxMiddle,
@@ -173,6 +176,7 @@ const buildAssets = async (): Promise<DragonFlightAssets> => {
     loadImage(ASSETS.gates),
     loadImage(ASSETS.boss),
     loadImage(ASSETS.player),
+    loadImage(ASSETS.playerCamera),
     loadImage(ASSETS.army),
     loadImage(ASSETS.parallaxTop),
     loadImage(ASSETS.parallaxMiddle),
@@ -184,6 +188,7 @@ const buildAssets = async (): Promise<DragonFlightAssets> => {
     gates,
     boss,
     player,
+    playerCamera,
     army,
     parallaxTop,
     parallaxMiddle,
@@ -318,6 +323,7 @@ export function DragonFlightGame({
   const [playerFrame, setPlayerFrame] = useState(0)
   const [bossFrame, setBossFrame] = useState(0)
   const [playerX, setPlayerX] = useState(DEFAULT_STAGE.width / 2)
+  const [hasStarted, setHasStarted] = useState(false)
   const [lockedPairId, setLockedPairId] = useState<string | null>(null)
   const [displayDragonCount, setDisplayDragonCount] = useState(1)
   const [bossHealth, setBossHealth] = useState(0)
@@ -327,6 +333,20 @@ export function DragonFlightGame({
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingSelectionRef = useRef<PendingSelection | null>(null)
   const playerTargetRef = useRef<number | null>(null)
+
+  const measureStage = useCallback(() => {
+    const element = containerRef.current
+    if (!element) return
+    const { width, height } = element.getBoundingClientRect()
+    if (width <= 0 || height <= 0) return
+    const nextWidth = Math.round(width)
+    const nextHeight = Math.round(height)
+    setStageSize((prev) =>
+      prev.width === nextWidth && prev.height === nextHeight
+        ? prev
+        : { width: nextWidth, height: nextHeight }
+    )
+  }, [])
 
   useEffect(() => {
     let isMounted = true
@@ -354,7 +374,7 @@ export function DragonFlightGame({
     }
   }, [preloadedAssets])
 
-  useEffect(() => {
+  const resetGame = useCallback(() => {
     const nextState = createDragonFlightState(vocabulary, { durationMs })
     initialRoundRef.current = nextState.round
     setState(nextState)
@@ -372,20 +392,53 @@ export function DragonFlightGame({
   }, [vocabulary, durationMs])
 
   useEffect(() => {
+    resetGame()
+    setHasStarted(false)
+  }, [resetGame])
+
+  useEffect(() => {
+    if (isLoading) return
     if (!containerRef.current) return
-    if (typeof ResizeObserver === 'undefined') return
-    const element = containerRef.current
-    const observer = new ResizeObserver((entries) => {
-      const entry = entries[0]
-      if (!entry) return
-      const { width, height } = entry.contentRect
-      if (width > 0 && height > 0) {
-        setStageSize({ width, height })
+    measureStage()
+    let frameId = 0
+    const handleResize = () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId)
       }
-    })
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [])
+      frameId = requestAnimationFrame(() => {
+        frameId = 0
+        measureStage()
+      })
+    }
+
+    let observer: ResizeObserver | null = null
+    if (typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(handleResize)
+      observer.observe(containerRef.current)
+    }
+
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
+
+    const viewport = window.visualViewport
+    if (viewport) {
+      viewport.addEventListener('resize', handleResize)
+      viewport.addEventListener('scroll', handleResize)
+    }
+
+    return () => {
+      if (frameId) {
+        cancelAnimationFrame(frameId)
+      }
+      observer?.disconnect()
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
+      if (viewport) {
+        viewport.removeEventListener('resize', handleResize)
+        viewport.removeEventListener('scroll', handleResize)
+      }
+    }
+  }, [isLoading, measureStage])
 
   const gateGrid = useMemo(
     () => (assets ? buildSpriteGrid(assets.gates.width, assets.gates.height) : null),
@@ -490,7 +543,7 @@ export function DragonFlightGame({
 
       return isNearTarget ? target : next
     })
-  }, state.status === 'running' && layout ? TICK_MS : null)
+  }, state.status === 'running' && layout && hasStarted ? TICK_MS : null)
 
   const createGatePair = useCallback(
     (round?: DragonFlightRound) => {
@@ -516,15 +569,15 @@ export function DragonFlightGame({
 
   useInterval(() => {
     setGateFrame((prev) => (prev + 1) % 3)
-  }, GATE_ANIM_MS)
+  }, hasStarted ? GATE_ANIM_MS : null)
 
   useInterval(() => {
     setPlayerFrame((prev) => (prev + 1) % 9)
-  }, PLAYER_ANIM_MS)
+  }, hasStarted ? PLAYER_ANIM_MS : null)
 
   useInterval(() => {
     setBossFrame((prev) => (prev + 1) % 3)
-  }, state.status === 'boss' ? BOSS_ANIM_MS : null)
+  }, state.status === 'boss' && hasStarted ? BOSS_ANIM_MS : null)
 
   useInterval(() => {
     if (!layout) return
@@ -538,12 +591,14 @@ export function DragonFlightGame({
       const next = prev + gateSpeed * deltaSeconds
       return next >= targetY ? targetY : next
     })
-  }, state.status === 'boss' && layout ? TICK_MS : null)
+  }, state.status === 'boss' && layout && hasStarted ? TICK_MS : null)
 
   useInterval(() => {
     setBossHealth((prev) => Math.max(0, prev - 1))
     setDisplayDragonCount((prev) => Math.max(0, prev - 1))
-  }, state.status === 'boss' && bossHealth > 0 && displayDragonCount > 0 ? BOSS_HEALTH_TICK_MS : null)
+  }, state.status === 'boss' && bossHealth > 0 && displayDragonCount > 0 && hasStarted
+    ? BOSS_HEALTH_TICK_MS
+    : null)
 
   useEffect(() => {
     if (feedback) {
@@ -614,6 +669,7 @@ export function DragonFlightGame({
   }, [gatePairs, lockedPairId])
 
   const handleGateSelection = useCallback((side: GateSide) => {
+    if (!hasStarted) return
     if (state.status !== 'running') return
     if (pendingSelectionRef.current) return
     if (lockedPairId) return
@@ -636,10 +692,11 @@ export function DragonFlightGame({
 
     setLockedPairId(pair.id)
     setFeedback(null)
-  }, [activePair, layout, lockedPairId, state.status])
+  }, [activePair, hasStarted, layout, lockedPairId, state.status])
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
+      if (!hasStarted) return
       if (state.status !== 'running') return
       if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') {
         handleGateSelection('left')
@@ -651,7 +708,7 @@ export function DragonFlightGame({
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [handleGateSelection, state.status])
+  }, [handleGateSelection, hasStarted, state.status])
 
   const promptRound = activePair?.round ?? state.round
   const remainingRatio = state.durationMs > 0
@@ -660,27 +717,9 @@ export function DragonFlightGame({
 
   const dragonCountDisplay = state.status === 'boss' ? displayDragonCount : state.dragonCount
   const activePairId = activePair?.id ?? null
-  const statusLabel = showResults ? 'results' : state.status
+  const statusLabel = showResults ? 'results' : hasStarted ? state.status : 'ready'
 
-  if (isLoading) {
-    return (
-      <div className='relative w-full h-[60vh] min-h-[420px] max-h-[720px] overflow-hidden rounded-3xl border border-slate-800/60 bg-slate-900'>
-        <div
-          className='absolute inset-0 bg-cover bg-center'
-          style={{
-            backgroundImage: `url(${ASSETS.loadingBackground})`,
-          }}
-        />
-        <div className='absolute inset-0 bg-slate-950/60' />
-        <div className='relative z-10 flex h-full flex-col items-center justify-center gap-4 text-center text-white'>
-          <div className='text-sm uppercase tracking-[0.3em] text-slate-200'>Preparing Flight</div>
-          <div className='text-3xl font-semibold'>Summoning the Dragon Gate</div>
-        </div>
-      </div>
-    )
-  }
-
-  if (!assets) {
+  if (!assets && !isLoading) {
     return (
       <div className='rounded-3xl border border-red-500/40 bg-red-950/30 p-6 text-sm text-red-200'>
         Unable to load Dragon Flight assets. Please refresh to try again.
@@ -688,225 +727,323 @@ export function DragonFlightGame({
     )
   }
 
-  if (!layout) {
-    return null
-  }
-
-  const gateLabels = activePair ? getGateLabels(activePair.round) : null
-  const gateLabelTop = activePair
-    ? activePair.y + layout.leftGate.height + 8
-    : layout.leftGate.top + layout.leftGate.height + 8
-  const arrowSize = clamp(layout.leftGate.width * 0.45, 64, 120)
-  const arrowOffsetX = clamp(layout.leftGate.width * 0.75, 110, 190)
-  const arrowTop = clamp(
-    layout.playerY - arrowSize / 2,
-    140,
-    stageSize.height - arrowSize - 80
-  )
-  const leftArrowX = clamp(
-    layout.playerX - arrowOffsetX - arrowSize / 2,
-    12,
-    stageSize.width - arrowSize - 12
-  )
-  const rightArrowX = clamp(
-    layout.playerX + arrowOffsetX - arrowSize / 2,
-    12,
-    stageSize.width - arrowSize - 12
-  )
+  const canRenderGame = Boolean(hasStarted && layout && assets)
+  const gateLabels = canRenderGame && activePair ? getGateLabels(activePair.round) : null
+  const gateLabelTop = canRenderGame
+    ? (activePair
+      ? activePair.y + layout!.leftGate.height + 8
+      : layout!.leftGate.top + layout!.leftGate.height + 8)
+    : 0
+  const arrowSize = canRenderGame ? clamp(layout!.leftGate.width * 0.45, 64, 120) : 0
+  const arrowOffsetX = canRenderGame ? clamp(layout!.leftGate.width * 0.75, 110, 190) : 0
+  const arrowTop = canRenderGame
+    ? clamp(
+      layout!.playerY - arrowSize / 2,
+      140,
+      stageSize.height - arrowSize - 80
+    )
+    : 0
+  const leftArrowX = canRenderGame
+    ? clamp(
+      layout!.playerX - arrowOffsetX - arrowSize / 2,
+      12,
+      stageSize.width - arrowSize - 12
+    )
+    : 0
+  const rightArrowX = canRenderGame
+    ? clamp(
+      layout!.playerX + arrowOffsetX - arrowSize / 2,
+      12,
+      stageSize.width - arrowSize - 12
+    )
+    : 0
 
   return (
     <div
       ref={containerRef}
-      className='relative w-full h-[70vh] min-h-[480px] max-h-[760px] overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.45)] touch-none select-none'
+      className={`relative w-full h-[70vh] min-h-[480px] max-h-[760px] overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.45)] ${hasStarted ? 'touch-none select-none' : ''}`}
       data-testid='dragon-flight'
       data-status={statusLabel}
     >
-      <DragonFlightCanvas
-        stageSize={stageSize}
-        assets={assets}
-        feedback={feedback}
-        gatePairs={gatePairs}
-        activePairId={activePairId}
-        layout={layout}
-        gateFrame={gateFrame}
-        playerFrame={playerFrame}
-        playerX={playerX}
-        dragonCount={dragonCountDisplay}
-        bossFrame={bossFrame}
-        bossY={bossY}
-        bossHealth={bossHealth}
-        onSelectGate={handleGateSelection}
-        showBoss={state.status === 'boss'}
+      <div
+        className='absolute inset-0 bg-cover bg-center'
+        style={{
+          backgroundImage: `url(${ASSETS.loadingBackground})`,
+        }}
       />
+      <div className='absolute inset-0 bg-slate-950/55' />
 
-      <div className='absolute inset-0 z-10 pointer-events-none'>
-        <div className='flex items-start justify-between p-6'>
-          <div className='max-w-[60%] rounded-2xl border border-white/10 bg-white/10 px-5 py-3 backdrop-blur'>
-            <div className='text-xs uppercase tracking-[0.2em] text-white/70'>Prompt</div>
-            <div className='text-2xl font-semibold text-white'>{promptRound.term || '—'}</div>
-          </div>
-          <div className='flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white backdrop-blur'>
-            <Flame className='h-4 w-4 text-amber-300' aria-hidden='true' />
-            <span className='text-xs uppercase tracking-[0.2em] text-white/70'>Dragons</span>
-            <motion.span
-              key={dragonCountDisplay}
-              data-testid='dragon-flight-dragon-count'
-              className='text-lg font-semibold'
-              initial={{ scale: 0.9, opacity: 0.6 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.2 }}
-            >
-              {dragonCountDisplay}
-            </motion.span>
-          </div>
-        </div>
+      {canRenderGame && (
+        <DragonFlightCanvas
+          stageSize={stageSize}
+          assets={assets!}
+          feedback={feedback}
+          gatePairs={gatePairs}
+          activePairId={activePairId}
+          layout={layout!}
+          gateFrame={gateFrame}
+          playerFrame={playerFrame}
+          playerX={playerX}
+          dragonCount={dragonCountDisplay}
+          bossFrame={bossFrame}
+          bossY={bossY}
+          bossHealth={bossHealth}
+          onSelectGate={handleGateSelection}
+          showBoss={state.status === 'boss'}
+        />
+      )}
 
-        <div className='absolute left-6 right-6 top-20'>
-          <div
-            className='h-2 w-full overflow-hidden rounded-full bg-white/10'
-            role='progressbar'
-            aria-label='Run timer'
-            aria-valuemin={0}
-            aria-valuemax={100}
-            aria-valuenow={Math.round(remainingRatio * 100)}
-          >
-            <motion.div
-              className='h-full rounded-full bg-gradient-to-r from-emerald-400 via-sky-400 to-indigo-400'
-              initial={{ width: '100%' }}
-              animate={{ width: `${remainingRatio * 100}%` }}
-              transition={{ duration: 0.2, ease: 'linear' }}
-              data-testid='dragon-flight-timer'
-            />
-          </div>
-        </div>
-
-        {state.status === 'running' && (
-          <>
-            <button
-              type='button'
-              className='absolute flex items-center justify-center rounded-2xl border border-white/20 bg-white/20 text-white backdrop-blur-sm transition active:scale-95 pointer-events-auto'
-              style={{
-                width: arrowSize,
-                height: arrowSize,
-                left: leftArrowX,
-                top: arrowTop,
-              }}
-              onPointerDown={() => handleGateSelection('left')}
-              aria-label='Choose left gate'
-            >
-              <ArrowLeft size={arrowSize * 0.55} aria-hidden='true' />
-            </button>
-            <button
-              type='button'
-              className='absolute flex items-center justify-center rounded-2xl border border-white/20 bg-white/20 text-white backdrop-blur-sm transition active:scale-95 pointer-events-auto'
-              style={{
-                width: arrowSize,
-                height: arrowSize,
-                left: rightArrowX,
-                top: arrowTop,
-              }}
-              onPointerDown={() => handleGateSelection('right')}
-              aria-label='Choose right gate'
-            >
-              <ArrowRight size={arrowSize * 0.55} aria-hidden='true' />
-            </button>
-          </>
-        )}
-
-        {gateLabels && (
-          <>
-            <div
-              className='absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-4 py-2 text-2xl font-semibold text-white shadow-lg'
-              style={{
-                left: layout.leftGate.left + layout.leftGate.width / 2,
-                top: gateLabelTop,
-              }}
-            >
-              {gateLabels.left}
+      {canRenderGame && (
+        <div className='absolute inset-0 z-10 pointer-events-none'>
+          <div className='flex items-start justify-between p-6'>
+            <div className='max-w-[60%] rounded-2xl border border-white/10 bg-white/10 px-5 py-3 backdrop-blur'>
+              <div className='text-xs uppercase tracking-[0.2em] text-white/70'>Prompt</div>
+              <div className='text-2xl font-semibold text-white'>{promptRound.term || '—'}</div>
             </div>
-            <div
-              className='absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-4 py-2 text-2xl font-semibold text-white shadow-lg'
-              style={{
-                left: layout.rightGate.left + layout.rightGate.width / 2,
-                top: gateLabelTop,
-              }}
-            >
-              {gateLabels.right}
+            <div className='flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white backdrop-blur'>
+              <Flame className='h-4 w-4 text-amber-300' aria-hidden='true' />
+              <span className='text-xs uppercase tracking-[0.2em] text-white/70'>Dragons</span>
+              <motion.span
+                key={dragonCountDisplay}
+                data-testid='dragon-flight-dragon-count'
+                className='text-lg font-semibold'
+                initial={{ scale: 0.9, opacity: 0.6 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.2 }}
+              >
+                {dragonCountDisplay}
+              </motion.span>
             </div>
-          </>
-        )}
+          </div>
 
-        <AnimatePresence>
-          {feedback && (
-            <motion.div
-              className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur'
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.2 }}
+          <div className='absolute left-6 right-6 top-20'>
+            <div
+              className='h-2 w-full overflow-hidden rounded-full bg-white/10'
+              role='progressbar'
+              aria-label='Run timer'
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(remainingRatio * 100)}
             >
-              {feedback.outcome === 'correct' ? '+1 Dragon' : '-1 Dragon'}
-            </motion.div>
+              <motion.div
+                className='h-full rounded-full bg-gradient-to-r from-emerald-400 via-sky-400 to-indigo-400'
+                initial={{ width: '100%' }}
+                animate={{ width: `${remainingRatio * 100}%` }}
+                transition={{ duration: 0.2, ease: 'linear' }}
+                data-testid='dragon-flight-timer'
+              />
+            </div>
+          </div>
+
+          {state.status === 'running' && (
+            <>
+              <button
+                type='button'
+                className='absolute flex items-center justify-center rounded-2xl border border-white/20 bg-white/20 text-white backdrop-blur-sm transition active:scale-95 pointer-events-auto'
+                style={{
+                  width: arrowSize,
+                  height: arrowSize,
+                  left: leftArrowX,
+                  top: arrowTop,
+                }}
+                onPointerDown={() => handleGateSelection('left')}
+                aria-label='Choose left gate'
+              >
+                <ArrowLeft size={arrowSize * 0.55} aria-hidden='true' />
+              </button>
+              <button
+                type='button'
+                className='absolute flex items-center justify-center rounded-2xl border border-white/20 bg-white/20 text-white backdrop-blur-sm transition active:scale-95 pointer-events-auto'
+                style={{
+                  width: arrowSize,
+                  height: arrowSize,
+                  left: rightArrowX,
+                  top: arrowTop,
+                }}
+                onPointerDown={() => handleGateSelection('right')}
+                aria-label='Choose right gate'
+              >
+                <ArrowRight size={arrowSize * 0.55} aria-hidden='true' />
+              </button>
+            </>
           )}
-        </AnimatePresence>
-      </div>
 
-      <div className='absolute inset-0 z-20 pointer-events-none'>
-        <AnimatePresence>
-          {state.status === 'boss' && !showResults && (
-            <motion.div
-              className='absolute inset-x-0 top-24 mx-auto flex w-fit items-center gap-3 rounded-full border border-white/10 bg-slate-900/70 px-5 py-2 text-sm uppercase tracking-[0.2em] text-white'
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              data-testid='dragon-flight-boss'
-            >
-              Skeleton King Approaches
-            </motion.div>
+          {gateLabels && layout && (
+            <>
+              <div
+                className='absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-4 py-2 text-2xl font-semibold text-white shadow-lg'
+                style={{
+                  left: layout.leftGate.left + layout.leftGate.width / 2,
+                  top: gateLabelTop,
+                }}
+              >
+              {gateLabels?.left}
+              </div>
+              <div
+                className='absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-4 py-2 text-2xl font-semibold text-white shadow-lg'
+                style={{
+                  left: layout.rightGate.left + layout.rightGate.width / 2,
+                  top: gateLabelTop,
+                }}
+              >
+              {gateLabels?.right}
+              </div>
+            </>
           )}
-        </AnimatePresence>
 
-        <AnimatePresence>
-          {showResults && results && (
-            <motion.div
-              className='absolute inset-0 flex items-center justify-center bg-slate-950/70 px-6'
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              data-testid='dragon-flight-results'
-            >
-              <div className='w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/90 p-6 text-white shadow-xl'>
-                <div className='text-sm uppercase tracking-[0.2em] text-white/60'>Run Complete</div>
-                <div className='mt-2 text-3xl font-semibold'>
-                  {results.victory ? 'Victory' : 'Defeat'}
-                </div>
-                <div className='mt-4 grid grid-cols-2 gap-4 text-sm'>
-                  <div>
-                    <div className='text-white/60'>Dragons</div>
-                    <div className='text-lg font-semibold'>{results.dragonCount}</div>
+          <AnimatePresence>
+            {feedback && (
+              <motion.div
+                className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur'
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.2 }}
+              >
+                {feedback.outcome === 'correct' ? '+1 Dragon' : '-1 Dragon'}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {canRenderGame && (
+        <div className='absolute inset-0 z-20 pointer-events-none'>
+          <AnimatePresence>
+            {state.status === 'boss' && !showResults && (
+              <motion.div
+                className='absolute inset-x-0 top-24 mx-auto flex w-fit items-center gap-3 rounded-full border border-white/10 bg-slate-900/70 px-5 py-2 text-sm uppercase tracking-[0.2em] text-white'
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                data-testid='dragon-flight-boss'
+              >
+                Skeleton King Approaches
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {showResults && results && (
+              <motion.div
+                className='absolute inset-0 flex items-center justify-center bg-slate-950/70 px-6'
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                data-testid='dragon-flight-results'
+              >
+                <div className='w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/90 p-6 text-white shadow-xl'>
+                  <div className='text-sm uppercase tracking-[0.2em] text-white/60'>Run Complete</div>
+                  <div className='mt-2 text-3xl font-semibold'>
+                    {results.victory ? 'Victory' : 'Defeat'}
                   </div>
-                  <div>
-                    <div className='text-white/60'>Boss Power</div>
-                    <div className='text-lg font-semibold'>{results.bossPower}</div>
-                  </div>
-                  <div>
-                    <div className='text-white/60'>Accuracy</div>
-                    <div className='text-lg font-semibold'>
-                      {Math.round(results.accuracy * 100)}%
+                  <div className='mt-4 grid grid-cols-2 gap-4 text-sm'>
+                    <div>
+                      <div className='text-white/60'>Dragons</div>
+                      <div className='text-lg font-semibold'>{results.dragonCount}</div>
+                    </div>
+                    <div>
+                      <div className='text-white/60'>Boss Power</div>
+                      <div className='text-lg font-semibold'>{results.bossPower}</div>
+                    </div>
+                    <div>
+                      <div className='text-white/60'>Accuracy</div>
+                      <div className='text-lg font-semibold'>
+                        {Math.round(results.accuracy * 100)}%
+                      </div>
+                    </div>
+                    <div>
+                      <div className='text-white/60'>XP</div>
+                      <div className='text-lg font-semibold'>{results.xp}</div>
                     </div>
                   </div>
-                  <div>
-                    <div className='text-white/60'>XP</div>
-                    <div className='text-lg font-semibold'>{results.xp}</div>
-                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {!hasStarted && (
+        <div className='relative z-20 flex h-full flex-col text-white'>
+          <div className='flex-1 space-y-6 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8'>
+            <div className='flex flex-wrap items-center justify-between gap-3'>
+              <div>
+                <div className='text-xs uppercase tracking-[0.35em] text-white/70'>Dragon Flight</div>
+                <div className='mt-2 text-2xl font-semibold sm:text-3xl'>Flight Briefing</div>
+                <p className='mt-2 max-w-xl text-sm text-white/80'>
+                  Review the vocabulary, then tap Start Game to launch your dragon flight.
+                </p>
+              </div>
+              <div className='rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.25em] text-white/80'>
+                {isLoading ? 'Loading Assets' : 'Ready'}
+              </div>
+            </div>
+
+            <div className='grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]'>
+              <div className='flex flex-col items-center justify-center gap-4 rounded-3xl border border-white/10 bg-white/10 px-5 py-6 text-center backdrop-blur sm:px-6 sm:py-8'>
+                <div
+                  className='dragon-flight-intro-sprite h-32 w-32 overflow-hidden rounded-3xl border border-white/20 bg-white/5 shadow-lg sm:h-44 sm:w-44'
+                  style={{
+                    backgroundImage: `url(${ASSETS.playerCamera})`,
+                  }}
+                />
+                <div className='text-base font-semibold'>The Gate Run Begins Soon</div>
+                <div className='text-sm text-white/70'>
+                  Choose the correct translation to grow your dragon flight.
                 </div>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+
+              <div className='rounded-3xl border border-white/10 bg-slate-900/70 p-5 backdrop-blur sm:p-6'>
+                <div className='text-xs uppercase tracking-[0.3em] text-white/60'>
+                  Vocabulary Preview
+                </div>
+                <div className='mt-3 max-h-40 overflow-y-auto rounded-2xl border border-white/10 bg-white/5 sm:max-h-56'>
+                  {vocabulary.length === 0 ? (
+                    <div className='px-4 py-6 text-sm text-white/60'>
+                      No vocabulary loaded yet.
+                    </div>
+                  ) : (
+                    vocabulary.map((item, index) => (
+                      <div
+                        key={`${item.term}-${index}`}
+                        className='flex items-center justify-between gap-4 border-b border-white/10 px-4 py-2 text-sm last:border-b-0'
+                      >
+                        <span className='font-semibold text-white'>{item.term}</span>
+                        <span className='text-white/70'>{item.translation}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className='flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-slate-950/60 px-4 py-4 backdrop-blur sm:px-6'>
+            <div className='text-xs uppercase tracking-[0.25em] text-white/70'>
+              {isLoading ? 'Summoning Dragon Gates' : 'Ready To Fly'}
+            </div>
+            <button
+              type='button'
+              className={`rounded-full px-6 py-2 text-sm font-semibold transition ${
+                isLoading
+                  ? 'cursor-not-allowed bg-white/20 text-white/50'
+                  : 'bg-emerald-400 text-emerald-950 hover:bg-emerald-300'
+              }`}
+              onClick={() => {
+                if (isLoading) return
+                resetGame()
+                setHasStarted(true)
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Loading...' : 'Start Game'}
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   )

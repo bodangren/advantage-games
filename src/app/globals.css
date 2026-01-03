@@ -170,3 +170,32 @@
 .enemy-die {
   animation: enemy-die 1s step-end forwards;
 }
+
+@keyframes dragon-flight-intro {
+  0% {
+    background-position: 0% 0%;
+  }
+  16.66% {
+    background-position: 50% 0%;
+  }
+  33.33% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  66.66% {
+    background-position: 50% 50%;
+  }
+  83.33% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.dragon-flight-intro-sprite {
+  background-size: 300% 300%;
+  animation: dragon-flight-intro 1s steps(1, end) infinite;
+}

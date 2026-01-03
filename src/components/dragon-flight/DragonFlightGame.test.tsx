@@ -38,6 +38,7 @@ const assets = {
   gates: createImage(900, 900),
   boss: createImage(900, 900),
   player: createImage(900, 900),
+  playerCamera: createImage(900, 900),
   army: createImage(900, 900),
   parallaxTop: createImage(1024, 1024),
   parallaxMiddle: createImage(1024, 1024),
@@ -74,6 +75,8 @@ describe('DragonFlightGame', () => {
     const randomSpy = mockRandomSequence([0.1, 0.9, 0.2])
     render(<DragonFlightGame vocabulary={vocabulary} preloadedAssets={assets} />)
 
+    fireEvent.click(screen.getByRole('button', { name: /start game/i }))
+
     expect(screen.getByText('Apple')).toBeInTheDocument()
     expect(screen.getByTestId('dragon-flight')).toHaveAttribute('data-status', 'running')
     expect(screen.getByTestId('dragon-flight-dragon-count')).toHaveTextContent('1')
@@ -86,6 +89,8 @@ describe('DragonFlightGame', () => {
     jest.useFakeTimers()
     const randomSpy = mockRandomSequence([0.1, 0.9, 0.2, 0.4, 0.8, 0.1])
     render(<DragonFlightGame vocabulary={vocabulary} preloadedAssets={assets} />)
+
+    fireEvent.click(screen.getByRole('button', { name: /start game/i }))
 
     act(() => {
       fireEvent.keyDown(window, { key: 'ArrowLeft' })
@@ -111,6 +116,8 @@ describe('DragonFlightGame', () => {
         preloadedAssets={assets}
       />
     )
+
+    fireEvent.click(screen.getByRole('button', { name: /start game/i }))
 
     act(() => {
       jest.advanceTimersByTime(120)
