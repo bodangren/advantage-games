@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react'
 import { GameEngine } from './GameEngine'
+import { withBasePath } from '@/lib/basePath'
 import { useGameStore } from '@/store/useGameStore'
 
 // Mock the store
@@ -33,7 +34,7 @@ describe('GameEngine', () => {
 
     const stage = container.firstChild as HTMLElement
     expect(stage).toHaveStyle({
-      backgroundImage: 'url(/games/magic-defense/background.png)',
+      backgroundImage: `url(${withBasePath('/games/magic-defense/background.png')})`,
     })
   })
 

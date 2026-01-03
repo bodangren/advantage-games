@@ -2,6 +2,7 @@
 
 import React, { useState, useCallback, useRef } from 'react'
 import { useGameStore, VocabularyItem, CastleId, MAX_CASTLE_HP } from '@/store/useGameStore'
+import { withBasePath } from '@/lib/basePath'
 import { useInterval } from '@/hooks/useInterval'
 import { useSound } from '@/hooks/useSound'
 import { nanoid } from 'nanoid'
@@ -35,7 +36,7 @@ interface ActiveBolt {
   targetEnemyId: string
 }
 
-const CASTLE_SHEET = '/games/magic-defense/castles_3x2_sheet.png'
+const CASTLE_SHEET = withBasePath('/games/magic-defense/castles_3x2_sheet.png')
 const CASTLE_COLUMNS = 2
 const CASTLE_ROWS = 3
 const CASTLE_SHEET_WIDTH = 1536
@@ -46,7 +47,7 @@ const CASTLE_SCALE = 0.25
 const CASTLE_RENDER_WIDTH = CASTLE_SPRITE_WIDTH * CASTLE_SCALE
 const CASTLE_RENDER_HEIGHT = CASTLE_SPRITE_HEIGHT * CASTLE_SCALE
 const CASTLE_BAR_HEIGHT = 8
-const BACKGROUND_IMAGE = '/games/magic-defense/background.png'
+const BACKGROUND_IMAGE = withBasePath('/games/magic-defense/background.png')
 const CASTLE_POSITIONS: Record<CastleId, number> = {
   left: 20,
   center: 50,

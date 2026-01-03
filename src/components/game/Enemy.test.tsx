@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { Enemy } from './Enemy'
+import { withBasePath } from '@/lib/basePath'
 
 describe('Enemy', () => {
   it('renders the term', () => {
@@ -18,7 +19,7 @@ describe('Enemy', () => {
     
     expect(screen.getByText('Apple')).toBeInTheDocument()
     expect(getByTestId('enemy-sprite')).toHaveStyle({
-      backgroundImage: 'url(/games/magic-defense/skeletons_3x3_pose_sheet.png)',
+      backgroundImage: `url(${withBasePath('/games/magic-defense/skeletons_3x3_pose_sheet.png')})`,
     })
   })
 })

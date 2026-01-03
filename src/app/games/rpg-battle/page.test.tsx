@@ -1,6 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react'
 import RpgBattlePage from './page'
 import { useRPGBattleStore } from '@/store/useRPGBattleStore'
+import { withBasePath } from '@/lib/basePath'
 
 jest.mock('next/link', () => {
   const Link = ({ children, href }: { children: React.ReactNode; href: string }) => {
@@ -65,7 +66,7 @@ describe('RpgBattlePage', () => {
     await waitFor(() => {
       const stage = screen.getByTestId('battle-stage')
       expect(stage).toHaveStyle({
-        backgroundImage: 'url(/games/rpg-battle/background_magic_arena.png)',
+        backgroundImage: `url(${withBasePath('/games/rpg-battle/background_magic_arena.png')})`,
       })
     })
   })
