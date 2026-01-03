@@ -160,6 +160,7 @@ export default function RpgBattlePage() {
     totalAttempts,
     totalCorrect,
     turnsTaken,
+    enemyMultiplier,
   ])
 
   const menuActions = useMemo(

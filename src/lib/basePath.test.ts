@@ -7,8 +7,8 @@ async function loadWithBasePath(basePath?: string) {
     delete process.env.NEXT_PUBLIC_BASE_PATH;
   }
   jest.resetModules();
-  const module = await import('./basePath');
-  return module.withBasePath;
+  const basePathModule = await import('./basePath');
+  return basePathModule.withBasePath;
 }
 
 afterEach(() => {

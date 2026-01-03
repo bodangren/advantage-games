@@ -14,7 +14,7 @@ const ENEMY_DEATH_SCALE = 2 * ENEMY_BASE_SCALE
 const WALK_ANIMATION_CLASS = 'enemy-walk'
 const DEATH_ANIMATION_CLASS = 'enemy-die'
 const DEATH_ANIMATION_DURATION = 1.0
-const START_TOP = '40%'
+const START_TOP = '30%'
 
 interface EnemyProps {
   id: string

@@ -7,8 +7,8 @@ async function loadGameCards(basePath?: string) {
     delete process.env.NEXT_PUBLIC_BASE_PATH;
   }
   jest.resetModules();
-  const module = await import('./gameCards');
-  return module.gameCards;
+  const gameCardsModule = await import('./gameCards');
+  return gameCardsModule.gameCards;
 }
 
 afterEach(() => {
