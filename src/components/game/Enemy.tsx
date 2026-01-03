@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Skull } from 'lucide-react'
+const ENEMY_SPRITE = '/games/magic-defense/skeletons.png'
 
 interface EnemyProps {
   id: string
@@ -34,7 +34,12 @@ export function Enemy({ id, x, term, duration, onReachBottom, isDying = false }:
       style={{ position: 'absolute' }}
     >
       <div className="relative">
-        <Skull className="w-10 h-10 text-slate-300 fill-slate-800 group-hover:text-primary transition-colors" />
+        <div
+          className="h-12 w-12 bg-center bg-no-repeat bg-contain drop-shadow-md transition-transform duration-200 group-hover:scale-105"
+          style={{ backgroundImage: `url(${ENEMY_SPRITE})` }}
+          data-testid="enemy-sprite"
+          aria-hidden="true"
+        />
         <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-background/90 px-2 py-1 rounded border shadow-sm whitespace-nowrap font-bold text-sm">
           {term}
         </div>

@@ -7,7 +7,7 @@ import { useSound } from '@/hooks/useSound'
 import { nanoid } from 'nanoid'
 import { InputController } from './InputController'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Castle as CastleIcon, Wand2 } from 'lucide-react'
+import { Wand2 } from 'lucide-react'
 import { Enemy } from './Enemy'
 import { Explosion } from './Explosion'
 import { MagicBolt } from './MagicBolt'
@@ -30,6 +30,18 @@ interface ActiveBolt {
   targetY: number
   targetEnemyId: string
 }
+
+const CASTLE_SHEET = '/games/magic-defense/castles_3x2_sheet.png'
+const CASTLE_COLUMNS = 3
+const CASTLE_ROWS = 2
+const BACKGROUND_IMAGE = '/games/magic-defense/background.png'
+
+const getCastleSpriteStyle = (column: number, row: number) => ({
+  backgroundImage: `url(${CASTLE_SHEET})`,
+  backgroundSize: `${CASTLE_COLUMNS * 100}% ${CASTLE_ROWS * 100}%`,
+  backgroundPosition: `${(column / (CASTLE_COLUMNS - 1)) * 100}% ${(row / (CASTLE_ROWS - 1)) * 100}%`,
+  backgroundRepeat: 'no-repeat',
+})
 
 export function GameEngine() {
   const { vocabulary, status, health, score, correctAnswers, totalAttempts, decreaseHealth, increaseScore, incrementAttempts } = useGameStore()
@@ -124,124 +136,152 @@ export function GameEngine() {
   if (status !== 'playing') return null
 
   return (
-    <div className={`relative w-full h-[600px] bg-green-900 overflow-hidden border-x-4 border-slate-800 shadow-inner rounded-lg transition-colors duration-300 ${
-      feedback === 'correct' ? 'bg-green-800' : 
-      feedback === 'incorrect' ? 'bg-red-900/50' : ''
-    }`}>
-      <HUD score={score} accuracy={accuracy} />
+    <div
+      className="relative w-full h-[600px] overflow-hidden border-x-4 border-slate-800 shadow-inner rounded-lg bg-slate-900"
+      style={{
+        backgroundImage: `url(${BACKGROUND_IMAGE})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      <div
+        className={`absolute inset-0 pointer-events-none transition-colors duration-300 ${
+          feedback === 'correct'
+            ? 'bg-emerald-500/20'
+            : feedback === 'incorrect'
+              ? 'bg-red-900/40'
+              : 'bg-transparent'
+        }`}
+        aria-hidden="true"
+      />
+      <div className="relative z-10 h-full">
+        <HUD score={score} accuracy={accuracy} />
 
-      <AnimatePresence>
-        {activeMissiles.map((missile) => (
-          <Enemy
-            key={missile.id}
-            id={missile.id}
-            x={missile.x}
-            term={missile.term}
-            duration={missileDuration}
-            onReachBottom={handleReachBottom}
+        <AnimatePresence>
+          {activeMissiles.map((missile) => (
+            <Enemy
+              key={missile.id}
+              id={missile.id}
+              x={missile.x}
+              term={missile.term}
+              duration={missileDuration}
+              onReachBottom={handleReachBottom}
+            />
+          ))}
+        </AnimatePresence>
+
+        {bolts.map((bolt) => (
+          <MagicBolt 
+            key={bolt.id}
+            startX={50}
+            startY={80} // Wizard position
+            targetX={bolt.targetX}
+            targetY={bolt.targetY}
+            onComplete={() => handleBoltComplete(bolt.id, bolt.targetEnemyId, bolt.targetX)}
           />
         ))}
-      </AnimatePresence>
 
-      {bolts.map((bolt) => (
-        <MagicBolt 
-          key={bolt.id}
-          startX={50}
-          startY={80} // Wizard position
-          targetX={bolt.targetX}
-          targetY={bolt.targetY}
-          onComplete={() => handleBoltComplete(bolt.id, bolt.targetEnemyId, bolt.targetX)}
-        />
-      ))}
+        {explosions.map((exp) => (
+          <Explosion 
+            key={exp.id} 
+            x={exp.x} 
+            y={exp.y} 
+            onComplete={() => setExplosions(prev => prev.filter(e => e.id !== exp.id))} 
+          />
+        ))}
+        
+        {/* Bases/Castles at the bottom */}
+        <div className="absolute bottom-0 w-full flex justify-around p-4 items-end pointer-events-none">
+          {/* Left Castle (Dies 2nd, so visible if health >= 2) */}
+          <motion.div
+            animate={{ 
+              opacity: health >= 2 ? 1 : 0,
+              scale: health >= 2 ? 1 : 0.5,
+              y: health >= 2 ? 0 : 20,
+              filter: health >= 2 ? 'none' : 'grayscale(100%) brightness(0.5)'
+            }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center"
+          >
+            <div
+              className="h-16 w-16"
+              style={getCastleSpriteStyle(0, 0)}
+              aria-hidden="true"
+            />
+            <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+               <motion.div 
+                 initial={{ width: '100%' }}
+                 animate={{ width: health >= 2 ? '100%' : '0%' }}
+                 className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+               />
+            </div>
+          </motion.div>
 
-      {explosions.map((exp) => (
-        <Explosion 
-          key={exp.id} 
-          x={exp.x} 
-          y={exp.y} 
-          onComplete={() => setExplosions(prev => prev.filter(e => e.id !== exp.id))} 
-        />
-      ))}
-      
-      {/* Bases/Castles at the bottom */}
-      <div className="absolute bottom-0 w-full flex justify-around p-4 items-end pointer-events-none">
-        {/* Left Castle (Dies 2nd, so visible if health >= 2) */}
-        <motion.div
-          animate={{ 
-            opacity: health >= 2 ? 1 : 0,
-            scale: health >= 2 ? 1 : 0.5,
-            y: health >= 2 ? 0 : 20,
-            filter: health >= 2 ? 'none' : 'grayscale(100%) brightness(0.5)'
-          }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center"
-        >
-          <CastleIcon className="w-16 h-16 text-slate-400 fill-slate-700 shadow-lg" />
-          <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
-             <motion.div 
-               initial={{ width: '100%' }}
-               animate={{ width: health >= 2 ? '100%' : '0%' }}
-               className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
-             />
-          </div>
-        </motion.div>
+          {/* Center Wizard (Dies last, visible if health >= 1) */}
+          <motion.div
+            animate={{ 
+              opacity: health >= 1 ? 1 : 0,
+              scale: health >= 1 ? 1 : 0.5,
+              y: health >= 1 ? 0 : 20,
+              filter: health >= 1 ? 'none' : 'grayscale(100%) brightness(0.5)'
+            }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center"
+          >
+            <div
+              className="h-20 w-20"
+              style={getCastleSpriteStyle(1, 0)}
+              aria-hidden="true"
+            />
+            <div className="w-24 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+               <motion.div 
+                 initial={{ width: '100%' }}
+                 animate={{ width: health >= 1 ? '100%' : '0%' }}
+                 className="h-full bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]" 
+               />
+            </div>
+          </motion.div>
 
-        {/* Center Wizard (Dies last, visible if health >= 1) */}
-        <motion.div
-          animate={{ 
-            opacity: health >= 1 ? 1 : 0,
-            scale: health >= 1 ? 1 : 0.5,
-            y: health >= 1 ? 0 : 20,
-            filter: health >= 1 ? 'none' : 'grayscale(100%) brightness(0.5)'
-          }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center"
-        >
-          <CastleIcon className="w-20 h-20 text-yellow-500 fill-yellow-900/50 shadow-lg" />
-          <div className="w-24 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
-             <motion.div 
-               initial={{ width: '100%' }}
-               animate={{ width: health >= 1 ? '100%' : '0%' }}
-               className="h-full bg-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.5)]" 
-             />
-          </div>
-        </motion.div>
+          {/* Right Castle (Dies 1st, visible if health >= 3) */}
+          <motion.div
+            animate={{ 
+              opacity: health >= 3 ? 1 : 0,
+              scale: health >= 3 ? 1 : 0.5,
+              y: health >= 3 ? 0 : 20,
+              filter: health >= 3 ? 'none' : 'grayscale(100%) brightness(0.5)'
+            }}
+            transition={{ duration: 0.5 }}
+            className="flex flex-col items-center"
+          >
+            <div
+              className="h-16 w-16"
+              style={getCastleSpriteStyle(2, 0)}
+              aria-hidden="true"
+            />
+            <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
+               <motion.div 
+                 initial={{ width: '100%' }}
+                 animate={{ width: health >= 3 ? '100%' : '0%' }}
+                 className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
+               />
+            </div>
+          </motion.div>
+        </div>
 
-        {/* Right Castle (Dies 1st, visible if health >= 3) */}
-        <motion.div
-          animate={{ 
-            opacity: health >= 3 ? 1 : 0,
-            scale: health >= 3 ? 1 : 0.5,
-            y: health >= 3 ? 0 : 20,
-            filter: health >= 3 ? 'none' : 'grayscale(100%) brightness(0.5)'
-          }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center"
-        >
-          <CastleIcon className="w-16 h-16 text-slate-400 fill-slate-700 shadow-lg" />
-          <div className="w-20 h-4 bg-slate-800 rounded-full mt-2 overflow-hidden border border-slate-700">
-             <motion.div 
-               initial={{ width: '100%' }}
-               animate={{ width: health >= 3 ? '100%' : '0%' }}
-               className="h-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]" 
-             />
-          </div>
-        </motion.div>
-      </div>
+        {/* Magician Avatar */}
+        <div className="absolute bottom-32 left-1/2 -translate-x-1/2 pointer-events-none">
+          <motion.div
+            animate={feedback === 'correct' ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] } : {}}
+            className="relative"
+          >
+            <div className="absolute -inset-4 bg-primary/20 rounded-full blur-xl animate-pulse" />
+            <Wand2 className="w-12 h-12 text-primary relative z-10" />
+          </motion.div>
+        </div>
 
-      {/* Magician Avatar */}
-      <div className="absolute bottom-32 left-1/2 -translate-x-1/2 pointer-events-none">
-        <motion.div
-          animate={feedback === 'correct' ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] } : {}}
-          className="relative"
-        >
-          <div className="absolute -inset-4 bg-primary/20 rounded-full blur-xl animate-pulse" />
-          <Wand2 className="w-12 h-12 text-primary relative z-10" />
-        </motion.div>
-      </div>
-
-      <div className="absolute top-20 left-0 right-0 z-20">
-        <InputController onSubmit={checkAnswer} />
+        <div className="absolute top-20 left-0 right-0 z-20">
+          <InputController onSubmit={checkAnswer} />
+        </div>
       </div>
     </div>
   )

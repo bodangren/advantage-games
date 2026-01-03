@@ -3,7 +3,7 @@ import { Enemy } from './Enemy'
 
 describe('Enemy', () => {
   it('renders the term', () => {
-    render(
+    const { getByTestId } = render(
       <Enemy 
         id="1" 
         x={50}
@@ -14,5 +14,8 @@ describe('Enemy', () => {
     )
     
     expect(screen.getByText('Apple')).toBeInTheDocument()
+    expect(getByTestId('enemy-sprite')).toHaveStyle({
+      backgroundImage: 'url(/games/magic-defense/skeletons.png)',
+    })
   })
 })

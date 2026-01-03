@@ -21,3 +21,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## [ ] Track: RPG Battle Selection Scene
 *Link: [./conductor/tracks/selection_screen_20260102/](./conductor/tracks/selection_screen_20260102/)*
+
+---
+
+## [ ] Track: Dragon Flight (Housekeeping + New Game)
+*Link: [./conductor/tracks/dragon-flight/](./conductor/tracks/dragon-flight/)*

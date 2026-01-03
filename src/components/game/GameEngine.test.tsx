@@ -19,7 +19,21 @@ describe('GameEngine', () => {
       vocabulary: [{ term: 'Apple', translation: 'Manzana' }],
       status: 'playing',
       health: 3,
+      score: 0,
+      correctAnswers: 0,
+      totalAttempts: 0,
       decreaseHealth: jest.fn(),
+      increaseScore: jest.fn(),
+      incrementAttempts: jest.fn(),
+    })
+  })
+
+  it('uses the castle defense background image', () => {
+    const { container } = render(<GameEngine />)
+
+    const stage = container.firstChild as HTMLElement
+    expect(stage).toHaveStyle({
+      backgroundImage: 'url(/games/magic-defense/background.png)',
     })
   })
 
@@ -29,7 +43,12 @@ describe('GameEngine', () => {
       vocabulary: [{ term: 'Apple', translation: 'Manzana' }],
       status: 'playing',
       health: 3,
+      score: 0,
+      correctAnswers: 0,
+      totalAttempts: 0,
       decreaseHealth,
+      increaseScore: jest.fn(),
+      incrementAttempts: jest.fn(),
     })
 
     render(<GameEngine />)

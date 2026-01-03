@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import MainMenu from './page'
+import MainMenu, { gameCards } from './page'
 
 // Mock next/link since it's used in the component
 jest.mock('next/link', () => {
@@ -10,16 +10,26 @@ jest.mock('next/link', () => {
   return Link
 })
 
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ src, alt, ...props }: { src: string; alt: string }) => (
+    <img src={src} alt={alt} {...props} />
+  ),
+}))
+
 describe('MainMenu', () => {
   it('renders the title and game options', () => {
     render(<MainMenu />)
     
     expect(screen.getByText(/Vocab Arcade/i)).toBeInTheDocument()
-    expect(screen.getByText(/Magic Defense/i)).toBeInTheDocument()
-    expect(screen.getByText(/RPG Battle/i)).toBeInTheDocument()
+    gameCards.forEach((game) => {
+      expect(screen.getByText(game.title)).toBeInTheDocument()
+    })
 
+    const playableGames = gameCards.filter((game) => game.status === 'playable')
     const links = screen.getAllByRole('link', { name: /Play Now/i })
     const hrefs = links.map((link) => link.getAttribute('href'))
-    expect(hrefs).toEqual(expect.arrayContaining(['/games/magic-defense', '/games/rpg-battle']))
+    expect(links).toHaveLength(playableGames.length)
+    expect(hrefs).toEqual(expect.arrayContaining(playableGames.map((game) => game.href)))
   })
 })
