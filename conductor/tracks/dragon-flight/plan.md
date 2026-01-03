@@ -7,11 +7,11 @@
 - [x] Task: Add unit/component tests for the main menu card data and asset mapping updates. [commit: 8b7cbb8, b8c981c, b64facd]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Housekeeping & Deployment Prep' (Protocol in workflow.md) [commit: 9ecfc83]
 
-## Phase 2: Dragon Flight Core Logic
+## Phase 2: Dragon Flight Core Logic [checkpoint: a2a0541]
 - [x] Task: Define Dragon Flight state/types and gate selection logic (timer, attempts, accuracy, dragon count). [commit: 0b6d7c7]
 - [x] Task: Implement boss fight resolution and XP calculation using `src/lib/xp.ts`. [commit: 0b6d7c7]
 - [x] Task: Add unit tests for gate selection, dragon count adjustments, boss outcome, and XP output. [commit: 0b6d7c7]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Dragon Flight Core Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Dragon Flight Core Logic' (Protocol in workflow.md) [commit: a2a0541]
 
 ## Phase 3: Dragon Flight UI & Interaction
 - [ ] Task: Build the Dragon Flight scene layout (prompt, gates, timer, dragon count).
