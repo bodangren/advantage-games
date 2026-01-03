@@ -4,21 +4,16 @@ import { DragonFlightGame } from './DragonFlightGame'
 import type { VocabularyItem } from '@/store/useGameStore'
 
 jest.mock('react-konva', () => {
-  const React = require('react')
+  const React = jest.requireActual('react')
   const Image = React.forwardRef((props: Record<string, unknown>, ref: React.Ref<HTMLDivElement>) => (
     <div ref={ref} />
   ))
+  Image.displayName = 'KonvaImageMock'
 
   return {
     Stage: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     Layer: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-    Group: ({
-      children,
-      onPointerDown,
-    }: {
-      children: ReactNode
-      onPointerDown?: () => void
-    }) => <div>{children}</div>,
+    Group: ({ children }: { children: ReactNode }) => <div>{children}</div>,
     Image,
     Rect: () => <div />,
     Text: ({ text }: { text: string }) => <span>{text}</span>,
@@ -88,15 +83,22 @@ describe('DragonFlightGame', () => {
   })
 
   it('updates dragon count after selecting a correct gate', () => {
+    jest.useFakeTimers()
     const randomSpy = mockRandomSequence([0.1, 0.9, 0.2, 0.4, 0.8, 0.1])
     render(<DragonFlightGame vocabulary={vocabulary} preloadedAssets={assets} />)
 
-    const gateLeft = screen.getByTestId('dragon-flight-gate-left')
-    fireEvent.click(gateLeft)
+    act(() => {
+      fireEvent.keyDown(window, { key: 'ArrowLeft' })
+    })
+
+    act(() => {
+      jest.advanceTimersByTime(1500)
+    })
 
     expect(screen.getByTestId('dragon-flight-dragon-count')).toHaveTextContent('2')
 
     randomSpy.mockRestore()
+    jest.useRealTimers()
   })
 
   it('transitions from boss encounter to results screen', () => {
@@ -117,6 +119,9 @@ describe('DragonFlightGame', () => {
     expect(screen.getByTestId('dragon-flight')).toHaveAttribute('data-status', 'boss')
     expect(screen.getByTestId('dragon-flight-boss')).toBeInTheDocument()
 
+    act(() => {
+      jest.advanceTimersByTime(15000)
+    })
     act(() => {
       jest.advanceTimersByTime(1000)
     })

@@ -24,4 +24,4 @@
 - [x] Task: Add the `/games/dragon-flight` route and integrate with `useGameStore` and XP completion flow. [commit: 53fe993]
 - [x] Task: Promote Dragon Flight to a playable card on the main menu once the route is live. [commit: b2a237f]
 - [x] Task: Final responsive tuning, accessibility checks, and mobile touch adjustments. [commit: 4c1d209]
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: App Integration & Final Polish' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 4: App Integration & Final Polish' (Protocol in workflow.md)

@@ -1,20 +1,20 @@
 'use client'
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Konva from 'konva'
-import { Group, Image as KonvaImage, Layer, Rect, Stage, Text } from 'react-konva'
+import { Group, Image as KonvaImage, Layer, Rect, Stage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Flame } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Flame } from 'lucide-react'
 import { withBasePath } from '@/lib/basePath'
 import {
   advanceDragonFlightTime,
   calculateBossPower,
   createDragonFlightState,
   getDragonFlightResults,
-  selectGate,
 } from '@/lib/dragonFlight'
 import type {
   DragonFlightResults,
+  DragonFlightRound,
   DragonFlightState,
   GateSide,
 } from '@/lib/dragonFlight'
@@ -41,6 +41,19 @@ type DragonFlightGameProps = {
 }
 
 type GateFeedback = {
+  pairId: string
+  side: GateSide
+  outcome: 'correct' | 'incorrect'
+}
+
+type GatePair = {
+  id: string
+  round: DragonFlightRound
+  y: number
+}
+
+type PendingSelection = {
+  pairId: string
   side: GateSide
   outcome: 'correct' | 'incorrect'
 }
@@ -97,11 +110,15 @@ const ASSETS = {
 }
 
 const DEFAULT_STAGE: StageSize = { width: 960, height: 540 }
-const TICK_MS = 100
+const TICK_MS = 60
 const GATE_ANIM_MS = 160
+const GATE_TRAVEL_MS = 7200
+const PLAYER_LERP = 0.22
 const PLAYER_ANIM_MS = 120
 const BOSS_ANIM_MS = 180
+const BOSS_HEALTH_TICK_MS = 450
 const RESULTS_REVEAL_MS = 900
+const GATE_SCALE_FACTOR = 0.5
 const PLAYER_BASE_SCALE = 0.22
 const BOSS_BASE_SCALE = 0.55
 const ARMY_BASE_SCALE = 0.12
@@ -186,7 +203,7 @@ const buildLayout = (
 ): FlightLayout => {
   const gateFrameWidth = gateGrid.columns[0] ?? 1
   const gateFrameHeight = gateGrid.rows[0] ?? 1
-  const gateWidth = clamp(stage.width * 0.32, 180, 320)
+  const gateWidth = clamp(stage.width * 0.32, 180, 320) * GATE_SCALE_FACTOR
   const gateScale = gateWidth / gateFrameWidth
   const gateHeight = gateFrameHeight * gateScale
   const gateTop = clamp(stage.height * 0.55 - gateHeight / 2, 120, stage.height * 0.7)
@@ -244,6 +261,40 @@ const getGateLabels = (round: DragonFlightState['round']) => {
   return { left, right }
 }
 
+const pickRandomIndex = (max: number) => Math.min(max - 1, Math.floor(Math.random() * max))
+
+const buildGateRound = (vocabulary: VocabularyItem[]): DragonFlightRound => {
+  if (vocabulary.length === 0) {
+    return {
+      term: '',
+      correctTranslation: '',
+      decoyTranslation: '',
+      correctSide: 'left',
+    }
+  }
+
+  const correctIndex = pickRandomIndex(vocabulary.length)
+  let decoyIndex = pickRandomIndex(vocabulary.length)
+  if (decoyIndex === correctIndex && vocabulary.length > 1) {
+    decoyIndex = (correctIndex + 1) % vocabulary.length
+  }
+
+  const correctItem = vocabulary[correctIndex]
+  const decoyItem = vocabulary[decoyIndex]
+
+  return {
+    term: correctItem.term,
+    correctTranslation: correctItem.translation,
+    decoyTranslation: decoyItem.translation,
+    correctSide: Math.random() < 0.5 ? 'left' : 'right',
+  }
+}
+
+const getActiveGatePair = (pairs: GatePair[]) => {
+  if (pairs.length === 0) return null
+  return pairs.reduce((current, pair) => (pair.y > current.y ? pair : current), pairs[0])
+}
+
 export function DragonFlightGame({
   vocabulary,
   durationMs = 30000,
@@ -254,17 +305,28 @@ export function DragonFlightGame({
   const [stageSize, setStageSize] = useState<StageSize>(DEFAULT_STAGE)
   const [assets, setAssets] = useState<DragonFlightAssets | null>(preloadedAssets ?? null)
   const [isLoading, setIsLoading] = useState(!preloadedAssets)
-  const [state, setState] = useState<DragonFlightState>(() =>
-    createDragonFlightState(vocabulary, { durationMs })
-  )
+  const [state, setState] = useState<DragonFlightState>(() => {
+    return createDragonFlightState(vocabulary, { durationMs })
+  })
+  const initialRoundRef = useRef<DragonFlightRound>(state.round)
+  const [gatePairs, setGatePairs] = useState<GatePair[]>([])
+  const gateIdRef = useRef(0)
   const [feedback, setFeedback] = useState<GateFeedback | null>(null)
   const [results, setResults] = useState<DragonFlightResults | null>(null)
   const [showResults, setShowResults] = useState(false)
   const [gateFrame, setGateFrame] = useState(0)
   const [playerFrame, setPlayerFrame] = useState(0)
   const [bossFrame, setBossFrame] = useState(0)
+  const [playerX, setPlayerX] = useState(DEFAULT_STAGE.width / 2)
+  const [lockedPairId, setLockedPairId] = useState<string | null>(null)
+  const [displayDragonCount, setDisplayDragonCount] = useState(1)
+  const [bossHealth, setBossHealth] = useState(0)
+  const [bossY, setBossY] = useState(DEFAULT_STAGE.height * 0.28)
+  const [bossSequenceDone, setBossSequenceDone] = useState(false)
   const { playSound } = useSound()
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pendingSelectionRef = useRef<PendingSelection | null>(null)
+  const playerTargetRef = useRef<number | null>(null)
 
   useEffect(() => {
     let isMounted = true
@@ -293,10 +355,20 @@ export function DragonFlightGame({
   }, [preloadedAssets])
 
   useEffect(() => {
-    setState(createDragonFlightState(vocabulary, { durationMs }))
+    const nextState = createDragonFlightState(vocabulary, { durationMs })
+    initialRoundRef.current = nextState.round
+    setState(nextState)
+    setGatePairs([])
     setFeedback(null)
     setResults(null)
     setShowResults(false)
+    setLockedPairId(null)
+    setPlayerX(DEFAULT_STAGE.width / 2)
+    setDisplayDragonCount(1)
+    setBossHealth(0)
+    setBossSequenceDone(false)
+    pendingSelectionRef.current = null
+    playerTargetRef.current = null
   }, [vocabulary, durationMs])
 
   useEffect(() => {
@@ -315,9 +387,132 @@ export function DragonFlightGame({
     return () => observer.disconnect()
   }, [])
 
+  const gateGrid = useMemo(
+    () => (assets ? buildSpriteGrid(assets.gates.width, assets.gates.height) : null),
+    [assets]
+  )
+  const playerGrid = useMemo(
+    () => (assets ? buildSpriteGrid(assets.player.width, assets.player.height) : null),
+    [assets]
+  )
+  const bossGrid = useMemo(
+    () => (assets ? buildSpriteGrid(assets.boss.width, assets.boss.height) : null),
+    [assets]
+  )
+  const armyGrid = useMemo(
+    () => (assets ? buildSpriteGrid(assets.army.width, assets.army.height) : null),
+    [assets]
+  )
+  const layout = useMemo(() => {
+    if (!gateGrid || !playerGrid || !bossGrid || !armyGrid) return null
+    return buildLayout(stageSize, gateGrid, playerGrid, bossGrid, armyGrid)
+  }, [stageSize, gateGrid, playerGrid, bossGrid, armyGrid])
+
+  useEffect(() => {
+    if (!layout) return
+    if (playerTargetRef.current !== null) return
+    setPlayerX((prev) => (Math.abs(prev - layout.playerX) > 1 ? layout.playerX : prev))
+  }, [layout])
+
+  useEffect(() => {
+    if (!layout) return
+    if (state.status === 'boss') {
+      setBossY(-layout.bossFrameHeight * layout.bossScale)
+      setBossHealth(calculateBossPower(state.attempts))
+      setDisplayDragonCount(state.dragonCount)
+      setBossSequenceDone(false)
+    } else {
+      setBossY(layout.bossY)
+      setBossHealth(0)
+      setBossSequenceDone(false)
+    }
+  }, [layout, state.status, state.attempts, state.dragonCount])
+
+  useEffect(() => {
+    if (state.status === 'boss') return
+    setDisplayDragonCount(state.dragonCount)
+  }, [state.dragonCount, state.status])
+
   useInterval(() => {
     setState((prev) => advanceDragonFlightTime(prev, TICK_MS))
-  }, state.status === 'running' ? TICK_MS : null)
+
+    if (!layout) return
+
+    const gateStartY = -layout.leftGate.height
+    const gateEndY = stageSize.height + layout.leftGate.height
+    const gateSpeed = (gateEndY - gateStartY) / (GATE_TRAVEL_MS / 1000)
+    const deltaSeconds = TICK_MS / 1000
+
+    setGatePairs((prev) => {
+      const nextPairs = prev
+        .map((pair) => ({ ...pair, y: pair.y + gateSpeed * deltaSeconds }))
+        .filter((pair) => pair.y <= gateEndY)
+
+      if (nextPairs.length === 0) {
+        const nextPair = createGatePair()
+        return nextPair ? [nextPair] : nextPairs
+      }
+
+      return nextPairs.slice(0, 1)
+    })
+
+    setPlayerX((prev) => {
+      const target = playerTargetRef.current ?? layout.playerX
+      const next = prev + (target - prev) * PLAYER_LERP
+      const isNearTarget = Math.abs(target - next) < 1.5
+
+      if (isNearTarget && pendingSelectionRef.current) {
+        const pending = pendingSelectionRef.current
+        pendingSelectionRef.current = null
+
+        setFeedback({
+          pairId: pending.pairId,
+          side: pending.side,
+          outcome: pending.outcome,
+        })
+        setState((prevState) => ({
+          ...prevState,
+          attempts: prevState.attempts + 1,
+          correctAnswers:
+            prevState.correctAnswers + (pending.outcome === 'correct' ? 1 : 0),
+          dragonCount:
+            pending.outcome === 'correct'
+              ? prevState.dragonCount + 1
+              : Math.max(1, prevState.dragonCount - 1),
+        }))
+        playSound(pending.outcome === 'correct' ? 'success' : 'error')
+        playerTargetRef.current = layout.playerX
+      }
+
+      if (isNearTarget && playerTargetRef.current !== null && !pendingSelectionRef.current) {
+        playerTargetRef.current = null
+      }
+
+      return isNearTarget ? target : next
+    })
+  }, state.status === 'running' && layout ? TICK_MS : null)
+
+  const createGatePair = useCallback(
+    (round?: DragonFlightRound) => {
+      if (!layout || vocabulary.length === 0) return null
+
+      gateIdRef.current += 1
+      return {
+        id: `gate-${gateIdRef.current}`,
+        round: round ?? buildGateRound(vocabulary),
+        y: -layout.leftGate.height,
+      }
+    },
+    [layout, vocabulary]
+  )
+
+  useEffect(() => {
+    if (!layout || gatePairs.length > 0) return
+    const initialPair = createGatePair(initialRoundRef.current)
+    if (initialPair) {
+      setGatePairs([initialPair])
+    }
+  }, [layout, createGatePair, gatePairs.length])
 
   useInterval(() => {
     setGateFrame((prev) => (prev + 1) % 3)
@@ -331,13 +526,44 @@ export function DragonFlightGame({
     setBossFrame((prev) => (prev + 1) % 3)
   }, state.status === 'boss' ? BOSS_ANIM_MS : null)
 
+  useInterval(() => {
+    if (!layout) return
+    const gateStartY = -layout.leftGate.height
+    const gateEndY = stageSize.height + layout.leftGate.height
+    const gateSpeed = (gateEndY - gateStartY) / (GATE_TRAVEL_MS / 1000)
+    const deltaSeconds = TICK_MS / 1000
+    const targetY = layout.playerY
+
+    setBossY((prev) => {
+      const next = prev + gateSpeed * deltaSeconds
+      return next >= targetY ? targetY : next
+    })
+  }, state.status === 'boss' && layout ? TICK_MS : null)
+
+  useInterval(() => {
+    setBossHealth((prev) => Math.max(0, prev - 1))
+    setDisplayDragonCount((prev) => Math.max(0, prev - 1))
+  }, state.status === 'boss' && bossHealth > 0 && displayDragonCount > 0 ? BOSS_HEALTH_TICK_MS : null)
+
   useEffect(() => {
     if (feedback) {
-      const timeout = setTimeout(() => setFeedback(null), 450)
+      const timeout = setTimeout(() => {
+        setFeedback(null)
+        setLockedPairId(null)
+      }, 450)
       return () => clearTimeout(timeout)
     }
     return () => undefined
   }, [feedback])
+
+  useEffect(() => {
+    if (state.status !== 'boss' || !layout) return
+    const bossHit = bossY >= layout.playerY
+    const battleOver = bossHealth <= 0 || displayDragonCount <= 0
+    if (bossHit && battleOver) {
+      setBossSequenceDone(true)
+    }
+  }, [bossHealth, bossY, displayDragonCount, layout, state.status])
 
   useEffect(() => {
     if (resultsTimeoutRef.current) {
@@ -348,6 +574,7 @@ export function DragonFlightGame({
     if (state.status !== 'boss') {
       setResults(null)
       setShowResults(false)
+      setBossSequenceDone(false)
       return () => undefined
     }
 
@@ -363,26 +590,53 @@ export function DragonFlightGame({
       onComplete(nextResults)
     }
 
+    return () => undefined
+  }, [state.status, state.correctAnswers, state.attempts, state.dragonCount, onComplete])
+
+  useEffect(() => {
+    if (!bossSequenceDone) return
     resultsTimeoutRef.current = setTimeout(() => {
       setShowResults(true)
     }, RESULTS_REVEAL_MS)
-
     return () => {
       if (resultsTimeoutRef.current) {
         clearTimeout(resultsTimeoutRef.current)
         resultsTimeoutRef.current = null
       }
     }
-  }, [state.status, state.correctAnswers, state.attempts, state.dragonCount, onComplete])
+  }, [bossSequenceDone])
 
-  const handleGateSelection = (side: GateSide) => {
+  const activePair = useMemo(() => {
+    if (lockedPairId) {
+      return gatePairs.find((pair) => pair.id === lockedPairId) ?? null
+    }
+    return getActiveGatePair(gatePairs)
+  }, [gatePairs, lockedPairId])
+
+  const handleGateSelection = useCallback((side: GateSide) => {
     if (state.status !== 'running') return
+    if (pendingSelectionRef.current) return
+    if (lockedPairId) return
 
-    const isCorrect = side === state.round.correctSide
-    playSound(isCorrect ? 'success' : 'error')
-    setFeedback({ side, outcome: isCorrect ? 'correct' : 'incorrect' })
-    setState((prev) => selectGate(prev, side, vocabulary))
-  }
+    const pair = activePair
+    if (!pair || !layout) return
+
+    const isCorrect = side === pair.round.correctSide
+    const targetX =
+      side === 'left'
+        ? layout.leftGate.left + layout.leftGate.width / 2
+        : layout.rightGate.left + layout.rightGate.width / 2
+
+    pendingSelectionRef.current = {
+      pairId: pair.id,
+      side,
+      outcome: isCorrect ? 'correct' : 'incorrect',
+    }
+    playerTargetRef.current = targetX
+
+    setLockedPairId(pair.id)
+    setFeedback(null)
+  }, [activePair, layout, lockedPairId, state.status])
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -397,13 +651,15 @@ export function DragonFlightGame({
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [state.status, vocabulary])
+  }, [handleGateSelection, state.status])
 
-  const gateLabels = getGateLabels(state.round)
+  const promptRound = activePair?.round ?? state.round
   const remainingRatio = state.durationMs > 0
     ? Math.max(0, 1 - state.elapsedMs / state.durationMs)
     : 0
 
+  const dragonCountDisplay = state.status === 'boss' ? displayDragonCount : state.dragonCount
+  const activePairId = activePair?.id ?? null
   const statusLabel = showResults ? 'results' : state.status
 
   if (isLoading) {
@@ -432,11 +688,31 @@ export function DragonFlightGame({
     )
   }
 
-  const gateGrid = buildSpriteGrid(assets.gates.width, assets.gates.height)
-  const playerGrid = buildSpriteGrid(assets.player.width, assets.player.height)
-  const bossGrid = buildSpriteGrid(assets.boss.width, assets.boss.height)
-  const armyGrid = buildSpriteGrid(assets.army.width, assets.army.height)
-  const layout = buildLayout(stageSize, gateGrid, playerGrid, bossGrid, armyGrid)
+  if (!layout) {
+    return null
+  }
+
+  const gateLabels = activePair ? getGateLabels(activePair.round) : null
+  const gateLabelTop = activePair
+    ? activePair.y + layout.leftGate.height + 8
+    : layout.leftGate.top + layout.leftGate.height + 8
+  const arrowSize = clamp(layout.leftGate.width * 0.45, 64, 120)
+  const arrowOffsetX = clamp(layout.leftGate.width * 0.75, 110, 190)
+  const arrowTop = clamp(
+    layout.playerY - arrowSize / 2,
+    140,
+    stageSize.height - arrowSize - 80
+  )
+  const leftArrowX = clamp(
+    layout.playerX - arrowOffsetX - arrowSize / 2,
+    12,
+    stageSize.width - arrowSize - 12
+  )
+  const rightArrowX = clamp(
+    layout.playerX + arrowOffsetX - arrowSize / 2,
+    12,
+    stageSize.width - arrowSize - 12
+  )
 
   return (
     <div
@@ -448,13 +724,17 @@ export function DragonFlightGame({
       <DragonFlightCanvas
         stageSize={stageSize}
         assets={assets}
-        state={state}
         feedback={feedback}
+        gatePairs={gatePairs}
+        activePairId={activePairId}
         layout={layout}
-        gateLabels={gateLabels}
         gateFrame={gateFrame}
         playerFrame={playerFrame}
+        playerX={playerX}
+        dragonCount={dragonCountDisplay}
         bossFrame={bossFrame}
+        bossY={bossY}
+        bossHealth={bossHealth}
         onSelectGate={handleGateSelection}
         showBoss={state.status === 'boss'}
       />
@@ -463,20 +743,20 @@ export function DragonFlightGame({
         <div className='flex items-start justify-between p-6'>
           <div className='max-w-[60%] rounded-2xl border border-white/10 bg-white/10 px-5 py-3 backdrop-blur'>
             <div className='text-xs uppercase tracking-[0.2em] text-white/70'>Prompt</div>
-            <div className='text-2xl font-semibold text-white'>{state.round.term || '—'}</div>
+            <div className='text-2xl font-semibold text-white'>{promptRound.term || '—'}</div>
           </div>
           <div className='flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-white backdrop-blur'>
             <Flame className='h-4 w-4 text-amber-300' aria-hidden='true' />
             <span className='text-xs uppercase tracking-[0.2em] text-white/70'>Dragons</span>
             <motion.span
-              key={state.dragonCount}
+              key={dragonCountDisplay}
               data-testid='dragon-flight-dragon-count'
               className='text-lg font-semibold'
               initial={{ scale: 0.9, opacity: 0.6 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.2 }}
             >
-              {state.dragonCount}
+              {dragonCountDisplay}
             </motion.span>
           </div>
         </div>
@@ -499,6 +779,62 @@ export function DragonFlightGame({
             />
           </div>
         </div>
+
+        {state.status === 'running' && (
+          <>
+            <button
+              type='button'
+              className='absolute flex items-center justify-center rounded-2xl border border-white/20 bg-white/20 text-white backdrop-blur-sm transition active:scale-95 pointer-events-auto'
+              style={{
+                width: arrowSize,
+                height: arrowSize,
+                left: leftArrowX,
+                top: arrowTop,
+              }}
+              onPointerDown={() => handleGateSelection('left')}
+              aria-label='Choose left gate'
+            >
+              <ArrowLeft size={arrowSize * 0.55} aria-hidden='true' />
+            </button>
+            <button
+              type='button'
+              className='absolute flex items-center justify-center rounded-2xl border border-white/20 bg-white/20 text-white backdrop-blur-sm transition active:scale-95 pointer-events-auto'
+              style={{
+                width: arrowSize,
+                height: arrowSize,
+                left: rightArrowX,
+                top: arrowTop,
+              }}
+              onPointerDown={() => handleGateSelection('right')}
+              aria-label='Choose right gate'
+            >
+              <ArrowRight size={arrowSize * 0.55} aria-hidden='true' />
+            </button>
+          </>
+        )}
+
+        {gateLabels && (
+          <>
+            <div
+              className='absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-4 py-2 text-2xl font-semibold text-white shadow-lg'
+              style={{
+                left: layout.leftGate.left + layout.leftGate.width / 2,
+                top: gateLabelTop,
+              }}
+            >
+              {gateLabels.left}
+            </div>
+            <div
+              className='absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-4 py-2 text-2xl font-semibold text-white shadow-lg'
+              style={{
+                left: layout.rightGate.left + layout.rightGate.width / 2,
+                top: gateLabelTop,
+              }}
+            >
+              {gateLabels.right}
+            </div>
+          </>
+        )}
 
         <AnimatePresence>
           {feedback && (
@@ -572,36 +908,6 @@ export function DragonFlightGame({
         </AnimatePresence>
       </div>
 
-      <button
-        type='button'
-        className='absolute z-30 bg-transparent'
-        style={{
-          left: layout.leftGate.left,
-          top: layout.leftGate.top,
-          width: layout.leftGate.width,
-          height: layout.leftGate.height,
-        }}
-        onClick={() => handleGateSelection('left')}
-        aria-label={`Left gate: ${gateLabels.left}`}
-        data-testid='dragon-flight-gate-left'
-      >
-        <span className='sr-only'>{gateLabels.left}</span>
-      </button>
-      <button
-        type='button'
-        className='absolute z-30 bg-transparent'
-        style={{
-          left: layout.rightGate.left,
-          top: layout.rightGate.top,
-          width: layout.rightGate.width,
-          height: layout.rightGate.height,
-        }}
-        onClick={() => handleGateSelection('right')}
-        aria-label={`Right gate: ${gateLabels.right}`}
-        data-testid='dragon-flight-gate-right'
-      >
-        <span className='sr-only'>{gateLabels.right}</span>
-      </button>
     </div>
   )
 }
@@ -609,13 +915,17 @@ export function DragonFlightGame({
 type DragonFlightCanvasProps = {
   stageSize: StageSize
   assets: DragonFlightAssets
-  state: DragonFlightState
   feedback: GateFeedback | null
+  gatePairs: GatePair[]
+  activePairId: string | null
   layout: FlightLayout
-  gateLabels: { left: string; right: string }
   gateFrame: number
   playerFrame: number
+  playerX: number
+  dragonCount: number
   bossFrame: number
+  bossY: number
+  bossHealth: number
   onSelectGate: (side: GateSide) => void
   showBoss: boolean
 }
@@ -640,17 +950,23 @@ const buildParallaxMetrics = (image: HTMLImageElement, stageWidth: number) => {
 const DragonFlightCanvas = ({
   stageSize,
   assets,
-  state,
   feedback,
+  gatePairs,
+  activePairId,
   layout,
-  gateLabels,
   gateFrame,
   playerFrame,
+  playerX,
+  dragonCount,
   bossFrame,
+  bossY,
+  bossHealth,
   onSelectGate,
   showBoss,
 }: DragonFlightCanvasProps) => {
-  const backgroundLayerRef = useRef<Konva.Layer | null>(null)
+  const bottomLayerRef = useRef<Konva.Layer | null>(null)
+  const middleLayerRef = useRef<Konva.Layer | null>(null)
+  const topLayerRef = useRef<Konva.Layer | null>(null)
   const parallaxRefs = useRef<ParallaxRefs>({
     topA: null,
     topB: null,
@@ -670,7 +986,7 @@ const DragonFlightCanvas = ({
   const armyGrid = useMemo(() => buildSpriteGrid(assets.army.width, assets.army.height), [assets])
 
   useEffect(() => {
-    if (!backgroundLayerRef.current) return
+    if (!bottomLayerRef.current || !middleLayerRef.current || !topLayerRef.current) return
 
     const topMetrics = buildParallaxMetrics(assets.parallaxTop, stageSize.width)
     const middleMetrics = buildParallaxMetrics(assets.parallaxMiddle, stageSize.width)
@@ -688,34 +1004,32 @@ const DragonFlightCanvas = ({
 
       const { topA, topB, middleA, middleB, bottomA, bottomB } = parallaxRefs.current
       if (topA && topB) {
-        topA.y(-parallaxOffsets.current.top)
-        topB.y(-parallaxOffsets.current.top + topMetrics.height)
+        topA.y(parallaxOffsets.current.top)
+        topB.y(parallaxOffsets.current.top - topMetrics.height)
       }
       if (middleA && middleB) {
-        middleA.y(-parallaxOffsets.current.middle)
-        middleB.y(-parallaxOffsets.current.middle + middleMetrics.height)
+        middleA.y(parallaxOffsets.current.middle)
+        middleB.y(parallaxOffsets.current.middle - middleMetrics.height)
       }
       if (bottomA && bottomB) {
-        bottomA.y(-parallaxOffsets.current.bottom)
-        bottomB.y(-parallaxOffsets.current.bottom + bottomMetrics.height)
+        bottomA.y(parallaxOffsets.current.bottom)
+        bottomB.y(parallaxOffsets.current.bottom - bottomMetrics.height)
       }
-    }, backgroundLayerRef.current)
+    }, [bottomLayerRef.current, middleLayerRef.current, topLayerRef.current])
 
     animation.start()
-    return () => animation.stop()
+    return () => {
+      animation.stop()
+    }
   }, [assets, stageSize.width])
-
-  const gateRowLeft = feedback ? (state.round.correctSide === 'left' ? 1 : 2) : 0
-  const gateRowRight = feedback ? (state.round.correctSide === 'right' ? 1 : 2) : 0
 
   const playerRow = Math.floor(playerFrame / 3)
   const playerCol = playerFrame % 3
 
-  const bossPower = calculateBossPower(state.attempts)
-  const bossRow = showBoss && state.dragonCount >= bossPower ? 2 : 0
+  const bossRow = showBoss && bossHealth <= 0 ? 2 : 0
   const bossCol = bossFrame % 3
 
-  const armyCount = Math.min(state.dragonCount, 12)
+  const armyCount = Math.min(dragonCount, 12)
   const armyItems = Array.from({ length: armyCount }, (_, index) => ({
     index,
     row: Math.floor(index / 3) % 3,
@@ -728,47 +1042,7 @@ const DragonFlightCanvas = ({
 
   return (
     <Stage width={stageSize.width} height={stageSize.height}>
-      <Layer ref={backgroundLayerRef}>
-        <KonvaImage
-          image={assets.parallaxTop}
-          x={0}
-          y={0}
-          scaleX={topMetrics.scale}
-          scaleY={topMetrics.scale}
-          ref={(node) => {
-            parallaxRefs.current.topA = node
-          }}
-        />
-        <KonvaImage
-          image={assets.parallaxTop}
-          x={0}
-          y={topMetrics.height}
-          scaleX={topMetrics.scale}
-          scaleY={topMetrics.scale}
-          ref={(node) => {
-            parallaxRefs.current.topB = node
-          }}
-        />
-        <KonvaImage
-          image={assets.parallaxMiddle}
-          x={0}
-          y={0}
-          scaleX={middleMetrics.scale}
-          scaleY={middleMetrics.scale}
-          ref={(node) => {
-            parallaxRefs.current.middleA = node
-          }}
-        />
-        <KonvaImage
-          image={assets.parallaxMiddle}
-          x={0}
-          y={middleMetrics.height}
-          scaleX={middleMetrics.scale}
-          scaleY={middleMetrics.scale}
-          ref={(node) => {
-            parallaxRefs.current.middleB = node
-          }}
-        />
+      <Layer ref={bottomLayerRef}>
         <KonvaImage
           image={assets.parallaxBottom}
           x={0}
@@ -782,11 +1056,59 @@ const DragonFlightCanvas = ({
         <KonvaImage
           image={assets.parallaxBottom}
           x={0}
-          y={bottomMetrics.height}
+          y={bottomMetrics.height * -1}
           scaleX={bottomMetrics.scale}
           scaleY={bottomMetrics.scale}
           ref={(node) => {
             parallaxRefs.current.bottomB = node
+          }}
+        />
+      </Layer>
+      <Layer ref={middleLayerRef}>
+        <KonvaImage
+          image={assets.parallaxMiddle}
+          x={0}
+          y={0}
+          scaleX={middleMetrics.scale}
+          scaleY={middleMetrics.scale}
+          opacity={0.85}
+          ref={(node) => {
+            parallaxRefs.current.middleA = node
+          }}
+        />
+        <KonvaImage
+          image={assets.parallaxMiddle}
+          x={0}
+          y={middleMetrics.height * -1}
+          scaleX={middleMetrics.scale}
+          scaleY={middleMetrics.scale}
+          opacity={0.85}
+          ref={(node) => {
+            parallaxRefs.current.middleB = node
+          }}
+        />
+      </Layer>
+      <Layer ref={topLayerRef}>
+        <KonvaImage
+          image={assets.parallaxTop}
+          x={0}
+          y={0}
+          scaleX={topMetrics.scale}
+          scaleY={topMetrics.scale}
+          opacity={0.7}
+          ref={(node) => {
+            parallaxRefs.current.topA = node
+          }}
+        />
+        <KonvaImage
+          image={assets.parallaxTop}
+          x={0}
+          y={topMetrics.height * -1}
+          scaleX={topMetrics.scale}
+          scaleY={topMetrics.scale}
+          opacity={0.7}
+          ref={(node) => {
+            parallaxRefs.current.topB = node
           }}
         />
       </Layer>
@@ -801,7 +1123,7 @@ const DragonFlightCanvas = ({
               key={`army-${army.index}`}
               image={assets.army}
               crop={crop}
-              x={layout.playerX - layout.armyFrameWidth * layout.armyScale + offsetX}
+              x={playerX - layout.armyFrameWidth * layout.armyScale + offsetX}
               y={layout.playerY - layout.armyFrameHeight * layout.armyScale - 40 + offsetY}
               width={crop.width}
               height={crop.height}
@@ -816,7 +1138,7 @@ const DragonFlightCanvas = ({
         <KonvaImage
           image={assets.player}
           crop={getSpriteCrop(playerGrid, playerCol, playerRow)}
-          x={layout.playerX}
+          x={playerX}
           y={layout.playerY}
           width={layout.playerFrameWidth}
           height={layout.playerFrameHeight}
@@ -831,7 +1153,7 @@ const DragonFlightCanvas = ({
             image={assets.boss}
             crop={getSpriteCrop(bossGrid, bossCol, bossRow)}
             x={layout.bossX}
-            y={layout.bossY}
+            y={bossY}
             width={layout.bossFrameWidth}
             height={layout.bossFrameHeight}
             offsetX={layout.bossFrameWidth / 2}
@@ -841,84 +1163,74 @@ const DragonFlightCanvas = ({
             opacity={0.95}
           />
         )}
-      </Layer>
+        {gatePairs.map((pair) => {
+          const gateCenterY = pair.y + layout.leftGate.height / 2
+          const isActive = pair.id === activePairId
+          const isFeedbackPair = feedback?.pairId === pair.id
+          const leftRow = isFeedbackPair ? (pair.round.correctSide === 'left' ? 1 : 2) : 0
+          const rightRow = isFeedbackPair ? (pair.round.correctSide === 'right' ? 1 : 2) : 0
+          const gateOpacity = isActive ? 1 : 0.7
 
-      <Layer>
-        <Group
-          x={layout.leftGate.left + layout.leftGate.width / 2}
-          y={layout.leftGate.top + layout.leftGate.height / 2}
-          scaleX={layout.gateScale}
-          scaleY={layout.gateScale}
-          onPointerDown={() => onSelectGate('left')}
-        >
-          <KonvaImage
-            image={assets.gates}
-            crop={getSpriteCrop(gateGrid, gateFrame, gateRowLeft)}
-            width={layout.gateFrameWidth}
-            height={layout.gateFrameHeight}
-            offsetX={layout.gateFrameWidth / 2}
-            offsetY={layout.gateFrameHeight / 2}
-          />
-          <Text
-            text={gateLabels.left}
-            fontSize={layout.gateFrameWidth * 0.12}
-            fontFamily='var(--font-geist-sans)'
-            fill='#f8fafc'
-            align='center'
-            width={layout.gateFrameWidth}
-            offsetX={layout.gateFrameWidth / 2}
-            y={layout.gateFrameHeight * 0.1}
-            shadowColor='rgba(15,23,42,0.7)'
-            shadowBlur={6}
-          />
-          {feedback && (
-            <Rect
-              width={layout.gateFrameWidth}
-              height={layout.gateFrameHeight}
-              offsetX={layout.gateFrameWidth / 2}
-              offsetY={layout.gateFrameHeight / 2}
-              fill={gateRowLeft === 1 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}
-            />
-          )}
-        </Group>
+          return (
+            <React.Fragment key={pair.id}>
+              <Group
+                x={layout.leftGate.left + layout.leftGate.width / 2}
+                y={gateCenterY}
+                scaleX={layout.gateScale}
+                scaleY={layout.gateScale}
+                opacity={gateOpacity}
+                listening={isActive}
+                onPointerDown={isActive ? () => onSelectGate('left') : undefined}
+              >
+                <KonvaImage
+                  image={assets.gates}
+                  crop={getSpriteCrop(gateGrid, gateFrame, leftRow)}
+                  width={layout.gateFrameWidth}
+                  height={layout.gateFrameHeight}
+                  offsetX={layout.gateFrameWidth / 2}
+                  offsetY={layout.gateFrameHeight / 2}
+                />
+                {isFeedbackPair && (
+                  <Rect
+                    width={layout.gateFrameWidth}
+                    height={layout.gateFrameHeight}
+                    offsetX={layout.gateFrameWidth / 2}
+                    offsetY={layout.gateFrameHeight / 2}
+                    fill={leftRow === 1 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}
+                  />
+                )}
+              </Group>
 
-        <Group
-          x={layout.rightGate.left + layout.rightGate.width / 2}
-          y={layout.rightGate.top + layout.rightGate.height / 2}
-          scaleX={layout.gateScale}
-          scaleY={layout.gateScale}
-          onPointerDown={() => onSelectGate('right')}
-        >
-          <KonvaImage
-            image={assets.gates}
-            crop={getSpriteCrop(gateGrid, gateFrame, gateRowRight)}
-            width={layout.gateFrameWidth}
-            height={layout.gateFrameHeight}
-            offsetX={layout.gateFrameWidth / 2}
-            offsetY={layout.gateFrameHeight / 2}
-          />
-          <Text
-            text={gateLabels.right}
-            fontSize={layout.gateFrameWidth * 0.12}
-            fontFamily='var(--font-geist-sans)'
-            fill='#f8fafc'
-            align='center'
-            width={layout.gateFrameWidth}
-            offsetX={layout.gateFrameWidth / 2}
-            y={layout.gateFrameHeight * 0.1}
-            shadowColor='rgba(15,23,42,0.7)'
-            shadowBlur={6}
-          />
-          {feedback && (
-            <Rect
-              width={layout.gateFrameWidth}
-              height={layout.gateFrameHeight}
-              offsetX={layout.gateFrameWidth / 2}
-              offsetY={layout.gateFrameHeight / 2}
-              fill={gateRowRight === 1 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}
-            />
-          )}
-        </Group>
+              <Group
+                x={layout.rightGate.left + layout.rightGate.width / 2}
+                y={gateCenterY}
+                scaleX={layout.gateScale}
+                scaleY={layout.gateScale}
+                opacity={gateOpacity}
+                listening={isActive}
+                onPointerDown={isActive ? () => onSelectGate('right') : undefined}
+              >
+                <KonvaImage
+                  image={assets.gates}
+                  crop={getSpriteCrop(gateGrid, gateFrame, rightRow)}
+                  width={layout.gateFrameWidth}
+                  height={layout.gateFrameHeight}
+                  offsetX={layout.gateFrameWidth / 2}
+                  offsetY={layout.gateFrameHeight / 2}
+                />
+                {isFeedbackPair && (
+                  <Rect
+                    width={layout.gateFrameWidth}
+                    height={layout.gateFrameHeight}
+                    offsetX={layout.gateFrameWidth / 2}
+                    offsetY={layout.gateFrameHeight / 2}
+                    fill={rightRow === 1 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}
+                  />
+                )}
+              </Group>
+            </React.Fragment>
+          )
+        })}
       </Layer>
     </Stage>
   )
