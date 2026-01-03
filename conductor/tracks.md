@@ -24,5 +24,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [ ] Track: Dragon Flight (Housekeeping + New Game)
+## [~] Track: Dragon Flight (Housekeeping + New Game)
 *Link: [./conductor/tracks/dragon-flight/](./conductor/tracks/dragon-flight/)*

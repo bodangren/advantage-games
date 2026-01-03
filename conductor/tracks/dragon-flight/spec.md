@@ -27,6 +27,9 @@ This track handles housekeeping for deployment and game selection, then delivers
 ### 3. Magic Defense Asset Swap
 - Update the Magic Defense game to use assets from `public/games/magic-defense/`.
 - Replace references for background, castles/health indicators, and enemies to align with the new asset set.
+- Asset details:
+  - `castles_3x2_sheet.png` is 1536x1024 (2 columns x 3 rows). Each castle frame is 768x341. Left column is blue (left/right castles), right column is yellow (center castle). Rows map to HP 3/2/1 from top to bottom.
+  - `skeletons_3x3_pose_sheet.png` is 426x426 (3x3). Top row is the walking loop. Bottom two rows are 6 death frames in sequence.
 
 ## Dragon Flight Game Requirements
 
