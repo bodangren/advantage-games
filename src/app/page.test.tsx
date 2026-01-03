@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import MainMenu, { gameCards } from './page'
+import MainMenu from './page'
+import { gameCards } from '@/lib/gameCards'
 
 // Mock next/link since it's used in the component
 jest.mock('next/link', () => {
