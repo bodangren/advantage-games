@@ -24,4 +24,25 @@ describe('BattleScene', () => {
     expect(ui).toContainElement(screen.getByText('Action Menu'))
     expect(ui).toContainElement(screen.getByText('Battle Log'))
   })
+
+  it('applies a background image when provided', () => {
+    render(
+      <BattleScene
+        player={<div>Player Sprite</div>}
+        enemy={<div>Enemy Sprite</div>}
+        playerHealth={<div>Player HP</div>}
+        enemyHealth={<div>Enemy HP</div>}
+        actionMenu={<div>Action Menu</div>}
+        battleLog={<div>Battle Log</div>}
+        backgroundImage="/games/rpg-battle/background_forest_clearing.png"
+      />
+    )
+
+    const stage = screen.getByTestId('battle-stage')
+    expect(stage).toHaveStyle({
+      backgroundImage: 'url(/games/rpg-battle/background_forest_clearing.png)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    })
+  })
 })

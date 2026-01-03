@@ -51,4 +51,22 @@ describe('RpgBattlePage', () => {
       expect(useRPGBattleStore.getState().status).toBe('playing')
     })
   })
+
+  it('applies the selected location background to the battle stage', async () => {
+    render(<RpgBattlePage />)
+
+    act(() => {
+      const { selectHero, selectLocation, selectEnemy } = useRPGBattleStore.getState()
+      selectHero('female')
+      selectLocation('magic-arena')
+      selectEnemy('goblin')
+    })
+
+    await waitFor(() => {
+      const stage = screen.getByTestId('battle-stage')
+      expect(stage).toHaveStyle({
+        backgroundImage: 'url(/games/rpg-battle/background_magic_arena.png)',
+      })
+    })
+  })
 })

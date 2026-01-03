@@ -42,6 +42,7 @@ export default function RpgBattlePage() {
     revealedTranslation,
     selectionStep,
     selectedHeroId,
+    selectedLocationId,
     selectedEnemyId,
     streak,
     initializeBattle,
@@ -77,6 +78,10 @@ export default function RpgBattlePage() {
     [selectedEnemyId]
   )
   const enemyMultiplier = selectedEnemy?.multiplier ?? 1
+  const selectedLocation = useMemo(
+    () => battleLocations.find((location) => location.id === selectedLocationId),
+    [selectedLocationId]
+  )
 
   useEffect(() => {
     setVocabulary(SAMPLE_VOCABULARY)
@@ -265,6 +270,7 @@ export default function RpgBattlePage() {
         ) : (
           <BattleEffects shakeKey={shakeKey} flashKey={flashKey} flashTone={flashTone}>
             <BattleScene
+              backgroundImage={selectedLocation?.background}
               playerHealth={
                 <HealthBar
                   current={playerHealth}
