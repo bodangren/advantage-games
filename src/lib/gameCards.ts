@@ -31,7 +31,8 @@ export const gameCards: GameCard[] = [
     title: 'Dragon Flight',
     description: 'Choose the correct gate to grow your dragon flight.',
     cover: withBasePath('/games/cover/dragon-flight-cover.png'),
-    status: 'coming-soon',
+    href: '/games/dragon-flight',
+    status: 'playable',
   },
   {
     id: 'treasure-chest-rush',

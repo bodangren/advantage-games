@@ -25,7 +25,7 @@ describe('gameCards', () => {
     const gameCards = await loadGameCards();
     const playable = gameCards.filter((card) => card.status === 'playable');
 
-    expect(playable.map((card) => card.id)).toEqual(['magic-defense', 'rpg-battle']);
+    expect(playable.map((card) => card.id)).toEqual(['magic-defense', 'rpg-battle', 'dragon-flight']);
     playable.forEach((card) => {
       expect(card.href).toMatch(/^\/games\//);
     });
