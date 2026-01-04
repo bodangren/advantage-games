@@ -7,7 +7,7 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 *   [x] Task: Create `src/app/games/wizard-vs-zombie` route and page structure. d964e2c
 *   [x] Task: Create `WizardZombieGame` container component using `react-konva`. 80a4d30
 *   [x] Task: Register game in Main Menu (using a temporary or placeholder cover image). e05db79
-*   [x] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure' [checkpoint: 15d029a]
+*   [x] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure' [checkpoint: 855a215]
 
 ## Phase 2: Core Gameplay Loop (Canvas & Movement)
 *   [ ] Task: Implement Game Loop using `useInterval` or `requestAnimationFrame` calling `advanceWizardZombieTime`.
