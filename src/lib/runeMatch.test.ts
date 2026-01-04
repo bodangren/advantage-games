@@ -1,4 +1,4 @@
-import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches, applyGravity, processMatches, initializeEmptyGrid, calculateMatchDamage, applyMatchResult, type VocabularyRune, advanceTime } from './runeMatch'
+import { createRuneMatchState, type Rune, initializeGrid, swapRunes, findMatches, processMatches, initializeEmptyGrid, calculateMatchDamage, applyMatchResult, type VocabularyRune, advanceTime } from './runeMatch'
 import { RUNE_MATCH_CONFIG } from './runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 

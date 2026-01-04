@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import type { RuneMatchGameResult } from '@/components/rune-match/RuneMatchGame'
 import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
@@ -13,6 +14,7 @@ const RuneMatchGame = dynamic(
 )
 
 export default function RuneMatchPage() {
+  const router = useRouter()
   const vocabulary = useGameStore((state) => state.vocabulary)
   const setVocabulary = useGameStore((state) => state.setVocabulary)
   const setLastResult = useGameStore((state) => state.setLastResult)
@@ -26,8 +28,9 @@ export default function RuneMatchPage() {
   const handleComplete = useCallback(
     (results: RuneMatchGameResult) => {
       setLastResult(results.xp, results.accuracy)
+      router.push('/')
     },
-    [setLastResult]
+    [setLastResult, router]
   )
 
   return (

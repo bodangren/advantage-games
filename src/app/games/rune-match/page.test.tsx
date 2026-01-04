@@ -4,7 +4,7 @@ import RuneMatchPage from './page'
 // Mock the dynamic import
 jest.mock('next/dynamic', () => ({
   __esModule: true,
-  default: (fn: () => Promise<{ RuneMatchGame: React.ComponentType }>) => {
+  default: () => {
     const MockedComponent = () => <div data-testid="rune-match-game">Mocked RuneMatchGame</div>
     MockedComponent.displayName = 'RuneMatchGame'
     return MockedComponent

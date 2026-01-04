@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -30,9 +31,12 @@ export default function MainMenu() {
                 )}
               >
                 <div className="relative w-full overflow-hidden rounded-t-xl">
-                  <img
+                  <Image
                     src={game.cover}
                     alt={`${game.title} cover`}
+                    width={1024}
+                    height={1536}
+                    sizes="(min-width: 1280px) 320px, (min-width: 768px) 50vw, 100vw"
                     className={cn(
                       'w-full h-auto object-contain transition-transform duration-300',
                       isPlayable && 'group-hover:scale-105'

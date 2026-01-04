@@ -2,7 +2,6 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { RuneMatchGame } from './RuneMatchGame'
 import type { VocabularyItem } from '@/store/useGameStore'
 import type React from 'react'
-import { RUNE_MATCH_CONFIG } from '@/lib/runeMatchConfig'
 
 type KonvaBaseProps = React.PropsWithChildren<Record<string, unknown>>
 type RectProps = KonvaBaseProps & { width?: number; height?: number; fill?: string }
@@ -148,10 +147,6 @@ describe('RuneMatchGame', () => {
     // Verify Power Word label
     expect(screen.getByText(/POWER WORD:/i)).toBeInTheDocument()
 
-    // Get translations for first two runes
-    const rune1Text = SAMPLE_VOCAB[0].translation
-    const rune2Text = SAMPLE_VOCAB[1].translation
-    
     // This is tricky because we use random grid, but for tests we can rely on what's rendered
     // Let's find two runes by their text and click them
     const runes = screen.getAllByText(/.+/) // Get all text elements

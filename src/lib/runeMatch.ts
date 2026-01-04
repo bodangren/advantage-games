@@ -290,7 +290,7 @@ export const advanceTime = (
   deltaMs: number
 ): RuneMatchState => {
   if (state.status !== 'playing') return state
-  let newState = { ...state }
+  const newState = { ...state }
   
   // Advance monster state
   if (newState.monsterStateTimer > 0) {
@@ -363,7 +363,7 @@ export const applyMatchResult = (state: RuneMatchState, result: MatchResult): Ru
   let playerHp = state.player.hp
   let hasShield = state.player.hasShield
   let correctAnswers = state.correctAnswers
-  let totalAttempts = state.totalAttempts + 1
+  const totalAttempts = state.totalAttempts + 1
   let totalDamage = 0
   const newFloatingTexts = [...state.floatingTexts]
 
@@ -415,61 +415,36 @@ export const applyMatchResult = (state: RuneMatchState, result: MatchResult): Ru
 
     
 
-    let status = state.status
-
-    let monsterState = state.monsterState
-
-    let monsterStateTimer = state.monsterStateTimer
+  let status: RuneMatchState['status'] = state.status
+  let monsterState = state.monsterState
+  let monsterStateTimer = state.monsterStateTimer
 
   
 
-    if (totalDamage > 0) {
-
-      if (monsterHp <= 0) {
-
-        status = 'victory'
-
-        monsterState = 'death'
-
-        monsterStateTimer = 2000 // Show death pose for 2s
-
-      } else {
-
-        monsterState = 'hurt'
-
-        monsterStateTimer = 500
-
-      }
-
+  if (totalDamage > 0) {
+    if (monsterHp <= 0) {
+      status = 'victory'
+      monsterState = 'death'
+      monsterStateTimer = 2000 // Show death pose for 2s
+    } else {
+      monsterState = 'hurt'
+      monsterStateTimer = 500
     }
-
-  
-
-    return {
-
-      ...state,
-
-      grid: result.grid,
-
-      status,
-
-      monster: state.monster ? { ...state.monster, hp: monsterHp } : null,
-
-      player: { ...state.player, hp: playerHp, hasShield },
-
-      correctAnswers,
-
-      totalAttempts,
-
-      floatingTexts: newFloatingTexts,
-
-      monsterState,
-
-      monsterStateTimer,
-
-    }
-
   }
+
+  return {
+    ...state,
+    grid: result.grid,
+    status,
+    monster: state.monster ? { ...state.monster, hp: monsterHp } : null,
+    player: { ...state.player, hp: playerHp, hasShield },
+    correctAnswers,
+    totalAttempts,
+    floatingTexts: newFloatingTexts,
+    monsterState,
+    monsterStateTimer,
+  }
+}
 
 const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune => {
   const roll = rng()

@@ -19,6 +19,7 @@ export type RuneMatchConfig = {
     lShapeDamage: number
     cascadeBonus: number
     powerRuneMultiplier: number
+    invalidSwapPenalty: number
   }
   powerUps: {
     healAmount: number
@@ -49,6 +50,7 @@ export const RUNE_MATCH_CONFIG: RuneMatchConfig = {
     lShapeDamage: 10,
     cascadeBonus: 2,
     powerRuneMultiplier: 2,
+    invalidSwapPenalty: 1,
   },
   powerUps: {
     healAmount: 5,

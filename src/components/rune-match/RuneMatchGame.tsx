@@ -3,13 +3,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
-import { createRuneMatchState, initializeGrid, swapRunes, findMatches, processMatches, applyMatchResult, advanceTime, type RuneMatchState, type GridPosition } from '@/lib/runeMatch'
+import { createRuneMatchState, initializeGrid, swapRunes, findMatches, processMatches, applyMatchResult, advanceTime, type RuneMatchState } from '@/lib/runeMatch'
 import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
 import { MonsterSelection } from './MonsterSelection'
 import { Button } from '@/components/ui/button'
-import { Trophy, Skull } from 'lucide-react'
 
 export type RuneMatchGameResult = { xp: number; accuracy: number }
 export type RuneMatchGameProps = { vocabulary: VocabularyItem[]; onComplete: (result: RuneMatchGameResult) => void }
@@ -118,14 +117,35 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           const result = processMatches(gridAfterSwap, prev.vocabulary, { rng: prev.rng })
           return { ...applyMatchResult({ ...prev, grid: gridAfterSwap }, result), selectedCell: null }
         } else {
-          setTimeout(() => {
-            setGameState(current => {
-              if (!current || current.status !== 'playing') return current
-              if (current.grid === gridAfterSwap) return { ...current, grid: prev.grid }
-              return current
-            })
-          }, 300)
-          return { ...prev, grid: gridAfterSwap, selectedCell: null }
+          // No match: keep swapped, but deduct penalty HP
+          const penalty = RUNE_MATCH_CONFIG.combat.invalidSwapPenalty
+          const newHp = Math.max(0, prev.player.hp - penalty)
+          const newStatus = newHp <= 0 ? 'defeat' : prev.status
+          
+          return {
+            ...prev,
+            grid: gridAfterSwap,
+            player: { ...prev.player, hp: newHp },
+            status: newStatus,
+            selectedCell: null,
+            totalAttempts: prev.totalAttempts + 1,
+            floatingTexts: [
+              ...prev.floatingTexts,
+              {
+                id: Math.random().toString(36).substring(2, 9),
+                text: `-${penalty} HP`,
+                x: col,
+                y: row,
+                offsetX: 0,
+                offsetY: 0,
+                color: "#ef4444",
+                opacity: 1,
+                scale: 1,
+                duration: 2000,
+                maxDuration: 2000
+              }
+            ]
+          }
         }
       } else { return { ...prev, selectedCell: { row, col } } }
     })
@@ -172,13 +192,24 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     <div ref={containerRef} data-testid="rune-match-container" className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 border border-white/10 md:aspect-video md:h-auto">
       <AnimatePresence mode="wait">
         {gameState.status === 'selection' && (
-          <motion.div key="selection" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+          <motion.div key="selection" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-10 flex items-start justify-center bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
             <MonsterSelection onSelect={handleSelectMonster}/>
           </motion.div>
         )}
         {gameState.status === 'victory' && (
           <motion.div key="victory" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md text-center space-y-6">
-            <div className="p-4 bg-yellow-500/20 rounded-full animate-bounce"><Trophy className="w-16 h-16 text-yellow-500" /></div>
+            <div className="w-[140px] h-[140px] bg-yellow-500/20 rounded-3xl flex items-center justify-center overflow-hidden border-2 border-yellow-500/30 shadow-lg shadow-yellow-500/10">
+              <div 
+                style={{
+                  width: '120px',
+                  height: '120px',
+                  backgroundImage: `url(${assets.monsters[gameState.monster?.type || 'goblin'].src})`,
+                  backgroundSize: '300% 400%',
+                  backgroundPosition: `${monsterAnimFrame * 50}% 100%`, // Row 3 is Death pose
+                  imageRendering: 'pixelated'
+                }}
+              />
+            </div>
             <div className="space-y-2"><h2 className="text-4xl font-bold text-white">Victory!</h2><p className="text-xl text-slate-400">You defeated the {gameState.monster?.type}!</p></div>
             <div className="p-6 bg-white/5 rounded-2xl border border-white/10 min-w-[200px]"><p className="text-sm text-slate-500 uppercase tracking-widest">XP Earned</p><p className="text-5xl font-black text-yellow-500">+{gameState.monster?.xp}</p></div>
             <Button onClick={() => onComplete({ xp: gameState.monster?.xp || 0, accuracy: gameState.totalAttempts > 0 ? (gameState.correctAnswers / gameState.totalAttempts) * 100 : 100 })} size="lg" className="px-12 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">Continue</Button>
@@ -229,7 +260,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
                     <Group key={rune.id} x={layout.gridX + c * layout.cellSize + 2} y={layout.gridY + r * layout.cellSize + 2} onClick={() => handleCellClick(r, c)} onTap={() => handleCellClick(r, c)}>
                       {isSelected && ( <Rect width={runeSize + 8} height={runeSize + 8} x={-4} y={-4} fill="rgba(96, 165, 250, 0.3)" cornerRadius={8} stroke="#60a5fa" strokeWidth={2}/> )}
                       <KonvaImage image={spriteSheet} width={runeSize} height={runeSize} cornerRadius={6} crop={crop}/>
-                      {rune.type === 'vocabulary' && ( <Text text={(rune as any).text || (rune as any).translation} width={runeSize - 12} height={runeSize - 12} x={6} y={6} fontSize={Math.max(12, layout.cellSize / 3.5)} fill="#0f172a" align="center" verticalAlign="middle" fontFamily="Arial" fontStyle="bold"/> )}
+                      {rune.type === 'vocabulary' && ( <Text text={rune.text} width={runeSize - 12} height={runeSize - 12} x={6} y={6} fontSize={Math.max(12, layout.cellSize / 3.5)} fill="#0f172a" align="center" verticalAlign="middle" fontFamily="Arial" fontStyle="bold"/> )}
                     </Group>
                   )
                 }))}

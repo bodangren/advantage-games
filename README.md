@@ -22,6 +22,10 @@ Choose the correct gate to gather enough dragons to defeat the boss
 Survive the zombie horde by running to collect magic orbs
 ![Wizard vs Zombie Gameplay](public/wizard-vs-zombie.png)
 
+### Rune Match
+Match vocabulary runes to defeat monsters in this RPG puzzle battle.
+![Ruen Match Gameplay](public/rune-match.png)
+
 ## 🛠️ Developer Guide
 
 ### Game Interface Standard
