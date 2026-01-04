@@ -25,7 +25,7 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Implement invalid swap reversion. 1e99219
 *   [x] Conductor - User Manual Verification 'Phase 3: Grid & Match-3 Core' 7fb626f
 
-## Phase 4: Combat System [checkpoint: 083081f]
+## Phase 4: Combat System [checkpoint: 2777c7c]
 *   [x] Task: Increase board and text size by ~50% for better readability. 83529d5
 *   [x] Task: Implement player HP and monster HP state. ccb55e1
 *   [x] Task: Implement damage calculation from matches (3/4/5/L/T + cascades). 39bbdbd
@@ -34,7 +34,7 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Implement screen shake on monster attack. ccb55e1
 *   [x] Task: Implement Power Word system (target term, bonus damage for matching). 42947e8
 *   [x] Task: Implement Power Word rotation (changes every 5 sec with attack). 42947e8
-*   [x] Task: Conductor - User Manual Verification 'Phase 4: Combat System' 083081f
+*   [x] Conductor - User Manual Verification 'Phase 4: Combat System' 2777c7c
 
 ## Phase 5: Power-Up Runes [checkpoint: cff2b38]
 *   [x] Task: Implement Heal rune spawning (configurable spawn rate). 42947e8
