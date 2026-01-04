@@ -20,8 +20,8 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Implement grid initialization with vocabulary runes (infinite stack model). ff61b3f
 *   [x] Task: Implement tile swap mechanic (tap two adjacent tiles). 4f801ae
 *   [x] Task: Implement match detection (3+ horizontal/vertical, L-shapes, T-shapes). 4135a99
-*   [~] Task: Implement tile clearing and gravity (tiles fall from top).
-*   [ ] Task: Implement cascade detection (chain reactions after gravity).
+*   [x] Task: Implement tile clearing and gravity (tiles fall from top). 3bc0532
+*   [~] Task: Implement cascade detection (chain reactions after gravity).
 *   [ ] Task: Implement invalid swap reversion.
 *   [ ] Task: Conductor - User Manual Verification 'Phase 3: Grid & Match-3 Core'
 
