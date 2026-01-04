@@ -36,16 +36,16 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Implement Power Word rotation (changes every 5 sec with attack). 42947e8
 *   [x] Task: Conductor - User Manual Verification 'Phase 4: Combat System' 083081f
 
-## Phase 5: Power-Up Runes
-*   [~] Task: Implement Heal rune spawning (configurable spawn rate).
-*   [ ] Task: Implement Shield rune spawning.
-*   [ ] Task: Implement Heal effect (restore HP on match).
-*   [ ] Task: Implement Shield effect (block next attack).
-*   [ ] Task: Implement visual feedback for power-up activation.
-*   [ ] Task: Conductor - User Manual Verification 'Phase 5: Power-Up Runes'
+## Phase 5: Power-Up Runes [checkpoint: cff2b38]
+*   [x] Task: Implement Heal rune spawning (configurable spawn rate). 42947e8
+*   [x] Task: Implement Shield rune spawning. 42947e8
+*   [x] Task: Implement Heal effect (restore HP on match). 42947e8
+*   [x] Task: Implement Shield effect (block next attack). 42947e8
+*   [x] Task: Implement visual feedback for power-up activation. 42947e8
+*   [x] Conductor - User Manual Verification 'Phase 5: Power-Up Runes' cff2b38
 
 ## Phase 6: UI & HUD
-*   [ ] Task: Implement Player HP bar display.
+*   [~] Task: Implement Player HP bar display.
 *   [ ] Task: Implement Monster HP bar display.
 *   [ ] Task: Implement Power Word display panel.
 *   [ ] Task: Implement damage numbers / combo indicators.
