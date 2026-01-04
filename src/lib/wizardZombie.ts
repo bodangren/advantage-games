@@ -98,13 +98,47 @@ export const createWizardZombieState = (
   }
 }
 
+export type InputState = {
+  dx: number // -1, 0, 1
+  dy: number // -1, 0, 1
+}
+
 export const advanceWizardZombieTime = (
   state: WizardZombieState,
-  dt: number
+  dt: number,
+  input: InputState = { dx: 0, dy: 0 }
 ): WizardZombieState => {
+  // Normalize vector if diagonal to prevent faster speed
+  let moveX = input.dx
+  let moveY = input.dy
+  if (moveX !== 0 && moveY !== 0) {
+    const invSqrt2 = 0.70710678118
+    moveX *= invSqrt2
+    moveY *= invSqrt2
+  }
+
+  const speed = state.player.speed
+  // Scale speed by dt? Usually speed is px/frame or px/sec. 
+  // Let's assume speed is px/frame (approx 16ms). If dt is 50ms, we scale.
+  // Base frame is 16.6ms. 
+  // speedFactor = dt / 16.6
+  const speedFactor = dt / 16.6
+  
+  let newX = state.player.x + moveX * speed * speedFactor
+  let newY = state.player.y + moveY * speed * speedFactor
+
+  // Clamp to bounds
+  newX = Math.max(PLAYER_RADIUS, Math.min(GAME_WIDTH - PLAYER_RADIUS, newX))
+  newY = Math.max(PLAYER_RADIUS, Math.min(GAME_HEIGHT - PLAYER_RADIUS, newY))
+
   return {
     ...state,
     gameTime: state.gameTime + dt,
+    player: {
+      ...state.player,
+      x: newX,
+      y: newY,
+    }
   }
 }
 
