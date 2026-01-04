@@ -93,6 +93,18 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     return () => clearInterval(interval)
   }, [])
 
+  // Game loop for attack timers
+  useEffect(() => {
+    const tickRate = 100 // 10 ticks per second
+    const interval = setInterval(() => {
+      setGameState((current) => {
+        if (!current || current.status !== 'playing') return current
+        return advanceTime(current, tickRate)
+      })
+    }, tickRate)
+    return () => clearInterval(interval)
+  }, [])
+
   // Asset Loading
   useEffect(() => {
     let mounted = true
@@ -359,14 +371,27 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
               />
               
               {/* Monster HP */}
-              {gameState.monster && renderHealthBar(
-                dimensions.width / 2 - 150,
-                layout.monsterAreaHeight * 0.2,
-                300,
-                gameState.monster.hp,
-                gameState.monster.maxHp,
-                "#ef4444",
-                gameState.monster.type.toUpperCase()
+              {gameState.monster && (
+                <Group>
+                  {renderHealthBar(
+                    dimensions.width / 2 - 150,
+                    layout.monsterAreaHeight * 0.2,
+                    300,
+                    gameState.monster.hp,
+                    gameState.monster.maxHp,
+                    "#ef4444",
+                    gameState.monster.type.toUpperCase()
+                  )}
+                  {/* Attack Timer Bar */}
+                  <Rect
+                    x={dimensions.width / 2 - 150}
+                    y={layout.monsterAreaHeight * 0.2 + 25}
+                    width={300 * (1 - gameState.attackTimer / RUNE_MATCH_CONFIG.combat.attackIntervalMs)}
+                    height={4}
+                    fill="#f87171"
+                    opacity={0.6}
+                  />
+                </Group>
               )}
 
               {/* Player HP */}

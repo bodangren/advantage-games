@@ -311,6 +311,38 @@ export const processMatches = (
   }
 }
 
+export const advanceTime = (
+  state: RuneMatchState,
+  deltaMs: number
+): RuneMatchState => {
+  if (state.status !== 'playing') return state
+
+  let newState = { ...state }
+  newState.attackTimer += deltaMs
+
+  const { attackIntervalMs } = RUNE_MATCH_CONFIG.combat
+
+  if (newState.attackTimer >= attackIntervalMs) {
+    // Monster Attacks!
+    newState.attackTimer %= attackIntervalMs
+
+    if (newState.player.hasShield) {
+      // Shield blocks one attack
+      newState.player = { ...newState.player, hasShield: false }
+    } else {
+      // Random damage from 1 to monster.attack
+      const monsterAtk = newState.monster?.attack || 1
+      const damage = Math.floor(state.rng() * monsterAtk) + 1
+      newState.player = { 
+        ...newState.player, 
+        hp: Math.max(0, newState.player.hp - damage) 
+      }
+    }
+  }
+
+  return newState
+}
+
 export const calculateMatchDamage = (
   runeCount: number,
   cascades: number,

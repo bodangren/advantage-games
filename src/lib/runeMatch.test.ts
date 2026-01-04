@@ -1,4 +1,4 @@
-import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches, applyGravity, processMatches, initializeEmptyGrid, calculateMatchDamage, applyMatchResult, type VocabularyRune } from './runeMatch'
+import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches, applyGravity, processMatches, initializeEmptyGrid, calculateMatchDamage, applyMatchResult, type VocabularyRune, advanceTime } from './runeMatch'
 import { RUNE_MATCH_CONFIG } from './runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 
@@ -15,6 +15,41 @@ const SAMPLE_VOCAB: VocabularyItem[] = [
   { term: 'พระจันทร์', translation: 'Moon' },
 ]
 
+describe('advanceTime', () => {
+  it('increments attack timer', () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB)
+    state.status = 'playing'
+    
+    const newState = advanceTime(state, 1000)
+    expect(newState.attackTimer).toBe(1000)
+  })
+
+  it('triggers monster attack when timer exceeds interval', () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB)
+    state.status = 'playing'
+    state.monster = { type: 'goblin', hp: 50, maxHp: 50, attack: 10, xp: 3 }
+    state.attackTimer = 4500
+    
+    const newState = advanceTime(state, 1000)
+    
+    expect(newState.attackTimer).toBe(500)
+    expect(newState.player.hp).toBeLessThan(100)
+  })
+
+  it('shield blocks monster attack', () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB)
+    state.status = 'playing'
+    state.monster = { type: 'goblin', hp: 50, maxHp: 50, attack: 10, xp: 3 }
+    state.player.hasShield = true
+    state.attackTimer = 4500
+    
+    const newState = advanceTime(state, 1000)
+    
+    expect(newState.player.hp).toBe(100)
+    expect(newState.player.hasShield).toBe(false)
+  })
+})
+
 describe('combat logic', () => {
   it('calculates damage for a basic 2-match', () => {
     const damage = calculateMatchDamage(2, 0, false)
@@ -28,12 +63,12 @@ describe('combat logic', () => {
 
   it('applies power rune multiplier', () => {
     const damage = calculateMatchDamage(2, 0, true)
-    expect(damage).toBe(10) // 5 * 2
+    expect(damage).toBe(10)
   })
 
   it('applies cascade bonus', () => {
     const damage = calculateMatchDamage(2, 1, false)
-    expect(damage).toBe(10) // 5 + 5
+    expect(damage).toBe(10)
   })
 
   it('updates monster HP in state', () => {
@@ -54,7 +89,7 @@ describe('combat logic', () => {
     }
     
     const newState = applyMatchResult(state, result)
-    expect(newState.monster?.hp).toBe(40) // 5 (base) + 5 (cascade) = 10 damage
+    expect(newState.monster?.hp).toBe(40)
   })
 
   it('processes power-ups (heal)', () => {
@@ -75,12 +110,11 @@ describe('combat logic', () => {
       }]
     }
     
-    // We need to manually set the grid types because initializeEmptyGrid sets vocab
     state.grid[0][0] = { id: 'h1', type: 'heal' }
     state.grid[0][1] = { id: 'h2', type: 'heal' }
 
     const newState = applyMatchResult(state, result)
-    expect(newState.player.hp).toBe(60) // 50 + (2 * 5)
+    expect(newState.player.hp).toBe(60)
   })
 })
 
@@ -143,10 +177,8 @@ describe('findMatches', () => {
   it('detects L-shapes as special matches', () => {
     const grid = initializeEmptyGrid(SAMPLE_VOCAB)
     const rune = { id: 'test', type: 'vocabulary', wordId: 'Hello', text: 'สวัสดี' } as Rune
-    // Horizontal pair
     grid[0][0] = rune
     grid[0][1] = rune
-    // Vertical pair intersecting at (0,0)
     grid[1][0] = rune
     
     const groups = findMatches(grid)
@@ -184,7 +216,6 @@ describe('initializeGrid', () => {
         const rune = grid[r][c]
         if (rune.type !== 'vocabulary') continue
 
-        // Check horizontal pair
         if (c < grid[r].length - 1) {
           const r2 = grid[r][c+1]
           if (r2.type === 'vocabulary') {
@@ -192,7 +223,6 @@ describe('initializeGrid', () => {
           }
         }
 
-        // Check vertical pair
         if (r < grid.length - 1) {
           const r2 = grid[r+1][c]
           if (r2.type === 'vocabulary') {
@@ -201,5 +231,12 @@ describe('initializeGrid', () => {
         }
       }
     }
+  })
+})
+
+describe('createRuneMatchState', () => {
+  it('creates initial state in selection screen', () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB)
+    expect(state.status).toBe('selection')
   })
 })
