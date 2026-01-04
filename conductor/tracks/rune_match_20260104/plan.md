@@ -11,10 +11,10 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure' 7e9f070
 
 ## Phase 2: Monster Selection Screen
-*   [ ] Task: Implement Monster Selection UI with 4 difficulty options.
-*   [ ] Task: Display monster stats (HP, Attack, XP reward) for each option.
-*   [ ] Task: Implement selection logic and transition to game screen.
-*   [ ] Task: Conductor - User Manual Verification 'Phase 2: Monster Selection Screen'
+*   [x] Task: Implement Monster Selection UI with 4 difficulty options. 5a430df
+*   [x] Task: Display monster stats (HP, Attack, XP reward) for each option. 5a430df
+*   [x] Task: Implement selection logic and transition to game screen. 5a430df
+*   [~] Task: Conductor - User Manual Verification 'Phase 2: Monster Selection Screen'
 
 ## Phase 3: Grid & Match-3 Core
 *   [ ] Task: Implement grid initialization with vocabulary runes (infinite stack model).
