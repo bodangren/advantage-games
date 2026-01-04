@@ -82,7 +82,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
         clearInterval(interval)
         clearTimeout(timeout)
     }
-  }, [])
+  }, [gameState])
 
   if (!gameState) {
     return (

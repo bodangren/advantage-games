@@ -23,6 +23,13 @@ jest.mock('@/hooks/useSound', () => ({
   useSound: () => ({ playSound: jest.fn() }),
 }))
 
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 const vocabulary: VocabularyItem[] = [
   { term: 'Apple', translation: 'Manzana', id: '1' },
   { term: 'Banana', translation: 'Platano', id: '2' },
