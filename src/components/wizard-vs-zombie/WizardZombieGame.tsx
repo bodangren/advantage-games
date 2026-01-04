@@ -33,27 +33,46 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   useEffect(() => {
     if (!containerRef.current) return
 
-    const updateDimensions = () => {
-      if (!containerRef.current) return
-      const { clientWidth, clientHeight } = containerRef.current
-      if (clientWidth === 0 || clientHeight === 0) return
+    const updateDimensions = (width: number, height: number) => {
+      if (width === 0 || height === 0) return
 
-      const scaleX = clientWidth / GAME_WIDTH
-      const scaleY = clientHeight / GAME_HEIGHT
+      const scaleX = width / GAME_WIDTH
+      const scaleY = height / GAME_HEIGHT
       const scale = Math.min(scaleX, scaleY)
       
       setDimensions({
-        width: clientWidth,
-        height: clientHeight,
+        width,
+        height,
         scale
       })
     }
 
-    const observer = new ResizeObserver(updateDimensions)
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        updateDimensions(entry.contentRect.width, entry.contentRect.height)
+      }
+    })
+    
     observer.observe(containerRef.current)
-    updateDimensions()
+    
+    // Initial check
+    if (containerRef.current) {
+        const { clientWidth, clientHeight } = containerRef.current
+        updateDimensions(clientWidth, clientHeight)
+    }
+    
+    // Fallback: Check again after a short delay in case of layout shifts
+    const timeout = setTimeout(() => {
+        if (containerRef.current) {
+            const { clientWidth, clientHeight } = containerRef.current
+            updateDimensions(clientWidth, clientHeight)
+        }
+    }, 100)
 
-    return () => observer.disconnect()
+    return () => {
+        observer.disconnect()
+        clearTimeout(timeout)
+    }
   }, [])
 
   if (!gameState) {
@@ -72,7 +91,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
         {/* Debug Overlay */}
         <div className="absolute top-16 left-4 z-20 font-mono text-xs text-green-400 pointer-events-none bg-black/80 p-2 rounded">
             <div>Debug Info:</div>
-            <div>Container: {dimensions.width}x{dimensions.height}</div>
+            <div>Container: {Math.round(dimensions.width)}x{Math.round(dimensions.height)}</div>
             <div>Scale: {dimensions.scale.toFixed(3)}</div>
             <div>Player: ({Math.round(gameState.player.x)}, {Math.round(gameState.player.y)})</div>
             <div>Orbs: {gameState.orbs.length}</div>
@@ -103,7 +122,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                 <Rect 
                     width={GAME_WIDTH} 
                     height={GAME_HEIGHT} 
-                    fill="#1a2e1a" // Dark Green for Debugging Contrast
+                    fill="#ef4444" // Bright Red for visibility
                 />
 
                 <Group>
