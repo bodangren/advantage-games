@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -30,19 +29,15 @@ export default function MainMenu() {
                   isPlayable ? 'hover:border-primary/50' : 'border-dashed opacity-80'
                 )}
               >
-                <div className="relative w-full overflow-hidden rounded-t-xl bg-slate-900">
-                  <div className="relative h-44 w-full">
-                    <Image
-                      src={game.cover}
-                      alt={`${game.title} cover`}
-                      fill
-                      sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
-                      className={cn(
-                        'object-contain transition-transform duration-300',
-                        isPlayable && 'group-hover:scale-105'
-                      )}
-                    />
-                  </div>
+                <div className="relative w-full overflow-hidden rounded-t-xl">
+                  <img
+                    src={game.cover}
+                    alt={`${game.title} cover`}
+                    className={cn(
+                      'w-full h-auto object-contain transition-transform duration-300',
+                      isPlayable && 'group-hover:scale-105'
+                    )}
+                  />
                 </div>
                 <CardHeader className="gap-3 px-6 pt-4">
                   <CardTitle className="text-2xl">{game.title}</CardTitle>

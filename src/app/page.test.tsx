@@ -12,13 +12,6 @@ jest.mock('next/link', () => {
   return Link
 })
 
-jest.mock('next/image', () => ({
-  __esModule: true,
-  default: ({ src, alt, ...props }: { src: string; alt: string }) => (
-    <img src={src} alt={alt} {...props} />
-  ),
-}))
-
 describe('MainMenu', () => {
   it('renders the title and game options', () => {
     render(<MainMenu />)
