@@ -1,7 +1,8 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { RuneMatchGame } from './RuneMatchGame'
 import type { VocabularyItem } from '@/store/useGameStore'
 import type React from 'react'
+import { RUNE_MATCH_CONFIG } from '@/lib/runeMatchConfig'
 
 type KonvaBaseProps = React.PropsWithChildren<Record<string, unknown>>
 type RectProps = KonvaBaseProps & { width?: number; height?: number; fill?: string }
@@ -18,6 +19,13 @@ jest.mock('react-konva', () => ({
   Image: ({ name }: ImageProps) => <div data-testid={name || 'image'} />,
   Text: ({ text }: TextProps) => <span>{text}</span>,
   Group: ({ children }: KonvaBaseProps) => <div>{children}</div>,
+}))
+
+// Mock lucide-react
+jest.mock('lucide-react', () => ({
+  Swords: () => <div data-testid="icon-swords" />,
+  Trophy: () => <div data-testid="icon-trophy" />,
+  Heart: () => <div data-testid="icon-heart" />,
 }))
 
 jest.mock('konva', () => ({
@@ -105,5 +113,37 @@ describe('RuneMatchGame', () => {
     const customCallback = jest.fn()
     render(<RuneMatchGame vocabulary={SAMPLE_VOCAB} onComplete={customCallback} />)
     expect(customCallback).not.toHaveBeenCalled() // Should only call on game completion
+  })
+
+  it('completes the monster selection flow', async () => {
+    // Mock dimensions so Stage renders
+    const spy = jest.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({
+      width: 800,
+      height: 600,
+      top: 0,
+      left: 0,
+      bottom: 600,
+      right: 800,
+      x: 0,
+      y: 0,
+      toJSON: () => {},
+    })
+
+    render(<RuneMatchGame vocabulary={SAMPLE_VOCAB} onComplete={mockOnComplete} />)
+
+    // Wait for assets to "load" (our mock triggers this)
+    await waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument())
+
+    // Should show selection screen
+    expect(screen.getByText(/Choose Your Opponent/i)).toBeInTheDocument()
+
+    // Select Dragon
+    const battleButtons = screen.getAllByRole('button', { name: /Battle/i })
+    fireEvent.click(battleButtons[3])
+
+    // Should now show battle text in Konva (rendered as span in our mock)
+    await waitFor(() => expect(screen.getByText(/Battle against dragon/i)).toBeInTheDocument())
+
+    spy.mockRestore()
   })
 })

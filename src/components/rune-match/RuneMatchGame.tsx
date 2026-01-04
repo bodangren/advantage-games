@@ -7,6 +7,7 @@ import { createRuneMatchState, type RuneMatchState } from '@/lib/runeMatch'
 import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
+import { MonsterSelection } from './MonsterSelection'
 
 export type RuneMatchGameResult = {
   xp: number
@@ -103,6 +104,25 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     resetGame()
   }, [resetGame])
 
+  const handleSelectMonster = useCallback((monsterType: MonsterType) => {
+    const config = RUNE_MATCH_CONFIG.monsters[monsterType]
+    setGameState((prev) => {
+      if (!prev) return null
+      return {
+        ...prev,
+        status: 'playing',
+        selectedMonster: monsterType,
+        monster: {
+          type: monsterType,
+          hp: config.hp,
+          maxHp: config.hp,
+          attack: config.attack,
+          xp: config.xp,
+        },
+      }
+    })
+  }, [])
+
   // Dimensions handling
   useEffect(() => {
     if (!containerRef.current) return
@@ -156,22 +176,38 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
       data-testid="rune-match-container"
       className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 border border-white/10 md:aspect-video md:h-auto"
     >
+      <AnimatePresence mode="wait">
+        {gameState.status === 'selection' ? (
+          <motion.div
+            key="selection"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm overflow-y-auto"
+          >
+            <MonsterSelection onSelect={handleSelectMonster} />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
       <Stage width={dimensions.width} height={dimensions.height}>
         <Layer>
           {/* Background */}
           <Rect fill="#0f172a" width={dimensions.width} height={dimensions.height} />
 
-          {/* Placeholder content */}
-          <Text
-            text="Monster Selection Screen - Coming Soon"
-            x={dimensions.width / 2}
-            y={dimensions.height / 2}
-            offsetX={200}
-            offsetY={15}
-            fontSize={20}
-            fill="#94a3b8"
-            fontFamily="Arial"
-          />
+          {/* Placeholder content for playing state */}
+          {gameState.status === 'playing' && (
+            <Text
+              text={`Battle against ${gameState.monster?.type} - Grid coming soon`}
+              x={dimensions.width / 2}
+              y={dimensions.height / 2}
+              offsetX={200}
+              offsetY={15}
+              fontSize={20}
+              fill="#94a3b8"
+              fontFamily="Arial"
+            />
+          )}
         </Layer>
       </Stage>
     </div>
