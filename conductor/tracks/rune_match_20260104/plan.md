@@ -7,7 +7,7 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Define `RuneMatchState`, `Monster`, `Rune`, and related types in `src/lib/runeMatch.ts`. d10c86e
 *   [x] Task: Create `src/app/games/rune-match` route and page structure. 0d293b3
 *   [x] Task: Create `RuneMatchGame` container component with React-Konva Stage. 3c2ce4d
-*   [ ] Task: Register game in Main Menu (using placeholder cover image).
+*   [x] Task: Register game in Main Menu (using placeholder cover image). 8f35e75
 *   [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure'
 
 ## Phase 2: Monster Selection Screen
