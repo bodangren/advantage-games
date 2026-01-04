@@ -17,8 +17,8 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Conductor - User Manual Verification 'Phase 2: Monster Selection Screen' e06f9ae
 
 ## Phase 3: Grid & Match-3 Core
-*   [ ] Task: Implement grid initialization with vocabulary runes (infinite stack model).
-*   [ ] Task: Implement tile swap mechanic (tap two adjacent tiles).
+*   [x] Task: Implement grid initialization with vocabulary runes (infinite stack model). ff61b3f
+*   [~] Task: Implement tile swap mechanic (tap two adjacent tiles).
 *   [ ] Task: Implement match detection (3+ horizontal/vertical, L-shapes, T-shapes).
 *   [ ] Task: Implement tile clearing and gravity (tiles fall from top).
 *   [ ] Task: Implement cascade detection (chain reactions after gravity).
