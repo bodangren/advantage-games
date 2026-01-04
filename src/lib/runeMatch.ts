@@ -202,6 +202,46 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
   return groups
 }
 
+export const applyGravity = (
+  grid: Rune[][],
+  matchedCoords: GridPosition[],
+  vocabulary: VocabularyItem[],
+  { rng = Math.random }: RuneMatchConfig = {}
+): Rune[][] => {
+  const rows = grid.length
+  const cols = grid[0].length
+  const newGrid: (Rune | null)[][] = grid.map(row => [...row])
+
+  // Mark matched runes as null
+  for (const { row, col } of matchedCoords) {
+    newGrid[row][col] = null
+  }
+
+  // Shift runes down and fill from top
+  for (let c = 0; c < cols; c++) {
+    // Extract non-null runes from column
+    const columnRunes: Rune[] = []
+    for (let r = rows - 1; r >= 0; r--) {
+      if (newGrid[r][c] !== null) {
+        columnRunes.push(newGrid[r][c] as Rune)
+      }
+    }
+
+    // Fill column from bottom to top
+    for (let r = rows - 1; r >= 0; r--) {
+      const existingRune = columnRunes.shift()
+      if (existingRune) {
+        newGrid[r][c] = existingRune
+      } else {
+        // Refill from top
+        newGrid[r][c] = createRandomRune(vocabulary, rng)
+      }
+    }
+  }
+
+  return newGrid as Rune[][]
+}
+
 const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune => {
   const roll = rng()
   const { spawnRate } = RUNE_MATCH_CONFIG.powerUps

@@ -1,4 +1,4 @@
-import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches } from './runeMatch'
+import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches, applyGravity } from './runeMatch'
 import { RUNE_MATCH_CONFIG } from './runeMatchConfig'
 
 const SAMPLE_VOCAB: VocabularyItem[] = [
@@ -13,6 +13,35 @@ const SAMPLE_VOCAB: VocabularyItem[] = [
   { term: 'Moon', translation: 'พระจันทร์' },
   { term: 'Star', translation: 'ดาว' },
 ]
+
+describe('applyGravity', () => {
+  it('clears matched runes and fills from top', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const matchedCoords = [{ row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }]
+    const originalTopRune = grid[0][0]
+    
+    const newGrid = applyGravity(grid, matchedCoords, SAMPLE_VOCAB)
+    
+    // Bottom runes should be different (shifted or new)
+    expect(newGrid[7][0]).not.toBe(grid[7][0])
+    
+    // Top runes should be refilled
+    expect(newGrid[0][0]).toBeDefined()
+    expect(newGrid[0][1]).toBeDefined()
+    expect(newGrid[0][2]).toBeDefined()
+  })
+
+  it('shifts runes down correctly', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const runeToShift = grid[6][0]
+    const matchedCoords = [{ row: 7, col: 0 }]
+    
+    const newGrid = applyGravity(grid, matchedCoords, SAMPLE_VOCAB)
+    
+    // Rune at (6,0) should have moved to (7,0)
+    expect(newGrid[7][0]).toBe(runeToShift)
+  })
+})
 
 describe('findMatches', () => {
   it('finds horizontal matches', () => {
