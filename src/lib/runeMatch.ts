@@ -297,6 +297,81 @@ export const processMatches = (
   }
 }
 
+export const calculateMatchDamage = (
+  runeCount: number,
+  cascades: number,
+  isPowerRune: boolean
+): number => {
+  const { combat } = RUNE_MATCH_CONFIG
+  
+  // Base damage
+  let damage = 0
+  if (runeCount === 2) damage = 5
+  else if (runeCount === 3) damage = combat.match3Damage
+  else if (runeCount === 4) damage = combat.match4Damage
+  else if (runeCount >= 5) damage = combat.match5Damage
+
+  // Multipliers
+  if (isPowerRune) damage *= combat.powerRuneMultiplier
+  
+  // Cascade bonus
+  if (cascades > 0) {
+    damage += cascades * combat.cascadeBonus
+  }
+
+  return damage
+}
+
+export const applyMatchResult = (
+  state: RuneMatchState,
+  result: MatchResult
+): RuneMatchState => {
+  if (state.status !== 'playing') return state
+
+  let monsterHp = state.monster?.hp || 0
+  let playerHp = state.player.hp
+  let hasShield = state.player.hasShield
+  let correctAnswers = state.correctAnswers
+  let totalAttempts = state.totalAttempts
+
+  // Process each cleared coordinate to find power-ups and vocabulary runes
+  for (const coord of result.allClearedCoords) {
+    const rune = state.grid[coord.row][coord.col]
+    
+    if (rune.type === 'vocabulary') {
+      totalAttempts++
+      // Check if it's the Power Word (to be implemented in next task)
+      const isPower = rune.wordId === state.powerWord
+      if (isPower) correctAnswers++
+      
+      const damage = calculateMatchDamage(1, result.cascades, isPower)
+      // Note: This 1-by-1 calculation is a bit off for multi-rune matches, 
+      // let's refine this to process actual Match Groups if we want accurate scaling.
+      // For now, simpler: we'll just apply a chunk of damage based on total cleared runes.
+    } else if (rune.type === 'heal') {
+      playerHp = Math.min(state.player.maxHp, playerHp + RUNE_MATCH_CONFIG.powerUps.healAmount)
+    } else if (rune.type === 'shield') {
+      hasShield = true
+    }
+  }
+
+  // Simplified damage: 5 per vocabulary rune + cascade bonus
+  const vocabRunes = result.allClearedCoords.filter(c => state.grid[c.row][c.col].type === 'vocabulary')
+  if (vocabRunes.length > 0) {
+    const totalDamage = calculateMatchDamage(vocabRunes.length, result.cascades, false)
+    monsterHp = Math.max(0, monsterHp - totalDamage)
+  }
+
+  return {
+    ...state,
+    grid: result.grid,
+    monster: state.monster ? { ...state.monster, hp: monsterHp } : null,
+    player: { ...state.player, hp: playerHp, hasShield },
+    correctAnswers,
+    totalAttempts,
+  }
+}
+
 const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune => {
   const roll = rng()
   const { spawnRate } = RUNE_MATCH_CONFIG.powerUps

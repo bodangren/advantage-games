@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
-import { createRuneMatchState, initializeGrid, swapRunes, findMatches, processMatches, type RuneMatchState, type GridPosition } from '@/lib/runeMatch'
+import { createRuneMatchState, initializeGrid, swapRunes, findMatches, processMatches, applyMatchResult, type RuneMatchState, type GridPosition } from '@/lib/runeMatch'
 import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
@@ -189,9 +189,12 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
         if (matches.length > 0) {
           // Valid swap - process matches and cascades
           const result = processMatches(gridAfterSwap, prev.vocabulary, { rng: prev.rng })
+          
+          // Apply combat results
+          const stateAfterCombat = applyMatchResult({ ...prev, grid: gridAfterSwap }, result)
+          
           return { 
-            ...prev, 
-            grid: result.grid, 
+            ...stateAfterCombat, 
             selectedCell: null 
           }
         } else {
@@ -268,6 +271,51 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     )
   }
 
+  const renderHealthBar = (
+    x: number,
+    y: number,
+    width: number,
+    current: number,
+    max: number,
+    color: string,
+    label: string
+  ) => {
+    const height = 20
+    const progress = Math.max(0, Math.min(1, current / max))
+    return (
+      <Group x={x} y={y}>
+        {/* Background */}
+        <Rect
+          width={width}
+          height={height}
+          fill="rgba(0, 0, 0, 0.5)"
+          cornerRadius={height / 2}
+          stroke="rgba(255, 255, 255, 0.2)"
+          strokeWidth={1}
+        />
+        {/* Fill */}
+        <Rect
+          width={Math.max(height, width * progress)}
+          height={height}
+          fill={color}
+          cornerRadius={height / 2}
+        />
+        {/* Text */}
+        <Text
+          text={`${label}: ${Math.ceil(current)}/${max}`}
+          width={width}
+          height={height}
+          fontSize={12}
+          fill="white"
+          align="center"
+          verticalAlign="middle"
+          fontStyle="bold"
+          fontFamily="Arial"
+        />
+      </Group>
+    )
+  }
+
   // Render game
   return (
     <div
@@ -309,16 +357,40 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
                 height={layout.monsterAreaHeight} 
                 fill="rgba(0, 0, 0, 0.2)"
               />
-              <Text
-                text={`Opponent: ${gameState.monster?.type?.toUpperCase()}`}
-                x={dimensions.width / 2}
-                y={layout.monsterAreaHeight / 2}
-                offsetX={100}
-                fontSize={24}
-                fill="#f87171"
-                fontStyle="bold"
-                fontFamily="Arial"
-              />
+              
+              {/* Monster HP */}
+              {gameState.monster && renderHealthBar(
+                dimensions.width / 2 - 150,
+                layout.monsterAreaHeight * 0.2,
+                300,
+                gameState.monster.hp,
+                gameState.monster.maxHp,
+                "#ef4444",
+                gameState.monster.type.toUpperCase()
+              )}
+
+              {/* Player HP */}
+              {renderHealthBar(
+                dimensions.width / 2 - 150,
+                layout.monsterAreaHeight * 0.7,
+                300,
+                gameState.player.hp,
+                gameState.player.maxHp,
+                "#22c55e",
+                "PLAYER"
+              )}
+
+              {/* Shield Indicator */}
+              {gameState.player.hasShield && (
+                <Text
+                  text="🛡️ SHIELD ACTIVE"
+                  x={dimensions.width / 2 + 160}
+                  y={layout.monsterAreaHeight * 0.7}
+                  fontSize={14}
+                  fill="#60a5fa"
+                  fontStyle="bold"
+                />
+              )}
 
               {/* Grid Background */}
               <Rect
