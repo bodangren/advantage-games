@@ -242,6 +242,42 @@ export const applyGravity = (
   return newGrid as Rune[][]
 }
 
+export type MatchResult = {
+  grid: Rune[][]
+  cascades: number
+  allClearedCoords: GridPosition[]
+}
+
+export const processMatches = (
+  grid: Rune[][],
+  vocabulary: VocabularyItem[],
+  { rng = Math.random }: RuneMatchConfig = {}
+): MatchResult => {
+  let currentGrid = grid
+  let cascades = 0
+  const allClearedCoords: GridPosition[] = []
+  
+  let matches = findMatches(currentGrid)
+  
+  while (matches.length > 0) {
+    cascades++
+    const currentMatchCoords = matches.flat()
+    allClearedCoords.push(...currentMatchCoords)
+    
+    currentGrid = applyGravity(currentGrid, currentMatchCoords, vocabulary, { rng })
+    matches = findMatches(currentGrid)
+    
+    // Safety break to prevent infinite loops if something goes wrong
+    if (cascades > 100) break
+  }
+
+  return {
+    grid: currentGrid,
+    cascades,
+    allClearedCoords,
+  }
+}
+
 const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune => {
   const roll = rng()
   const { spawnRate } = RUNE_MATCH_CONFIG.powerUps

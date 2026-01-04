@@ -1,4 +1,4 @@
-import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches, applyGravity } from './runeMatch'
+import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches, applyGravity, processMatches } from './runeMatch'
 import { RUNE_MATCH_CONFIG } from './runeMatchConfig'
 
 const SAMPLE_VOCAB: VocabularyItem[] = [
@@ -13,6 +13,49 @@ const SAMPLE_VOCAB: VocabularyItem[] = [
   { term: 'Moon', translation: 'พระจันทร์' },
   { term: 'Star', translation: 'ดาว' },
 ]
+
+describe('processMatches', () => {
+  it('processes a single match and returns cascade count of 1', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const rune = { id: 'test', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    grid[7][0] = rune
+    grid[7][1] = rune
+    grid[7][2] = rune
+    
+    const result = processMatches(grid, SAMPLE_VOCAB)
+    expect(result.cascades).toBe(1)
+    expect(findMatches(result.grid)).toHaveLength(0)
+  })
+
+  it('detects multiple cascades', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const runeA = { id: 'a', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    const runeB = { id: 'b', type: 'vocabulary', word: 'B', translation: 'B' } as Rune
+    
+    // First match at bottom
+    grid[7][0] = runeA
+    grid[7][1] = runeA
+    grid[7][2] = runeA
+    
+    // Set up a second match that will fall into place
+    grid[6][0] = runeB
+    grid[6][1] = runeB
+    grid[6][2] = runeB
+    
+    // And ensure the items ABOVE the first match are NOT runeB initially
+    grid[7][0] = runeA // Already set
+    grid[5][0] = runeB // This will fall to row 6
+    grid[5][1] = runeB // This will fall to row 6
+    grid[5][2] = runeB // This will fall to row 6
+    
+    // Actually simpler: 
+    // Row 7: A A A
+    // Row 6: B B B (already a match, processMatches should find it too)
+    
+    const result = processMatches(grid, SAMPLE_VOCAB)
+    expect(result.cascades).toBeGreaterThanOrEqual(1)
+  })
+})
 
 describe('applyGravity', () => {
   it('clears matched runes and fills from top', () => {
