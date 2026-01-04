@@ -116,7 +116,8 @@ function spawnOrbs(
     ;[quadrants[i], quadrants[j]] = [quadrants[j], quadrants[i]]
   }
 
-  const selectedQuadrants = quadrants.slice(0, 3)
+  // Use all 4 quadrants
+  const selectedQuadrants = quadrants
   const orbs: Orb[] = []
 
   // Correct orb
@@ -131,9 +132,9 @@ function spawnOrbs(
     isCorrect: true,
   })
 
-  // Decoy orbs
+  // Decoy orbs (3 decoys)
   const otherWords = vocabulary.filter((v) => v.id !== target.id)
-  for (let i = 1; i < 3; i++) {
+  for (let i = 1; i < 4; i++) {
     const q = selectedQuadrants[i]
     let decoy: VocabularyItem
     if (otherWords.length > 0) {

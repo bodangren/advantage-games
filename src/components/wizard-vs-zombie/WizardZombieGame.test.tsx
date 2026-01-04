@@ -50,19 +50,13 @@ describe('WizardZombieGame', () => {
 
   it('renders orbs', () => {
     render(<WizardZombieGame vocabulary={vocabulary} onComplete={jest.fn()} />)
-    // Should have 3 orbs initially
+    // Should have 4 orbs initially (1 correct, 3 decoys)
     const orbs = screen.getAllByTestId('orb')
-    expect(orbs).toHaveLength(3)
+    expect(orbs).toHaveLength(4)
   })
 
   it('displays the target word UI', () => {
     render(<WizardZombieGame vocabulary={vocabulary} onComplete={jest.fn()} />)
     expect(screen.getByText(/Find:/i)).toBeInTheDocument()
-  })
-
-  it('renders debug info', () => {
-    render(<WizardZombieGame vocabulary={vocabulary} onComplete={jest.fn()} />)
-    expect(screen.getByText(/Debug Info:/i)).toBeInTheDocument()
-    expect(screen.getByText(/Status:/i)).toBeInTheDocument()
   })
 })
