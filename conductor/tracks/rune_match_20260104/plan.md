@@ -5,7 +5,7 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 ## Phase 1: Setup & Infrastructure
 *   [x] Task: Create configuration file `src/lib/runeMatchConfig.ts` with all balance values. a20e9c0
 *   [x] Task: Define `RuneMatchState`, `Monster`, `Rune`, and related types in `src/lib/runeMatch.ts`. d10c86e
-*   [ ] Task: Create `src/app/games/rune-match` route and page structure.
+*   [x] Task: Create `src/app/games/rune-match` route and page structure. 0d293b3
 *   [ ] Task: Create `RuneMatchGame` container component with React-Konva Stage.
 *   [ ] Task: Register game in Main Menu (using placeholder cover image).
 *   [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure'
