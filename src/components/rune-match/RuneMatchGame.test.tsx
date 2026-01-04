@@ -143,8 +143,10 @@ describe('RuneMatchGame', () => {
     const battleButtons = screen.getAllByRole('button', { name: /Battle/i })
     fireEvent.click(battleButtons[3])
 
-    // Verify grid initialization message
-    await waitFor(() => expect(screen.getByText(/Opponent: DRAGON/i)).toBeInTheDocument())
+    // Verify monster HP bar with label
+    await waitFor(() => expect(screen.getByText(/DRAGON:/i)).toBeInTheDocument())
+    // Verify Power Word label
+    expect(screen.getByText(/POWER WORD:/i)).toBeInTheDocument()
 
     // Get translations for first two runes
     const rune1Text = SAMPLE_VOCAB[0].translation
@@ -183,7 +185,7 @@ describe('RuneMatchGame', () => {
     // Select Dragon
     const battleButtons = screen.getAllByRole('button', { name: /Battle/i })
     fireEvent.click(battleButtons[3])
-    await waitFor(() => expect(screen.getByText(/Opponent: DRAGON/i)).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByText(/DRAGON:/i)).toBeInTheDocument())
 
     // We can't easily force a non-match because initializeGrid ensures no matches,
     // and random filling might create one after swap.

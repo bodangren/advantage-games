@@ -18,6 +18,10 @@ Fight monsters PvP
 Choose the correct gate to gather enough dragons to defeat the boss
 ![Dragon Flight Gameplay](public/dragon-flight.png)
 
+### Wizard vs Zombie
+Survive the zombie horde by running to collect magic orbs
+![Wizard vs Zombie Gameplay](public/wizard-vs-zombie.png)
+
 ## 🛠️ Developer Guide
 
 ### Game Interface Standard
@@ -129,17 +133,6 @@ This is a fantastic direction. Turning vocabulary practice into a "Hybridcasual"
     *   Example: The word "BOOK" is written in brown on a wooden table texture.
 *   **The Gameplay:** A voice says: "Find the word Book." The player has to scan the messy background to find the word camouflaged against the textures. When found, they tap it, and the item materializes into their inventory.
 *   **Why it works:** It trains reading speed and spelling recognition (finding the shape of the word) without being a boring quiz.
-
-### 6. The "Health Pickup" (Survival Mode)
-**Your Idea:** Run to get the correct word to heal.
-**My Expansion:** **The "Zombie Tag" Survival**.
-*   **The Mechanic:** The player controls the wizard in a small arena (top-down view). Zombies are slowly shambling toward them. The Wizard’s health bar is critical (flashing red).
-*   **The Action:** Several glowing orbs spawn on the floor.
-    *   Orb A: "Banana" (Correct)
-    *   Orb B: "Apple" (Wrong)
-    *   Orb C: "Grape" (Wrong)
-*   **The Prompt:** "HEAL: Find Banana!"
-*   **The Tension:** The player has to dodge the zombies while running to the "Banana" orb. Touching it creates a shockwave that pushes zombies back and restores health.
 
 ### Bonus Idea: The "Tower Stacking" (High skill)
 This is a very popular casual mechanic (like *Tower Bloxx*).

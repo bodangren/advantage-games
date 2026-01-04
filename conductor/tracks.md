@@ -29,5 +29,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: Wizard vs Zombie (Health Pickup)
+## [x] Track: Wizard vs Zombie (Health Pickup)
 *Link: [./conductor/tracks/wizard_vs_zombie_20260104/](./conductor/tracks/wizard_vs_zombie_20260104/)*
+
+---
+
+## [~] Track: Rune Match (Match-3 RPG Combat)
+*Link: [./conductor/tracks/rune_match_20260104/](./conductor/tracks/rune_match_20260104/)*
