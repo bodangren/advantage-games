@@ -67,7 +67,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   return (
     <div 
         ref={containerRef} 
-        className="relative aspect-video w-full overflow-hidden rounded-2xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none"
+        className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto"
     >
         {/* HUD Overlay */}
         <div className="absolute top-4 left-4 z-10 text-white font-bold text-lg pointer-events-none">
@@ -94,7 +94,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                 <Rect 
                     width={GAME_WIDTH} 
                     height={GAME_HEIGHT} 
-                    fill="#1e293b" // slate-800
+                    fill="#334155" // slate-700 (Lighter than container for visibility)
                 />
 
                 <Group>

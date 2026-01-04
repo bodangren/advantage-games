@@ -1,10 +1,15 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect } from 'react'
-import { WizardZombieGame } from '@/components/wizard-vs-zombie/WizardZombieGame'
 import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
 import { useGameStore } from '@/store/useGameStore'
+
+const WizardZombieGame = dynamic(
+  () => import('@/components/wizard-vs-zombie/WizardZombieGame').then((mod) => mod.WizardZombieGame),
+  { ssr: false }
+)
 
 export default function WizardZombiePage() {
   const vocabulary = useGameStore((state) => state.vocabulary)
