@@ -102,12 +102,14 @@ export const createWizardZombieState = (
 export type InputState = {
   dx: number // -1, 0, 1
   dy: number // -1, 0, 1
+  cast?: boolean
 }
 
 export const advanceWizardZombieTime = (
   state: WizardZombieState,
   dt: number,
-  input: InputState = { dx: 0, dy: 0 }
+  input: InputState = { dx: 0, dy: 0, cast: false },
+  vocabulary: VocabularyItem[] = []
 ): WizardZombieState => {
   // Normalize vector if diagonal to prevent faster speed
   let moveX = input.dx
@@ -119,10 +121,6 @@ export const advanceWizardZombieTime = (
   }
 
   const speed = state.player.speed
-  // Scale speed by dt? Usually speed is px/frame or px/sec. 
-  // Let's assume speed is px/frame (approx 16ms). If dt is 50ms, we scale.
-  // Base frame is 16.6ms. 
-  // speedFactor = dt / 16.6
   const speedFactor = dt / 16.6
   
   let newX = state.player.x + moveX * speed * speedFactor
@@ -132,22 +130,55 @@ export const advanceWizardZombieTime = (
   newX = Math.max(PLAYER_RADIUS, Math.min(GAME_WIDTH - PLAYER_RADIUS, newX))
   newY = Math.max(PLAYER_RADIUS, Math.min(GAME_HEIGHT - PLAYER_RADIUS, newY))
 
+  let nextPlayer = {
+    ...state.player,
+    x: newX,
+    y: newY,
+  }
+
+  let nextZombies = [...state.zombies]
+
+  // Shockwave Logic
+  if (input.cast && state.player.shockwaveCharges > 0) {
+      nextPlayer.shockwaveCharges -= 1
+      const SHOCKWAVE_RADIUS = 250
+      const PUSH_FORCE = 300
+
+      nextZombies = nextZombies.map(z => {
+          const dx = z.x - nextPlayer.x
+          const dy = z.y - nextPlayer.y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+          
+          if (dist < SHOCKWAVE_RADIUS) {
+              // Push away
+              const angle = Math.atan2(dy, dx)
+              return {
+                  ...z,
+                  x: z.x + Math.cos(angle) * PUSH_FORCE,
+                  y: z.y + Math.sin(angle) * PUSH_FORCE
+              }
+          }
+          return z
+      })
+  }
+
   const nextState = {
     ...state,
     gameTime: state.gameTime + dt,
-    player: {
-      ...state.player,
-      x: newX,
-      y: newY,
-    }
+    player: nextPlayer,
+    zombies: nextZombies
   }
 
   const withZombies = updateZombies(nextState, dt, speedFactor)
-  return checkCollisions(withZombies, dt)
+  return checkCollisions(withZombies, dt, vocabulary)
 }
 
-function checkCollisions(state: WizardZombieState, dt: number): WizardZombieState {
-  let { player, zombies, status } = state
+function checkCollisions(
+    state: WizardZombieState, 
+    dt: number, 
+    vocabulary: VocabularyItem[]
+): WizardZombieState {
+  let { player, zombies, orbs, status, score, targetWord } = state
 
   // Cooldowns
   if (player.invulnerabilityTime > 0) {
@@ -155,6 +186,43 @@ function checkCollisions(state: WizardZombieState, dt: number): WizardZombieStat
         ...player,
         invulnerabilityTime: Math.max(0, player.invulnerabilityTime - dt)
     }
+  }
+
+  // Orb Collisions
+  let collectedOrb: Orb | null = null
+  for (const orb of orbs) {
+      const dx = player.x - orb.x
+      const dy = player.y - orb.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      
+      if (dist < player.radius + orb.radius) {
+          collectedOrb = orb
+          break
+      }
+  }
+
+  if (collectedOrb) {
+      if (collectedOrb.isCorrect) {
+          player = {
+              ...player,
+              hp: Math.min(player.maxHp, player.hp + 10),
+              shockwaveCharges: Math.min(player.maxShockwaveCharges, player.shockwaveCharges + 1)
+          }
+          score += 10
+          
+          // Pick new target word
+          if (vocabulary.length > 0) {
+              const nextTarget = vocabulary[Math.floor(Math.random() * vocabulary.length)]
+              targetWord = nextTarget.term
+              orbs = spawnOrbs(nextTarget, vocabulary, Math.random)
+          }
+      } else {
+          // Incorrect: Just reshuffle same word
+          if (vocabulary.length > 0) {
+              const currentTarget = vocabulary.find(v => v.term === targetWord) || vocabulary[0]
+              orbs = spawnOrbs(currentTarget, vocabulary, Math.random)
+          }
+      }
   }
 
   // Zombie Collisions
@@ -174,7 +242,7 @@ function checkCollisions(state: WizardZombieState, dt: number): WizardZombieStat
               if (player.hp <= 0) {
                   status = 'gameover'
               }
-              break // One hit per frame max to avoid instant death from overlaps
+              break 
           }
       }
   }
@@ -182,7 +250,10 @@ function checkCollisions(state: WizardZombieState, dt: number): WizardZombieStat
   return {
       ...state,
       player,
-      status
+      status,
+      orbs,
+      score,
+      targetWord
   }
 }
 
@@ -272,7 +343,7 @@ function spawnOrbs(
   // Correct orb
   const qCorrect = selectedQuadrants[0]
   orbs.push({
-    id: `orb-correct-${Date.now()}`,
+    id: `orb-correct-${Math.random()}`,
     x: qCorrect.minX + rng() * (qCorrect.maxX - qCorrect.minX),
     y: qCorrect.minY + rng() * (qCorrect.maxY - qCorrect.minY),
     radius: ORB_RADIUS,
@@ -282,23 +353,24 @@ function spawnOrbs(
   })
 
   // Decoy orbs (3 decoys)
-  const otherWords = vocabulary.filter((v) => v.id !== target.id)
+  const otherWords = vocabulary.filter((v) => v.term !== target.term)
   for (let i = 1; i < 4; i++) {
     const q = selectedQuadrants[i]
     let decoy: VocabularyItem
     if (otherWords.length > 0) {
       const dIndex = Math.floor(rng() * otherWords.length)
+      // Remove to ensure uniqueness among decoys
       decoy = otherWords.splice(dIndex, 1)[0]
     } else {
       decoy = target
     }
 
     orbs.push({
-      id: `orb-decoy-${i}-${Date.now()}`,
+      id: `orb-decoy-${i}-${Math.random()}`,
       x: q.minX + rng() * (q.maxX - q.minX),
       y: q.minY + rng() * (q.maxY - q.minY),
       radius: ORB_RADIUS,
-      word: target.term,
+      word: decoy.term,
       translation: decoy.translation,
       isCorrect: false,
     })

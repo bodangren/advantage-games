@@ -8,6 +8,7 @@ export type InputVector = {
 export function useDirectionalInput() {
   const [keys, setKeys] = useState<Set<string>>(new Set())
   const [virtualInput, setVirtualInput] = useState<InputVector>({ dx: 0, dy: 0 })
+  const [castTriggered, setCastTriggered] = useState(false)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
     setKeys((prev) => {
@@ -15,6 +16,9 @@ export function useDirectionalInput() {
       next.add(e.code)
       return next
     })
+    if (e.code === 'Space' || e.code === 'Enter') {
+        setCastTriggered(true)
+    }
   }, [])
 
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
@@ -34,6 +38,13 @@ export function useDirectionalInput() {
     }
   }, [handleKeyDown, handleKeyUp])
 
+  // Reset castTriggered after it's been processed?
+  // In a React state-based loop, it's tricky.
+  // Better: return it and reset it in an effect or callback.
+  const consumeCast = useCallback(() => {
+      setCastTriggered(false)
+  }, [])
+
   // Calculate final input vector from keys + virtual
   let dx = 0
   let dy = 0
@@ -43,14 +54,16 @@ export function useDirectionalInput() {
   if (keys.has('ArrowLeft') || keys.has('KeyA')) dx -= 1
   if (keys.has('ArrowRight') || keys.has('KeyD')) dx += 1
 
-  // Combine with virtual input (D-Pad overrides keyboard if active)
+  // Combine with virtual input
   if (virtualInput.dx !== 0 || virtualInput.dy !== 0) {
       dx = virtualInput.dx
       dy = virtualInput.dy
   }
 
   return { 
-      input: { dx, dy },
-      setVirtualInput 
+      input: { dx, dy, cast: castTriggered },
+      setVirtualInput,
+      triggerCast: () => setCastTriggered(true),
+      consumeCast
   }
 }

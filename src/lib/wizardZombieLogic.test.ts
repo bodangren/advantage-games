@@ -5,7 +5,7 @@ describe('advanceWizardZombieTime', () => {
 
   it('increases game time', () => {
     const initialState = createWizardZombieState(vocabulary)
-    const nextState = advanceWizardZombieTime(initialState, 100)
+    const nextState = advanceWizardZombieTime(initialState, 100, { dx: 0, dy: 0 }, vocabulary)
     
     expect(nextState.gameTime).toBe(initialState.gameTime + 100)
   })
@@ -13,7 +13,7 @@ describe('advanceWizardZombieTime', () => {
   it('moves player based on input', () => {
     const initialState = createWizardZombieState(vocabulary)
     // Speed is 3. dt=16.6 (1 frame). Expect move ~3px.
-    const nextState = advanceWizardZombieTime(initialState, 16.6, { dx: 1, dy: 0 })
+    const nextState = advanceWizardZombieTime(initialState, 16.6, { dx: 1, dy: 0 }, vocabulary)
     
     expect(nextState.player.x).toBeGreaterThan(initialState.player.x)
     expect(nextState.player.y).toBe(initialState.player.y)
@@ -21,7 +21,7 @@ describe('advanceWizardZombieTime', () => {
 
   it('normalizes diagonal movement', () => {
     const initialState = createWizardZombieState(vocabulary)
-    const nextState = advanceWizardZombieTime(initialState, 16.6, { dx: 1, dy: 1 })
+    const nextState = advanceWizardZombieTime(initialState, 16.6, { dx: 1, dy: 1 }, vocabulary)
     
     const deltaX = nextState.player.x - initialState.player.x
     const deltaY = nextState.player.y - initialState.player.y
@@ -37,7 +37,7 @@ describe('advanceWizardZombieTime', () => {
     initialState.player.x = 0
     
     // Try to move left (out of bounds)
-    const nextState = advanceWizardZombieTime(initialState, 16.6, { dx: -1, dy: 0 })
+    const nextState = advanceWizardZombieTime(initialState, 16.6, { dx: -1, dy: 0 }, vocabulary)
     
     // Should be clamped to radius
     expect(nextState.player.x).toBe(20) // PLAYER_RADIUS
@@ -47,7 +47,7 @@ describe('advanceWizardZombieTime', () => {
     let state = createWizardZombieState(vocabulary)
     // Force spawn timer to threshold (assuming 1s for test simplicity, check logic constant)
     // We'll advance time by 2000ms to ensure a spawn happens
-    state = advanceWizardZombieTime(state, 2000)
+    state = advanceWizardZombieTime(state, 2000, { dx: 0, dy: 0 }, vocabulary)
     
     expect(state.zombies.length).toBeGreaterThan(0)
   })
@@ -65,7 +65,7 @@ describe('advanceWizardZombieTime', () => {
     })
     
     // Player is at center (400, 300)
-    const nextState = advanceWizardZombieTime(state, 16.6)
+    const nextState = advanceWizardZombieTime(state, 16.6, { dx: 0, dy: 0 }, vocabulary)
     const zombie = nextState.zombies[0]
     
     // Zombie should move positive towards player
@@ -87,7 +87,7 @@ describe('advanceWizardZombieTime', () => {
       damage: 10
     })
 
-    const nextState = advanceWizardZombieTime(state, 16.6)
+    const nextState = advanceWizardZombieTime(state, 16.6, { dx: 0, dy: 0 }, vocabulary)
     
     // Should take damage
     expect(nextState.player.hp).toBe(state.player.hp - 10)
@@ -109,7 +109,7 @@ describe('advanceWizardZombieTime', () => {
       damage: 10
     })
 
-    const nextState = advanceWizardZombieTime(state, 16.6)
+    const nextState = advanceWizardZombieTime(state, 16.6, { dx: 0, dy: 0 }, vocabulary)
     
     expect(nextState.player.hp).toBe(state.player.hp)
     // Invulnerability should decrease
@@ -128,9 +128,70 @@ describe('advanceWizardZombieTime', () => {
       damage: 10
     })
 
-    const nextState = advanceWizardZombieTime(state, 16.6)
+    const nextState = advanceWizardZombieTime(state, 16.6, { dx: 0, dy: 0 }, vocabulary)
     
     expect(nextState.player.hp).toBe(0)
     expect(nextState.status).toBe('gameover')
+  })
+
+  it('collecting a correct orb heals and reshuffles', () => {
+    let state = createWizardZombieState(vocabulary)
+    state.player.hp = 50
+    const correctOrb = state.orbs.find(o => o.isCorrect)!
+    
+    // Move player to orb
+    state.player.x = correctOrb.x
+    state.player.y = correctOrb.y
+    
+    const nextState = advanceWizardZombieTime(state, 16.6, { dx: 0, dy: 0 }, vocabulary)
+    
+    expect(nextState.player.hp).toBe(60) // 50 + 10
+    expect(nextState.score).toBeGreaterThan(0)
+    expect(nextState.orbs[0].id).not.toBe(state.orbs[0].id)
+  })
+
+  it('collecting an incorrect orb only reshuffles', () => {
+    let state = createWizardZombieState(vocabulary)
+    state.player.hp = 50
+    const decoyOrb = state.orbs.find(o => !o.isCorrect)!
+    
+    state.player.x = decoyOrb.x
+    state.player.y = decoyOrb.y
+    
+    const nextState = advanceWizardZombieTime(state, 16.6, { dx: 0, dy: 0 }, vocabulary)
+    
+    expect(nextState.player.hp).toBe(50) // No healing
+    expect(nextState.orbs[0].id).not.toBe(state.orbs[0].id) // Reshuffled
+  })
+
+  it('gains shockwave charge on correct orb', () => {
+    let state = createWizardZombieState(vocabulary)
+    state.player.shockwaveCharges = 0
+    const correctOrb = state.orbs.find(o => o.isCorrect)!
+    state.player.x = correctOrb.x
+    state.player.y = correctOrb.y
+    
+    const nextState = advanceWizardZombieTime(state, 16.6, { dx: 0, dy: 0, cast: false }, vocabulary)
+    
+    expect(nextState.player.shockwaveCharges).toBe(1)
+  })
+
+  it('pushes zombies back when casting shockwave', () => {
+    let state = createWizardZombieState(vocabulary)
+    state.player.shockwaveCharges = 1
+    // Add zombie close to player
+    state.zombies.push({
+      id: 'z1',
+      x: state.player.x + 50,
+      y: state.player.y,
+      radius: 15,
+      speed: 2,
+      damage: 10
+    })
+
+    const nextState = advanceWizardZombieTime(state, 16.6, { dx: 0, dy: 0, cast: true }, vocabulary)
+    
+    expect(nextState.player.shockwaveCharges).toBe(0)
+    expect(nextState.zombies[0].x).toBeGreaterThan(state.zombies[0].x) // Pushed right
   })
 })

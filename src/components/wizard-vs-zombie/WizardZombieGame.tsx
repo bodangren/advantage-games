@@ -23,7 +23,7 @@ interface WizardZombieGameProps {
 
 export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGameProps) {
   const { playSound } = useSound() 
-  const { input, setVirtualInput } = useDirectionalInput()
+  const { input, setVirtualInput, triggerCast, consumeCast } = useDirectionalInput()
   const [gameState, setGameState] = useState<WizardZombieState | null>(null)
   
   const containerRef = useRef<HTMLDivElement>(null)
@@ -40,8 +40,14 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   // Game Loop
   useInterval(() => {
     if (gameState && gameState.status === 'playing') {
-        const nextState = advanceWizardZombieTime(gameState, 50, input)
+        const nextState = advanceWizardZombieTime(gameState, 50, input, vocabulary)
         setGameState(nextState)
+
+        // Reset cast input after processing
+        if (input.cast) {
+            consumeCast()
+            playSound('success') // Placeholder sound for cast
+        }
 
         if (dimensions.width > 0 && dimensions.height > 0) {
              const scaleY = dimensions.height / GAME_HEIGHT
@@ -111,8 +117,15 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
         ) : (
             <>
                 {/* HUD Overlay */}
-                <div className="absolute top-4 left-4 z-10 text-white font-bold text-lg pointer-events-none">
-                    HP: {Math.ceil(gameState.player.hp)}
+                <div className="absolute top-4 left-4 z-10 flex flex-col gap-1 text-white font-bold text-lg pointer-events-none">
+                    <div>HP: {Math.ceil(gameState.player.hp)}</div>
+                    <div className="text-blue-400 text-sm">
+                        SHOCKWAVE: {Array(gameState.player.maxShockwaveCharges).fill(0).map((_, i) => (
+                            <span key={i} className={i < gameState.player.shockwaveCharges ? "opacity-100" : "opacity-30"}>
+                                ⚡
+                            </span>
+                        ))}
+                    </div>
                 </div>
                 <div className="absolute top-4 right-4 z-10 text-white font-bold text-lg pointer-events-none">
                     Score: {gameState.score}
@@ -154,7 +167,18 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                 ))}
 
                 {/* Virtual Controls */}
-                <div className="absolute bottom-8 right-8 z-20">
+                <div className="absolute bottom-8 right-8 z-20 flex flex-row items-end gap-6">
+                    <button 
+                        onClick={() => triggerCast()}
+                        disabled={gameState.player.shockwaveCharges === 0}
+                        className={`w-20 h-20 rounded-full border-2 flex items-center justify-center font-bold transition-all active:scale-95 ${
+                            gameState.player.shockwaveCharges > 0 
+                            ? 'bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]' 
+                            : 'bg-slate-800 border-slate-700 text-slate-500 opacity-50'
+                        }`}
+                    >
+                        CAST
+                    </button>
                     <VirtualDPad onInput={setVirtualInput} />
                 </div>
 
