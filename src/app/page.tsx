@@ -30,7 +30,7 @@ export default function MainMenu() {
                   isPlayable ? 'hover:border-primary/50' : 'border-dashed opacity-80'
                 )}
               >
-                <div className="relative w-full overflow-hidden rounded-t-xl">
+                <div className="relative w-full overflow-hidden rounded-t-xl bg-slate-900">
                   <div className="relative h-44 w-full">
                     <Image
                       src={game.cover}
@@ -38,7 +38,7 @@ export default function MainMenu() {
                       fill
                       sizes="(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"
                       className={cn(
-                        'object-cover transition-transform duration-300',
+                        'object-contain transition-transform duration-300',
                         isPlayable && 'group-hover:scale-105'
                       )}
                     />

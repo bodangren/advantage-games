@@ -43,6 +43,14 @@ export const gameCards: GameCard[] = [
     status: 'playable',
   },
   {
+    id: 'rune-match',
+    title: 'Rune Match',
+    description: 'Match vocabulary runes to defeat monsters in this RPG puzzle battle.',
+    cover: withBasePath('/games/cover/word-collapse-cover.png'),
+    href: '/games/rune-match',
+    status: 'playable',
+  },
+  {
     id: 'treasure-chest-rush',
     title: 'Treasure Chest Rush',
     description: 'Stop the spinning locks on the correct translations.',
