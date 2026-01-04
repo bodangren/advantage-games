@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
-import { createRuneMatchState, initializeGrid, swapRunes, type RuneMatchState, type GridPosition } from '@/lib/runeMatch'
+import { createRuneMatchState, initializeGrid, swapRunes, findMatches, processMatches, type RuneMatchState, type GridPosition } from '@/lib/runeMatch'
 import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
@@ -173,12 +173,24 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
         (Math.abs(selected.col - col) === 1 && selected.row === row)
 
       if (isAdjacent) {
-        // Swap
-        const newGrid = swapRunes(prev.grid, selected, { row, col })
-        return { 
-          ...prev, 
-          grid: newGrid, 
-          selectedCell: null 
+        // Attempt Swap
+        const gridAfterSwap = swapRunes(prev.grid, selected, { row, col })
+        const matches = findMatches(gridAfterSwap)
+
+        if (matches.length > 0) {
+          // Valid swap - process matches and cascades
+          const result = processMatches(gridAfterSwap, prev.vocabulary, { rng: prev.rng })
+          return { 
+            ...prev, 
+            grid: result.grid, 
+            selectedCell: null 
+          }
+        } else {
+          // Invalid swap - revert
+          return { 
+            ...prev, 
+            selectedCell: null 
+          }
         }
       } else {
         // Change selection
