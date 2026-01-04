@@ -6,7 +6,7 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 *   [x] Task: Define `WizardZombieState` and types in `src/lib/wizardZombie.ts`. 48e7bad
 *   [x] Task: Create `src/app/games/wizard-vs-zombie` route and page structure. d964e2c
 *   [x] Task: Create `WizardZombieGame` container component using `react-konva`. 80a4d30
-*   [ ] Task: Register game in Main Menu (using a temporary or placeholder cover image).
+*   [x] Task: Register game in Main Menu (using a temporary or placeholder cover image). e05db79
 *   [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure'
 
 ## Phase 2: Core Gameplay Loop (Canvas & Movement)
@@ -14,11 +14,13 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 *   [ ] Task: Implement Player Movement logic (Arrows/WASD + **Virtual D-Pad support**).
 *   [ ] Task: Implement Zombie Spawning logic (Spawn from **4 Gates**: N, S, E, W).
 *   [ ] Task: Implement Canvas Rendering for Player and Zombies.
+*   [ ] Task: Implement Camera Follow Logic (Center on Player if World > Viewport).
 *   [ ] Task: Implement Collision Detection (Circle/Box) in the game loop.
 *   [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Gameplay Loop'
 
 ## Phase 3: Vocabulary Mechanics (Orbs & Interaction)
 *   [ ] Task: Implement Orb Spawning and Rendering in Canvas.
+*   [ ] Task: Implement Off-screen Indicators (Arrow + Label) for distant Orbs.
 *   [ ] Task: Implement Orb Collection Logic.
 *   [ ] Task: Implement Shockwave Logic.
 *   [ ] Task: Conductor - User Manual Verification 'Phase 3: Vocabulary Mechanics'
@@ -26,7 +28,7 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 ## Phase 4: Assets & Polish
 *   [ ] Task: Integrate final "Wizard" and "Zombie" sprite sheets with animations.
 *   [ ] Task: Integrate Background and Orb assets.
-*   [ ] Task: Implement HUD (Health, Score) overlay (can be DOM on top of Canvas).
+*   [ ] Task: Implement Smart HUD (Health, Score) overlay (Safe Zones, non-obscuring).
 *   [ ] Task: Implement Game Over screen and XP calculation.
 *   [ ] Task: Final Tuning (Speed, Hitboxes, Spawn Rates).
 *   [ ] Task: Conductor - User Manual Verification 'Phase 4: Assets & Polish'
