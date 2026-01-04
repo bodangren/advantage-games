@@ -10,8 +10,8 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 *   [x] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure' [checkpoint: 855a215]
 
 ## Phase 2: Core Gameplay Loop (Canvas & Movement)
-*   [ ] Task: Implement Game Loop using `useInterval` or `requestAnimationFrame` calling `advanceWizardZombieTime`.
-*   [ ] Task: Implement Player Movement logic (Arrows/WASD + **Virtual D-Pad support**).
+*   [x] Task: Implement Game Loop using `useInterval` or `requestAnimationFrame` calling `advanceWizardZombieTime`. 9217284
+*   [~] Task: Implement Player Movement logic (Arrows/WASD + **Virtual D-Pad support**).
 *   [ ] Task: Implement Zombie Spawning logic (Spawn from **4 Gates**: N, S, E, W).
 *   [ ] Task: Implement Canvas Rendering for Player and Zombies.
 *   [ ] Task: Implement Camera Follow Logic (Center on Player if World > Viewport).
