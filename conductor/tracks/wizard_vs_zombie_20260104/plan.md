@@ -26,12 +26,12 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 *   [x] Task: Conductor - User Manual Verification 'Phase 3: Vocabulary Mechanics' [checkpoint: 315c281]
 
 ## Phase 4: Assets & Polish
-*   [ ] Task: Integrate final "Wizard" and "Zombie" sprite sheets with animations.
-*   [ ] Task: Integrate Background and Orb assets.
-*   [ ] Task: Implement Smart HUD (Health, Score) overlay (Safe Zones, non-obscuring).
-*   [ ] Task: Implement Game Over screen and XP calculation.
-*   [ ] Task: Final Tuning (Speed, Hitboxes, Spawn Rates).
-*   [ ] Task: Conductor - User Manual Verification 'Phase 4: Assets & Polish'
+*   [x] Task: Integrate final "Wizard" and "Zombie" sprite sheets with animations. 550e242
+*   [x] Task: Integrate Background and Orb assets. 550e242
+*   [x] Task: Implement Smart HUD (Health, Score) overlay (Safe Zones, non-obscuring). 550e242
+*   [x] Task: Implement Game Over screen and XP calculation. 550e242
+*   [x] Task: Final Tuning (Speed, Hitboxes, Spawn Rates). 550e242
+*   [x] Task: Conductor - User Manual Verification 'Phase 4: Assets & Polish' [checkpoint: 550e242]
 
 ---
 
