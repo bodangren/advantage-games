@@ -142,7 +142,48 @@ export const advanceWizardZombieTime = (
     }
   }
 
-  return updateZombies(nextState, dt, speedFactor)
+  const withZombies = updateZombies(nextState, dt, speedFactor)
+  return checkCollisions(withZombies, dt)
+}
+
+function checkCollisions(state: WizardZombieState, dt: number): WizardZombieState {
+  let { player, zombies, status } = state
+
+  // Cooldowns
+  if (player.invulnerabilityTime > 0) {
+    player = {
+        ...player,
+        invulnerabilityTime: Math.max(0, player.invulnerabilityTime - dt)
+    }
+  }
+
+  // Zombie Collisions
+  if (status === 'playing' && player.invulnerabilityTime === 0) {
+      for (const zombie of zombies) {
+          const dx = player.x - zombie.x
+          const dy = player.y - zombie.y
+          const dist = Math.sqrt(dx * dx + dy * dy)
+          
+          if (dist < player.radius + zombie.radius) {
+              player = {
+                  ...player,
+                  hp: Math.max(0, player.hp - zombie.damage),
+                  invulnerabilityTime: INVULNERABILITY_DURATION
+              }
+              
+              if (player.hp <= 0) {
+                  status = 'gameover'
+              }
+              break // One hit per frame max to avoid instant death from overlaps
+          }
+      }
+  }
+
+  return {
+      ...state,
+      player,
+      status
+  }
 }
 
 function updateZombies(state: WizardZombieState, dt: number, speedFactor: number): WizardZombieState {

@@ -72,4 +72,65 @@ describe('advanceWizardZombieTime', () => {
     expect(zombie.x).toBeGreaterThan(0)
     expect(zombie.y).toBeGreaterThan(0)
   })
+
+  it('player takes damage from zombie collision', () => {
+    let state = createWizardZombieState(vocabulary)
+    // Place player and zombie overlapping
+    state.player.x = 100
+    state.player.y = 100
+    state.zombies.push({
+      id: 'z1',
+      x: 100,
+      y: 100,
+      radius: 15,
+      speed: 2,
+      damage: 10
+    })
+
+    const nextState = advanceWizardZombieTime(state, 16.6)
+    
+    // Should take damage
+    expect(nextState.player.hp).toBe(state.player.hp - 10)
+    // Should be invulnerable
+    expect(nextState.player.invulnerabilityTime).toBeGreaterThan(0)
+  })
+
+  it('player does not take damage while invulnerable', () => {
+    let state = createWizardZombieState(vocabulary)
+    state.player.x = 100
+    state.player.y = 100
+    state.player.invulnerabilityTime = 500
+    state.zombies.push({
+      id: 'z1',
+      x: 100,
+      y: 100,
+      radius: 15,
+      speed: 2,
+      damage: 10
+    })
+
+    const nextState = advanceWizardZombieTime(state, 16.6)
+    
+    expect(nextState.player.hp).toBe(state.player.hp)
+    // Invulnerability should decrease
+    expect(nextState.player.invulnerabilityTime).toBeLessThan(500)
+  })
+
+  it('triggers gameover when hp reaches 0', () => {
+    let state = createWizardZombieState(vocabulary)
+    state.player.hp = 10
+    state.zombies.push({
+      id: 'z1',
+      x: state.player.x, // Direct hit
+      y: state.player.y,
+      radius: 15,
+      speed: 2,
+      damage: 10
+    })
+
+    const nextState = advanceWizardZombieTime(state, 16.6)
+    
+    expect(nextState.player.hp).toBe(0)
+    expect(nextState.status).toBe('gameover')
+  })
 })
