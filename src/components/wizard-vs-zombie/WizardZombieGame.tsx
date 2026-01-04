@@ -69,6 +69,15 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
         ref={containerRef} 
         className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto"
     >
+        {/* Debug Overlay */}
+        <div className="absolute top-16 left-4 z-20 font-mono text-xs text-green-400 pointer-events-none bg-black/80 p-2 rounded">
+            <div>Debug Info:</div>
+            <div>Container: {dimensions.width}x{dimensions.height}</div>
+            <div>Scale: {dimensions.scale.toFixed(3)}</div>
+            <div>Player: ({Math.round(gameState.player.x)}, {Math.round(gameState.player.y)})</div>
+            <div>Orbs: {gameState.orbs.length}</div>
+        </div>
+
         {/* HUD Overlay */}
         <div className="absolute top-4 left-4 z-10 text-white font-bold text-lg pointer-events-none">
             HP: {Math.ceil(gameState.player.hp)}
@@ -94,7 +103,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                 <Rect 
                     width={GAME_WIDTH} 
                     height={GAME_HEIGHT} 
-                    fill="#334155" // slate-700 (Lighter than container for visibility)
+                    fill="#1a2e1a" // Dark Green for Debugging Contrast
                 />
 
                 <Group>

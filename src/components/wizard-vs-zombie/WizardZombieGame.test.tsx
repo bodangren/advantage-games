@@ -50,11 +50,12 @@ describe('WizardZombieGame', () => {
 
   it('displays the target word UI', () => {
     render(<WizardZombieGame vocabulary={vocabulary} onComplete={jest.fn()} />)
-    // The target word should be visible in the UI (outside canvas usually, or inside as text)
-    // Based on plan "Implement HUD... overlay (can be DOM on top of Canvas)"
-    // For Phase 1, we might just put it in a div.
-    // The mocked random seed isn't set, so we can't predict the exact word, but we can check if *one* of the words is present?
-    // Or just check that the container exists.
     expect(screen.getByText(/Find:/i)).toBeInTheDocument()
+  })
+
+  it('renders debug info', () => {
+    render(<WizardZombieGame vocabulary={vocabulary} onComplete={jest.fn()} />)
+    expect(screen.getByText(/Debug Info:/i)).toBeInTheDocument()
+    expect(screen.getByText(/Player:/i)).toBeInTheDocument()
   })
 })
