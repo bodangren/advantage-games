@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
-import { createRuneMatchState, initializeGrid, swapRunes, findMatches, processMatches, applyMatchResult, type RuneMatchState, type GridPosition } from '@/lib/runeMatch'
+import { createRuneMatchState, initializeGrid, swapRunes, findMatches, processMatches, applyMatchResult, advanceTime, type RuneMatchState, type GridPosition } from '@/lib/runeMatch'
 import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
@@ -351,156 +351,190 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
 
       <Stage width={dimensions.width} height={dimensions.height}>
         <Layer>
-          {/* Background */}
-          <KonvaImage 
-            image={assets.background}
-            width={dimensions.width}
-            height={dimensions.height}
-          />
+          <Group
+            x={gameState.shakeIntensity * (Math.random() * 10 - 5)}
+            y={gameState.shakeIntensity * (Math.random() * 10 - 5)}
+          >
+            {/* Background */}
+            <KonvaImage 
+              image={assets.background}
+              width={dimensions.width}
+              height={dimensions.height}
+            />
 
-          {/* Playing State HUD & Grid */}
-          {gameState.status === 'playing' && (
-            <Group>
-              {/* HUD Area */}
-              <Rect 
-                x={0} 
-                y={0} 
-                width={dimensions.width} 
-                height={layout.monsterAreaHeight} 
-                fill="rgba(0, 0, 0, 0.2)"
-              />
-              
-              {/* Monster HP */}
-              {gameState.monster && (
-                <Group>
-                  {renderHealthBar(
-                    dimensions.width / 2 - 150,
-                    layout.monsterAreaHeight * 0.2,
-                    300,
-                    gameState.monster.hp,
-                    gameState.monster.maxHp,
-                    "#ef4444",
-                    gameState.monster.type.toUpperCase()
-                  )}
-                  {/* Attack Timer Bar */}
-                  <Rect
-                    x={dimensions.width / 2 - 150}
-                    y={layout.monsterAreaHeight * 0.2 + 25}
-                    width={300 * (1 - gameState.attackTimer / RUNE_MATCH_CONFIG.combat.attackIntervalMs)}
-                    height={4}
-                    fill="#f87171"
-                    opacity={0.6}
-                  />
-                </Group>
-              )}
-
-              {/* Player HP */}
-              {renderHealthBar(
-                dimensions.width / 2 - 150,
-                layout.monsterAreaHeight * 0.7,
-                300,
-                gameState.player.hp,
-                gameState.player.maxHp,
-                "#22c55e",
-                "PLAYER"
-              )}
-
-              {/* Shield Indicator */}
-              {gameState.player.hasShield && (
-                <Text
-                  text="🛡️ SHIELD ACTIVE"
-                  x={dimensions.width / 2 + 160}
-                  y={layout.monsterAreaHeight * 0.7}
-                  fontSize={14}
-                  fill="#60a5fa"
-                  fontStyle="bold"
+            {/* Playing State HUD & Grid */}
+            {gameState.status === 'playing' && (
+              <Group>
+                {/* HUD Area */}
+                <Rect 
+                  x={0} 
+                  y={0} 
+                  width={dimensions.width} 
+                  height={layout.monsterAreaHeight} 
+                  fill="rgba(0, 0, 0, 0.2)"
                 />
-              )}
+                
+                {/* Monster HP */}
+                {gameState.monster && (
+                  <Group>
+                    {renderHealthBar(
+                      dimensions.width / 2 - 150,
+                      layout.monsterAreaHeight * 0.2,
+                      300,
+                      gameState.monster.hp,
+                      gameState.monster.maxHp,
+                      "#ef4444",
+                      gameState.monster.type.toUpperCase()
+                    )}
+                    {/* Attack Timer Bar */}
+                    <Rect
+                      x={dimensions.width / 2 - 150}
+                      y={layout.monsterAreaHeight * 0.2 + 25}
+                      width={300 * (1 - gameState.attackTimer / RUNE_MATCH_CONFIG.combat.attackIntervalMs)}
+                      height={4}
+                      fill="#f87171"
+                      opacity={0.6}
+                    />
+                  </Group>
+                )}
 
-              {/* Grid Background */}
-              <Rect
-                x={layout.gridX - 8}
-                y={layout.gridY - 8}
-                width={layout.gridWidth + 16}
-                height={layout.gridHeight + 16}
-                fill="rgba(0, 0, 0, 0.4)"
-                cornerRadius={12}
-                stroke="rgba(255, 255, 255, 0.1)"
-                strokeWidth={2}
-              />
+                              {/* Player HP */}
+                              {renderHealthBar(
+                                dimensions.width / 2 - 150,
+                                layout.monsterAreaHeight * 0.7,
+                                300,
+                                gameState.player.hp,
+                                gameState.player.maxHp,
+                                "#22c55e",
+                                "PLAYER"
+                              )}
+                
+                              {/* Power Word Display */}
+                              <Text
+                                text={`POWER WORD: ${gameState.powerWord?.toUpperCase()}`}
+                                x={dimensions.width / 2}
+                                y={layout.monsterAreaHeight * 0.45}
+                                offsetX={150}
+                                width={300}
+                                fontSize={18}
+                                fill="#facc15" // Yellow for power word
+                                fontStyle="bold"
+                                align="center"
+                                fontFamily="Arial"
+                              />
+                
+                              {/* Shield Indicator */}                {gameState.player.hasShield && (
+                  <Text
+                    text="🛡️ SHIELD ACTIVE"
+                    x={dimensions.width / 2 + 160}
+                    y={layout.monsterAreaHeight * 0.7}
+                    fontSize={14}
+                    fill="#60a5fa"
+                    fontStyle="bold"
+                  />
+                )}
 
-              {/* Runes */}
-              {gameState.grid.map((row, r) => 
-                row.map((rune, c) => {
-                  const isSelected = gameState.selectedCell?.row === r && gameState.selectedCell?.col === c
-                  const runeSize = layout.cellSize - 4
-                  
-                  const spriteSheet = 
-                    rune.type === 'vocabulary' ? assets.runes.base :
-                    rune.type === 'heal' ? assets.runes.heal :
-                    assets.runes.shield
-                  
-                  const fw = spriteSheet.width / 3
-                  const fh = spriteSheet.height / 2
-                  const crop = {
-                    x: animFrame * fw,
-                    y: 0,
-                    width: fw,
-                    height: fh
-                  }
+                {/* Grid Background */}
+                <Rect
+                  x={layout.gridX - 8}
+                  y={layout.gridY - 8}
+                  width={layout.gridWidth + 16}
+                  height={layout.gridHeight + 16}
+                  fill="rgba(0, 0, 0, 0.4)"
+                  cornerRadius={12}
+                  stroke="rgba(255, 255, 255, 0.1)"
+                  strokeWidth={2}
+                />
 
-                  return (
-                    <Group 
-                      key={rune.id} 
-                      x={layout.gridX + c * layout.cellSize + 2} 
-                      y={layout.gridY + r * layout.cellSize + 2}
-                      onClick={() => handleCellClick(r, c)}
-                      onTap={() => handleCellClick(r, c)}
-                    >
-                      {/* Selection Glow */}
-                      {isSelected && (
-                        <Rect
-                          width={runeSize + 8}
-                          height={runeSize + 8}
-                          x={-4}
-                          y={-4}
-                          fill="rgba(96, 165, 250, 0.3)"
-                          cornerRadius={8}
-                          stroke="#60a5fa"
-                          strokeWidth={2}
+                {/* Runes */}
+                {gameState.grid.map((row, r) => 
+                  row.map((rune, c) => {
+                    const isSelected = gameState.selectedCell?.row === r && gameState.selectedCell?.col === c
+                    const runeSize = layout.cellSize - 4
+                    
+                                      const spriteSheet = 
+                                        rune.type === 'vocabulary' ? assets.runes.base :
+                                        rune.type === 'heal' ? assets.runes.heal :
+                                        assets.runes.shield
+                                      
+                                      const isPowerRune = rune.type === 'vocabulary' && rune.wordId === gameState.powerWord
+                    
+                                      const fw = spriteSheet.width / 3
+                                      const fh = spriteSheet.height / 2
+                                      const crop = {
+                                        x: animFrame * fw,
+                                        y: 0,
+                                        width: fw,
+                                        height: fh
+                                      }
+                    
+                                      return (
+                                        <Group 
+                                          key={rune.id} 
+                                          x={layout.gridX + c * layout.cellSize + 2} 
+                                          y={layout.gridY + r * layout.cellSize + 2}
+                                          onClick={() => handleCellClick(r, c)}
+                                          onTap={() => handleCellClick(r, c)}
+                                        >
+                                          {/* Selection Glow */}
+                                          {isSelected && (
+                                            <Rect
+                                              width={runeSize + 8}
+                                              height={runeSize + 8}
+                                              x={-4}
+                                              y={-4}
+                                              fill="rgba(96, 165, 250, 0.3)"
+                                              cornerRadius={8}
+                                              stroke="#60a5fa"
+                                              strokeWidth={2}
+                                            />
+                                          )}
+                    
+                                          {/* Power Word Glow */}
+                                          {isPowerRune && !isSelected && (
+                                            <Rect
+                                              width={runeSize + 4}
+                                              height={runeSize + 4}
+                                              x={-2}
+                                              y={-2}
+                                              fill="rgba(250, 204, 21, 0.1)"
+                                              cornerRadius={8}
+                                              stroke="#facc15"
+                                              strokeWidth={1.5}
+                                              opacity={0.6 + Math.sin(Date.now() / 200) * 0.2}
+                                            />
+                                          )}
+                        {/* Rune Asset */}
+                        <KonvaImage
+                          image={spriteSheet}
+                          width={runeSize}
+                          height={runeSize}
+                          cornerRadius={6}
+                          crop={crop}
                         />
-                      )}
-
-                      {/* Rune Asset */}
-                      <KonvaImage
-                        image={spriteSheet}
-                        width={runeSize}
-                        height={runeSize}
-                        cornerRadius={6}
-                        crop={crop}
-                      />
-                      
-                      {rune.type === 'vocabulary' && (
-                        <Text
-                          text={(rune as any).text || (rune as any).translation}
-                          width={runeSize - 12}
-                          height={runeSize - 12}
-                          x={6}
-                          y={6}
-                          fontSize={Math.max(12, layout.cellSize / 3.5)}
-                          fill="#0f172a" // Black/Dark text for better contrast on light blue rune
-                          align="center"
-                          verticalAlign="middle"
-                          fontFamily="Arial"
-                          fontStyle="bold"
-                        />
-                      )}
-                    </Group>
-                  )
-                })
-              )}
-            </Group>
-          )}
+                        
+                        {rune.type === 'vocabulary' && (
+                          <Text
+                            text={(rune as any).text || (rune as any).translation}
+                            width={runeSize - 12}
+                            height={runeSize - 12}
+                            x={6}
+                            y={6}
+                            fontSize={Math.max(12, layout.cellSize / 3.5)}
+                            fill="#0f172a" // Black/Dark text for better contrast on light blue rune
+                            align="center"
+                            verticalAlign="middle"
+                            fontFamily="Arial"
+                            fontStyle="bold"
+                          />
+                        )}
+                      </Group>
+                    )
+                  })
+                )}
+              </Group>
+            )}
+          </Group>
         </Layer>
       </Stage>
     </div>

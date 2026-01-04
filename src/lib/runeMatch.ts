@@ -47,6 +47,7 @@ export type RuneMatchState = {
   totalAttempts: number
   vocabulary: VocabularyItem[]
   rng: () => number
+  shakeIntensity: number // 0 to 1
 }
 
 export type RuneMatchConfig = {
@@ -319,12 +320,19 @@ export const advanceTime = (
 
   let newState = { ...state }
   newState.attackTimer += deltaMs
+  
+  // Decay shake
+  newState.shakeIntensity = Math.max(0, newState.shakeIntensity - deltaMs / 500)
 
   const { attackIntervalMs } = RUNE_MATCH_CONFIG.combat
 
   if (newState.attackTimer >= attackIntervalMs) {
     // Monster Attacks!
     newState.attackTimer %= attackIntervalMs
+    newState.shakeIntensity = 1.0
+    
+    // Rotate Power Word
+    newState.powerWord = newState.vocabulary[Math.floor(newState.rng() * newState.vocabulary.length)].translation
 
     if (newState.player.hasShield) {
       // Shield blocks one attack
@@ -463,10 +471,11 @@ export const createRuneMatchState = (
     grid: [],
     selectedCell: null,
     attackTimer: 0,
-    powerWord: null,
+    powerWord: vocabulary[Math.floor(rng() * vocabulary.length)].translation,
     correctAnswers: 0,
     totalAttempts: 0,
     vocabulary,
     rng,
+    shakeIntensity: 0,
   }
 }
