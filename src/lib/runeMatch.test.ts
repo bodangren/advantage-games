@@ -1,23 +1,24 @@
 import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches, applyGravity, processMatches } from './runeMatch'
 import { RUNE_MATCH_CONFIG } from './runeMatchConfig'
+import type { VocabularyItem } from '@/store/useGameStore'
 
 const SAMPLE_VOCAB: VocabularyItem[] = [
-  { term: 'Hello', translation: 'สวัสดี' },
-  { term: 'Cat', translation: 'แมว' },
-  { term: 'Dog', translation: 'สุนัข' },
-  { term: 'Water', translation: 'น้ำ' },
-  { term: 'Food', translation: 'อาหาร' },
-  { term: 'House', translation: 'บ้าน' },
-  { term: 'Tree', translation: 'ต้นไม้' },
-  { term: 'Sun', translation: 'พระอาทิตย์' },
-  { term: 'Moon', translation: 'พระจันทร์' },
-  { term: 'Star', translation: 'ดาว' },
+  { term: 'สวัสดี', translation: 'Hello' },
+  { term: 'แมว', translation: 'Cat' },
+  { term: 'หมา', translation: 'Dog' },
+  { term: 'น้ำ', translation: 'Water' },
+  { term: 'ข้าว', translation: 'Rice' },
+  { term: 'รัก', translation: 'Love' },
+  { term: 'บ้าน', translation: 'House' },
+  { term: 'ต้นไม้', translation: 'Tree' },
+  { term: 'พระอาทิตย์', translation: 'Sun' },
+  { term: 'พระจันทร์', translation: 'Moon' },
 ]
 
 describe('processMatches', () => {
   it('processes a single match and returns cascade count of 1', () => {
     const grid = initializeGrid(SAMPLE_VOCAB)
-    const rune = { id: 'test', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    const rune = { id: 'test', type: 'vocabulary', wordId: 'Hello', text: 'สวัสดี' } as Rune
     grid[7][0] = rune
     grid[7][1] = rune
     grid[7][2] = rune
@@ -29,8 +30,8 @@ describe('processMatches', () => {
 
   it('detects multiple cascades', () => {
     const grid = initializeGrid(SAMPLE_VOCAB)
-    const runeA = { id: 'a', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
-    const runeB = { id: 'b', type: 'vocabulary', word: 'B', translation: 'B' } as Rune
+    const runeA = { id: 'a', type: 'vocabulary', wordId: 'Hello', text: 'สวัสดี' } as Rune
+    const runeB = { id: 'b', type: 'vocabulary', wordId: 'Cat', text: 'แมว' } as Rune
     
     // First match at bottom
     grid[7][0] = runeA
@@ -42,15 +43,9 @@ describe('processMatches', () => {
     grid[6][1] = runeB
     grid[6][2] = runeB
     
-    // And ensure the items ABOVE the first match are NOT runeB initially
-    grid[7][0] = runeA // Already set
-    grid[5][0] = runeB // This will fall to row 6
-    grid[5][1] = runeB // This will fall to row 6
-    grid[5][2] = runeB // This will fall to row 6
-    
-    // Actually simpler: 
-    // Row 7: A A A
-    // Row 6: B B B (already a match, processMatches should find it too)
+    grid[5][0] = runeB 
+    grid[5][1] = runeB 
+    grid[5][2] = runeB 
     
     const result = processMatches(grid, SAMPLE_VOCAB)
     expect(result.cascades).toBeGreaterThanOrEqual(1)
@@ -61,7 +56,6 @@ describe('applyGravity', () => {
   it('clears matched runes and fills from top', () => {
     const grid = initializeGrid(SAMPLE_VOCAB)
     const matchedCoords = [{ row: 7, col: 0 }, { row: 7, col: 1 }, { row: 7, col: 2 }]
-    const originalTopRune = grid[0][0]
     
     const newGrid = applyGravity(grid, matchedCoords, SAMPLE_VOCAB)
     
@@ -89,7 +83,7 @@ describe('applyGravity', () => {
 describe('findMatches', () => {
   it('finds horizontal matches', () => {
     const grid = initializeGrid(SAMPLE_VOCAB)
-    const rune = { id: 'test', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    const rune = { id: 'test', type: 'vocabulary', wordId: 'Hello', text: 'สวัสดี' } as Rune
     grid[0][0] = rune
     grid[0][1] = rune
     grid[0][2] = rune
@@ -106,7 +100,7 @@ describe('findMatches', () => {
 
   it('finds vertical matches', () => {
     const grid = initializeGrid(SAMPLE_VOCAB)
-    const rune = { id: 'test', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    const rune = { id: 'test', type: 'vocabulary', wordId: 'Hello', text: 'สวัสดี' } as Rune
     grid[0][0] = rune
     grid[1][0] = rune
     grid[2][0] = rune
@@ -116,9 +110,20 @@ describe('findMatches', () => {
     expect(matches[0]).toHaveLength(3)
   })
 
+  it('matches mixed languages for the same wordId', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    grid[0][0] = { id: '1', type: 'vocabulary', wordId: 'Hello', text: 'สวัสดี' } as Rune
+    grid[0][1] = { id: '2', type: 'vocabulary', wordId: 'Hello', text: 'Hello' } as Rune
+    grid[0][2] = { id: '3', type: 'vocabulary', wordId: 'Hello', text: 'สวัสดี' } as Rune
+    
+    const matches = findMatches(grid)
+    expect(matches.length).toBe(1)
+    expect(matches[0]).toHaveLength(3)
+  })
+
   it('handles L-shapes as unified matches', () => {
     const grid = initializeGrid(SAMPLE_VOCAB)
-    const rune = { id: 'test', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    const rune = { id: 'test', type: 'vocabulary', wordId: 'Hello', text: 'สวัสดี' } as Rune
     // Horizontal
     grid[0][0] = rune
     grid[0][1] = rune
@@ -128,8 +133,6 @@ describe('findMatches', () => {
     grid[2][0] = rune
     
     const matches = findMatches(grid)
-    // Depending on implementation, it might be 1 combined match or 2 overlapping matches.
-    // Let's assume it finds all matching coordinates.
     const allMatchedCoords = matches.flat()
     expect(allMatchedCoords).toHaveLength(5)
   })
@@ -169,8 +172,8 @@ describe('initializeGrid', () => {
     grid.flat().forEach(rune => {
       expect(['vocabulary', 'heal', 'shield']).toContain(rune.type)
       if (rune.type === 'vocabulary') {
-        expect(rune.word).toBeDefined()
-        expect(rune.translation).toBeDefined()
+        expect(rune.wordId).toBeDefined()
+        expect(rune.text).toBeDefined()
       }
     })
   })
@@ -188,7 +191,7 @@ describe('initializeGrid', () => {
           const r2 = grid[r][c+1]
           const r3 = grid[r][c+2]
           if (r2.type === 'vocabulary' && r3.type === 'vocabulary') {
-            const match = rune.translation === r2.translation && rune.translation === r3.translation
+            const match = rune.wordId === r2.wordId && rune.wordId === r3.wordId
             expect(match).toBe(false)
           }
         }
@@ -198,7 +201,7 @@ describe('initializeGrid', () => {
           const r2 = grid[r+1][c]
           const r3 = grid[r+2][c]
           if (r2.type === 'vocabulary' && r3.type === 'vocabulary') {
-            const match = rune.translation === r2.translation && rune.translation === r3.translation
+            const match = rune.wordId === r2.wordId && rune.wordId === r3.wordId
             expect(match).toBe(false)
           }
         }
@@ -221,12 +224,12 @@ describe('runeMatch types', () => {
       const rune: Rune = {
         id: 'rune-1',
         type: 'vocabulary',
-        word: 'Hello',
-        translation: 'สวัสดี',
+        wordId: 'Hello',
+        text: 'สวัสดี',
       }
       expect(rune.type).toBe('vocabulary')
-      expect(rune.word).toBe('Hello')
-      expect(rune.translation).toBe('สวัสดี')
+      expect(rune.wordId).toBe('Hello')
+      expect((rune as VocabularyRune).text).toBe('สวัสดี')
     })
 
     it('supports heal power-up type', () => {
@@ -235,7 +238,7 @@ describe('runeMatch types', () => {
         type: 'heal',
       }
       expect(rune.type).toBe('heal')
-      expect(rune).not.toHaveProperty('word')
+      expect(rune).not.toHaveProperty('wordId')
     })
 
     it('supports shield power-up type', () => {
@@ -244,7 +247,7 @@ describe('runeMatch types', () => {
         type: 'shield',
       }
       expect(rune.type).toBe('shield')
-      expect(rune).not.toHaveProperty('word')
+      expect(rune).not.toHaveProperty('wordId')
     })
   })
 })
@@ -295,13 +298,11 @@ describe('createRuneMatchState', () => {
     const state = createRuneMatchState(SAMPLE_VOCAB, { rng: mockRng })
 
     expect(state.status).toBe('selection')
-    // RNG not used in selection screen, but should be stored for later
   })
 
   it('stores vocabulary reference', () => {
     const state = createRuneMatchState(SAMPLE_VOCAB)
 
-    // State should have access to vocabulary for grid generation
     expect(state.status).toBe('selection')
   })
 })
@@ -340,7 +341,6 @@ describe('RuneMatchState structure', () => {
     const state = createRuneMatchState(SAMPLE_VOCAB)
 
     expect(Array.isArray(state.grid)).toBe(true)
-    // Grid is empty in selection state
     expect(state.grid.length).toBe(0)
   })
 

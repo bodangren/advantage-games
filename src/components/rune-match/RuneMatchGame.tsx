@@ -173,7 +173,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
         (Math.abs(selected.col - col) === 1 && selected.row === row)
 
       if (isAdjacent) {
-        // Attempt Swap
+        // Perform Swap
         const gridAfterSwap = swapRunes(prev.grid, selected, { row, col })
         const matches = findMatches(gridAfterSwap)
 
@@ -186,9 +186,23 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
             selectedCell: null 
           }
         } else {
-          // Invalid swap - revert
+          // Invalid swap - show temporary swap then revert
+          // We update the grid to show the swap, then set a timeout to revert it
+          // Note: In a production app, we'd use a more robust animation system (framer-motion or similar)
+          setTimeout(() => {
+            setGameState(current => {
+              if (!current || current.status !== 'playing') return current
+              // Only revert if the grid hasn't changed in the meantime (safety)
+              if (current.grid === gridAfterSwap) {
+                return { ...current, grid: prev.grid }
+              }
+              return current
+            })
+          }, 400)
+
           return { 
             ...prev, 
+            grid: gridAfterSwap,
             selectedCell: null 
           }
         }
@@ -269,37 +283,23 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
       <Stage width={dimensions.width} height={dimensions.height}>
         <Layer>
           {/* Background */}
-          <Rect fill="#0f172a" width={dimensions.width} height={dimensions.height} />
+          <KonvaImage 
+            image={assets.background}
+            width={dimensions.width}
+            height={dimensions.height}
+          />
 
           {/* Playing State HUD & Grid */}
           {gameState.status === 'playing' && (
             <Group>
-              {/* Monster Area Placeholder */}
-              <Rect 
-                x={0} 
-                y={0} 
-                width={dimensions.width} 
-                height={layout.monsterAreaHeight} 
-                fill="rgba(255, 255, 255, 0.05)"
-              />
-              <Text
-                text={`Opponent: ${gameState.monster?.type?.toUpperCase()}`}
-                x={dimensions.width / 2}
-                y={layout.monsterAreaHeight / 2}
-                offsetX={100}
-                fontSize={20}
-                fill="#f87171"
-                fontStyle="bold"
-              />
-
               {/* Grid Background */}
               <Rect
-                x={layout.gridX - 4}
-                y={layout.gridY - 4}
-                width={layout.gridWidth + 8}
-                height={layout.gridHeight + 8}
-                fill="rgba(0, 0, 0, 0.3)"
-                cornerRadius={8}
+                x={layout.gridX - 8}
+                y={layout.gridY - 8}
+                width={layout.gridWidth + 16}
+                height={layout.gridHeight + 16}
+                fill="rgba(0, 0, 0, 0.4)"
+                cornerRadius={12}
                 stroke="rgba(255, 255, 255, 0.1)"
                 strokeWidth={2}
               />
@@ -308,46 +308,60 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
               {gameState.grid.map((row, r) => 
                 row.map((rune, c) => {
                   const isSelected = gameState.selectedCell?.row === r && gameState.selectedCell?.col === c
+                  const runeSize = layout.cellSize - 4
+                  
                   return (
                     <Group 
                       key={rune.id} 
-                      x={layout.gridX + c * layout.cellSize} 
-                      y={layout.gridY + r * layout.cellSize}
+                      x={layout.gridX + c * layout.cellSize + 2} 
+                      y={layout.gridY + r * layout.cellSize + 2}
                       onClick={() => handleCellClick(r, c)}
                       onTap={() => handleCellClick(r, c)}
                     >
-                      <Rect
-                        width={layout.cellSize - 4}
-                        height={layout.cellSize - 4}
-                        x={2}
-                        y={2}
-                        fill={isSelected ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.05)"}
-                        stroke={isSelected ? "#60a5fa" : "rgba(255, 255, 255, 0.1)"}
-                        strokeWidth={isSelected ? 2 : 1}
-                        cornerRadius={4}
+                      {/* Selection Glow */}
+                      {isSelected && (
+                        <Rect
+                          width={runeSize + 8}
+                          height={runeSize + 8}
+                          x={-4}
+                          y={-4}
+                          fill="rgba(96, 165, 250, 0.3)"
+                          cornerRadius={8}
+                          stroke="#60a5fa"
+                          strokeWidth={2}
+                        />
+                      )}
+
+                      {/* Rune Asset */}
+                      <KonvaImage
+                        image={
+                          rune.type === 'vocabulary' ? assets.runes.base :
+                          rune.type === 'heal' ? assets.runes.heal :
+                          assets.runes.shield
+                        }
+                        width={runeSize}
+                        height={runeSize}
+                        cornerRadius={6}
+                        crop={rune.type === 'vocabulary' ? { x: 0, y: 0, width: 256, height: 256 } : undefined}
                       />
-                      {rune.type === 'vocabulary' ? (
+                      
+                      {rune.type === 'vocabulary' && (
                         <Text
-                          text={rune.translation}
-                          width={layout.cellSize - 8}
-                          height={layout.cellSize - 8}
-                          x={4}
-                          y={4}
+                          text={(rune as any).text || (rune as any).translation}
+                          width={runeSize - 12}
+                          height={runeSize - 12}
+                          x={6}
+                          y={6}
                           fontSize={Math.max(10, layout.cellSize / 5)}
                           fill="white"
                           align="center"
                           verticalAlign="middle"
-                        />
-                      ) : (
-                        <Text
-                          text={rune.type === 'heal' ? "❤️" : "🛡️"}
-                          width={layout.cellSize - 8}
-                          height={layout.cellSize - 8}
-                          x={4}
-                          y={4}
-                          fontSize={layout.cellSize / 2}
-                          align="center"
-                          verticalAlign="middle"
+                          fontFamily="Arial"
+                          fontStyle="bold"
+                          shadowColor="black"
+                          shadowBlur={2}
+                          shadowOpacity={0.8}
+                          shadowOffset={{ x: 1, y: 1 }}
                         />
                       )}
                     </Group>

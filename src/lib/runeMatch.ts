@@ -9,8 +9,8 @@ export type GridPosition = {
 export type VocabularyRune = {
   id: string
   type: 'vocabulary'
-  word: string
-  translation: string
+  wordId: string // Unique identifier for the vocabulary item (e.g. the English term)
+  text: string   // The actual text displayed (can be Thai or English)
 }
 
 export type PowerUpRune = {
@@ -74,12 +74,12 @@ export const initializeGrid = (
         // Check for matches
         if (rune.type === 'vocabulary') {
           const hasHorizontalMatch = c >= 2 && 
-            grid[r][c-1].type === 'vocabulary' && (grid[r][c-1] as VocabularyRune).translation === rune.translation &&
-            grid[r][c-2].type === 'vocabulary' && (grid[r][c-2] as VocabularyRune).translation === rune.translation
+            grid[r][c-1].type === 'vocabulary' && (grid[r][c-1] as VocabularyRune).wordId === rune.wordId &&
+            grid[r][c-2].type === 'vocabulary' && (grid[r][c-2] as VocabularyRune).wordId === rune.wordId
           
           const hasVerticalMatch = r >= 2 && 
-            grid[r-1][c].type === 'vocabulary' && (grid[r-1][c] as VocabularyRune).translation === rune.translation &&
-            grid[r-2][c].type === 'vocabulary' && (grid[r-2][c] as VocabularyRune).translation === rune.translation
+            grid[r-1][c].type === 'vocabulary' && (grid[r-1][c] as VocabularyRune).wordId === rune.wordId &&
+            grid[r-2][c].type === 'vocabulary' && (grid[r-2][c] as VocabularyRune).wordId === rune.wordId
             
           if (!hasHorizontalMatch && !hasVerticalMatch) {
             validRune = rune
@@ -122,7 +122,7 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
         c < cols &&
         grid[r][c].type === 'vocabulary' &&
         grid[r][c - 1].type === 'vocabulary' &&
-        (grid[r][c] as VocabularyRune).translation === (grid[r][c - 1] as VocabularyRune).translation
+        (grid[r][c] as VocabularyRune).wordId === (grid[r][c - 1] as VocabularyRune).wordId
       ) {
         matchLength++
       } else {
@@ -144,7 +144,7 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
         r < rows &&
         grid[r][c].type === 'vocabulary' &&
         grid[r - 1][c].type === 'vocabulary' &&
-        (grid[r][c] as VocabularyRune).translation === (grid[r - 1][c] as VocabularyRune).translation
+        (grid[r][c] as VocabularyRune).wordId === (grid[r - 1][c] as VocabularyRune).wordId
       ) {
         matchLength++
       } else {
@@ -293,13 +293,18 @@ const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune
   // Spawn vocabulary rune
   const index = Math.floor(rng() * vocabulary.length)
   const item = vocabulary[index]
+  
+  // Randomly choose between Term (Thai) and Translation (English)
+  const showTranslation = rng() > 0.5
+
   return {
     id: generateId(),
     type: 'vocabulary',
-    word: item.term,
-    translation: item.translation
+    wordId: item.translation, // Use English translation as unique ID
+    text: showTranslation ? item.translation : item.term
   }
 }
+
 
 export const createRuneMatchState = (
   vocabulary: VocabularyItem[],
