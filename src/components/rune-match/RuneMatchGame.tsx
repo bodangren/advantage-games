@@ -57,8 +57,8 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   // Layout constants
   const layout = useMemo(() => {
     const padding = 20
-    const monsterAreaHeight = dimensions.height * 0.3
-    const gridAreaHeight = dimensions.height * 0.6
+    const monsterAreaHeight = dimensions.height * 0.4
+    const gridAreaHeight = dimensions.height * 0.5
     const _hudAreaHeight = dimensions.height * 0.1
 
     const availableGridWidth = dimensions.width - padding * 2
@@ -301,6 +301,25 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           {/* Playing State HUD & Grid */}
           {gameState.status === 'playing' && (
             <Group>
+              {/* HUD Area */}
+              <Rect 
+                x={0} 
+                y={0} 
+                width={dimensions.width} 
+                height={layout.monsterAreaHeight} 
+                fill="rgba(0, 0, 0, 0.2)"
+              />
+              <Text
+                text={`Opponent: ${gameState.monster?.type?.toUpperCase()}`}
+                x={dimensions.width / 2}
+                y={layout.monsterAreaHeight / 2}
+                offsetX={100}
+                fontSize={24}
+                fill="#f87171"
+                fontStyle="bold"
+                fontFamily="Arial"
+              />
+
               {/* Grid Background */}
               <Rect
                 x={layout.gridX - 8}
@@ -371,7 +390,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
                           height={runeSize - 12}
                           x={6}
                           y={6}
-                          fontSize={Math.max(10, layout.cellSize / 5.5)}
+                          fontSize={Math.max(12, layout.cellSize / 3.5)}
                           fill="#0f172a" // Black/Dark text for better contrast on light blue rune
                           align="center"
                           verticalAlign="middle"

@@ -57,6 +57,6 @@ export const RUNE_MATCH_CONFIG: RuneMatchConfig = {
   },
   grid: {
     columns: 6,
-    rows: 8,
+    rows: 6,
   },
 }
