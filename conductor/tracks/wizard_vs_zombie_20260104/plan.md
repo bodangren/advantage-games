@@ -15,8 +15,8 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 *   [x] Task: Implement Zombie Spawning logic (Spawn from **4 Gates**: N, S, E, W). c49f462
 *   [x] Task: Implement Canvas Rendering for Player and Zombies. c49f462
 *   [x] Task: Implement Camera Follow Logic (Center on Player if World > Viewport). 236714b
-*   [ ] Task: Implement Collision Detection (Circle/Box) in the game loop.
-*   [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Gameplay Loop'
+*   [x] Task: Implement Collision Detection (Circle/Box) in the game loop. a2a3cef
+*   [x] Task: Conductor - User Manual Verification 'Phase 2: Core Gameplay Loop' [checkpoint: a2a3cef]
 
 ## Phase 3: Vocabulary Mechanics (Orbs & Interaction)
 *   [ ] Task: Implement Orb Spawning and Rendering in Canvas.
