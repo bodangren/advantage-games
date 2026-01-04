@@ -35,6 +35,14 @@ export const gameCards: GameCard[] = [
     status: 'playable',
   },
   {
+    id: 'wizard-vs-zombie',
+    title: 'Wizard vs Zombie',
+    description: 'Survive the horde by collecting vocabulary orbs.',
+    cover: withBasePath('/games/cover/zombie-escape-cover.png'), // Temporary placeholder
+    href: '/games/wizard-vs-zombie',
+    status: 'playable',
+  },
+  {
     id: 'treasure-chest-rush',
     title: 'Treasure Chest Rush',
     description: 'Stop the spinning locks on the correct translations.',
