@@ -44,16 +44,16 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Implement visual feedback for power-up activation. 42947e8
 *   [x] Conductor - User Manual Verification 'Phase 5: Power-Up Runes' cff2b38
 
-## Phase 6: UI & HUD
+## Phase 6: UI & HUD [checkpoint: 51939a9]
 *   [x] Task: Implement Player HP bar display. ccb55e1
 *   [x] Task: Implement Monster HP bar display. ccb55e1
 *   [x] Task: Implement Power Word display panel. 42947e8
 *   [x] Task: Implement damage numbers / combo indicators. 42947e8
-*   [~] Task: Implement monster sprite display with state animations.
-*   [ ] Task: Conductor - User Manual Verification 'Phase 6: UI & HUD'
+*   [x] Task: Implement monster sprite display with state animations. 51939a9
+*   [x] Conductor - User Manual Verification 'Phase 6: UI & HUD' 51939a9
 
 ## Phase 7: Game States & Polish
-*   [ ] Task: Implement Victory state (monster HP = 0, show XP earned).
+*   [~] Task: Implement Victory state (monster HP = 0, show XP earned).
 *   [ ] Task: Implement Defeat state (player HP = 0, game over).
 *   [ ] Task: Implement match explosion effects.
 *   [ ] Task: Implement monster attack/hurt/death animations.
