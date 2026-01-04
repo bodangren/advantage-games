@@ -97,6 +97,18 @@ export const initializeGrid = (
   return grid
 }
 
+export const swapRunes = (
+  grid: Rune[][],
+  pos1: GridPosition,
+  pos2: GridPosition
+): Rune[][] => {
+  const newGrid = grid.map(row => [...row])
+  const temp = newGrid[pos1.row][pos1.col]
+  newGrid[pos1.row][pos1.col] = newGrid[pos2.row][pos2.col]
+  newGrid[pos2.row][pos2.col] = temp
+  return newGrid
+}
+
 const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune => {
   const roll = rng()
   const { spawnRate } = RUNE_MATCH_CONFIG.powerUps

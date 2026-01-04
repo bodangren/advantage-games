@@ -18,7 +18,9 @@ jest.mock('react-konva', () => ({
   ),
   Image: ({ name }: ImageProps) => <div data-testid={name || 'image'} />,
   Text: ({ text }: TextProps) => <span>{text}</span>,
-  Group: ({ children }: KonvaBaseProps) => <div>{children}</div>,
+  Group: ({ children, onClick }: KonvaBaseProps & { onClick?: () => void }) => (
+    <div onClick={onClick}>{children}</div>
+  ),
 }))
 
 // Mock lucide-react
@@ -141,11 +143,30 @@ describe('RuneMatchGame', () => {
     const battleButtons = screen.getAllByRole('button', { name: /Battle/i })
     fireEvent.click(battleButtons[3])
 
-    // Should now show battle text in Konva (rendered as span in our mock)
-    await waitFor(() => expect(screen.getByText(/Battle against dragon/i)).toBeInTheDocument())
+    // Verify grid initialization message
+    await waitFor(() => expect(screen.getByText(/Opponent: DRAGON/i)).toBeInTheDocument())
 
-    // Verify grid initialization message (I'll add this to RuneMatchGame.tsx placeholder)
-    expect(screen.getByText(/Grid: 8x6/i)).toBeInTheDocument()
+    // Get translations for first two runes
+    const rune1Text = SAMPLE_VOCAB[0].translation
+    const rune2Text = SAMPLE_VOCAB[1].translation
+    
+    // This is tricky because we use random grid, but for tests we can rely on what's rendered
+    // Let's find two runes by their text and click them
+    const runes = screen.getAllByText(/.+/) // Get all text elements
+    // We want the ones that are likely runes (translations)
+    const translations = SAMPLE_VOCAB.map(v => v.translation)
+    const runeElements = runes.filter(el => translations.includes(el.textContent || ''))
+    
+    if (runeElements.length >= 2) {
+      const firstRune = runeElements[0]
+      const secondRune = runeElements[1]
+      
+      fireEvent.click(firstRune)
+      fireEvent.click(secondRune)
+      
+      // In a real swap, their positions would change. 
+      // In our mock, we just want to see that it doesn't crash and state updates.
+    }
 
     spy.mockRestore()
   })

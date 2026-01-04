@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
-import { createRuneMatchState, initializeGrid, type RuneMatchState } from '@/lib/runeMatch'
+import { createRuneMatchState, initializeGrid, swapRunes, type RuneMatchState, type GridPosition } from '@/lib/runeMatch'
 import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
@@ -52,6 +52,37 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   const [assets, setAssets] = useState<RuneMatchAssets | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  // Layout constants
+  const layout = useMemo(() => {
+    const padding = 20
+    const monsterAreaHeight = dimensions.height * 0.3
+    const gridAreaHeight = dimensions.height * 0.6
+    const _hudAreaHeight = dimensions.height * 0.1
+
+    const availableGridWidth = dimensions.width - padding * 2
+    const availableGridHeight = gridAreaHeight - padding
+
+    const cellSize = Math.min(
+      availableGridWidth / RUNE_MATCH_CONFIG.grid.columns,
+      availableGridHeight / RUNE_MATCH_CONFIG.grid.rows
+    )
+
+    const gridWidth = cellSize * RUNE_MATCH_CONFIG.grid.columns
+    const gridHeight = cellSize * RUNE_MATCH_CONFIG.grid.rows
+
+    const gridX = (dimensions.width - gridWidth) / 2
+    const gridY = monsterAreaHeight + (gridAreaHeight - gridHeight) / 2
+
+    return {
+      cellSize,
+      gridX,
+      gridY,
+      gridWidth,
+      gridHeight,
+      monsterAreaHeight,
+    }
+  }, [dimensions])
 
   // Asset Loading
   useEffect(() => {
@@ -123,6 +154,35 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           xp: config.xp,
         },
         grid,
+      }
+    })
+  }, [])
+
+  const handleCellClick = useCallback((row: number, col: number) => {
+    setGameState((prev) => {
+      if (!prev || prev.status !== 'playing') return prev
+
+      const selected = prev.selectedCell
+      if (!selected) {
+        return { ...prev, selectedCell: { row, col } }
+      }
+
+      // Check if adjacent
+      const isAdjacent = 
+        (Math.abs(selected.row - row) === 1 && selected.col === col) ||
+        (Math.abs(selected.col - col) === 1 && selected.row === row)
+
+      if (isAdjacent) {
+        // Swap
+        const newGrid = swapRunes(prev.grid, selected, { row, col })
+        return { 
+          ...prev, 
+          grid: newGrid, 
+          selectedCell: null 
+        }
+      } else {
+        // Change selection
+        return { ...prev, selectedCell: { row, col } }
       }
     })
   }, [])
@@ -199,29 +259,89 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           {/* Background */}
           <Rect fill="#0f172a" width={dimensions.width} height={dimensions.height} />
 
-          {/* Placeholder content for playing state */}
+          {/* Playing State HUD & Grid */}
           {gameState.status === 'playing' && (
             <Group>
+              {/* Monster Area Placeholder */}
+              <Rect 
+                x={0} 
+                y={0} 
+                width={dimensions.width} 
+                height={layout.monsterAreaHeight} 
+                fill="rgba(255, 255, 255, 0.05)"
+              />
               <Text
-                text={`Battle against ${gameState.monster?.type} - Grid coming soon`}
+                text={`Opponent: ${gameState.monster?.type?.toUpperCase()}`}
                 x={dimensions.width / 2}
-                y={dimensions.height / 2}
-                offsetX={200}
-                offsetY={15}
+                y={layout.monsterAreaHeight / 2}
+                offsetX={100}
                 fontSize={20}
-                fill="#94a3b8"
-                fontFamily="Arial"
+                fill="#f87171"
+                fontStyle="bold"
               />
-              <Text
-                text={`Grid: ${gameState.grid.length}x${gameState.grid[0]?.length}`}
-                x={dimensions.width / 2}
-                y={dimensions.height / 2 + 30}
-                offsetX={200}
-                offsetY={15}
-                fontSize={16}
-                fill="#64748b"
-                fontFamily="Arial"
+
+              {/* Grid Background */}
+              <Rect
+                x={layout.gridX - 4}
+                y={layout.gridY - 4}
+                width={layout.gridWidth + 8}
+                height={layout.gridHeight + 8}
+                fill="rgba(0, 0, 0, 0.3)"
+                cornerRadius={8}
+                stroke="rgba(255, 255, 255, 0.1)"
+                strokeWidth={2}
               />
+
+              {/* Runes */}
+              {gameState.grid.map((row, r) => 
+                row.map((rune, c) => {
+                  const isSelected = gameState.selectedCell?.row === r && gameState.selectedCell?.col === c
+                  return (
+                    <Group 
+                      key={rune.id} 
+                      x={layout.gridX + c * layout.cellSize} 
+                      y={layout.gridY + r * layout.cellSize}
+                      onClick={() => handleCellClick(r, c)}
+                      onTap={() => handleCellClick(r, c)}
+                    >
+                      <Rect
+                        width={layout.cellSize - 4}
+                        height={layout.cellSize - 4}
+                        x={2}
+                        y={2}
+                        fill={isSelected ? "rgba(255, 255, 255, 0.2)" : "rgba(255, 255, 255, 0.05)"}
+                        stroke={isSelected ? "#60a5fa" : "rgba(255, 255, 255, 0.1)"}
+                        strokeWidth={isSelected ? 2 : 1}
+                        cornerRadius={4}
+                      />
+                      {rune.type === 'vocabulary' ? (
+                        <Text
+                          text={rune.translation}
+                          width={layout.cellSize - 8}
+                          height={layout.cellSize - 8}
+                          x={4}
+                          y={4}
+                          fontSize={Math.max(10, layout.cellSize / 5)}
+                          fill="white"
+                          align="center"
+                          verticalAlign="middle"
+                        />
+                      ) : (
+                        <Text
+                          text={rune.type === 'heal' ? "❤️" : "🛡️"}
+                          width={layout.cellSize - 8}
+                          height={layout.cellSize - 8}
+                          x={4}
+                          y={4}
+                          fontSize={layout.cellSize / 2}
+                          align="center"
+                          verticalAlign="middle"
+                        />
+                      )}
+                    </Group>
+                  )
+                })
+              )}
             </Group>
           )}
         </Layer>

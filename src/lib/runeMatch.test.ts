@@ -1,4 +1,4 @@
-import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid } from './runeMatch'
+import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes } from './runeMatch'
 import { RUNE_MATCH_CONFIG } from './runeMatchConfig'
 
 const SAMPLE_VOCAB: VocabularyItem[] = [
@@ -13,6 +13,28 @@ const SAMPLE_VOCAB: VocabularyItem[] = [
   { term: 'Moon', translation: 'พระจันทร์' },
   { term: 'Star', translation: 'ดาว' },
 ]
+
+describe('swapRunes', () => {
+  it('swaps two runes in the grid', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const r1 = grid[0][0]
+    const r2 = grid[0][1]
+    
+    const newGrid = swapRunes(grid, { row: 0, col: 0 }, { row: 0, col: 1 })
+    
+    expect(newGrid[0][0]).toBe(r2)
+    expect(newGrid[0][1]).toBe(r1)
+  })
+
+  it('does not mutate the original grid', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const r1 = grid[0][0]
+    
+    swapRunes(grid, { row: 0, col: 0 }, { row: 0, col: 1 })
+    
+    expect(grid[0][0]).toBe(r1)
+  })
+})
 
 describe('initializeGrid', () => {
   it('creates a grid with correct dimensions', () => {
