@@ -40,6 +40,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const [animFrame, setAnimFrame] = useState(0)
+  const [monsterAnimFrame, setMonsterAnimFrame] = useState(0)
 
   // Layout constants
   const layout = useMemo(() => {
@@ -59,12 +60,11 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     return { cellSize, gridX, gridY, gridWidth, gridHeight, monsterAreaHeight }
   }, [dimensions])
 
-  // Animation loop for runes (frames)
+  // Animation loops
   useEffect(() => {
-    const interval = setInterval(() => {
-      setAnimFrame((f) => (f + 1) % 3)
-    }, 500)
-    return () => clearInterval(interval)
+    const rInt = setInterval(() => setAnimFrame((f) => (f + 1) % 3), 500)
+    const mInt = setInterval(() => setMonsterAnimFrame((f) => (f + 1) % 3), 150)
+    return () => { clearInterval(rInt); clearInterval(mInt) }
   }, [])
 
   // Game logic loop (10fps)
@@ -116,10 +116,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     const load = async () => {
       const loadImage = (src: string): Promise<HTMLImageElement> =>
         new Promise((res, rej) => {
-          const img = new Image()
-          img.src = withBasePath(src)
-          img.onload = () => res(img)
-          img.onerror = rej
+          const img = new Image(); img.src = withBasePath(src); img.onload = () => res(img); img.onerror = rej
         })
       try {
         const [goblin, skeleton, orc, dragon, base, heal, shield, background] = await Promise.all([
@@ -132,15 +129,10 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           loadImage('/games/rune-match/runes/rune_shield_3x2_pose_sheet.png'),
           loadImage('/games/rune-match/ui/background-tiled.png'),
         ])
-        if (mounted) {
-          setAssets({ monsters: { goblin, skeleton, orc, dragon }, runes: { base, heal, shield }, background })
-        }
-      } catch (e) {
-        console.error('Failed to load assets', e)
-      }
+        if (mounted) setAssets({ monsters: { goblin, skeleton, orc, dragon }, runes: { base, heal, shield }, background })
+      } catch (e) { console.error('Failed to load assets', e) }
     }
-    load()
-    return () => { mounted = false }
+    load(); return () => { mounted = false }
   }, [])
 
   const resetGame = useCallback(() => {
@@ -201,15 +193,11 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     }
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
-          setDimensions({ width: entry.contentRect.width, height: entry.contentRect.height })
-        }
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) setDimensions({ width: entry.contentRect.width, height: entry.contentRect.height })
       }
     })
-    observer.observe(containerRef.current)
-    const interval = setInterval(updateDimensions, 200)
-    const timeout = setTimeout(() => clearInterval(interval), 2000)
-    updateDimensions()
+    observer.observe(containerRef.current); updateDimensions()
+    const interval = setInterval(updateDimensions, 200); const timeout = setTimeout(() => clearInterval(interval), 2000)
     return () => { observer.disconnect(); clearInterval(interval); clearTimeout(timeout) }
   }, [])
 
@@ -225,8 +213,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   }
 
   const renderHealthBar = (x: number, y: number, width: number, current: number, max: number, color: string, label: string) => {
-    const height = 20
-    const progress = Math.max(0, Math.min(1, current / max))
+    const height = 20; const progress = Math.max(0, Math.min(1, current / max))
     return (
       <Group x={x} y={y}>
         <Rect width={width} height={height} fill="rgba(0, 0, 0, 0.5)" cornerRadius={height / 2} stroke="rgba(255, 255, 255, 0.2)" strokeWidth={1}/>
@@ -254,45 +241,33 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
                 <Rect x={0} y={0} width={dimensions.width} height={layout.monsterAreaHeight} fill="rgba(0, 0, 0, 0.2)"/>
                 {gameState.monster && (
                   <Group>
-                    {renderHealthBar(dimensions.width / 2 - 150, layout.monsterAreaHeight * 0.2, 300, gameState.monster.hp, gameState.monster.maxHp, "#ef4444", gameState.monster.type.toUpperCase())}
-                    <Rect x={dimensions.width / 2 - 150} y={layout.monsterAreaHeight * 0.2 + 25} width={300 * (1 - gameState.attackTimer / RUNE_MATCH_CONFIG.combat.attackIntervalMs)} height={4} fill="#f87171" opacity={0.6}/>
+                    <KonvaImage image={assets.monsters[gameState.monster.type]} x={dimensions.width / 2 - 60} y={layout.monsterAreaHeight * 0.05} width={120} height={120} crop={{ x: monsterAnimFrame * (assets.monsters[gameState.monster.type].width / 3), y: 0, width: assets.monsters[gameState.monster.type].width / 3, height: assets.monsters[gameState.monster.type].height / 4 }}/>
+                    {renderHealthBar(dimensions.width / 2 - 150, layout.monsterAreaHeight * 0.45, 300, gameState.monster.hp, gameState.monster.maxHp, "#ef4444", gameState.monster.type.toUpperCase())}
+                    <Rect x={dimensions.width / 2 - 150} y={layout.monsterAreaHeight * 0.45 + 25} width={300 * (1 - gameState.attackTimer / RUNE_MATCH_CONFIG.combat.attackIntervalMs)} height={4} fill="#f87171" opacity={0.6}/>
                   </Group>
                 )}
-                {renderHealthBar(dimensions.width / 2 - 150, layout.monsterAreaHeight * 0.7, 300, gameState.player.hp, gameState.player.maxHp, "#22c55e", "PLAYER")}
-                <Text text={`POWER WORD: ${gameState.powerWord?.toUpperCase()}`} x={dimensions.width / 2} y={layout.monsterAreaHeight * 0.45} offsetX={150} width={300} fontSize={18} fill="#facc15" fontStyle="bold" align="center" fontFamily="Arial"/>
-                {gameState.player.hasShield && (
-                  <Text text="🛡️ SHIELD ACTIVE" x={dimensions.width / 2 + 160} y={layout.monsterAreaHeight * 0.7} fontSize={14} fill="#60a5fa" fontStyle="bold"/>
-                )}
+                {renderHealthBar(dimensions.width / 2 - 150, layout.monsterAreaHeight * 0.8, 300, gameState.player.hp, gameState.player.maxHp, "#22c55e", "PLAYER")}
+                <Text text={`POWER WORD: ${gameState.powerWord?.toUpperCase()}`} x={dimensions.width / 2} y={layout.monsterAreaHeight * 0.65} offsetX={150} width={300} fontSize={18} fill="#facc15" fontStyle="bold" align="center" fontFamily="Arial"/>
+                {gameState.player.hasShield && ( <Text text="🛡️ SHIELD ACTIVE" x={dimensions.width / 2 + 160} y={layout.monsterAreaHeight * 0.8} fontSize={14} fill="#60a5fa" fontStyle="bold"/> )}
                 <Rect x={layout.gridX - 8} y={layout.gridY - 8} width={layout.gridWidth + 16} height={layout.gridHeight + 16} fill="rgba(0, 0, 0, 0.4)" cornerRadius={12} stroke="rgba(255, 255, 255, 0.1)" strokeWidth={2}/>
                 {gameState.grid.map((row, r) => row.map((rune, c) => {
-                  const isSelected = gameState.selectedCell?.row === r && gameState.selectedCell?.col === c
-                  const runeSize = layout.cellSize - 4
+                  const isSelected = gameState.selectedCell?.row === r && gameState.selectedCell?.col === c; const runeSize = layout.cellSize - 4
                   const spriteSheet = rune.type === 'vocabulary' ? assets.runes.base : rune.type === 'heal' ? assets.runes.heal : assets.runes.shield
-                  const fw = spriteSheet.width / 3
-                  const fh = spriteSheet.height / 2
-                  const crop = { x: animFrame * fw, y: 0, width: fw, height: fh }
+                  const fw = spriteSheet.width / 3; const fh = spriteSheet.height / 2; const crop = { x: animFrame * fw, y: 0, width: fw, height: fh }
                   return (
                     <Group key={rune.id} x={layout.gridX + c * layout.cellSize + 2} y={layout.gridY + r * layout.cellSize + 2} onClick={() => handleCellClick(r, c)} onTap={() => handleCellClick(r, c)}>
                       {isSelected && ( <Rect width={runeSize + 8} height={runeSize + 8} x={-4} y={-4} fill="rgba(96, 165, 250, 0.3)" cornerRadius={8} stroke="#60a5fa" strokeWidth={2}/> )}
                       <KonvaImage image={spriteSheet} width={runeSize} height={runeSize} cornerRadius={6} crop={crop}/>
-                      {rune.type === 'vocabulary' && (
-                        <Text text={(rune as any).text || (rune as any).translation} width={runeSize - 12} height={runeSize - 12} x={6} y={6} fontSize={Math.max(12, layout.cellSize / 3.5)} fill="#0f172a" align="center" verticalAlign="middle" fontFamily="Arial" fontStyle="bold"/>
-                      )}
+                      {rune.type === 'vocabulary' && ( <Text text={(rune as any).text || (rune as any).translation} width={runeSize - 12} height={runeSize - 12} x={6} y={6} fontSize={Math.max(12, layout.cellSize / 3.5)} fill="#0f172a" align="center" verticalAlign="middle" fontFamily="Arial" fontStyle="bold"/> )}
                     </Group>
                   )
                 }))}
               </Group>
             )}
             {gameState.floatingTexts.map((ft) => {
-              let screenX = dimensions.width / 2
-              let screenY = layout.monsterAreaHeight / 2
-              if (ft.x !== -1) {
-                screenX = layout.gridX + ft.x * layout.cellSize + layout.cellSize / 2
-                screenY = layout.gridY + ft.y * layout.cellSize + layout.cellSize / 2
-              }
-              return (
-                <Text key={ft.id} text={ft.text} x={screenX + ft.offsetX} y={screenY + ft.offsetY - 20} fontSize={28} scaleX={ft.scale} scaleY={ft.scale} fill={ft.color} opacity={ft.opacity} fontStyle="bold" fontFamily="Arial" align="center" shadowColor="black" shadowBlur={4} shadowOpacity={0.8} offsetX={50}/>
-              )
+              let screenX = dimensions.width / 2; let screenY = layout.monsterAreaHeight / 2
+              if (ft.x !== -1) { screenX = layout.gridX + ft.x * layout.cellSize + layout.cellSize / 2; screenY = layout.gridY + ft.y * layout.cellSize + layout.cellSize / 2 }
+              return ( <Text key={ft.id} text={ft.text} x={screenX + ft.offsetX} y={screenY + ft.offsetY - 20} fontSize={28} scaleX={ft.scale} scaleY={ft.scale} fill={ft.color} opacity={ft.opacity} fontStyle="bold" fontFamily="Arial" align="center" shadowColor="black" shadowBlur={4} shadowOpacity={0.8} offsetX={50}/> )
             })}
           </Group>
         </Layer>
