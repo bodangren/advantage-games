@@ -1,4 +1,4 @@
-import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes } from './runeMatch'
+import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid, swapRunes, findMatches } from './runeMatch'
 import { RUNE_MATCH_CONFIG } from './runeMatchConfig'
 
 const SAMPLE_VOCAB: VocabularyItem[] = [
@@ -13,6 +13,55 @@ const SAMPLE_VOCAB: VocabularyItem[] = [
   { term: 'Moon', translation: 'พระจันทร์' },
   { term: 'Star', translation: 'ดาว' },
 ]
+
+describe('findMatches', () => {
+  it('finds horizontal matches', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const rune = { id: 'test', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    grid[0][0] = rune
+    grid[0][1] = rune
+    grid[0][2] = rune
+    
+    const matches = findMatches(grid)
+    expect(matches.length).toBe(1)
+    expect(matches[0]).toHaveLength(3)
+    expect(matches[0]).toEqual(expect.arrayContaining([
+      { row: 0, col: 0 },
+      { row: 0, col: 1 },
+      { row: 0, col: 2 },
+    ]))
+  })
+
+  it('finds vertical matches', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const rune = { id: 'test', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    grid[0][0] = rune
+    grid[1][0] = rune
+    grid[2][0] = rune
+    
+    const matches = findMatches(grid)
+    expect(matches.length).toBe(1)
+    expect(matches[0]).toHaveLength(3)
+  })
+
+  it('handles L-shapes as unified matches', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    const rune = { id: 'test', type: 'vocabulary', word: 'A', translation: 'A' } as Rune
+    // Horizontal
+    grid[0][0] = rune
+    grid[0][1] = rune
+    grid[0][2] = rune
+    // Vertical
+    grid[1][0] = rune
+    grid[2][0] = rune
+    
+    const matches = findMatches(grid)
+    // Depending on implementation, it might be 1 combined match or 2 overlapping matches.
+    // Let's assume it finds all matching coordinates.
+    const allMatchedCoords = matches.flat()
+    expect(allMatchedCoords).toHaveLength(5)
+  })
+})
 
 describe('swapRunes', () => {
   it('swaps two runes in the grid', () => {

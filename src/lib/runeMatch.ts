@@ -109,6 +109,99 @@ export const swapRunes = (
   return newGrid
 }
 
+export const findMatches = (grid: Rune[][]): GridPosition[][] => {
+  const rows = grid.length
+  const cols = grid[0].length
+  const matchedPositions: GridPosition[] = []
+
+  // Find all horizontal matches
+  for (let r = 0; r < rows; r++) {
+    let matchLength = 1
+    for (let c = 1; c <= cols; c++) {
+      if (
+        c < cols &&
+        grid[r][c].type === 'vocabulary' &&
+        grid[r][c - 1].type === 'vocabulary' &&
+        (grid[r][c] as VocabularyRune).translation === (grid[r][c - 1] as VocabularyRune).translation
+      ) {
+        matchLength++
+      } else {
+        if (matchLength >= 3) {
+          for (let i = 0; i < matchLength; i++) {
+            matchedPositions.push({ row: r, col: c - 1 - i })
+          }
+        }
+        matchLength = 1
+      }
+    }
+  }
+
+  // Find all vertical matches
+  for (let c = 0; c < cols; c++) {
+    let matchLength = 1
+    for (let r = 1; r <= rows; r++) {
+      if (
+        r < rows &&
+        grid[r][c].type === 'vocabulary' &&
+        grid[r - 1][c].type === 'vocabulary' &&
+        (grid[r][c] as VocabularyRune).translation === (grid[r - 1][c] as VocabularyRune).translation
+      ) {
+        matchLength++
+      } else {
+        if (matchLength >= 3) {
+          for (let i = 0; i < matchLength; i++) {
+            matchedPositions.push({ row: r - 1 - i, col: c })
+          }
+        }
+        matchLength = 1
+      }
+    }
+  }
+
+  if (matchedPositions.length === 0) return []
+
+  // Group overlapping matches (L/T shapes) using BFS
+  const groups: GridPosition[][] = []
+  const visited = new Set<string>()
+  const posKey = (p: GridPosition) => `${p.row},${p.col}`
+  
+  // Create a set for quick lookup of matched positions
+  const matchedSet = new Set(matchedPositions.map(posKey))
+
+  for (const pos of matchedPositions) {
+    const key = posKey(pos)
+    if (visited.has(key)) continue
+
+    const group: GridPosition[] = []
+    const queue: GridPosition[] = [pos]
+    visited.add(key)
+
+    while (queue.length > 0) {
+      const current = queue.shift()!
+      group.push(current)
+
+      // Check neighbors in matchedPositions
+      const neighbors = [
+        { row: current.row - 1, col: current.col },
+        { row: current.row + 1, col: current.col },
+        { row: current.row, col: current.col - 1 },
+        { row: current.row, col: current.col + 1 },
+      ]
+
+      for (const neighbor of neighbors) {
+        const nKey = posKey(neighbor)
+        if (matchedSet.has(nKey) && !visited.has(nKey)) {
+          visited.add(nKey)
+          queue.push(neighbor)
+        }
+      }
+    }
+    groups.push(group)
+  }
+
+  return groups
+}
+
 const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune => {
   const roll = rng()
   const { spawnRate } = RUNE_MATCH_CONFIG.powerUps
