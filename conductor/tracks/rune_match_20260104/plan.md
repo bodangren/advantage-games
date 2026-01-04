@@ -25,19 +25,19 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Implement invalid swap reversion. 1e99219
 *   [x] Conductor - User Manual Verification 'Phase 3: Grid & Match-3 Core' 7fb626f
 
-## Phase 4: Combat System
+## Phase 4: Combat System [checkpoint: 083081f]
 *   [x] Task: Increase board and text size by ~50% for better readability. 83529d5
 *   [x] Task: Implement player HP and monster HP state. ccb55e1
 *   [x] Task: Implement damage calculation from matches (3/4/5/L/T + cascades). 39bbdbd
-*   [ ] Task: Implement monster attack timer (every 5 seconds).
-*   [ ] Task: Implement random damage (1 to monster ATK stat).
-*   [ ] Task: Implement screen shake on monster attack.
-*   [ ] Task: Implement Power Word system (target term, bonus damage for matching).
-*   [ ] Task: Implement Power Word rotation (changes every 5 sec with attack).
-*   [ ] Task: Conductor - User Manual Verification 'Phase 4: Combat System'
+*   [x] Task: Implement monster attack timer (every 5 seconds). 0afdbc7
+*   [x] Task: Implement random damage (1 to monster ATK stat). 0afdbc7
+*   [x] Task: Implement screen shake on monster attack. ccb55e1
+*   [x] Task: Implement Power Word system (target term, bonus damage for matching). 42947e8
+*   [x] Task: Implement Power Word rotation (changes every 5 sec with attack). 42947e8
+*   [x] Task: Conductor - User Manual Verification 'Phase 4: Combat System' 083081f
 
 ## Phase 5: Power-Up Runes
-*   [ ] Task: Implement Heal rune spawning (configurable spawn rate).
+*   [~] Task: Implement Heal rune spawning (configurable spawn rate).
 *   [ ] Task: Implement Shield rune spawning.
 *   [ ] Task: Implement Heal effect (restore HP on match).
 *   [ ] Task: Implement Shield effect (block next attack).
