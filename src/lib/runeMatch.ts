@@ -71,15 +71,13 @@ export const initializeGrid = (
         attempts++
         const rune = createRandomRune(vocabulary, rng)
         
-        // Check for matches
+        // Check for matches (now 2-in-a-row)
         if (rune.type === 'vocabulary') {
-          const hasHorizontalMatch = c >= 2 && 
-            grid[r][c-1].type === 'vocabulary' && (grid[r][c-1] as VocabularyRune).wordId === rune.wordId &&
-            grid[r][c-2].type === 'vocabulary' && (grid[r][c-2] as VocabularyRune).wordId === rune.wordId
+          const hasHorizontalMatch = c >= 1 && 
+            grid[r][c-1].type === 'vocabulary' && (grid[r][c-1] as VocabularyRune).wordId === rune.wordId
           
-          const hasVerticalMatch = r >= 2 && 
-            grid[r-1][c].type === 'vocabulary' && (grid[r-1][c] as VocabularyRune).wordId === rune.wordId &&
-            grid[r-2][c].type === 'vocabulary' && (grid[r-2][c] as VocabularyRune).wordId === rune.wordId
+          const hasVerticalMatch = r >= 1 && 
+            grid[r-1][c].type === 'vocabulary' && (grid[r-1][c] as VocabularyRune).wordId === rune.wordId
             
           if (!hasHorizontalMatch && !hasVerticalMatch) {
             validRune = rune
@@ -94,6 +92,27 @@ export const initializeGrid = (
     }
   }
 
+  return grid
+}
+
+// ... (swapRunes remains same)
+
+export const initializeEmptyGrid = (vocabulary: VocabularyItem[]): Rune[][] => {
+  const { rows, columns } = RUNE_MATCH_CONFIG.grid
+  const grid: Rune[][] = []
+  for (let r = 0; r < rows; r++) {
+    grid[r] = []
+    for (let c = 0; c < columns; c++) {
+      // Use a unique ID and a word that won't match others easily
+      const item = vocabulary[(r * columns + c) % vocabulary.length]
+      grid[r][c] = {
+        id: `empty-${r}-${c}`,
+        type: 'vocabulary',
+        wordId: `word-${r}-${c}`, // Unique wordId per cell
+        text: item.term
+      }
+    }
+  }
   return grid
 }
 
@@ -114,7 +133,7 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
   const cols = grid[0].length
   const matchedPositions: GridPosition[] = []
 
-  // Find all horizontal matches
+  // Find all horizontal matches (2+ in a row)
   for (let r = 0; r < rows; r++) {
     let matchLength = 1
     for (let c = 1; c <= cols; c++) {
@@ -126,7 +145,7 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
       ) {
         matchLength++
       } else {
-        if (matchLength >= 3) {
+        if (matchLength >= 2) {
           for (let i = 0; i < matchLength; i++) {
             matchedPositions.push({ row: r, col: c - 1 - i })
           }
@@ -136,7 +155,7 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
     }
   }
 
-  // Find all vertical matches
+  // Find all vertical matches (2+ in a row)
   for (let c = 0; c < cols; c++) {
     let matchLength = 1
     for (let r = 1; r <= rows; r++) {
@@ -148,7 +167,7 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
       ) {
         matchLength++
       } else {
-        if (matchLength >= 3) {
+        if (matchLength >= 2) {
           for (let i = 0; i < matchLength; i++) {
             matchedPositions.push({ row: r - 1 - i, col: c })
           }

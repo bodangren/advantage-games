@@ -52,6 +52,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   const [assets, setAssets] = useState<RuneMatchAssets | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const [animFrame, setAnimFrame] = useState(0)
 
   // Layout constants
   const layout = useMemo(() => {
@@ -83,6 +84,14 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
       monsterAreaHeight,
     }
   }, [dimensions])
+
+  // Animation loop for runes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setAnimFrame((f) => (f + 1) % 3) // Cycle top row (0, 1, 2)
+    }, 500)
+    return () => clearInterval(interval)
+  }, [])
 
   // Asset Loading
   useEffect(() => {
@@ -310,6 +319,20 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
                   const isSelected = gameState.selectedCell?.row === r && gameState.selectedCell?.col === c
                   const runeSize = layout.cellSize - 4
                   
+                  const spriteSheet = 
+                    rune.type === 'vocabulary' ? assets.runes.base :
+                    rune.type === 'heal' ? assets.runes.heal :
+                    assets.runes.shield
+                  
+                  const fw = spriteSheet.width / 3
+                  const fh = spriteSheet.height / 2
+                  const crop = {
+                    x: animFrame * fw,
+                    y: 0,
+                    width: fw,
+                    height: fh
+                  }
+
                   return (
                     <Group 
                       key={rune.id} 
@@ -334,15 +357,11 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
 
                       {/* Rune Asset */}
                       <KonvaImage
-                        image={
-                          rune.type === 'vocabulary' ? assets.runes.base :
-                          rune.type === 'heal' ? assets.runes.heal :
-                          assets.runes.shield
-                        }
+                        image={spriteSheet}
                         width={runeSize}
                         height={runeSize}
                         cornerRadius={6}
-                        crop={rune.type === 'vocabulary' ? { x: 0, y: 0, width: 256, height: 256 } : undefined}
+                        crop={crop}
                       />
                       
                       {rune.type === 'vocabulary' && (
@@ -352,16 +371,12 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
                           height={runeSize - 12}
                           x={6}
                           y={6}
-                          fontSize={Math.max(10, layout.cellSize / 5)}
-                          fill="white"
+                          fontSize={Math.max(10, layout.cellSize / 5.5)}
+                          fill="#0f172a" // Black/Dark text for better contrast on light blue rune
                           align="center"
                           verticalAlign="middle"
                           fontFamily="Arial"
                           fontStyle="bold"
-                          shadowColor="black"
-                          shadowBlur={2}
-                          shadowOpacity={0.8}
-                          shadowOffset={{ x: 1, y: 1 }}
                         />
                       )}
                     </Group>
