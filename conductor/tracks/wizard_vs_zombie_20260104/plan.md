@@ -21,9 +21,9 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 ## Phase 3: Vocabulary Mechanics (Orbs & Interaction)
 *   [x] Task: Implement Orb Spawning and Rendering in Canvas. c49f462
 *   [x] Task: Implement Off-screen Indicators (Arrow + Label) for distant Orbs. eaf748d
-*   [~] Task: Implement Orb Collection Logic.
-*   [ ] Task: Implement Shockwave Logic.
-*   [ ] Task: Conductor - User Manual Verification 'Phase 3: Vocabulary Mechanics'
+*   [x] Task: Implement Orb Collection Logic. 315c281
+*   [x] Task: Implement Shockwave Logic. 315c281
+*   [x] Task: Conductor - User Manual Verification 'Phase 3: Vocabulary Mechanics' [checkpoint: 315c281]
 
 ## Phase 4: Assets & Polish
 *   [ ] Task: Integrate final "Wizard" and "Zombie" sprite sheets with animations.
