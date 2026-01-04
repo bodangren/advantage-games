@@ -34,5 +34,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: Rune Match (Match-3 RPG Combat)
-*Link: [./conductor/tracks/rune_match_20260104/](./conductor/tracks/rune_match_20260104/)*
+## [x] Track: Rune Match (Match-3 RPG Combat)
+*Link: [./conductor/tracks/rune_match_20260104/./conductor/tracks/rune_match_20260104/)*
