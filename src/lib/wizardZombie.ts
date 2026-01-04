@@ -202,7 +202,9 @@ function checkCollisions(
   }
 
   if (collectedOrb) {
+      state.totalAttempts += 1
       if (collectedOrb.isCorrect) {
+          state.correctAnswers += 1
           player = {
               ...player,
               hp: Math.min(player.maxHp, player.hp + 10),
@@ -217,7 +219,8 @@ function checkCollisions(
               orbs = spawnOrbs(nextTarget, vocabulary, Math.random)
           }
       } else {
-          // Incorrect: Just reshuffle same word
+          // Incorrect: Just reshuffle same word + Penalty
+          score = Math.max(0, score - 5)
           if (vocabulary.length > 0) {
               const currentTarget = vocabulary.find(v => v.term === targetWord) || vocabulary[0]
               orbs = spawnOrbs(currentTarget, vocabulary, Math.random)
