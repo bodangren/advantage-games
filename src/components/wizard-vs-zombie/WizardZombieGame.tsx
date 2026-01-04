@@ -30,47 +30,56 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
      }
   }, [vocabulary])
 
-  useEffect(() => {
-    if (!containerRef.current) return
+  const [debugLog, setDebugLog] = useState<string>('Init')
 
-    const updateDimensions = (width: number, height: number) => {
+  useEffect(() => {
+    if (!containerRef.current) {
+        setDebugLog('Ref is null')
+        return
+    }
+    setDebugLog('Ref attached')
+
+    const updateDimensions = () => {
+      if (!containerRef.current) return
+      const { width, height } = containerRef.current.getBoundingClientRect()
+      
+      // Update debug log with raw values
+      setDebugLog(prev => `Measure: ${Math.round(width)}x${Math.round(height)}`)
+
       if (width === 0 || height === 0) return
 
       const scaleX = width / GAME_WIDTH
       const scaleY = height / GAME_HEIGHT
       const scale = Math.min(scaleX, scaleY)
       
-      setDimensions({
-        width,
-        height,
-        scale
-      })
+      setDimensions({ width, height, scale })
     }
 
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        updateDimensions(entry.contentRect.width, entry.contentRect.height)
+         // Use contentRect for precise observer updates
+         const { width, height } = entry.contentRect
+         if (width > 0 && height > 0) {
+             const scaleX = width / GAME_WIDTH
+             const scaleY = height / GAME_HEIGHT
+             const scale = Math.min(scaleX, scaleY)
+             setDimensions({ width, height, scale })
+         }
       }
     })
     
     observer.observe(containerRef.current)
     
-    // Initial check
-    if (containerRef.current) {
-        const { clientWidth, clientHeight } = containerRef.current
-        updateDimensions(clientWidth, clientHeight)
-    }
-    
-    // Fallback: Check again after a short delay in case of layout shifts
-    const timeout = setTimeout(() => {
-        if (containerRef.current) {
-            const { clientWidth, clientHeight } = containerRef.current
-            updateDimensions(clientWidth, clientHeight)
-        }
-    }, 100)
+    // Aggressive Polling for 2 seconds to catch any layout shifts
+    const interval = setInterval(updateDimensions, 200)
+    const timeout = setTimeout(() => clearInterval(interval), 2000)
+
+    // Immediate check
+    updateDimensions()
 
     return () => {
         observer.disconnect()
+        clearInterval(interval)
         clearTimeout(timeout)
     }
   }, [])
@@ -86,6 +95,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   return (
     <div 
         ref={containerRef} 
+        style={{ minHeight: '300px' }}
         className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto"
     >
         {/* Debug Overlay */}
@@ -93,7 +103,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
             <div>Debug Info:</div>
             <div>Container: {Math.round(dimensions.width)}x{Math.round(dimensions.height)}</div>
             <div>Scale: {dimensions.scale.toFixed(3)}</div>
-            <div>Player: ({Math.round(gameState.player.x)}, {Math.round(gameState.player.y)})</div>
+            <div>Status: {debugLog}</div>
             <div>Orbs: {gameState.orbs.length}</div>
         </div>
 

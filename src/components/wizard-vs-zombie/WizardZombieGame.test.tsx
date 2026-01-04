@@ -56,6 +56,6 @@ describe('WizardZombieGame', () => {
   it('renders debug info', () => {
     render(<WizardZombieGame vocabulary={vocabulary} onComplete={jest.fn()} />)
     expect(screen.getByText(/Debug Info:/i)).toBeInTheDocument()
-    expect(screen.getByText(/Player:/i)).toBeInTheDocument()
+    expect(screen.getByText(/Status:/i)).toBeInTheDocument()
   })
 })
