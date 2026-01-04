@@ -56,6 +56,7 @@ export const ORB_RADIUS = 25
 export const INITIAL_HP = 100
 export const MAX_SHOCKWAVE_CHARGES = 3
 export const INVULNERABILITY_DURATION = 500 // ms
+export const SPAWN_RATE_MS = 1000
 
 export const createWizardZombieState = (
   vocabulary: VocabularyItem[],
@@ -131,7 +132,7 @@ export const advanceWizardZombieTime = (
   newX = Math.max(PLAYER_RADIUS, Math.min(GAME_WIDTH - PLAYER_RADIUS, newX))
   newY = Math.max(PLAYER_RADIUS, Math.min(GAME_HEIGHT - PLAYER_RADIUS, newY))
 
-  return {
+  const nextState = {
     ...state,
     gameTime: state.gameTime + dt,
     player: {
@@ -139,6 +140,69 @@ export const advanceWizardZombieTime = (
       x: newX,
       y: newY,
     }
+  }
+
+  return updateZombies(nextState, dt, speedFactor)
+}
+
+function updateZombies(state: WizardZombieState, dt: number, speedFactor: number): WizardZombieState {
+  let { zombies, spawnTimer } = state
+  spawnTimer += dt
+
+  // Spawn Logic (Cap at 50)
+  if (spawnTimer >= SPAWN_RATE_MS && zombies.length < 50) {
+    spawnTimer = 0
+    const gateIndex = Math.floor(Math.random() * 4) // 0-3
+    const gates = [
+        { x: GAME_WIDTH / 2, y: -50 }, // N
+        { x: GAME_WIDTH / 2, y: GAME_HEIGHT + 50 }, // S
+        { x: -50, y: GAME_HEIGHT / 2 }, // W
+        { x: GAME_WIDTH + 50, y: GAME_HEIGHT / 2 }, // E
+    ]
+    const gate = gates[gateIndex]
+    
+    zombies = [
+        ...zombies,
+        {
+            id: `zombie-${Date.now()}-${Math.random()}`,
+            x: gate.x,
+            y: gate.y,
+            radius: ZOMBIE_RADIUS,
+            speed: 1.5 + (state.difficultyMultiplier * 0.1), // Mild speed increase
+            damage: 10
+        }
+    ]
+  }
+
+  // Move Zombies (Vector-based optimization)
+  const nextZombies = zombies.map(z => {
+      let dx = state.player.x - z.x
+      let dy = state.player.y - z.y
+      
+      // Add cheap noise to the target vector BEFORE normalization
+      // This is much faster than trig functions
+      dx += (Math.random() - 0.5) * 200 // Increased wander influence
+      dy += (Math.random() - 0.5) * 200
+
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      
+      if (dist < 1) return z 
+
+      // Normalize and scale
+      const moveX = (dx / dist) * z.speed * speedFactor
+      const moveY = (dy / dist) * z.speed * speedFactor
+      
+      return {
+          ...z,
+          x: z.x + moveX,
+          y: z.y + moveY
+      }
+  })
+
+  return {
+      ...state,
+      zombies: nextZombies,
+      spawnTimer
   }
 }
 

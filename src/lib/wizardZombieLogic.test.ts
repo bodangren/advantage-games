@@ -42,4 +42,34 @@ describe('advanceWizardZombieTime', () => {
     // Should be clamped to radius
     expect(nextState.player.x).toBe(20) // PLAYER_RADIUS
   })
+
+  it('spawns zombies periodically', () => {
+    let state = createWizardZombieState(vocabulary)
+    // Force spawn timer to threshold (assuming 1s for test simplicity, check logic constant)
+    // We'll advance time by 2000ms to ensure a spawn happens
+    state = advanceWizardZombieTime(state, 2000)
+    
+    expect(state.zombies.length).toBeGreaterThan(0)
+  })
+
+  it('zombies move towards player', () => {
+    let state = createWizardZombieState(vocabulary)
+    // Manually add a zombie at 0,0
+    state.zombies.push({
+      id: 'z1',
+      x: 0,
+      y: 0,
+      radius: 15,
+      speed: 2,
+      damage: 10
+    })
+    
+    // Player is at center (400, 300)
+    const nextState = advanceWizardZombieTime(state, 16.6)
+    const zombie = nextState.zombies[0]
+    
+    // Zombie should move positive towards player
+    expect(zombie.x).toBeGreaterThan(0)
+    expect(zombie.y).toBeGreaterThan(0)
+  })
 })
