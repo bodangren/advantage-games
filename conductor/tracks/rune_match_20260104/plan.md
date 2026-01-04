@@ -27,8 +27,8 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 
 ## Phase 4: Combat System
 *   [x] Task: Increase board and text size by ~50% for better readability. 83529d5
-*   [ ] Task: Implement player HP and monster HP state.
-*   [ ] Task: Implement damage calculation from matches (3/4/5/L/T + cascades).
+*   [x] Task: Implement player HP and monster HP state. ccb55e1
+*   [~] Task: Implement damage calculation from matches (3/4/5/L/T + cascades).
 *   [ ] Task: Implement monster attack timer (every 5 seconds).
 *   [ ] Task: Implement random damage (1 to monster ATK stat).
 *   [ ] Task: Implement screen shake on monster attack.
