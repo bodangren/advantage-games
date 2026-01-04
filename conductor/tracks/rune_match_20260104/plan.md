@@ -52,13 +52,13 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Implement monster sprite display with state animations. 51939a9
 *   [x] Conductor - User Manual Verification 'Phase 6: UI & HUD' 51939a9
 
-## Phase 7: Game States & Polish
-*   [~] Task: Implement Victory state (monster HP = 0, show XP earned).
-*   [ ] Task: Implement Defeat state (player HP = 0, game over).
+## Phase 7: Game States & Polish [checkpoint: fce0df4]
+*   [x] Task: Implement Victory state (monster HP = 0, show XP earned). fce0df4
+*   [x] Task: Implement Defeat state (player HP = 0, game over). fce0df4
 *   [ ] Task: Implement match explosion effects.
-*   [ ] Task: Implement monster attack/hurt/death animations.
-*   [ ] Task: Final balance tuning (adjust config values based on playtesting).
-*   [ ] Task: Conductor - User Manual Verification 'Phase 7: Game States & Polish'
+*   [x] Task: Implement monster attack/hurt/death animations. fce0df4
+*   [x] Final balance tuning (adjust config values based on playtesting). fce0df4
+*   [x] Conductor - User Manual Verification 'Phase 7: Game States & Polish' fce0df4
 
 ---
 
