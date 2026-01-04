@@ -130,7 +130,7 @@ export const advanceWizardZombieTime = (
   newX = Math.max(PLAYER_RADIUS, Math.min(GAME_WIDTH - PLAYER_RADIUS, newX))
   newY = Math.max(PLAYER_RADIUS, Math.min(GAME_HEIGHT - PLAYER_RADIUS, newY))
 
-  let nextPlayer = {
+  const nextPlayer = {
     ...state.player,
     x: newX,
     y: newY,
@@ -178,7 +178,8 @@ function checkCollisions(
     dt: number, 
     vocabulary: VocabularyItem[]
 ): WizardZombieState {
-  let { player, zombies, orbs, status, score, targetWord } = state
+  let { player, orbs, status, score, targetWord } = state
+  const { zombies } = state
 
   // Cooldowns
   if (player.invulnerabilityTime > 0) {

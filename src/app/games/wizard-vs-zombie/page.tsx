@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect } from 'react'
+import type { WizardZombieGameResult } from '@/components/wizard-vs-zombie/WizardZombieGame'
 import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
 import { useGameStore } from '@/store/useGameStore'
 
@@ -23,7 +24,7 @@ export default function WizardZombiePage() {
   }, [vocabulary.length, setVocabulary])
 
   const handleComplete = useCallback(
-    (results: any) => {
+    (results: WizardZombieGameResult) => {
       setLastResult(results.xp, results.accuracy)
     },
     [setLastResult]

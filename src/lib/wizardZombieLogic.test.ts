@@ -1,7 +1,7 @@
-import { advanceWizardZombieTime, createWizardZombieState, WizardZombieState } from './wizardZombie'
+import { advanceWizardZombieTime, createWizardZombieState } from './wizardZombie'
 
 describe('advanceWizardZombieTime', () => {
-  const vocabulary = [{ term: 'A', translation: 'B', id: '1' }]
+  const vocabulary = [{ term: 'A', translation: 'B' }]
 
   it('increases game time', () => {
     const initialState = createWizardZombieState(vocabulary)
@@ -53,7 +53,7 @@ describe('advanceWizardZombieTime', () => {
   })
 
   it('zombies move towards player', () => {
-    let state = createWizardZombieState(vocabulary)
+    const state = createWizardZombieState(vocabulary)
     // Manually add a zombie at 0,0
     state.zombies.push({
       id: 'z1',
@@ -74,7 +74,7 @@ describe('advanceWizardZombieTime', () => {
   })
 
   it('player takes damage from zombie collision', () => {
-    let state = createWizardZombieState(vocabulary)
+    const state = createWizardZombieState(vocabulary)
     // Place player and zombie overlapping
     state.player.x = 100
     state.player.y = 100
@@ -96,7 +96,7 @@ describe('advanceWizardZombieTime', () => {
   })
 
   it('player does not take damage while invulnerable', () => {
-    let state = createWizardZombieState(vocabulary)
+    const state = createWizardZombieState(vocabulary)
     state.player.x = 100
     state.player.y = 100
     state.player.invulnerabilityTime = 500
@@ -117,7 +117,7 @@ describe('advanceWizardZombieTime', () => {
   })
 
   it('triggers gameover when hp reaches 0', () => {
-    let state = createWizardZombieState(vocabulary)
+    const state = createWizardZombieState(vocabulary)
     state.player.hp = 10
     state.zombies.push({
       id: 'z1',
@@ -135,7 +135,7 @@ describe('advanceWizardZombieTime', () => {
   })
 
   it('collecting a correct orb heals and reshuffles', () => {
-    let state = createWizardZombieState(vocabulary)
+    const state = createWizardZombieState(vocabulary)
     state.player.hp = 50
     const correctOrb = state.orbs.find(o => o.isCorrect)!
     
@@ -151,7 +151,7 @@ describe('advanceWizardZombieTime', () => {
   })
 
   it('collecting an incorrect orb only reshuffles', () => {
-    let state = createWizardZombieState(vocabulary)
+    const state = createWizardZombieState(vocabulary)
     state.player.hp = 50
     const decoyOrb = state.orbs.find(o => !o.isCorrect)!
     
@@ -165,7 +165,7 @@ describe('advanceWizardZombieTime', () => {
   })
 
   it('gains shockwave charge on correct orb', () => {
-    let state = createWizardZombieState(vocabulary)
+    const state = createWizardZombieState(vocabulary)
     state.player.shockwaveCharges = 0
     const correctOrb = state.orbs.find(o => o.isCorrect)!
     state.player.x = correctOrb.x
@@ -177,7 +177,7 @@ describe('advanceWizardZombieTime', () => {
   })
 
   it('pushes zombies back when casting shockwave', () => {
-    let state = createWizardZombieState(vocabulary)
+    const state = createWizardZombieState(vocabulary)
     state.player.shockwaveCharges = 1
     // Add zombie close to player
     state.zombies.push({

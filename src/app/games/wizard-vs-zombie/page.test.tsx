@@ -1,10 +1,17 @@
 import { render, screen } from '@testing-library/react'
 import WizardZombiePage from './page'
+import type { VocabularyItem } from '@/store/useGameStore'
+
+type GameStoreMockState = {
+  vocabulary: VocabularyItem[]
+  setVocabulary: (vocabulary: VocabularyItem[]) => void
+  setLastResult: (xp: number, accuracy: number) => void
+}
 
 // Mock the game store
 jest.mock('@/store/useGameStore', () => ({
-  useGameStore: (selector: any) => {
-    const state = {
+  useGameStore: <T,>(selector: (state: GameStoreMockState) => T): T => {
+    const state: GameStoreMockState = {
       vocabulary: [],
       setVocabulary: jest.fn(),
       setLastResult: jest.fn(),

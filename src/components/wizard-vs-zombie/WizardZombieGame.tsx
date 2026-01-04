@@ -1,13 +1,12 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Stage, Layer, Circle, Text, Group, Rect, Image as KonvaImage } from 'react-konva'
+import { Stage, Layer, Text, Group, Rect, Image as KonvaImage } from 'react-konva'
 import { 
   createWizardZombieState, 
   advanceWizardZombieTime,
   GAME_WIDTH, 
   GAME_HEIGHT, 
-  PLAYER_RADIUS,
   type WizardZombieState 
 } from '@/lib/wizardZombie'
 import type { VocabularyItem } from '@/store/useGameStore'
@@ -21,9 +20,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, Zap, BookOpen, Trophy, Target, Sparkles, Home, RotateCcw, Skull } from 'lucide-react'
 import { calculateXP } from '@/lib/xp'
 
+export type WizardZombieGameResult = {
+  xp: number
+  accuracy: number
+}
+
 interface WizardZombieGameProps {
   vocabulary: VocabularyItem[]
-  onComplete: (results: any) => void
+  onComplete: (results: WizardZombieGameResult) => void
 }
 
 // Sprite Helper
@@ -362,7 +366,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                                     </button>
                                     <button 
                                         onClick={() => {
-                                            const results = {
+                                            const results: WizardZombieGameResult = {
                                                 xp: calculateXP(gameState.score, gameState.correctAnswers, gameState.totalAttempts),
                                                 accuracy: gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0
                                             }
@@ -462,6 +466,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                             {/* Player */}
                             <KonvaImage 
                                 image={assets.player}
+                                name="player"
                                 x={gameState.player.x}
                                 y={gameState.player.y}
                                 width={64}
@@ -476,6 +481,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                                 <KonvaImage 
                                     key={zombie.id}
                                     image={assets.zombie}
+                                    name="zombie"
                                     x={zombie.x}
                                     y={zombie.y}
                                     width={48}
@@ -491,6 +497,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                                 <Group key={orb.id} x={orb.x} y={orb.y}>
                                     <KonvaImage 
                                         image={assets.orb}
+                                        name="orb"
                                         width={orb.radius * 2}
                                         height={orb.radius * 2}
                                         offsetX={orb.radius}

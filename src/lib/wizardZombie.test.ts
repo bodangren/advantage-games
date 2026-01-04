@@ -18,7 +18,7 @@ describe('wizardZombie game logic', () => {
       expect(state.player.hp).toBe(INITIAL_HP)
       expect(state.player.shockwaveCharges).toBe(0)
       expect(state.zombies).toHaveLength(0)
-      expect(state.orbs).toHaveLength(3)
+      expect(state.orbs).toHaveLength(4)
       expect(mockVocabulary.map(v => v.term)).toContain(state.targetWord)
       expect(state.score).toBe(0)
     })
