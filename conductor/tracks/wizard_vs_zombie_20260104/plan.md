@@ -19,9 +19,9 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 *   [x] Task: Conductor - User Manual Verification 'Phase 2: Core Gameplay Loop' [checkpoint: a2a3cef]
 
 ## Phase 3: Vocabulary Mechanics (Orbs & Interaction)
-*   [ ] Task: Implement Orb Spawning and Rendering in Canvas.
-*   [ ] Task: Implement Off-screen Indicators (Arrow + Label) for distant Orbs.
-*   [ ] Task: Implement Orb Collection Logic.
+*   [x] Task: Implement Orb Spawning and Rendering in Canvas. c49f462
+*   [x] Task: Implement Off-screen Indicators (Arrow + Label) for distant Orbs. eaf748d
+*   [~] Task: Implement Orb Collection Logic.
 *   [ ] Task: Implement Shockwave Logic.
 *   [ ] Task: Conductor - User Manual Verification 'Phase 3: Vocabulary Mechanics'
 
