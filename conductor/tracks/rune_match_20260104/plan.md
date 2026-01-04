@@ -26,7 +26,7 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Conductor - User Manual Verification 'Phase 3: Grid & Match-3 Core' 7fb626f
 
 ## Phase 4: Combat System
-*   [ ] Task: Increase board and text size by ~50% for better readability.
+*   [x] Task: Increase board and text size by ~50% for better readability. 83529d5
 *   [ ] Task: Implement player HP and monster HP state.
 *   [ ] Task: Implement damage calculation from matches (3/4/5/L/T + cascades).
 *   [ ] Task: Implement monster attack timer (every 5 seconds).
