@@ -2,13 +2,13 @@
 
 This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary game using **React-Konva (Canvas)** for high-performance rendering.
 
-## Phase 1: Setup & Infrastructure
+## Phase 1: Setup & Infrastructure [checkpoint: 7e9f070]
 *   [x] Task: Create configuration file `src/lib/runeMatchConfig.ts` with all balance values. a20e9c0
 *   [x] Task: Define `RuneMatchState`, `Monster`, `Rune`, and related types in `src/lib/runeMatch.ts`. d10c86e
 *   [x] Task: Create `src/app/games/rune-match` route and page structure. 0d293b3
 *   [x] Task: Create `RuneMatchGame` container component with React-Konva Stage. 3c2ce4d
 *   [x] Task: Register game in Main Menu (using placeholder cover image). 8f35e75
-*   [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure'
+*   [x] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure' 7e9f070
 
 ## Phase 2: Monster Selection Screen
 *   [ ] Task: Implement Monster Selection UI with 4 difficulty options.
