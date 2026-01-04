@@ -98,6 +98,16 @@ export const createWizardZombieState = (
   }
 }
 
+export const advanceWizardZombieTime = (
+  state: WizardZombieState,
+  dt: number
+): WizardZombieState => {
+  return {
+    ...state,
+    gameTime: state.gameTime + dt,
+  }
+}
+
 function spawnOrbs(
   target: VocabularyItem,
   vocabulary: VocabularyItem[],

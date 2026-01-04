@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import { Stage, Layer, Circle, Text, Group, Rect } from 'react-konva'
 import { 
   createWizardZombieState, 
+  advanceWizardZombieTime,
   GAME_WIDTH, 
   GAME_HEIGHT, 
   type WizardZombieState 
 } from '@/lib/wizardZombie'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { useSound } from '@/hooks/useSound'
+import { useInterval } from '@/hooks/useInterval'
 
 interface WizardZombieGameProps {
   vocabulary: VocabularyItem[]
@@ -23,6 +25,13 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   // Dimensions for responsive canvas
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0, scale: 1 })
+
+  // Game Loop
+  useInterval(() => {
+    if (gameState && gameState.status === 'playing') {
+        setGameState(prev => prev ? advanceWizardZombieTime(prev, 50) : null)
+    }
+  }, gameState?.status === 'playing' ? 50 : null)
 
   useEffect(() => {
      if (vocabulary.length > 0) {
