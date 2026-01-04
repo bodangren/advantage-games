@@ -5,7 +5,7 @@ This plan outlines the steps to build the "Wizard vs Zombie" survival game using
 ## Phase 1: Setup & Infrastructure
 *   [x] Task: Define `WizardZombieState` and types in `src/lib/wizardZombie.ts`. 48e7bad
 *   [x] Task: Create `src/app/games/wizard-vs-zombie` route and page structure. d964e2c
-*   [ ] Task: Create `WizardZombieGame` container component using `react-konva`.
+*   [x] Task: Create `WizardZombieGame` container component using `react-konva`. 80a4d30
 *   [ ] Task: Register game in Main Menu (using a temporary or placeholder cover image).
 *   [ ] Task: Conductor - User Manual Verification 'Phase 1: Setup & Infrastructure'
 
