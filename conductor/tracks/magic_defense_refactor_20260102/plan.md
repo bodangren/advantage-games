@@ -19,7 +19,7 @@
 - [x] Task: Implement Magic Bolt animation (Wizard -> Enemy) [commit: 8ae72e7]
 - [x] Task: Update Health Visuals to destroy Right -> Left -> Center [commit: e3e0a9e]
 - [x] Task: Implement HUD for Score and Accuracy [commit: aeb6fee]
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Tuning and Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Tuning and Logic' (Protocol in workflow.md)
 
 ## Phase 4: Final Polish (New)
 - [x] Task: Revert shooting mechanic to Enter key [commit: 2e7d5f7]
@@ -28,4 +28,4 @@
 - [x] Task: Move InputController to top of screen [commit: e8d9415]
 - [x] Task: Fix XP calculation to `Correct Answers * Accuracy` [commit: 6afbfdf]
 - [x] Task: Change background to green (grass) [commit: 1314652]
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Polish' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Polish' (Protocol in workflow.md)

@@ -9,7 +9,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [~] Track: Transform into "Magic Defense": RPG theme, restructuring, and gameplay tuning.
+## [x] Track: Transform into "Magic Defense": RPG theme, restructuring, and gameplay tuning.
 *Link: [./conductor/tracks/magic_defense_refactor_20260102/](./conductor/tracks/magic_defense_refactor_20260102/)*
 
 ---
@@ -19,10 +19,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [ ] Track: RPG Battle Selection Scene
+## [x] Track: RPG Battle Selection Scene
 *Link: [./conductor/tracks/selection_screen_20260102/](./conductor/tracks/selection_screen_20260102/)*
 
 ---
 
-## [~] Track: Dragon Flight (Housekeeping + New Game)
+## [x] Track: Dragon Flight (Housekeeping + New Game)
 *Link: [./conductor/tracks/dragon-flight/](./conductor/tracks/dragon-flight/)*
+
+---
+
+## [~] Track: Wizard vs Zombie (Health Pickup)
+*Link: [./conductor/tracks/wizard_vs_zombie_20260104/](./conductor/tracks/wizard_vs_zombie_20260104/)*

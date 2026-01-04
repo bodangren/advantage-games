@@ -10,9 +10,13 @@ Defend your castles from falling words by typing their correct translations!
 ![Magic Defense Gameplay](public/gameplay.png)
 
 ### RPG Battle
-Fight mosters
+Fight monsters PvP
 
 ![RPG Battle Gameplay](public/rpg-battle.png)
+
+### Dragon Flight
+Choose the correct gate to gather enough dragons to defeat the boss
+![Dragon Flight Gameplay](public/dragon-flight.png)
 
 ## 🛠️ Developer Guide
 
