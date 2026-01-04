@@ -22,8 +22,8 @@ This plan outlines the steps to build the "Rune Match" match-3 RPG vocabulary ga
 *   [x] Task: Implement match detection (3+ horizontal/vertical, L-shapes, T-shapes). 4135a99
 *   [x] Task: Implement tile clearing and gravity (tiles fall from top). 3bc0532
 *   [x] Task: Implement cascade detection (chain reactions after gravity). a91ce5e
-*   [~] Task: Implement invalid swap reversion.
-*   [ ] Task: Conductor - User Manual Verification 'Phase 3: Grid & Match-3 Core'
+*   [x] Task: Implement invalid swap reversion. 1e99219
+*   [~] Task: Conductor - User Manual Verification 'Phase 3: Grid & Match-3 Core'
 
 ## Phase 4: Combat System
 *   [ ] Task: Implement player HP and monster HP state.
