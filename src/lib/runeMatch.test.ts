@@ -1,5 +1,5 @@
-import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition } from './runeMatch'
-import type { VocabularyItem } from '@/store/useGameStore'
+import { createRuneMatchState, type RuneMatchState, type Rune, type GridPosition, initializeGrid } from './runeMatch'
+import { RUNE_MATCH_CONFIG } from './runeMatchConfig'
 
 const SAMPLE_VOCAB: VocabularyItem[] = [
   { term: 'Hello', translation: 'สวัสดี' },
@@ -13,6 +13,56 @@ const SAMPLE_VOCAB: VocabularyItem[] = [
   { term: 'Moon', translation: 'พระจันทร์' },
   { term: 'Star', translation: 'ดาว' },
 ]
+
+describe('initializeGrid', () => {
+  it('creates a grid with correct dimensions', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    expect(grid.length).toBe(RUNE_MATCH_CONFIG.grid.rows)
+    expect(grid[0].length).toBe(RUNE_MATCH_CONFIG.grid.columns)
+  })
+
+  it('contains valid runes', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    grid.flat().forEach(rune => {
+      expect(['vocabulary', 'heal', 'shield']).toContain(rune.type)
+      if (rune.type === 'vocabulary') {
+        expect(rune.word).toBeDefined()
+        expect(rune.translation).toBeDefined()
+      }
+    })
+  })
+
+  it('does not have initial matches', () => {
+    const grid = initializeGrid(SAMPLE_VOCAB)
+    
+    for (let r = 0; r < grid.length; r++) {
+      for (let c = 0; c < grid[r].length; c++) {
+        const rune = grid[r][c]
+        if (rune.type !== 'vocabulary') continue
+
+        // Check horizontal
+        if (c < grid[r].length - 2) {
+          const r2 = grid[r][c+1]
+          const r3 = grid[r][c+2]
+          if (r2.type === 'vocabulary' && r3.type === 'vocabulary') {
+            const match = rune.translation === r2.translation && rune.translation === r3.translation
+            expect(match).toBe(false)
+          }
+        }
+
+        // Check vertical
+        if (r < grid.length - 2) {
+          const r2 = grid[r+1][c]
+          const r3 = grid[r+2][c]
+          if (r2.type === 'vocabulary' && r3.type === 'vocabulary') {
+            const match = rune.translation === r2.translation && rune.translation === r3.translation
+            expect(match).toBe(false)
+          }
+        }
+      }
+    }
+  })
+})
 
 describe('runeMatch types', () => {
   describe('GridPosition', () => {

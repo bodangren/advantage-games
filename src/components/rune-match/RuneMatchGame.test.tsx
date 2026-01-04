@@ -144,6 +144,9 @@ describe('RuneMatchGame', () => {
     // Should now show battle text in Konva (rendered as span in our mock)
     await waitFor(() => expect(screen.getByText(/Battle against dragon/i)).toBeInTheDocument())
 
+    // Verify grid initialization message (I'll add this to RuneMatchGame.tsx placeholder)
+    expect(screen.getByText(/Grid: 8x6/i)).toBeInTheDocument()
+
     spy.mockRestore()
   })
 })

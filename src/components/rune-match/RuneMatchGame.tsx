@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
-import { createRuneMatchState, type RuneMatchState } from '@/lib/runeMatch'
+import { createRuneMatchState, initializeGrid, type RuneMatchState } from '@/lib/runeMatch'
 import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
@@ -108,6 +108,9 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     const config = RUNE_MATCH_CONFIG.monsters[monsterType]
     setGameState((prev) => {
       if (!prev) return null
+      
+      const grid = initializeGrid(prev.vocabulary, { rng: prev.rng })
+
       return {
         ...prev,
         status: 'playing',
@@ -119,6 +122,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           attack: config.attack,
           xp: config.xp,
         },
+        grid,
       }
     })
   }, [])
@@ -197,16 +201,28 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
 
           {/* Placeholder content for playing state */}
           {gameState.status === 'playing' && (
-            <Text
-              text={`Battle against ${gameState.monster?.type} - Grid coming soon`}
-              x={dimensions.width / 2}
-              y={dimensions.height / 2}
-              offsetX={200}
-              offsetY={15}
-              fontSize={20}
-              fill="#94a3b8"
-              fontFamily="Arial"
-            />
+            <Group>
+              <Text
+                text={`Battle against ${gameState.monster?.type} - Grid coming soon`}
+                x={dimensions.width / 2}
+                y={dimensions.height / 2}
+                offsetX={200}
+                offsetY={15}
+                fontSize={20}
+                fill="#94a3b8"
+                fontFamily="Arial"
+              />
+              <Text
+                text={`Grid: ${gameState.grid.length}x${gameState.grid[0]?.length}`}
+                x={dimensions.width / 2}
+                y={dimensions.height / 2 + 30}
+                offsetX={200}
+                offsetY={15}
+                fontSize={16}
+                fill="#64748b"
+                fontFamily="Arial"
+              />
+            </Group>
           )}
         </Layer>
       </Stage>
