@@ -131,11 +131,12 @@ export const swapRunes = (
 export const findMatches = (grid: Rune[][]): GridPosition[][] => {
   const rows = grid.length
   const cols = grid[0].length
-  const matchedPositions: GridPosition[] = []
+  const horizontalMatches: GridPosition[][] = []
+  const verticalMatches: GridPosition[][] = []
 
   // Find all horizontal matches (2+ in a row)
   for (let r = 0; r < rows; r++) {
-    let matchLength = 1
+    let match: GridPosition[] = [{ row: r, col: 0 }]
     for (let c = 1; c <= cols; c++) {
       if (
         c < cols &&
@@ -143,21 +144,19 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
         grid[r][c - 1].type === 'vocabulary' &&
         (grid[r][c] as VocabularyRune).wordId === (grid[r][c - 1] as VocabularyRune).wordId
       ) {
-        matchLength++
+        match.push({ row: r, col: c })
       } else {
-        if (matchLength >= 2) {
-          for (let i = 0; i < matchLength; i++) {
-            matchedPositions.push({ row: r, col: c - 1 - i })
-          }
+        if (match.length >= 2) {
+          horizontalMatches.push(match)
         }
-        matchLength = 1
+        if (c < cols) match = [{ row: r, col: c }]
       }
     }
   }
 
   // Find all vertical matches (2+ in a row)
   for (let c = 0; c < cols; c++) {
-    let matchLength = 1
+    let match: GridPosition[] = [{ row: 0, col: c }]
     for (let r = 1; r <= rows; r++) {
       if (
         r < rows &&
@@ -165,41 +164,46 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
         grid[r - 1][c].type === 'vocabulary' &&
         (grid[r][c] as VocabularyRune).wordId === (grid[r - 1][c] as VocabularyRune).wordId
       ) {
-        matchLength++
+        match.push({ row: r, col: c })
       } else {
-        if (matchLength >= 2) {
-          for (let i = 0; i < matchLength; i++) {
-            matchedPositions.push({ row: r - 1 - i, col: c })
-          }
+        if (match.length >= 2) {
+          verticalMatches.push(match)
         }
-        matchLength = 1
+        if (r < rows) match = [{ row: r, col: c }]
       }
     }
   }
 
-  if (matchedPositions.length === 0) return []
+  const allMatchedCoords = [...horizontalMatches.flat(), ...verticalMatches.flat()]
+  if (allMatchedCoords.length === 0) return []
 
   // Group overlapping matches (L/T shapes) using BFS
-  const groups: GridPosition[][] = []
+  const groups: MatchGroup[] = []
   const visited = new Set<string>()
   const posKey = (p: GridPosition) => `${p.row},${p.col}`
   
-  // Create a set for quick lookup of matched positions
-  const matchedSet = new Set(matchedPositions.map(posKey))
+  const matchedSet = new Set(allMatchedCoords.map(posKey))
 
-  for (const pos of matchedPositions) {
+  for (const pos of allMatchedCoords) {
     const key = posKey(pos)
     if (visited.has(key)) continue
 
-    const group: GridPosition[] = []
+    const groupCoords: GridPosition[] = []
     const queue: GridPosition[] = [pos]
     visited.add(key)
 
+    let hasIntersection = false
+    const groupWordId = (grid[pos.row][pos.col] as VocabularyRune).wordId
+
     while (queue.length > 0) {
       const current = queue.shift()!
-      group.push(current)
+      groupCoords.push(current)
 
-      // Check neighbors in matchedPositions
+      // Check for L/T shape: coordinate is in both horizontal and vertical matches
+      const inHorizontal = horizontalMatches.some(m => m.some(p => p.row === current.row && p.col === current.col))
+      const inVertical = verticalMatches.some(m => m.some(p => p.row === current.row && p.col === current.col))
+      if (inHorizontal && inVertical) hasIntersection = true
+
       const neighbors = [
         { row: current.row - 1, col: current.col },
         { row: current.row + 1, col: current.col },
@@ -210,12 +214,19 @@ export const findMatches = (grid: Rune[][]): GridPosition[][] => {
       for (const neighbor of neighbors) {
         const nKey = posKey(neighbor)
         if (matchedSet.has(nKey) && !visited.has(nKey)) {
-          visited.add(nKey)
-          queue.push(neighbor)
+          const neighborRune = grid[neighbor.row][neighbor.col]
+          if (neighborRune.type === 'vocabulary' && neighborRune.wordId === groupWordId) {
+            visited.add(nKey)
+            queue.push(neighbor)
+          }
         }
       }
     }
-    groups.push(group)
+    groups.push({
+      coords: groupCoords,
+      isSpecial: hasIntersection,
+      wordId: groupWordId
+    })
   }
 
   return groups
@@ -275,18 +286,20 @@ export const processMatches = (
   let currentGrid = grid
   let cascades = 0
   const allClearedCoords: GridPosition[] = []
+  const allGroups: MatchGroup[] = []
   
-  let matches = findMatches(currentGrid)
+  let groups = findMatches(currentGrid)
   
-  while (matches.length > 0) {
+  while (groups.length > 0) {
     cascades++
-    const currentMatchCoords = matches.flat()
-    allClearedCoords.push(...currentMatchCoords)
+    for (const group of groups) {
+      allClearedCoords.push(...group.coords)
+      allGroups.push(group)
+    }
     
-    currentGrid = applyGravity(currentGrid, currentMatchCoords, vocabulary, { rng })
-    matches = findMatches(currentGrid)
+    currentGrid = applyGravity(currentGrid, groups.flatMap(g => g.coords), vocabulary, { rng })
+    groups = findMatches(currentGrid)
     
-    // Safety break to prevent infinite loops if something goes wrong
     if (cascades > 100) break
   }
 
@@ -294,6 +307,7 @@ export const processMatches = (
     grid: currentGrid,
     cascades,
     allClearedCoords,
+    groups: allGroups
   }
 }
 
@@ -334,33 +348,30 @@ export const applyMatchResult = (
   let correctAnswers = state.correctAnswers
   let totalAttempts = state.totalAttempts
 
-  // Process each cleared coordinate to find power-ups and vocabulary runes
-  for (const coord of result.allClearedCoords) {
-    const rune = state.grid[coord.row][coord.col]
+  // Calculate total damage from all groups
+  let totalDamage = 0
+
+  for (const group of result.groups) {
+    const firstCoord = group.coords[0]
+    const rune = state.grid[firstCoord.row][firstCoord.col]
     
     if (rune.type === 'vocabulary') {
       totalAttempts++
-      // Check if it's the Power Word (to be implemented in next task)
       const isPower = rune.wordId === state.powerWord
       if (isPower) correctAnswers++
       
-      const damage = calculateMatchDamage(1, result.cascades, isPower)
-      // Note: This 1-by-1 calculation is a bit off for multi-rune matches, 
-      // let's refine this to process actual Match Groups if we want accurate scaling.
-      // For now, simpler: we'll just apply a chunk of damage based on total cleared runes.
+      const damage = calculateMatchDamage(group.coords.length, result.cascades, isPower)
+      const groupBonus = group.isSpecial ? RUNE_MATCH_CONFIG.combat.lShapeDamage : 0
+      
+      totalDamage += damage + groupBonus
     } else if (rune.type === 'heal') {
-      playerHp = Math.min(state.player.maxHp, playerHp + RUNE_MATCH_CONFIG.powerUps.healAmount)
+      playerHp = Math.min(state.player.maxHp, playerHp + (group.coords.length * RUNE_MATCH_CONFIG.powerUps.healAmount))
     } else if (rune.type === 'shield') {
       hasShield = true
     }
   }
 
-  // Simplified damage: 5 per vocabulary rune + cascade bonus
-  const vocabRunes = result.allClearedCoords.filter(c => state.grid[c.row][c.col].type === 'vocabulary')
-  if (vocabRunes.length > 0) {
-    const totalDamage = calculateMatchDamage(vocabRunes.length, result.cascades, false)
-    monsterHp = Math.max(0, monsterHp - totalDamage)
-  }
+  monsterHp = Math.max(0, monsterHp - totalDamage)
 
   return {
     ...state,
