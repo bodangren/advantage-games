@@ -8,29 +8,15 @@ import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
 import { MonsterSelection } from './MonsterSelection'
+import { Button } from '@/components/ui/button'
+import { Trophy, Skull } from 'lucide-react'
 
-export type RuneMatchGameResult = {
-  xp: number
-  accuracy: number
-}
-
-export type RuneMatchGameProps = {
-  vocabulary: VocabularyItem[]
-  onComplete: (result: RuneMatchGameResult) => void
-}
+export type RuneMatchGameResult = { xp: number; accuracy: number }
+export type RuneMatchGameProps = { vocabulary: VocabularyItem[]; onComplete: (result: RuneMatchGameResult) => void }
 
 type RuneMatchAssets = {
-  monsters: {
-    goblin: HTMLImageElement
-    skeleton: HTMLImageElement
-    orc: HTMLImageElement
-    dragon: HTMLImageElement
-  }
-  runes: {
-    base: HTMLImageElement
-    heal: HTMLImageElement
-    shield: HTMLImageElement
-  }
+  monsters: { goblin: HTMLImageElement; skeleton: HTMLImageElement; orc: HTMLImageElement; dragon: HTMLImageElement }
+  runes: { base: HTMLImageElement; heal: HTMLImageElement; shield: HTMLImageElement }
   background: HTMLImageElement
 }
 
@@ -42,32 +28,21 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   const [animFrame, setAnimFrame] = useState(0)
   const [monsterAnimFrame, setMonsterAnimFrame] = useState(0)
 
-  // Layout constants
   const layout = useMemo(() => {
-    const padding = 20
-    const monsterAreaHeight = dimensions.height * 0.4
-    const gridAreaHeight = dimensions.height * 0.5
-    const availableGridWidth = dimensions.width - padding * 2
-    const availableGridHeight = gridAreaHeight - padding
-    const cellSize = Math.min(
-      availableGridWidth / RUNE_MATCH_CONFIG.grid.columns,
-      availableGridHeight / RUNE_MATCH_CONFIG.grid.rows
-    )
-    const gridWidth = cellSize * RUNE_MATCH_CONFIG.grid.columns
-    const gridHeight = cellSize * RUNE_MATCH_CONFIG.grid.rows
-    const gridX = (dimensions.width - gridWidth) / 2
-    const gridY = monsterAreaHeight + (gridAreaHeight - gridHeight) / 2
+    const padding = 20; const monsterAreaHeight = dimensions.height * 0.4; const gridAreaHeight = dimensions.height * 0.5
+    const availableGridWidth = dimensions.width - padding * 2; const availableGridHeight = gridAreaHeight - padding
+    const cellSize = Math.min(availableGridWidth / RUNE_MATCH_CONFIG.grid.columns, availableGridHeight / RUNE_MATCH_CONFIG.grid.rows)
+    const gridWidth = cellSize * RUNE_MATCH_CONFIG.grid.columns; const gridHeight = cellSize * RUNE_MATCH_CONFIG.grid.rows
+    const gridX = (dimensions.width - gridWidth) / 2; const gridY = monsterAreaHeight + (gridAreaHeight - gridHeight) / 2
     return { cellSize, gridX, gridY, gridWidth, gridHeight, monsterAreaHeight }
   }, [dimensions])
 
-  // Animation loops
   useEffect(() => {
     const rInt = setInterval(() => setAnimFrame((f) => (f + 1) % 3), 500)
     const mInt = setInterval(() => setMonsterAnimFrame((f) => (f + 1) % 3), 150)
     return () => { clearInterval(rInt); clearInterval(mInt) }
   }, [])
 
-  // Game logic loop (10fps)
   useEffect(() => {
     const tickRate = 100
     const interval = setInterval(() => {
@@ -79,29 +54,16 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     return () => clearInterval(interval)
   }, [])
 
-  // Smooth visual animation loop (60fps)
   useEffect(() => {
-    let lastTime = performance.now()
-    let frameId: number
+    let lastTime = performance.now(); let frameId: number
     const tick = (now: number) => {
-      const dt = now - lastTime
-      lastTime = now
+      const dt = now - lastTime; lastTime = now
       setGameState((current) => {
         if (!current || current.floatingTexts.length === 0) return current
-        const nextTexts = current.floatingTexts
-          .map(ft => {
-            const remaining = ft.duration - dt
-            const progress = 1 - (remaining / ft.maxDuration)
-            return {
-              ...ft,
-              offsetX: ft.offsetX + (dt / 1000) * 40,
-              offsetY: ft.offsetY - (dt / 1000) * 80,
-              opacity: Math.max(0, 1 - progress),
-              scale: 1 + progress * 0.8,
-              duration: remaining
-            }
-          })
-          .filter(ft => ft.duration > 0)
+        const nextTexts = current.floatingTexts.map(ft => {
+          const remaining = ft.duration - dt; const progress = 1 - (remaining / ft.maxDuration)
+          return { ...ft, offsetX: ft.offsetX + (dt / 1000) * 40, offsetY: ft.offsetY - (dt / 1000) * 80, opacity: Math.max(0, 1 - progress), scale: 1 + progress * 0.8, duration: remaining }
+        }).filter(ft => ft.duration > 0)
         return { ...current, floatingTexts: nextTexts }
       })
       frameId = requestAnimationFrame(tick)
@@ -110,24 +72,17 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     return () => cancelAnimationFrame(frameId)
   }, [])
 
-  // Asset Loading
   useEffect(() => {
     let mounted = true
     const load = async () => {
       const loadImage = (src: string): Promise<HTMLImageElement> =>
-        new Promise((res, rej) => {
-          const img = new Image(); img.src = withBasePath(src); img.onload = () => res(img); img.onerror = rej
-        })
+        new Promise((res, rej) => { const img = new Image(); img.src = withBasePath(src); img.onload = () => res(img); img.onerror = rej })
       try {
         const [goblin, skeleton, orc, dragon, base, heal, shield, background] = await Promise.all([
-          loadImage('/games/rune-match/monsters/goblin_3x4_pose_sheet.png'),
-          loadImage('/games/rune-match/monsters/skeleton_3x4_pose_sheet.png'),
-          loadImage('/games/rune-match/monsters/orc_3x4_pose_sheet.png'),
-          loadImage('/games/rune-match/monsters/dragon_3x4_pose_sheet.png'),
-          loadImage('/games/rune-match/runes/rune_base_3x2_pose_sheet.png'),
-          loadImage('/games/rune-match/runes/rune_heal_3x2_pose_sheet.png'),
-          loadImage('/games/rune-match/runes/rune_shield_3x2_pose_sheet.png'),
-          loadImage('/games/rune-match/ui/background-tiled.png'),
+          loadImage('/games/rune-match/monsters/goblin_3x4_pose_sheet.png'), loadImage('/games/rune-match/monsters/skeleton_3x4_pose_sheet.png'),
+          loadImage('/games/rune-match/monsters/orc_3x4_pose_sheet.png'), loadImage('/games/rune-match/monsters/dragon_3x4_pose_sheet.png'),
+          loadImage('/games/rune-match/runes/rune_base_3x2_pose_sheet.png'), loadImage('/games/rune-match/runes/rune_heal_3x2_pose_sheet.png'),
+          loadImage('/games/rune-match/runes/rune_shield_3x2_pose_sheet.png'), loadImage('/games/rune-match/ui/background-tiled.png'),
         ])
         if (mounted) setAssets({ monsters: { goblin, skeleton, orc, dragon }, runes: { base, heal, shield }, background })
       } catch (e) { console.error('Failed to load assets', e) }
@@ -146,13 +101,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     setGameState((prev) => {
       if (!prev) return null
       const grid = initializeGrid(prev.vocabulary, { rng: prev.rng })
-      return {
-        ...prev,
-        status: 'playing',
-        selectedMonster: monsterType,
-        monster: { type: monsterType, hp: config.hp, maxHp: config.hp, attack: config.attack, xp: config.xp },
-        grid,
-      }
+      return { ...prev, status: 'playing', selectedMonster: monsterType, monster: { type: monsterType, hp: config.hp, maxHp: config.hp, attack: config.attack, xp: config.xp }, grid }
     })
   }, [])
 
@@ -178,9 +127,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           }, 300)
           return { ...prev, grid: gridAfterSwap, selectedCell: null }
         }
-      } else {
-        return { ...prev, selectedCell: { row, col } }
-      }
+      } else { return { ...prev, selectedCell: { row, col } } }
     })
   }, [])
 
@@ -192,9 +139,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
       if (width > 0 && height > 0) setDimensions({ width, height })
     }
     const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) setDimensions({ width: entry.contentRect.width, height: entry.contentRect.height })
-      }
+      for (const entry of entries) { if (entry.contentRect.width > 0 && entry.contentRect.height > 0) setDimensions({ width: entry.contentRect.width, height: entry.contentRect.height }) }
     })
     observer.observe(containerRef.current); updateDimensions()
     const interval = setInterval(updateDimensions, 200); const timeout = setTimeout(() => clearInterval(interval), 2000)
@@ -226,22 +171,48 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   return (
     <div ref={containerRef} data-testid="rune-match-container" className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 border border-white/10 md:aspect-video md:h-auto">
       <AnimatePresence mode="wait">
-        {gameState.status === 'selection' ? (
-          <motion.div key="selection" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+        {gameState.status === 'selection' && (
+          <motion.div key="selection" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-10 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
             <MonsterSelection onSelect={handleSelectMonster}/>
           </motion.div>
-        ) : null}
+        )}
+        {gameState.status === 'victory' && (
+          <motion.div key="victory" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md text-center space-y-6">
+            <div className="p-4 bg-yellow-500/20 rounded-full animate-bounce"><Trophy className="w-16 h-16 text-yellow-500" /></div>
+            <div className="space-y-2"><h2 className="text-4xl font-bold text-white">Victory!</h2><p className="text-xl text-slate-400">You defeated the {gameState.monster?.type}!</p></div>
+            <div className="p-6 bg-white/5 rounded-2xl border border-white/10 min-w-[200px]"><p className="text-sm text-slate-500 uppercase tracking-widest">XP Earned</p><p className="text-5xl font-black text-yellow-500">+{gameState.monster?.xp}</p></div>
+            <Button onClick={() => onComplete({ xp: gameState.monster?.xp || 0, accuracy: gameState.totalAttempts > 0 ? (gameState.correctAnswers / gameState.totalAttempts) * 100 : 100 })} size="lg" className="px-12 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">Continue</Button>
+          </motion.div>
+        )}
+        {gameState.status === 'defeat' && (
+          <motion.div key="defeat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md text-center space-y-6">
+            <div className="w-[140px] h-[140px] bg-red-500/20 rounded-3xl flex items-center justify-center overflow-hidden border-2 border-red-500/30 shadow-lg shadow-red-500/10">
+              <div 
+                style={{
+                  width: '120px',
+                  height: '120px',
+                  backgroundImage: `url(${assets.monsters[gameState.monster?.type || 'goblin'].src})`,
+                  backgroundSize: '300% 400%',
+                  backgroundPosition: `${monsterAnimFrame * 50}% 33.33%`, // Row 1 is Attack
+                  imageRendering: 'pixelated'
+                }}
+              />
+            </div>
+            <div className="space-y-2"><h2 className="text-4xl font-bold text-white">Defeat...</h2><p className="text-xl text-slate-400">The monster was too strong.</p></div>
+            <Button onClick={resetGame} variant="outline" size="lg" className="px-12 border-red-500 text-red-500 hover:bg-red-500 hover:text-white">Try Again</Button>
+          </motion.div>
+        )}
       </AnimatePresence>
       <Stage width={dimensions.width} height={dimensions.height}>
         <Layer>
           <Group x={gameState.shakeIntensity * (Math.random() * 10 - 5)} y={gameState.shakeIntensity * (Math.random() * 10 - 5)}>
             <KonvaImage image={assets.background} width={dimensions.width} height={dimensions.height}/>
-            {gameState.status === 'playing' && (
+            {(gameState.status === 'playing' || gameState.status === 'victory' || gameState.status === 'defeat') && (
               <Group>
                 <Rect x={0} y={0} width={dimensions.width} height={layout.monsterAreaHeight} fill="rgba(0, 0, 0, 0.2)"/>
                 {gameState.monster && (
                   <Group>
-                    <KonvaImage image={assets.monsters[gameState.monster.type]} x={dimensions.width / 2 - 60} y={layout.monsterAreaHeight * 0.05} width={120} height={120} crop={{ x: monsterAnimFrame * (assets.monsters[gameState.monster.type].width / 3), y: 0, width: assets.monsters[gameState.monster.type].width / 3, height: assets.monsters[gameState.monster.type].height / 4 }}/>
+                    <KonvaImage image={assets.monsters[gameState.monster.type]} x={dimensions.width / 2 - 60} y={layout.monsterAreaHeight * 0.05} width={120} height={120} crop={{ x: monsterAnimFrame * (assets.monsters[gameState.monster.type].width / 3), y: (gameState.monsterState === 'idle' ? 0 : gameState.monsterState === 'attack' ? 1 : gameState.monsterState === 'hurt' ? 2 : 3) * (assets.monsters[gameState.monster.type].height / 4), width: assets.monsters[gameState.monster.type].width / 3, height: assets.monsters[gameState.monster.type].height / 4 }}/>
                     {renderHealthBar(dimensions.width / 2 - 150, layout.monsterAreaHeight * 0.45, 300, gameState.monster.hp, gameState.monster.maxHp, "#ef4444", gameState.monster.type.toUpperCase())}
                     <Rect x={dimensions.width / 2 - 150} y={layout.monsterAreaHeight * 0.45 + 25} width={300 * (1 - gameState.attackTimer / RUNE_MATCH_CONFIG.combat.attackIntervalMs)} height={4} fill="#f87171" opacity={0.6}/>
                   </Group>

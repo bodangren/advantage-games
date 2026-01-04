@@ -63,6 +63,8 @@ export type RuneMatchState = {
   rng: () => number
   shakeIntensity: number
   floatingTexts: FloatingText[]
+  monsterState: 'idle' | 'attack' | 'hurt' | 'death'
+  monsterStateTimer: number // ms remaining in current state
 }
 
 export type RuneMatchConfig = {
@@ -289,7 +291,18 @@ export const advanceTime = (
 ): RuneMatchState => {
   if (state.status !== 'playing') return state
   let newState = { ...state }
+  
+  // Advance monster state
+  if (newState.monsterStateTimer > 0) {
+    newState.monsterStateTimer -= deltaMs
+    if (newState.monsterStateTimer <= 0) {
+      newState.monsterState = 'idle'
+      newState.monsterStateTimer = 0
+    }
+  }
+
   newState.attackTimer += deltaMs
+  // Decay shake
   newState.shakeIntensity = Math.max(0, newState.shakeIntensity - deltaMs / 500)
 
   newState.floatingTexts = newState.floatingTexts
@@ -298,10 +311,10 @@ export const advanceTime = (
       const progress = 1 - (remaining / ft.maxDuration)
       return {
         ...ft,
-        offsetX: ft.offsetX + (deltaMs / 1000) * 20, // 20 pixels per second right
-        offsetY: ft.offsetY - (deltaMs / 1000) * 40, // 40 pixels per second up
+        offsetX: ft.offsetX + (deltaMs / 1000) * 40,
+        offsetY: ft.offsetY - (deltaMs / 1000) * 80,
         opacity: Math.max(0, 1 - progress),
-        scale: 1 + progress * 0.5,
+        scale: 1 + progress * 0.8,
         duration: remaining
       }
     })
@@ -311,7 +324,11 @@ export const advanceTime = (
   if (newState.attackTimer >= attackIntervalMs) {
     newState.attackTimer %= attackIntervalMs
     newState.shakeIntensity = 1.0
+    newState.monsterState = 'attack'
+    newState.monsterStateTimer = 500 // 500ms attack animation
+    
     newState.powerWord = newState.vocabulary[Math.floor(newState.rng() * newState.vocabulary.length)].translation
+
     if (newState.player.hasShield) {
       newState.player = { ...newState.player, hasShield: false }
       newState.floatingTexts.push({ id: generateId(), text: "BLOCKED!", x: -1, y: -1, offsetX: 0, offsetY: 0, color: "#60a5fa", opacity: 1, scale: 1, duration: 3000, maxDuration: 3000 })
@@ -320,6 +337,10 @@ export const advanceTime = (
       const damage = Math.floor(state.rng() * monsterAtk) + 1
       newState.player = { ...newState.player, hp: Math.max(0, newState.player.hp - damage) }
       newState.floatingTexts.push({ id: generateId(), text: `-${damage}`, x: -1, y: -1, offsetX: 0, offsetY: 0, color: "#ef4444", opacity: 1, scale: 1, duration: 3000, maxDuration: 3000 })
+      
+      if (newState.player.hp <= 0) {
+        newState.status = 'defeat'
+      }
     }
   }
   return newState
@@ -390,9 +411,65 @@ export const applyMatchResult = (state: RuneMatchState, result: MatchResult): Ru
     }
   })
 
-  monsterHp = Math.max(0, monsterHp - totalDamage)
-  return { ...state, grid: result.grid, monster: state.monster ? { ...state.monster, hp: monsterHp } : null, player: { ...state.player, hp: playerHp, hasShield }, correctAnswers, totalAttempts, floatingTexts: newFloatingTexts }
-}
+    monsterHp = Math.max(0, monsterHp - totalDamage)
+
+    
+
+    let status = state.status
+
+    let monsterState = state.monsterState
+
+    let monsterStateTimer = state.monsterStateTimer
+
+  
+
+    if (totalDamage > 0) {
+
+      if (monsterHp <= 0) {
+
+        status = 'victory'
+
+        monsterState = 'death'
+
+        monsterStateTimer = 2000 // Show death pose for 2s
+
+      } else {
+
+        monsterState = 'hurt'
+
+        monsterStateTimer = 500
+
+      }
+
+    }
+
+  
+
+    return {
+
+      ...state,
+
+      grid: result.grid,
+
+      status,
+
+      monster: state.monster ? { ...state.monster, hp: monsterHp } : null,
+
+      player: { ...state.player, hp: playerHp, hasShield },
+
+      correctAnswers,
+
+      totalAttempts,
+
+      floatingTexts: newFloatingTexts,
+
+      monsterState,
+
+      monsterStateTimer,
+
+    }
+
+  }
 
 const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune => {
   const roll = rng()
@@ -405,5 +482,5 @@ const createRandomRune = (vocabulary: VocabularyItem[], rng: () => number): Rune
 
 export const createRuneMatchState = (vocabulary: VocabularyItem[], { rng = Math.random }: RuneMatchConfig = {}): RuneMatchState => {
   if (vocabulary.length === 0) throw new Error('Vocabulary cannot be empty')
-  return { status: 'selection', selectedMonster: null, player: { hp: RUNE_MATCH_CONFIG.player.maxHp, maxHp: RUNE_MATCH_CONFIG.player.maxHp, hasShield: false }, monster: null, grid: [], selectedCell: null, attackTimer: 0, powerWord: vocabulary[Math.floor(rng() * vocabulary.length)].translation, correctAnswers: 0, totalAttempts: 0, vocabulary, rng, shakeIntensity: 0, floatingTexts: [] }
+  return { status: 'selection', selectedMonster: null, player: { hp: RUNE_MATCH_CONFIG.player.maxHp, maxHp: RUNE_MATCH_CONFIG.player.maxHp, hasShield: false }, monster: null, grid: [], selectedCell: null, attackTimer: 0, powerWord: vocabulary[Math.floor(rng() * vocabulary.length)].translation, correctAnswers: 0, totalAttempts: 0, vocabulary, rng, shakeIntensity: 0, floatingTexts: [], monsterState: 'idle', monsterStateTimer: 0 }
 }
