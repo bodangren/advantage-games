@@ -1,6 +1,6 @@
 # Plan: Castle Defense
 
-## Phase 1: Infrastructure & Scene Setup
+## Phase 1: Infrastructure & Scene Setup [checkpoint: 6326506]
 - [x] Task: Create `CastleDefenseState` types and configuration (`src/lib/castleDefense.ts`).
 - [x] Task: Implement `useCastleDefenseStore` for game state management (`src/store/useCastleDefenseStore.ts`).
 - [x] Task: Create `src/app/games/castle-defense` route and basic game container.
