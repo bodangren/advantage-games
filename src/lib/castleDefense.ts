@@ -73,6 +73,7 @@ export type CastleDefenseState = {
   projectiles: Projectile[]
   
   // Game Logic
+  vocabulary: VocabularyItem[]
   targetSentence: string // The full sentence to assemble
   targetTranslation: string // The hint shown to the user
   hearts: number // Base health
@@ -151,6 +152,7 @@ export const createCastleDefenseState = (
     towers: [], // Starts empty
     words: [], // Will be spawned by game loop
     projectiles: [],
+    vocabulary,
     targetSentence: targetItem.term,
     targetTranslation: targetItem.translation,
     hearts: INITIAL_HEARTS,
@@ -160,4 +162,68 @@ export const createCastleDefenseState = (
     spawnTimer: 0,
     ...config,
   }
+  
+  // Initial Spawn
+  const initialWords = spawnWords(targetItem, vocabulary)
+  return {
+      ...initialState,
+      words: initialWords
+  }
+}
+
+export function spawnWords(target: VocabularyItem, allVocabulary: VocabularyItem[]): Word[] {
+    const words: Word[] = []
+    const sentenceParts = target.term.split(' ')
+    
+    // 1. Add Correct Words
+    sentenceParts.forEach((part, index) => {
+        words.push({
+            id: `word-${index}-${Date.now()}`,
+            x: 0, // Assigned below
+            y: 0,
+            radius: WORD_RADIUS,
+            text: part,
+            translation: target.translation,
+            originalIndex: index,
+            isDistractor: false,
+            isCollected: false
+        })
+    })
+
+    // 2. Add Distractors (Targeting ~3-5 extra words)
+    // Filter out the current item to avoid duplicates if possible
+    const otherVocab = allVocabulary.filter(v => v.term !== target.term)
+    const distractorCount = Math.max(3, Math.min(5, otherVocab.length))
+    
+    for (let i = 0; i < distractorCount; i++) {
+        // Pick random vocab
+        const vocabIndex = Math.floor(Math.random() * otherVocab.length)
+        const vocab = otherVocab[vocabIndex]
+        if (!vocab) continue;
+        
+        // Pick random word from that vocab
+        const parts = vocab.term.split(' ')
+        const part = parts[Math.floor(Math.random() * parts.length)]
+        
+        words.push({
+            id: `distractor-${i}-${Date.now()}`,
+            x: 0, 
+            y: 0,
+            radius: WORD_RADIUS,
+            text: part,
+            translation: vocab.translation,
+            originalIndex: -1,
+            isDistractor: true,
+            isCollected: false
+        })
+    }
+
+    // 3. Assign Random Positions in Field
+    // Simple collision avoidance could be added, but for MVP just random
+    words.forEach(w => {
+        w.x = MAP_CONFIG.wordField.minX + Math.random() * (MAP_CONFIG.wordField.maxX - MAP_CONFIG.wordField.minX)
+        w.y = MAP_CONFIG.wordField.minY + Math.random() * (MAP_CONFIG.wordField.maxY - MAP_CONFIG.wordField.minY)
+    })
+
+    return words
 }

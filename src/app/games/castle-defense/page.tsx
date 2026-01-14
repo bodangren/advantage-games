@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect } from 'react'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
+import { SAMPLE_SENTENCES } from '@/lib/sampleSentences'
 import { useGameStore } from '@/store/useGameStore'
 
 const CastleDefenseGame = dynamic(
@@ -18,7 +18,7 @@ export default function CastleDefensePage() {
 
   useEffect(() => {
     if (vocabulary.length === 0) {
-      setVocabulary(SAMPLE_VOCABULARY)
+      setVocabulary(SAMPLE_SENTENCES)
     }
   }, [vocabulary.length, setVocabulary])
 
