@@ -65,20 +65,6 @@ export const gameCards: GameCard[] = [
     status: 'coming-soon',
   },
   {
-    id: 'word-collapse',
-    title: 'Word Collapse',
-    description: 'Tap matching word pairs to clear the board.',
-    cover: withBasePath('/games/cover/word-collapse-cover.png'),
-    status: 'coming-soon',
-  },
-  {
-    id: 'magic-spell-scroll',
-    title: 'Magic Spell Scroll',
-    description: 'Find camouflaged words hidden in a magical scene.',
-    cover: withBasePath('/games/cover/magic-spell-scroll-cover.png'),
-    status: 'coming-soon',
-  },
-  {
     id: 'castle-tower-stack',
     title: 'Castle Tower Stack',
     description: 'Stack matching translations to build a towering fortress.',
@@ -86,10 +72,18 @@ export const gameCards: GameCard[] = [
     status: 'coming-soon',
   },
   {
-    id: 'zombie-escape',
-    title: 'Zombie Escape',
-    description: 'Grab the correct word to survive the undead chase.',
-    cover: withBasePath('/games/cover/zombie-escape-cover.png'),
+    id: 'potion-rush',
+    title: 'Potion Rush',
+    description: 'Brew potions by selecting ingredients from a conveyor belt.',
+    cover: withBasePath('/games/cover/potion-rush-cover.png'),
     status: 'coming-soon',
+  },
+  {
+    id: 'castle-defense',
+    title: 'Castle Defense',
+    description: 'Collect words to build towers and defend your castle!',
+    cover: withBasePath('/games/cover/castle-tower-stack-cover.png'),
+    href: '/games/castle-defense',
+    status: 'playable',
   },
 ]

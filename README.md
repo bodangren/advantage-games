@@ -26,6 +26,10 @@ Survive the zombie horde by running to collect magic orbs
 Match vocabulary runes to defeat monsters in this RPG puzzle battle.
 ![Ruen Match Gameplay](public/rune-match.png)
 
+### Potion Rush
+Brew powerful potions by selecting the correct ingredients from a high-speed conveyor belt before the monster breaks in!
+![Potion Rush Gameplay](public/games/cover/potion-rush-cover.png)
+
 ## 🛠️ Developer Guide
 
 ### Game Interface Standard
