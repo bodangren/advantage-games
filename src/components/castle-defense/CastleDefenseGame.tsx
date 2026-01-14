@@ -207,7 +207,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
       </Stage>
 
       {/* Mobile Controls */}
-      <div className="absolute bottom-6 right-6 z-10 opacity-80 hover:opacity-100 transition-opacity">
+      <div className="fixed bottom-6 right-6 z-50 opacity-80 hover:opacity-100 transition-opacity">
         <DPad onInput={setVirtualInput} />
       </div>
 

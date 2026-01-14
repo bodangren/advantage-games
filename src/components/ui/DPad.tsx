@@ -24,10 +24,13 @@ export function DPad({ onInput }: DPadProps) {
   }
 
   // Button styles
-  const btnClass = "w-16 h-16 bg-slate-800/80 border-2 border-slate-600 rounded-full flex items-center justify-center active:bg-blue-600 active:border-blue-400 touch-none select-none transition-colors"
+  const btnClass = "w-11 h-11 bg-slate-800/80 border-2 border-slate-600 rounded-full flex items-center justify-center active:bg-blue-600 active:border-blue-400 touch-none select-none transition-colors"
 
   return (
-    <div className="grid grid-cols-3 gap-1 p-2 bg-slate-900/50 rounded-full backdrop-blur-sm">
+    <div 
+      className="grid grid-cols-3 gap-1 p-2 bg-slate-900/50 rounded-full backdrop-blur-sm"
+      onContextMenu={(e) => e.preventDefault()}
+    >
       {/* Top Row */}
       <div />
       <button 
@@ -38,7 +41,7 @@ export function DPad({ onInput }: DPadProps) {
         onMouseUp={handleEnd}
         onMouseLeave={handleEnd}
       >
-        <ArrowUp className="w-8 h-8 text-white" />
+        <ArrowUp className="w-5 h-5 text-white" />
       </button>
       <div />
 
@@ -51,9 +54,9 @@ export function DPad({ onInput }: DPadProps) {
         onMouseUp={handleEnd}
         onMouseLeave={handleEnd}
       >
-        <ArrowLeft className="w-8 h-8 text-white" />
+        <ArrowLeft className="w-5 h-5 text-white" />
       </button>
-      <div className="w-16 h-16 bg-slate-700/50 rounded-full" /> {/* Center */}
+      <div className="w-11 h-11 bg-slate-700/50 rounded-full" /> {/* Center */}
       <button 
         className={btnClass}
         onTouchStart={handleStart(1, 0)}
@@ -62,7 +65,7 @@ export function DPad({ onInput }: DPadProps) {
         onMouseUp={handleEnd}
         onMouseLeave={handleEnd}
       >
-        <ArrowRight className="w-8 h-8 text-white" />
+        <ArrowRight className="w-5 h-5 text-white" />
       </button>
 
       {/* Bottom Row */}
@@ -75,7 +78,7 @@ export function DPad({ onInput }: DPadProps) {
         onMouseUp={handleEnd}
         onMouseLeave={handleEnd}
       >
-        <ArrowDown className="w-8 h-8 text-white" />
+        <ArrowDown className="w-5 h-5 text-white" />
       </button>
       <div />
     </div>
