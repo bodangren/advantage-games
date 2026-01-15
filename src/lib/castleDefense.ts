@@ -1,4 +1,5 @@
 import type { VocabularyItem } from '@/store/useGameStore'
+import { EnemyType, CASTLE_DEFENSE_CONFIG } from './castleDefenseConfig'
 
 // --- Constants & Config ---
 
@@ -41,11 +42,12 @@ export type Word = Entity & {
 }
 
 export type Enemy = Entity & {
+  type: EnemyType
   hp: number
   maxHp: number
   speed: number
-  pathIndex: number // Current index in the map's path array
-  distanceTraveled: number // For sorting/targeting logic
+  pathIndex: number 
+  distanceTraveled: number
 }
 
 export type Tower = Entity & {
@@ -62,27 +64,42 @@ export type Projectile = Entity & {
   speed: number
 }
 
+export type GameEvent = {
+  type: 'damage' | 'build' | 'erupt' | 'hit'
+  id: number // Unique ID to trigger effects
+  x?: number
+  y?: number
+}
+
 export type CastleDefenseState = {
-  status: 'playing' | 'gameover' | 'victory'
+  status: 'idle' | 'playing' | 'gameover' | 'victory' | 'cooldown'
   
   // Entities
   player: Player
   enemies: Enemy[]
   towers: Tower[]
-  words: Word[] // Words on the field
+  words: Word[] 
   projectiles: Projectile[]
   
   // Game Logic
   vocabulary: VocabularyItem[]
-  targetSentence: string // The full sentence to assemble
-  targetTranslation: string // The hint shown to the user
-  hearts: number // Base health
+  targetSentence: string 
+  targetTranslation: string 
+  hearts: number 
   score: number
   wave: number
+  
+  // Wave Logic
+  waveBudget: number
+  spawnQueue: EnemyType[]
+  waveCooldownTimer: number
   
   // Timers
   gameTime: number
   spawnTimer: number
+  
+  // Events
+  lastEvent: GameEvent | null
 }
 
 export type MapConfig = {
@@ -145,8 +162,8 @@ export const createCastleDefenseState = (
     inventory: [],
   }
 
-  return {
-    status: 'playing',
+  const initialState: CastleDefenseState = {
+    status: 'idle',
     player,
     enemies: [],
     towers: [], // Starts empty
@@ -158,8 +175,12 @@ export const createCastleDefenseState = (
     hearts: INITIAL_HEARTS,
     score: 0,
     wave: 1,
+    waveBudget: CASTLE_DEFENSE_CONFIG.WAVE.INITIAL_BUDGET,
+    spawnQueue: generateSpawnQueue(CASTLE_DEFENSE_CONFIG.WAVE.INITIAL_BUDGET),
+    waveCooldownTimer: 0,
     gameTime: 0,
     spawnTimer: 0,
+    lastEvent: null,
     ...config,
   }
   
@@ -169,6 +190,41 @@ export const createCastleDefenseState = (
       ...initialState,
       words: initialWords
   }
+}
+
+// Helper to generate queue based on budget
+export function generateSpawnQueue(budget: number): EnemyType[] {
+    const queue: EnemyType[] = []
+    let remaining = budget
+    const { SOLDIER, TANK, BOSS } = CASTLE_DEFENSE_CONFIG.ENEMIES
+
+    // Simple Algorithm:
+    // 1. If budget > 100, buy a BOSS.
+    // 2. Buy Tanks with 40% of remaining budget.
+    // 3. Fill rest with Soldiers.
+    
+    while(remaining >= BOSS.cost && remaining > 100) {
+        queue.push('BOSS')
+        remaining -= BOSS.cost
+    }
+
+    // Tanks
+    const tankBudget = remaining * 0.4
+    let tankSpend = 0
+    while(tankSpend < tankBudget && remaining >= TANK.cost) {
+        queue.push('TANK')
+        remaining -= TANK.cost
+        tankSpend += TANK.cost
+    }
+
+    // Soldiers
+    while(remaining >= SOLDIER.cost) {
+        queue.push('SOLDIER')
+        remaining -= SOLDIER.cost
+    }
+
+    // Shuffle queue for variety
+    return queue.sort(() => Math.random() - 0.5)
 }
 
 export function spawnWords(target: VocabularyItem, allVocabulary: VocabularyItem[]): Word[] {
@@ -190,39 +246,28 @@ export function spawnWords(target: VocabularyItem, allVocabulary: VocabularyItem
         })
     })
 
-    // 2. Add Distractors (Targeting ~3-5 extra words)
-    // Filter out the current item to avoid duplicates if possible
-    const otherVocab = allVocabulary.filter(v => v.term !== target.term)
-    const distractorCount = Math.max(3, Math.min(5, otherVocab.length))
+    // 2. Assign Non-Overlapping Positions using a Grid
+    const field = MAP_CONFIG.wordField
+    const padding = 20
+    const cellSize = (WORD_RADIUS * 2) + padding
     
-    for (let i = 0; i < distractorCount; i++) {
-        // Pick random vocab
-        const vocabIndex = Math.floor(Math.random() * otherVocab.length)
-        const vocab = otherVocab[vocabIndex]
-        if (!vocab) continue;
-        
-        // Pick random word from that vocab
-        const parts = vocab.term.split(' ')
-        const part = parts[Math.floor(Math.random() * parts.length)]
-        
-        words.push({
-            id: `distractor-${i}-${Date.now()}`,
-            x: 0, 
-            y: 0,
-            radius: WORD_RADIUS,
-            text: part,
-            translation: vocab.translation,
-            originalIndex: -1,
-            isDistractor: true,
-            isCollected: false
-        })
+    const cols = Math.floor((field.maxX - field.minX) / cellSize)
+    const rows = Math.floor((field.maxY - field.minY) / cellSize)
+    
+    const availableCells: {r: number, c: number}[] = []
+    for(let r=0; r<rows; r++) {
+        for(let c=0; c<cols; c++) {
+            availableCells.push({r, c})
+        }
     }
 
-    // 3. Assign Random Positions in Field
-    // Simple collision avoidance could be added, but for MVP just random
-    words.forEach(w => {
-        w.x = MAP_CONFIG.wordField.minX + Math.random() * (MAP_CONFIG.wordField.maxX - MAP_CONFIG.wordField.minX)
-        w.y = MAP_CONFIG.wordField.minY + Math.random() * (MAP_CONFIG.wordField.maxY - MAP_CONFIG.wordField.minY)
+    // Shuffle cells
+    availableCells.sort(() => Math.random() - 0.5)
+
+    words.forEach((w, i) => {
+        const cell = availableCells[i % availableCells.length]
+        w.x = field.minX + cell.c * cellSize + cellSize / 2
+        w.y = field.minY + cell.r * cellSize + cellSize / 2
     })
 
     return words

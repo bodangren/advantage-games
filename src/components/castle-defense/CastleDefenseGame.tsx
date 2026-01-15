@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Circle, Group, Text, Line as React_Line } from 'react-konva'
 import { useCastleDefenseStore } from '@/store/useCastleDefenseStore'
 import { GAME_WIDTH, GAME_HEIGHT, MAP_CONFIG } from '@/lib/castleDefense'
+import { CASTLE_DEFENSE_CONFIG } from '@/lib/castleDefenseConfig'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { type VocabularyItem } from '@/store/useGameStore'
 import { DPad } from '@/components/ui/DPad'
@@ -22,6 +23,8 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
   const initialize = useCastleDefenseStore(state => state.initialize)
   const tick = useCastleDefenseStore(state => state.tick)
   const setPlayerInput = useCastleDefenseStore(state => state.setPlayerInput)
+  const reset = useCastleDefenseStore(state => state.reset)
+  const startGame = useCastleDefenseStore(state => state.startGame)
   
   // Game State for Rendering
   const player = useCastleDefenseStore(state => state.player)
@@ -33,20 +36,46 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
   const hearts = useCastleDefenseStore(state => state.hearts)
   const score = useCastleDefenseStore(state => state.score)
   const targetTranslation = useCastleDefenseStore(state => state.targetTranslation)
+  const lastEvent = useCastleDefenseStore(state => state.lastEvent)
+  const wave = useCastleDefenseStore(state => state.wave)
+  const waveCooldownTimer = useCastleDefenseStore(state => state.waveCooldownTimer)
+
+  // Visual State
+  const [shake, setShake] = useState({ x: 0, y: 0 })
+  const [particles, setParticles] = useState<{id: number, x: number, y: number, life: number}[]>([])
+  const shakeIntensity = useRef(0)
 
   // Input
-  const { input, setVirtualInput } = useDirectionalInput()
-  const { dx, dy } = input
+  const { input, setVirtualInput, consumeCast } = useDirectionalInput()
+  const { dx, dy, cast } = input
 
   // Init
   useEffect(() => {
     initialize(vocabulary)
   }, [initialize, vocabulary])
 
+  // Handle Reset
+  const handleReset = () => {
+    initialize(vocabulary)
+  }
+
+  // Event Listener
+  // ...
+
   // Input Sync
   useEffect(() => {
-    setPlayerInput(dx, dy)
-  }, [dx, dy, setPlayerInput])
+    setPlayerInput(dx, dy, cast)
+    if (cast) {
+        consumeCast()
+    }
+  }, [dx, dy, cast, setPlayerInput, consumeCast])
+
+  // XP Integration & Game Over Handling
+  useEffect(() => {
+    if (status === 'gameover' || status === 'victory') {
+      onComplete({ xp: score, accuracy: 100 })
+    }
+  }, [status, score, onComplete])
 
   // Game Loop
   useEffect(() => {
@@ -58,10 +87,25 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
       lastTime = time
       
       tick(dt)
+
+      // VFX Logic
+      if (shakeIntensity.current > 0) {
+          shakeIntensity.current = Math.max(0, shakeIntensity.current - dt * 0.05)
+          setShake({
+              x: (Math.random() - 0.5) * shakeIntensity.current,
+              y: (Math.random() - 0.5) * shakeIntensity.current
+          })
+      } else {
+          setShake({ x: 0, y: 0 })
+      }
+
+      setParticles(prev => prev.map(p => ({...p, life: p.life - dt * 0.002})).filter(p => p.life > 0))
+
       animationFrameId = requestAnimationFrame(loop)
     }
 
-    if (status === 'playing') {
+    // Always run loop unless unmounted, but tick handles pause logic
+    if (status === 'playing' || status === 'cooldown') {
       animationFrameId = requestAnimationFrame(loop)
     }
 
@@ -87,13 +131,16 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
     return () => window.removeEventListener('resize', updateSize)
   }, [])
 
-  const handleReset = () => {
-    initialize(vocabulary)
-  }
-
   return (
     <div ref={containerRef} className="relative w-full max-w-[800px] overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-2xl">
-      <Stage width={dimensions.width} height={dimensions.height} scaleX={scale} scaleY={scale}>
+      <Stage 
+        width={dimensions.width} 
+        height={dimensions.height} 
+        scaleX={scale} 
+        scaleY={scale}
+        x={shake.x}
+        y={shake.y}
+      >
         <Layer>
           {/* Background */}
           <Rect 
@@ -146,14 +193,46 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
             <Circle key={proj.id} x={proj.x} y={proj.y} radius={proj.radius} fill="#fbbf24" shadowColor="#fbbf24" shadowBlur={5} />
           ))}
 
-          {/* Enemies */}
-          {enemies.map((enemy) => (
-            <Group key={enemy.id} x={enemy.x} y={enemy.y}>
-              <Circle radius={enemy.radius} fill="#ef4444" stroke="#7f1d1d" strokeWidth={2} />
-              <Rect x={-15} y={-25} width={30} height={4} fill="#7f1d1d" />
-              <Rect x={-15} y={-25} width={(enemy.hp / enemy.maxHp) * 30} height={4} fill="#ef4444" />
-            </Group>
+          {/* Particles */}
+          {particles.map((p) => (
+            <Circle 
+                key={p.id} 
+                x={p.x} 
+                y={p.y} 
+                radius={3} 
+                fill="#fbbf24" 
+                opacity={p.life} 
+            />
           ))}
+
+          {/* Enemies */}
+          {enemies.map((enemy) => {
+             const stats = CASTLE_DEFENSE_CONFIG.ENEMIES[enemy.type]
+             return (
+                <Group key={enemy.id} x={enemy.x} y={enemy.y}>
+                    <Circle 
+                      radius={enemy.radius} 
+                      fill={stats.color} 
+                      stroke={enemy.type === 'BOSS' ? '#fcd34d' : '#7f1d1d'} 
+                      strokeWidth={enemy.type === 'BOSS' ? 4 : 2}
+                    />
+                    <Rect 
+                      x={-15} 
+                      y={-25} 
+                      width={30} 
+                      height={4} 
+                      fill="#000" 
+                    />
+                    <Rect 
+                      x={-15} 
+                      y={-25} 
+                      width={(enemy.hp / enemy.maxHp) * 30} 
+                      height={4} 
+                      fill="#ef4444" 
+                    />
+                </Group>
+             )
+          })}
 
           {/* Map: Base */}
           <Rect x={MAP_CONFIG.basePoint.x - 30} y={MAP_CONFIG.basePoint.y - 30} width={60} height={60} fill="#3b82f6" />
@@ -172,25 +251,90 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
 
           {/* HUD Layer */}
           <Group x={GAME_WIDTH / 2} y={40}>
-            <Rect width={400} height={60} fill="#0f172a" opacity={0.8} cornerRadius={12} offsetX={200} offsetY={30} stroke="#3b82f6" strokeWidth={2} />
-            <Text text="Translate to English:" fontSize={12} fill="#93c5fd" align="center" width={400} offsetX={200} offsetY={20} />
-            <Text text={targetTranslation} fontSize={24} fontStyle="bold" fill="white" align="center" verticalAlign="middle" width={380} height={60} offsetX={190} offsetY={30} />
-            <Group x={210} y={-10}>
-              <Text text={`❤️ ${hearts}`} fontSize={20} fill="#f43f5e" fontStyle="bold" />
-            </Group>
-            <Group x={-270} y={-10}>
-              <Text text={`SCORE: ${score}`} fontSize={20} fill="#fbbf24" fontStyle="bold" />
-            </Group>
+             {/* Background Panel */}
+             <Rect 
+               width={400} 
+               height={80} 
+               fill="#0f172a" 
+               opacity={0.8} 
+               cornerRadius={12} 
+               offsetX={200} 
+               offsetY={40}
+               stroke="#3b82f6"
+               strokeWidth={2}
+             />
+             
+             {/* Wave Info */}
+             <Text 
+                text={`WAVE ${wave}`}
+                fontSize={16}
+                fill="#fbbf24"
+                fontStyle="bold"
+                align="center"
+                width={400}
+                offsetX={200}
+                offsetY={35}
+             />
+
+             <Text 
+                text="Translate to English:"
+                fontSize={12}
+                fill="#93c5fd"
+                align="center"
+                width={400}
+                offsetX={200}
+                offsetY={15}
+             />
+             <Text 
+                text={targetTranslation} 
+                fontSize={24} 
+                fontStyle="bold"
+                fill="white" 
+                align="center"
+                verticalAlign="middle" 
+                width={380} 
+                height={60}
+                offsetX={190} 
+                offsetY={-5}
+             />
+
+             {/* Hearts */}
+             <Group x={210} y={-20}>
+                <Text text={`❤️ ${hearts}`} fontSize={20} fill="#f43f5e" fontStyle="bold" />
+             </Group>
+
+             {/* Score */}
+             <Group x={-270} y={-20}>
+                <Text text={`SCORE: ${score}`} fontSize={20} fill="#fbbf24" fontStyle="bold" />
+             </Group>
           </Group>
+          
+          {/* Wave Cooldown Overlay */}
+          {status === 'cooldown' && (
+             <Group x={GAME_WIDTH / 2} y={GAME_HEIGHT / 2}>
+                 <Rect width={300} height={100} fill="rgba(0,0,0,0.7)" cornerRadius={20} offsetX={150} offsetY={50} />
+                 <Text 
+                    text={`Next Wave in ${(waveCooldownTimer / 1000).toFixed(1)}s`} 
+                    fontSize={24} 
+                    fill="white" 
+                    align="center" 
+                    width={300} 
+                    offsetX={150} 
+                    offsetY={12}
+                 />
+             </Group>
+          )}
 
           {/* Inventory / Queue */}
-          <Group x={GAME_WIDTH / 2} y={90}>
+          <Group x={GAME_WIDTH / 2} y={110}>
             {player.inventory.map((word, i) => {
               const totalWidth = player.inventory.length * 50
               const startX = -totalWidth / 2
               return (
                 <Group key={word.id} x={startX + i * 50 + 25} y={0}>
                   <Rect width={46} height={36} fill="#f1f5f9" cornerRadius={6} stroke="#3b82f6" strokeWidth={2} offsetX={23} offsetY={18} />
+                  <Circle x={-18} y={-14} radius={6} fill="#3b82f6" />
+                  <Text x={-20} y={-17} text={`${i + 1}`} fontSize={8} fill="white" width={10} align="center" />
                   <Text text={word.text} fontSize={10} fontStyle="bold" align="center" verticalAlign="middle" width={46} height={36} offsetX={23} offsetY={18} fill="#0f172a" />
                 </Group>
               )
@@ -207,12 +351,47 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
       </Stage>
 
       {/* Mobile Controls */}
-      <div className="fixed bottom-6 right-6 z-50 opacity-80 hover:opacity-100 transition-opacity">
-        <DPad onInput={setVirtualInput} />
-      </div>
+      {status !== 'idle' && (
+        <div className="fixed bottom-6 right-6 z-50 opacity-80 hover:opacity-100 transition-opacity">
+          <DPad onInput={setVirtualInput} />
+        </div>
+      )}
+
+      {/* Start Screen */}
+      {status === 'idle' && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-sm p-8 text-center overflow-hidden">
+            <h1 className="text-5xl font-extrabold tracking-tight text-white mb-2">
+              Castle Defense
+            </h1>
+            <p className="text-xl text-slate-400 mb-8 max-w-md">
+              Collect words to build towers. Defend the base from the enemy horde!
+            </p>
+
+            <div className="w-full max-w-md bg-slate-900/50 rounded-xl border border-slate-700 p-6 mb-8 flex-1 overflow-y-auto">
+                <h3 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">
+                    Sentence Preview
+                </h3>
+                <div className="space-y-3">
+                    {vocabulary.map((item, i) => (
+                        <div key={i} className="flex justify-between items-center text-left border-b border-slate-800 pb-2 last:border-0">
+                            <span className="font-medium text-white">{item.term}</span>
+                            <span className="text-sm text-slate-400">{item.translation}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <button
+              onClick={() => startGame()}
+              className="rounded-full bg-blue-600 px-10 py-4 text-xl font-bold text-white transition-all hover:bg-blue-500 hover:scale-105 active:scale-95 shadow-lg shadow-blue-900/40"
+            >
+              Start Defense
+            </button>
+        </div>
+      )}
 
       {/* Overlays */}
-      {status !== 'playing' && (
+      {status !== 'playing' && status !== 'cooldown' && status !== 'idle' && (
         <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm">
           <div className="flex flex-col items-center gap-6 rounded-2xl border border-slate-700 bg-slate-900 p-12 text-center shadow-2xl">
             <h2 className="text-5xl font-bold tracking-tight text-white">

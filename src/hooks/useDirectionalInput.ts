@@ -3,11 +3,12 @@ import { useEffect, useState, useCallback } from 'react'
 export type InputVector = {
   dx: number
   dy: number
+  cast?: boolean
 }
 
 export function useDirectionalInput() {
   const [keys, setKeys] = useState<Set<string>>(new Set())
-  const [virtualInput, setVirtualInput] = useState<InputVector>({ dx: 0, dy: 0 })
+  const [virtualInput, setVirtualInput] = useState<InputVector>({ dx: 0, dy: 0, cast: false })
   const [castTriggered, setCastTriggered] = useState(false)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -59,9 +60,11 @@ export function useDirectionalInput() {
       dx = virtualInput.dx
       dy = virtualInput.dy
   }
+  
+  const cast = castTriggered || virtualInput.cast
 
   return { 
-      input: { dx, dy, cast: castTriggered },
+      input: { dx, dy, cast },
       setVirtualInput,
       triggerCast: () => setCastTriggered(true),
       consumeCast

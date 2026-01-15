@@ -9,10 +9,18 @@ describe('useCastleDefenseStore', () => {
     })
   })
 
-  it('initializes with default state', () => {
+  it('initializes with idle state', () => {
     const { result } = renderHook(() => useCastleDefenseStore())
-    expect(result.current.status).toBe('playing')
+    expect(result.current.status).toBe('idle')
     expect(result.current.player.inventory).toEqual([])
+  })
+
+  it('starts game', () => {
+    const { result } = renderHook(() => useCastleDefenseStore())
+    act(() => {
+      result.current.startGame()
+    })
+    expect(result.current.status).toBe('playing')
   })
 
   it('updates player input', () => {
@@ -20,13 +28,16 @@ describe('useCastleDefenseStore', () => {
     act(() => {
       result.current.setPlayerInput(1, 0)
     })
-    // Note: setPlayerInput updates a local var, so we can't test it directly on state 
-    // without running tick().
   })
 
-  it('moves player on tick', () => {
+  it('moves player on tick when playing', () => {
     const { result } = renderHook(() => useCastleDefenseStore())
     
+    // Start game first
+    act(() => {
+        result.current.startGame()
+    })
+
     // Set input
     act(() => {
       result.current.setPlayerInput(1, 0) // Move Right
@@ -42,14 +53,10 @@ describe('useCastleDefenseStore', () => {
     expect(result.current.player.x).toBeGreaterThan(initialX)
   })
 
-  it('does not move player if status is not playing', () => {
+  it('does not move player if status is idle', () => {
     const { result } = renderHook(() => useCastleDefenseStore())
     
-    // Manually set status to gameover
-    act(() => {
-        useCastleDefenseStore.setState({ status: 'gameover' })
-    })
-
+    // Status is idle by default
     act(() => {
       result.current.setPlayerInput(1, 0)
     })

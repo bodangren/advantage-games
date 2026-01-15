@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [ ] Track: Castle Defense Game
+## [x] Track: Castle Defense Game
 *Link: [./conductor/tracks/castle-defense-20260115/](./conductor/tracks/castle-defense-20260115/)*

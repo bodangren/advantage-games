@@ -4,14 +4,14 @@ import React, { useEffect, useState } from 'react'
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react'
 
 interface DPadProps {
-  onInput: (input: { dx: number, dy: number }) => void
+  onInput: (input: { dx: number, dy: number, cast?: boolean }) => void
 }
 
 export function DPad({ onInput }: DPadProps) {
   const [direction, setDirection] = useState({ dx: 0, dy: 0 })
 
   const handleStart = (dx: number, dy: number) => (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault() // Prevent scroll/selection
+    e.preventDefault() 
     const newDir = { dx, dy }
     setDirection(newDir)
     onInput(newDir)
@@ -21,6 +21,12 @@ export function DPad({ onInput }: DPadProps) {
     e.preventDefault()
     setDirection({ dx: 0, dy: 0 })
     onInput({ dx: 0, dy: 0 })
+  }
+
+  const handleDrop = (e: React.TouchEvent | React.MouseEvent) => {
+    e.preventDefault()
+    onInput({ ...direction, cast: true })
+    setTimeout(() => onInput({ ...direction, cast: false }), 100)
   }
 
   // Button styles
@@ -56,7 +62,16 @@ export function DPad({ onInput }: DPadProps) {
       >
         <ArrowLeft className="w-5 h-5 text-white" />
       </button>
-      <div className="w-11 h-11 bg-slate-700/50 rounded-full" /> {/* Center */}
+      
+      {/* Center / Drop Button */}
+      <button 
+        className={`${btnClass} bg-red-900/80 border-red-700 active:bg-red-600`}
+        onTouchStart={handleDrop}
+        onMouseDown={handleDrop}
+      >
+        <span className="text-[10px] font-bold text-white">DROP</span>
+      </button>
+
       <button 
         className={btnClass}
         onTouchStart={handleStart(1, 0)}

@@ -33,9 +33,17 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Combat System' (Protocol in workflow.md) 80b7637
 
 ## Phase 5: Visuals & Polish
-- [x] Task: Implement **Mobile D-Pad** controls for touch devices.
-- [ ] Task: Replace placeholders with final assets (Castle, Soldiers, Bosses, Player).
-- [ ] Task: Add "Juice": Screen shake on word eruption, impact effects, and animations.
-- [ ] Task: Integrate XP calculation and `useGameStore`.
+- [x] Task: Implement **Mobile D-Pad** controls for touch devices. faa10f3
+- [x] Task: Replace placeholders with final assets (Using Polished Konva Primitives as per agreement).
+- [x] Task: Add "Juice": Screen shake on word eruption, impact effects, and animations.
+- [x] Task: Integrate XP calculation and `useGameStore`.
 - [x] Task: Implement Victory/Defeat screens. 80b7637
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Polish & Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Polish & Integration' (Protocol in workflow.md)
+
+## Phase 6: Gameplay Depth & Balancing
+- [ ] Task: Create `CASTLE_DEFENSE_CONFIG` with unit stats and wave multipliers.
+- [ ] Task: Refactor `Enemy` type to include `type` (Soldier, Tank, Boss) and update spawn logic.
+- [ ] Task: Implement **Wave Manager**: Budget-based generation + 15-unit max concurrency queue.
+- [ ] Task: Implement **Wave Cooldown** state (5s timer between waves).
+- [ ] Task: Implement **Win Condition**: All towers built & enemies cleared.
+- [ ] Task: Conductor - User Manual Verification 'Phase 6: Gameplay Depth & Balancing' (Protocol in workflow.md)
