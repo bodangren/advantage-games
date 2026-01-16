@@ -10,6 +10,14 @@ describe('createCastleDefenseState', () => {
     expect(state.player.x).toBe(GAME_WIDTH / 2)
   })
 
+  it('initializes a grassMap with correct dimensions', () => {
+    const state = createCastleDefenseState([])
+    expect(state.grassMap).toHaveLength(12) // Rows
+    expect(state.grassMap[0]).toHaveLength(16) // Cols
+    expect(state.grassMap[0][0]).toBeGreaterThanOrEqual(0)
+    expect(state.grassMap[0][0]).toBeLessThan(4)
+  })
+
   it('uses provided vocabulary', () => {
     const vocab = [{ term: 'Apple', translation: 'Pomme' }]
     const state = createCastleDefenseState(vocab)

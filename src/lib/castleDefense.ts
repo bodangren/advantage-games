@@ -74,6 +74,9 @@ export type GameEvent = {
 export type CastleDefenseState = {
   status: 'idle' | 'playing' | 'gameover' | 'victory' | 'cooldown'
   
+  // Map Data
+  grassMap: number[][] // 16x12 array of grass variant indices (0-3)
+
   // Entities
   player: Player
   enemies: Enemy[]
@@ -145,6 +148,73 @@ export const MAP_CONFIG: MapConfig = {
   }
 }
 
+export type RoadInfo = {
+  type: 'EW' | 'NS' | 'CORNER'
+  rotation: number
+}
+
+/**
+ * Returns road tile information for a given grid coordinate.
+ * Grid coordinates are 0-indexed (0-15 for X, 0-11 for Y).
+ */
+export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
+  const worldX = gridX * TILE_SIZE + TILE_SIZE / 2
+  const worldY = gridY * TILE_SIZE + TILE_SIZE / 2
+
+  // 1. Identify if this point is on any path segment
+  let segmentIndex = -1
+  for (let i = 0; i < MAP_CONFIG.path.length - 1; i++) {
+    const p1 = MAP_CONFIG.path[i]
+    const p2 = MAP_CONFIG.path[i + 1]
+    
+    const minX = Math.min(p1.x, p2.x)
+    const maxX = Math.max(p1.x, p2.x)
+    const minY = Math.min(p1.y, p2.y)
+    const maxY = Math.max(p1.y, p2.y)
+
+    if (worldX >= minX && worldX <= maxX && worldY >= minY && worldY <= maxY) {
+      segmentIndex = i
+      // Keep checking because it might be a corner (belongs to two segments)
+    }
+  }
+
+  if (segmentIndex === -1) return null
+
+  // 2. Check if it's a corner
+  const cornerIndex = MAP_CONFIG.path.findIndex(p => p.x === worldX && p.y === worldY)
+  
+  if (cornerIndex !== -1 && cornerIndex > 0 && cornerIndex < MAP_CONFIG.path.length - 1) {
+    const prev = MAP_CONFIG.path[cornerIndex - 1]
+    const curr = MAP_CONFIG.path[cornerIndex]
+    const next = MAP_CONFIG.path[cornerIndex + 1]
+
+    const dx1 = Math.sign(prev.x - curr.x)
+    const dy1 = Math.sign(prev.y - curr.y)
+    const dx2 = Math.sign(next.x - curr.x)
+    const dy2 = Math.sign(next.y - curr.y)
+
+    // Directions relative to curr:
+    // dy -1 = North, dy 1 = South, dx 1 = East, dx -1 = West
+    const dirs = new Set([`${dx1},${dy1}`, `${dx2},${dy2}`])
+
+    // road_corner.png default: West (-1,0) and South (0,1)
+    if (dirs.has('-1,0') && dirs.has('0,1')) return { type: 'CORNER', rotation: 0 }
+    if (dirs.has('0,-1') && dirs.has('-1,0')) return { type: 'CORNER', rotation: 90 }
+    if (dirs.has('1,0') && dirs.has('0,-1')) return { type: 'CORNER', rotation: 180 }
+    if (dirs.has('0,1') && dirs.has('1,0')) return { type: 'CORNER', rotation: 270 }
+    
+    return { type: 'CORNER', rotation: 0 } // Fallback
+  }
+
+  // 3. If not corner, it's straight
+  const p1 = MAP_CONFIG.path[segmentIndex]
+  const p2 = MAP_CONFIG.path[segmentIndex + 1]
+  
+  if (p1.x === p2.x) return { type: 'NS', rotation: 0 }
+  return { type: 'EW', rotation: 0 }
+}
+
+
 export const createCastleDefenseState = (
   vocabulary: VocabularyItem[],
   config: Partial<CastleDefenseState> = {}
@@ -164,6 +234,9 @@ export const createCastleDefenseState = (
 
   const initialState: CastleDefenseState = {
     status: 'idle',
+    grassMap: Array.from({ length: 12 }, () => 
+        Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
+    ),
     player,
     enemies: [],
     towers: [], // Starts empty
