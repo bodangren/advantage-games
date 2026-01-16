@@ -5,11 +5,11 @@
 - [x] Task: Update existing unit tests in `src/lib/castleDefense.test.ts` to reflect new coordinates. [a224db0]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Grid Refactoring' (Protocol in workflow.md) [3b96dd4]
 
-## Phase 2: Asset Loading & Tile Logic
+## Phase 2: Asset Loading & Tile Logic [checkpoint: ba522d3]
 - [x] Task: Create a tile selection utility in `src/lib/castleDefense.ts` that determines the correct road tile (EW, NS, Corner) and rotation for any given path coordinate. [e021786]
 - [x] Task: Write unit tests for the road tile selection logic to ensure all corner rotations are correct. [e021786]
 - [x] Task: Implement a grass distribution generator that assigns a stable random grass variant to every grid cell. [e021786]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Asset Loading & Tile Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Asset Loading & Tile Logic' (Protocol in workflow.md) [ba522d3]
 
 ## Phase 3: Visual Implementation (Background & Assets)
 - [ ] Task: Create a `BackgroundLayer` component in `src/components/castle-defense/` that renders the grass and roads to a cached Konva layer.
