@@ -5,7 +5,7 @@ import { EnemyType, CASTLE_DEFENSE_CONFIG } from './castleDefenseConfig'
 
 export const GAME_WIDTH = 800
 export const GAME_HEIGHT = 600
-export const TILE_SIZE = 64 // Visual reference for grid alignment
+export const TILE_SIZE = 50 // Visual reference for grid alignment
 export const PLAYER_RADIUS = 20
 export const ENEMY_RADIUS = 15
 export const TOWER_RADIUS = 30
@@ -122,20 +122,20 @@ export const INITIAL_HEARTS = 5
 export const MAP_CONFIG: MapConfig = {
   // Simple "U" shape path for now
   path: [
-    { x: 50, y: 50 },
-    { x: 50, y: 500 },
-    { x: 750, y: 500 },
-    { x: 750, y: 50 },
+    { x: 75, y: 75 },
+    { x: 75, y: 525 },
+    { x: 725, y: 525 },
+    { x: 725, y: 75 },
   ],
-  spawnPoint: { x: 50, y: 50 },
-  basePoint: { x: 750, y: 50 },
+  spawnPoint: { x: 75, y: 75 },
+  basePoint: { x: 725, y: 75 },
   towerSlots: [
-    { x: 150, y: 400 },
-    { x: 300, y: 400 },
-    { x: 450, y: 400 },
-    { x: 600, y: 400 },
-    { x: 150, y: 200 }, // Inner defense
-    { x: 600, y: 200 },
+    { x: 175, y: 425 },
+    { x: 325, y: 425 },
+    { x: 475, y: 425 },
+    { x: 625, y: 425 },
+    { x: 175, y: 175 }, // Inner defense
+    { x: 625, y: 175 },
   ],
   wordField: {
     minX: 200,

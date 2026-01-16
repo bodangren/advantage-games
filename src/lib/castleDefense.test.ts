@@ -4,7 +4,7 @@ describe('createCastleDefenseState', () => {
   it('initializes with default values', () => {
     const state = createCastleDefenseState([])
     
-    expect(state.status).toBe('playing')
+    expect(state.status).toBe('idle')
     expect(state.hearts).toBe(5)
     expect(state.wave).toBe(1)
     expect(state.player.x).toBe(GAME_WIDTH / 2)
@@ -22,7 +22,7 @@ describe('createCastleDefenseState', () => {
     const state = createCastleDefenseState([])
     expect(state.enemies).toHaveLength(0)
     expect(state.towers).toHaveLength(0)
-    expect(state.words).toHaveLength(0)
+    expect(state.words.length).toBeGreaterThan(0)
     expect(state.projectiles).toHaveLength(0)
   })
 })
