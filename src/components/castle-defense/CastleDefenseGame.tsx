@@ -1,13 +1,14 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Stage, Layer, Rect, Circle, Group, Text, Line as React_Line } from 'react-konva'
+import { Stage, Layer, Rect, Circle, Group, Text, Image as KonvaImage } from 'react-konva'
 import { useCastleDefenseStore } from '@/store/useCastleDefenseStore'
-import { GAME_WIDTH, GAME_HEIGHT, MAP_CONFIG } from '@/lib/castleDefense'
+import { GAME_WIDTH, GAME_HEIGHT, MAP_CONFIG, TILE_SIZE } from '@/lib/castleDefense'
 import { CASTLE_DEFENSE_CONFIG } from '@/lib/castleDefenseConfig'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { type VocabularyItem } from '@/store/useGameStore'
 import { DPad } from '@/components/ui/DPad'
+import { BackgroundLayer } from './BackgroundLayer'
 
 interface CastleDefenseGameProps {
   vocabulary: VocabularyItem[]
@@ -18,6 +19,28 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: GAME_WIDTH, height: GAME_HEIGHT })
   const [scale, setScale] = useState(1)
+
+  // Asset Loading
+  const [gameImages, setGameImages] = useState<Record<string, HTMLImageElement>>({})
+  
+  useEffect(() => {
+    const assets = {
+        base: '/games/castle-defense/player-castle.png',
+        towerBase: '/games/castle-defense/tower-base.png',
+        towerBuilt: '/games/castle-defense/tower-built.png'
+    }
+    const loaded: Record<string, HTMLImageElement> = {}
+    Object.entries(assets).forEach(([key, src]) => {
+        const img = new window.Image()
+        img.src = src
+        img.onload = () => {
+            loaded[key] = img
+            if (Object.keys(loaded).length === Object.keys(assets).length) {
+                setGameImages(loaded)
+            }
+        }
+    })
+  }, [])
 
   // Store
   const initialize = useCastleDefenseStore(state => state.initialize)
@@ -39,6 +62,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
   const lastEvent = useCastleDefenseStore(state => state.lastEvent)
   const wave = useCastleDefenseStore(state => state.wave)
   const waveCooldownTimer = useCastleDefenseStore(state => state.waveCooldownTimer)
+  const grassMap = useCastleDefenseStore(state => state.grassMap)
 
   // Visual State
   const [shake, setShake] = useState({ x: 0, y: 0 })
@@ -141,49 +165,50 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
         x={shake.x}
         y={shake.y}
       >
+        <BackgroundLayer grassMap={grassMap} />
+        
         <Layer>
-          {/* Background */}
-          <Rect 
-            width={GAME_WIDTH} 
-            height={GAME_HEIGHT} 
-            fill="#1e293b" 
-          />
-          
-          {/* Map: Road */}
-          {MAP_CONFIG.path.map((point, index) => {
-            if (index === 0) return null
-            const prev = MAP_CONFIG.path[index - 1]
-            return (
-              <React_Line 
-                key={`road-${index}`}
-                points={[prev.x, prev.y, point.x, point.y]}
-                stroke="#334155" 
-                strokeWidth={40}
-                lineCap="round"
-                lineJoin="round"
-              />
-            )
-          })}
-
           {/* Map: Tower Slots */}
           {MAP_CONFIG.towerSlots.map((slot, index) => (
-            <Rect
-              key={`slot-${index}`}
-              x={slot.x - 20}
-              y={slot.y - 20}
-              width={40}
-              height={40}
-              fill="#475569" 
-              stroke="#64748b"
-              strokeWidth={2}
-            />
+            gameImages.towerBase ? (
+                <KonvaImage
+                    key={`slot-${index}`}
+                    image={gameImages.towerBase}
+                    x={slot.x}
+                    y={slot.y}
+                    width={TILE_SIZE}
+                    height={TILE_SIZE}
+                    offsetX={TILE_SIZE / 2}
+                    offsetY={TILE_SIZE / 2}
+                    opacity={0.8}
+                />
+            ) : (
+                <Rect
+                    key={`slot-${index}`}
+                    x={slot.x - 20}
+                    y={slot.y - 20}
+                    width={40}
+                    height={40}
+                    fill="#475569" 
+                />
+            )
           ))}
 
           {/* Towers */}
           {towers.map((tower) => (
             <Group key={tower.id} x={tower.x} y={tower.y}>
-              <Rect x={-25} y={-25} width={50} height={50} fill="#1e293b" stroke="#3b82f6" strokeWidth={3} cornerRadius={4} />
-              <Circle radius={15} fill="#3b82f6" stroke="#93c5fd" strokeWidth={2} />
+              {gameImages.towerBuilt ? (
+                 <KonvaImage
+                    image={gameImages.towerBuilt}
+                    width={TILE_SIZE * 1.2}
+                    height={TILE_SIZE * 1.2}
+                    offsetX={(TILE_SIZE * 1.2) / 2}
+                    offsetY={(TILE_SIZE * 1.2) / 2}
+                 />
+              ) : (
+                <Rect x={-25} y={-25} width={50} height={50} fill="#1e293b" stroke="#3b82f6" strokeWidth={3} cornerRadius={4} />
+              )}
+              {/* Range Indicator */}
               <Circle radius={tower.range} stroke="#3b82f6" strokeWidth={1} dash={[5, 5]} opacity={0.2} />
             </Group>
           ))}
@@ -235,8 +260,22 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
           })}
 
           {/* Map: Base */}
-          <Rect x={MAP_CONFIG.basePoint.x - 30} y={MAP_CONFIG.basePoint.y - 30} width={60} height={60} fill="#3b82f6" />
-          <Text x={MAP_CONFIG.basePoint.x - 25} y={MAP_CONFIG.basePoint.y - 10} text="BASE" fill="white" fontStyle="bold" />
+          {gameImages.base ? (
+            <KonvaImage
+                image={gameImages.base}
+                x={MAP_CONFIG.basePoint.x}
+                y={MAP_CONFIG.basePoint.y}
+                width={TILE_SIZE * 1.5}
+                height={TILE_SIZE * 1.5}
+                offsetX={(TILE_SIZE * 1.5) / 2}
+                offsetY={(TILE_SIZE * 1.5) / 2}
+            />
+          ) : (
+            <Rect x={MAP_CONFIG.basePoint.x - 30} y={MAP_CONFIG.basePoint.y - 30} width={60} height={60} fill="#3b82f6" />
+          )}
+          
+          <Text x={MAP_CONFIG.basePoint.x - 25} y={MAP_CONFIG.basePoint.y - 40} text="BASE" fill="white" fontStyle="bold" stroke="black" strokeWidth={3} fillAfterStrokeEnabled />
+          <Text x={MAP_CONFIG.basePoint.x - 25} y={MAP_CONFIG.basePoint.y - 40} text="BASE" fill="white" fontStyle="bold" />
 
           {/* Map: Spawn */}
           <Circle x={MAP_CONFIG.spawnPoint.x} y={MAP_CONFIG.spawnPoint.y} radius={20} fill="#ef4444" opacity={0.5} />
