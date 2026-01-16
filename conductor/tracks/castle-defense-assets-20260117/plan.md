@@ -1,9 +1,9 @@
 # Plan: Tile-Based Background and Asset System
 
-## Phase 1: Grid Refactoring & Map Realignment
+## Phase 1: Grid Refactoring & Map Realignment [checkpoint: 3b96dd4]
 - [x] Task: Update `TILE_SIZE` to 50 and realign `MAP_CONFIG` coordinates in `src/lib/castleDefense.ts` to grid centers (25, 75, etc.). [a224db0]
 - [x] Task: Update existing unit tests in `src/lib/castleDefense.test.ts` to reflect new coordinates. [a224db0]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Grid Refactoring' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Grid Refactoring' (Protocol in workflow.md) [3b96dd4]
 
 ## Phase 2: Asset Loading & Tile Logic
 - [ ] Task: Create a tile selection utility in `src/lib/castleDefense.ts` that determines the correct road tile (EW, NS, Corner) and rotation for any given path coordinate.
