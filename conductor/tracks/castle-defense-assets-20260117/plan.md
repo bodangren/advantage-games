@@ -18,7 +18,7 @@
 - [x] Task: Remove old primitive rendering logic (Rects/Lines for roads and background). [a39af01]
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Visual Implementation' (Protocol in workflow.md) [7a65467]
 
-## Phase 4: Final Polishing & Verification
-- [ ] Task: Verify that all entities (enemies, projectiles, player) are still correctly aligned with the new road visuals.
-- [ ] Task: Ensure the background caching is working correctly and not causing re-render issues.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing' (Protocol in workflow.md)
+## Phase 4: Final Polishing & Verification [checkpoint: cadecae]
+- [x] Task: Verify that all entities (enemies, projectiles, player) are still correctly aligned with the new road visuals.
+- [x] Task: Ensure the background caching is working correctly and not causing re-render issues.
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Polishing' (Protocol in workflow.md) [cadecae]
