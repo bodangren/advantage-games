@@ -11,12 +11,12 @@
 - [x] Task: Implement a grass distribution generator that assigns a stable random grass variant to every grid cell. [e021786]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Asset Loading & Tile Logic' (Protocol in workflow.md) [ba522d3]
 
-## Phase 3: Visual Implementation (Background & Assets)
-- [ ] Task: Create a `BackgroundLayer` component in `src/components/castle-defense/` that renders the grass and roads to a cached Konva layer.
-- [ ] Task: Update `CastleDefenseGame.tsx` to use `player-castle.png` for the base.
-- [ ] Task: Update `CastleDefenseGame.tsx` to use `tower-base.png` for slots and `tower-built.png` for active towers.
-- [ ] Task: Remove old primitive rendering logic (Rects/Lines for roads and background).
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Visual Implementation' (Protocol in workflow.md)
+## Phase 3: Visual Implementation (Background & Assets) [checkpoint: 7a65467]
+- [x] Task: Create a `BackgroundLayer` component in `src/components/castle-defense/` that renders the grass and roads to a cached Konva layer. [a39af01]
+- [x] Task: Update `CastleDefenseGame.tsx` to use `player-castle.png` for the base. [a39af01]
+- [x] Task: Update `CastleDefenseGame.tsx` to use `tower-base.png` for slots and `tower-built.png` for active towers. [a39af01]
+- [x] Task: Remove old primitive rendering logic (Rects/Lines for roads and background). [a39af01]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Visual Implementation' (Protocol in workflow.md) [7a65467]
 
 ## Phase 4: Final Polishing & Verification
 - [ ] Task: Verify that all entities (enemies, projectiles, player) are still correctly aligned with the new road visuals.
