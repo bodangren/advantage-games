@@ -8,7 +8,7 @@
     - [ ] Ensure "Death" state plays once and locks on the final frame.
 - [x] Task: Conductor - User Manual Verification 'Sprite Logic Core' (Protocol in workflow.md)
 
-## Phase 2: Player Integration
+## Phase 2: Player Integration [checkpoint: 8b3111c]
 - [x] Task: Update `CastleDefenseGame` to use the new `SpriteAnimation` logic for the Player. f2b16b0
     - [ ] Load `player_3x3_pose_sheet.png`.
     - [ ] Replace existing player rendering code with the new sprite rendering.
