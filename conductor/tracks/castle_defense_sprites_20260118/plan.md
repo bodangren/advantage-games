@@ -1,6 +1,6 @@
 # Implementation Plan - Castle Defense Enemy & Player Sprites
 
-## Phase 1: Sprite Logic Core
+## Phase 1: Sprite Logic Core [checkpoint: 3cebe5e]
 - [x] Task: Create `SpriteAnimation` helper or hook. 2b473e9
     - [ ] Create `useSpriteAnimation` hook (or utility function) that manages the 3x3 grid state (Row/Column selection based on Action/Frame).
     - [ ] Implement logic to switch Rows based on state (Idle/Walk -> Row 1, Attack -> Row 2, Death -> Row 3).
