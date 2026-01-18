@@ -6,12 +6,10 @@ A collection of vocabulary learning games built with Next.js, designed to help u
 
 ### Magic Defense
 Defend your castles from falling words by typing their correct translations!
-
 ![Magic Defense Gameplay](public/gameplay.png)
 
 ### RPG Battle
 Fight monsters PvP
-
 ![RPG Battle Gameplay](public/rpg-battle.png)
 
 ### Dragon Flight
@@ -26,9 +24,9 @@ Survive the zombie horde by running to collect magic orbs
 Match vocabulary runes to defeat monsters in this RPG puzzle battle.
 ![Ruen Match Gameplay](public/rune-match.png)
 
-### Potion Rush
-Brew powerful potions by selecting the correct ingredients from a high-speed conveyor belt before the monster breaks in!
-![Potion Rush Gameplay](public/games/cover/potion-rush-cover.png)
+### Castle Defense
+Defend your towers against swarms of enemies by collecting word cards to create correct sentences.
+![Castle Deffense Gameplay](public//castle-defense.png)
 
 ## 🛠️ Developer Guide
 
