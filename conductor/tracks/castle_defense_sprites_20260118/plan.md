@@ -15,7 +15,7 @@
     - [ ] Verify Row/Col mapping matches the Player asset (Idle vs Walk vs Attack).
 - [x] Task: Conductor - User Manual Verification 'Player Integration' (Protocol in workflow.md)
 
-## Phase 3: Enemy Integration
+## Phase 3: Enemy Integration [checkpoint: 8d981c1]
 - [x] Task: Update `CastleDefenseGame` to support multiple enemy types (Goblin, Orc, Troll).
 - [x] Task: Update Enemy Rendering Loop.
 - [x] Task: Update Spawner Logic.
