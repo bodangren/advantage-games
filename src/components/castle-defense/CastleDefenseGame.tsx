@@ -117,34 +117,37 @@ function EnemySprite({ enemy, gameTime, image }: {
   const fw = image.width / 3
   const fh = image.height / 3
 
+  // Visual scaling based on user request: Goblin 48, Orc 72, Troll 96
+  let size = 48
+  if (enemy.type === 'TANK') size = 72
+  if (enemy.type === 'BOSS') size = 96
+
   return (
     <Group x={enemy.x} y={enemy.y}>
         <KonvaImage
           image={image}
-          width={48}
-          height={48}
-          offsetX={24}
-          offsetY={24}
+          width={size}
+          height={size}
+          offsetX={size / 2}
+          offsetY={size / 2}
           crop={{
             x: frame.col * fw,
             y: frame.row * fh,
             width: fw,
             height: fh
           }}
-          // Flip if moving left (Assuming standard right-facing sprites, though config said South. 
-          // We can adjust based on visual feedback. For now, no flip logic as they follow a path.)
         />
         {/* Health Bar */}
         <Rect 
           x={-15} 
-          y={-30} 
+          y={-(size / 2) - 10} 
           width={30} 
           height={4} 
           fill="#000" 
         />
         <Rect 
           x={-15} 
-          y={-30} 
+          y={-(size / 2) - 10} 
           width={(enemy.hp / enemy.maxHp) * 30} 
           height={4} 
           fill="#ef4444" 
