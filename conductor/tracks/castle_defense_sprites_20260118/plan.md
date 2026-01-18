@@ -20,4 +20,4 @@
 - [x] Task: Update Enemy Rendering Loop.
 - [x] Task: Update Spawner Logic.
     - [ ] Randomize `enemyType` when spawning new enemies (Goblin, Orc, Troll).
-- [ ] Task: Conductor - User Manual Verification 'Enemy Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Enemy Integration' (Protocol in workflow.md)
