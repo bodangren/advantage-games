@@ -8,5 +8,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Link: [./conductor/tracks/castle-defense-20260115/](./conductor/tracks/castle-defense-20260115/)*
 ---
 
-- [~] **Track: Replace player and enemy placeholders with animated 3x3 sprite sheets (Goblins, Orcs, Trolls).**
+- [x] **Track: Replace player and enemy placeholders with animated 3x3 sprite sheets (Goblins, Orcs, Trolls).**
 *Link: [./tracks/castle_defense_sprites_20260118/](./tracks/castle_defense_sprites_20260118/)*
