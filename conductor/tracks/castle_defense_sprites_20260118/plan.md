@@ -9,7 +9,7 @@
 - [x] Task: Conductor - User Manual Verification 'Sprite Logic Core' (Protocol in workflow.md)
 
 ## Phase 2: Player Integration
-- [ ] Task: Update `CastleDefenseGame` to use the new `SpriteAnimation` logic for the Player.
+- [x] Task: Update `CastleDefenseGame` to use the new `SpriteAnimation` logic for the Player. f2b16b0
     - [ ] Load `player_3x3_pose_sheet.png`.
     - [ ] Replace existing player rendering code with the new sprite rendering.
     - [ ] Verify Row/Col mapping matches the Player asset (Idle vs Walk vs Attack).
