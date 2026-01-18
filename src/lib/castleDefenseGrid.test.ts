@@ -6,14 +6,14 @@ describe('Castle Defense Grid System', () => {
   })
 
   it('aligns all path points to grid centers', () => {
-    MAP_CONFIG.path.forEach((point, index) => {
+    MAP_CONFIG.path.forEach((point) => {
       expect((point.x - 25) % 50).toBe(0)
       expect((point.y - 25) % 50).toBe(0)
     })
   })
 
   it('aligns all tower slots to grid centers', () => {
-    MAP_CONFIG.towerSlots.forEach((slot, index) => {
+    MAP_CONFIG.towerSlots.forEach((slot) => {
       expect((slot.x - 25) % 50).toBe(0)
       expect((slot.y - 25) % 50).toBe(0)
     })

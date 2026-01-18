@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Circle, Group, Text, Image as KonvaImage } from 'react-konva'
 import { useCastleDefenseStore } from '@/store/useCastleDefenseStore'
-import { GAME_WIDTH, GAME_HEIGHT, MAP_CONFIG, TILE_SIZE } from '@/lib/castleDefense'
+import { GAME_WIDTH, GAME_HEIGHT, MAP_CONFIG, TILE_SIZE, type Enemy, type Player } from '@/lib/castleDefense'
 import { CASTLE_DEFENSE_CONFIG } from '@/lib/castleDefenseConfig'
-import { useDirectionalInput } from '@/hooks/useDirectionalInput'
+import { useDirectionalInput, type InputVector } from '@/hooks/useDirectionalInput'
 import { type VocabularyItem } from '@/store/useGameStore'
 import { DPad } from '@/components/ui/DPad'
 import { BackgroundLayer } from './BackgroundLayer'
@@ -36,8 +36,8 @@ const ENEMY_SPRITE_CONFIG: SpriteSheetConfig = {
 }
 
 function PlayerSprite({ player, input, gameTime, image }: { 
-  player: any, 
-  input: any, 
+  player: Player, 
+  input: InputVector, 
   gameTime: number, 
   image?: HTMLImageElement 
 }) {
@@ -78,7 +78,7 @@ function PlayerSprite({ player, input, gameTime, image }: {
 }
 
 function EnemySprite({ enemy, gameTime, image }: { 
-  enemy: any, 
+  enemy: Enemy, 
   gameTime: number, 
   image?: HTMLImageElement 
 }) {
@@ -191,7 +191,6 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
   const initialize = useCastleDefenseStore(state => state.initialize)
   const tick = useCastleDefenseStore(state => state.tick)
   const setPlayerInput = useCastleDefenseStore(state => state.setPlayerInput)
-  const reset = useCastleDefenseStore(state => state.reset)
   const startGame = useCastleDefenseStore(state => state.startGame)
   
   // Game State for Rendering
@@ -204,7 +203,6 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
   const hearts = useCastleDefenseStore(state => state.hearts)
   const score = useCastleDefenseStore(state => state.score)
   const targetTranslation = useCastleDefenseStore(state => state.targetTranslation)
-  const lastEvent = useCastleDefenseStore(state => state.lastEvent)
   const wave = useCastleDefenseStore(state => state.wave)
   const waveCooldownTimer = useCastleDefenseStore(state => state.waveCooldownTimer)
   const grassMap = useCastleDefenseStore(state => state.grassMap)

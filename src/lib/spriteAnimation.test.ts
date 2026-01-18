@@ -1,4 +1,4 @@
-import { getSpriteFrame, SpriteState, SpriteSheetConfig } from './spriteAnimation'
+import { getSpriteFrame, SpriteSheetConfig } from './spriteAnimation'
 
 describe('getSpriteFrame', () => {
   const enemyConfig: SpriteSheetConfig = {

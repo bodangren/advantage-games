@@ -258,7 +258,7 @@ export const createCastleDefenseState = (
   }
   
   // Initial Spawn
-  const initialWords = spawnWords(targetItem, vocabulary)
+  const initialWords = spawnWords(targetItem)
   return {
       ...initialState,
       words: initialWords
@@ -300,7 +300,7 @@ export function generateSpawnQueue(budget: number): EnemyType[] {
     return queue.sort(() => Math.random() - 0.5)
 }
 
-export function spawnWords(target: VocabularyItem, allVocabulary: VocabularyItem[]): Word[] {
+export function spawnWords(target: VocabularyItem): Word[] {
     const words: Word[] = []
     const sentenceParts = target.term.split(' ')
     

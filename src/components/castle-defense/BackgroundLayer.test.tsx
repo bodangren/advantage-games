@@ -1,28 +1,40 @@
 import { render, waitFor, screen } from '@testing-library/react'
+import type { ComponentProps } from 'react'
 import { BackgroundLayer } from './BackgroundLayer'
+
+type MockDivProps = ComponentProps<'div'> & { listening?: boolean }
+type MockImageProps = ComponentProps<'div'> & { image?: { src?: string } | null }
 
 // Mock react-konva
 jest.mock('react-konva', () => ({
-  Layer: ({ children, listening, ...props }: any) => <div data-testid="layer" data-listening={listening} {...props}>{children}</div>,
-  Image: ({ image, ...props }: any) => <img data-testid="konva-image" src={image?.src} {...props} />,
-  Stage: ({ children, ...props }: any) => <div data-testid="stage" {...props}>{children}</div>,
-  Group: ({ children, ...props }: any) => <div data-testid="group" {...props}>{children}</div>,
+  Layer: ({ children, listening, ...props }: MockDivProps) => <div data-testid="layer" data-listening={listening} {...props}>{children}</div>,
+  Image: ({ image, ...props }: MockImageProps) => <div data-testid="konva-image" data-src={image?.src} {...props} />,
+  Stage: ({ children, ...props }: MockDivProps) => <div data-testid="stage" {...props}>{children}</div>,
+  Group: ({ children, ...props }: MockDivProps) => <div data-testid="group" {...props}>{children}</div>,
 }))
 
 // Mock Image loading
 const originalImage = window.Image
 beforeAll(() => {
-  (window as any).Image = class {
+  Object.defineProperty(window, 'Image', {
+    writable: true,
+    configurable: true,
+    value: class MockImage {
     onload: () => void = () => {}
     src: string = ''
     constructor() {
       setTimeout(() => this.onload(), 10)
     }
-  }
+    }
+  })
 })
 
 afterAll(() => {
-  window.Image = originalImage
+  Object.defineProperty(window, 'Image', {
+    writable: true,
+    configurable: true,
+    value: originalImage
+  })
 })
 
 describe('BackgroundLayer', () => {

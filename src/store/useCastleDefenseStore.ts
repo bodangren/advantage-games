@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { 
   CastleDefenseState, 
   createCastleDefenseState, 
+  type Enemy,
   Player,
   MAP_CONFIG,
   spawnWords,
@@ -40,7 +41,8 @@ export const useCastleDefenseStore = create<CastleDefenseStore>((set, get) => ({
 
   tick: (dt: number) => {
     const state = get()
-    const { player, words, enemies, towers, projectiles, status, hearts, score, gameTime, spawnTimer, wave, waveBudget, spawnQueue, waveCooldownTimer } = state
+    const { player, enemies, towers, projectiles, status, hearts, score, gameTime, spawnTimer, wave, spawnQueue, waveCooldownTimer } = state
+    type Words = typeof state.words
     
     if (status === 'idle' || status === 'gameover' || status === 'victory') return
 
@@ -71,11 +73,12 @@ export const useCastleDefenseStore = create<CastleDefenseStore>((set, get) => ({
     const nextGameTime = gameTime + dt
     let nextSpawnTimer = spawnTimer + dt
     let nextHearts = hearts
-    let nextStatus = status
+    let nextStatus: CastleDefenseState['status'] = status
     let nextScore = score
     let nextEvent: typeof state.lastEvent = null
-    let nextSpawnQueue = [...spawnQueue]
+    const nextSpawnQueue = [...spawnQueue]
     let nextWaveCooldown = waveCooldownTimer
+    let isGameOver = false
 
     // 1. Move Player
     let newX = player.x + inputState.dx * player.speed
@@ -105,7 +108,7 @@ export const useCastleDefenseStore = create<CastleDefenseStore>((set, get) => ({
     }
 
     // 2. Spawn Enemies
-    let spawnedEnemies: typeof enemies = []
+    const spawnedEnemies: Enemy[] = []
     if (status === 'playing') {
         if (enemies.length < CASTLE_DEFENSE_CONFIG.WAVE.MAX_CONCURRENT_ENEMIES && nextSpawnQueue.length > 0) {
             if (nextSpawnTimer >= 1500) {
@@ -134,14 +137,17 @@ export const useCastleDefenseStore = create<CastleDefenseStore>((set, get) => ({
     }
 
     // 3. Move Enemies
-    const nextEnemies: typeof enemies = []
+    const nextEnemies: Enemy[] = []
     const currentEnemies = [...enemies, ...spawnedEnemies]
     currentEnemies.forEach(enemy => {
         const target = MAP_CONFIG.path[enemy.pathIndex]
         if (!target) {
             nextHearts -= 1
             nextEvent = { type: 'damage', id: Date.now() }
-            if (nextHearts <= 0) nextStatus = 'gameover'
+            if (nextHearts <= 0) {
+                nextStatus = 'gameover'
+                isGameOver = true
+            }
             return
         }
         const dx = target.x - enemy.x
@@ -160,14 +166,17 @@ export const useCastleDefenseStore = create<CastleDefenseStore>((set, get) => ({
     const nextProjectiles: typeof projectiles = []
     const nextTowers = towers.map(tower => {
         if (nextGameTime - tower.lastFired < tower.cooldown) return tower
-        let bestTarget: typeof enemies[0] | null = null
+        let bestTarget: Enemy | null = null
         let minDist = tower.range
-        nextEnemies.forEach(e => {
-            const dx = e.x - tower.x
-            const dy = e.y - tower.y
+        for (const enemy of nextEnemies) {
+            const dx = enemy.x - tower.x
+            const dy = enemy.y - tower.y
             const d = Math.sqrt(dx * dx + dy * dy)
-            if (d < minDist) { minDist = d; bestTarget = e; }
-        })
+            if (d < minDist) {
+                minDist = d
+                bestTarget = enemy
+            }
+        }
         if (bestTarget) {
             nextProjectiles.push({
                 id: `proj-${Date.now()}-${Math.random()}`,
@@ -209,14 +218,14 @@ export const useCastleDefenseStore = create<CastleDefenseStore>((set, get) => ({
     })
 
     // 4. WIN CONDITION
-    if (nextTowers.length === MAP_CONFIG.towerSlots.length && nextEnemies.length === 0 && nextSpawnQueue.length === 0 && nextStatus !== 'gameover') {
+    if (!isGameOver && nextTowers.length === MAP_CONFIG.towerSlots.length && nextEnemies.length === 0 && nextSpawnQueue.length === 0) {
         nextStatus = 'victory'
     }
 
     // 5. Word Collection (Only if didn't drop)
     if (!eruptionOccurred) {
-        const collectedWords: typeof words = []
-        const remainingWords: typeof words = []
+        const collectedWords: Words = []
+        const remainingWords: Words = []
         finalWords.forEach(word => {
             const dx = nextPlayer.x - word.x
             const dy = nextPlayer.y - word.y
@@ -276,13 +285,13 @@ export const useCastleDefenseStore = create<CastleDefenseStore>((set, get) => ({
         const { vocabulary } = state
         let nextTargetSentence = state.targetSentence
         let nextTargetTranslation = state.targetTranslation
-        let nextWords: typeof words = []
+        let nextWords: Words = []
 
         if (nextTowers.length < MAP_CONFIG.towerSlots.length) {
             const nextTarget = vocabulary[Math.floor(Math.random() * vocabulary.length)]
             nextTargetSentence = nextTarget.term
             nextTargetTranslation = nextTarget.translation
-            nextWords = spawnWords(nextTarget, vocabulary)
+            nextWords = spawnWords(nextTarget)
         }
 
         set({
