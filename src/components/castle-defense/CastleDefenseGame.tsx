@@ -26,6 +26,15 @@ const PLAYER_SPRITE_CONFIG: SpriteSheetConfig = {
   frameDuration: 150
 }
 
+const ENEMY_SPRITE_CONFIG: SpriteSheetConfig = {
+  states: {
+    walk: { row: 0, frames: 3, loop: true },
+    attack: { row: 1, frames: 1, loop: false, startCol: 0 },
+    death: { row: 2, frames: 2, loop: false, startCol: 0 }
+  },
+  frameDuration: 150
+}
+
 function PlayerSprite({ player, input, gameTime, image }: { 
   player: any, 
   input: any, 
@@ -68,6 +77,82 @@ function PlayerSprite({ player, input, gameTime, image }: {
   )
 }
 
+function EnemySprite({ enemy, gameTime, image }: { 
+  enemy: any, 
+  gameTime: number, 
+  image?: HTMLImageElement 
+}) {
+  // Simple state logic: defaulting to walk unless we add explicit attack/death states later
+  const state: SpriteState = 'walk' 
+  const frame = useSpriteAnimation(state, gameTime, ENEMY_SPRITE_CONFIG)
+  
+  if (!image) {
+     const stats = CASTLE_DEFENSE_CONFIG.ENEMIES[enemy.type]
+     return (
+        <Group x={enemy.x} y={enemy.y}>
+            <Circle 
+              radius={enemy.radius} 
+              fill={stats.color} 
+              stroke={enemy.type === 'BOSS' ? '#fcd34d' : '#7f1d1d'} 
+              strokeWidth={enemy.type === 'BOSS' ? 4 : 2}
+            />
+            <Rect 
+              x={-15} 
+              y={-25} 
+              width={30} 
+              height={4} 
+              fill="#000" 
+            />
+            <Rect 
+              x={-15} 
+              y={-25} 
+              width={(enemy.hp / enemy.maxHp) * 30} 
+              height={4} 
+              fill="#ef4444" 
+            />
+        </Group>
+     )
+  }
+
+  const fw = image.width / 3
+  const fh = image.height / 3
+
+  return (
+    <Group x={enemy.x} y={enemy.y}>
+        <KonvaImage
+          image={image}
+          width={48}
+          height={48}
+          offsetX={24}
+          offsetY={24}
+          crop={{
+            x: frame.col * fw,
+            y: frame.row * fh,
+            width: fw,
+            height: fh
+          }}
+          // Flip if moving left (Assuming standard right-facing sprites, though config said South. 
+          // We can adjust based on visual feedback. For now, no flip logic as they follow a path.)
+        />
+        {/* Health Bar */}
+        <Rect 
+          x={-15} 
+          y={-30} 
+          width={30} 
+          height={4} 
+          fill="#000" 
+        />
+        <Rect 
+          x={-15} 
+          y={-30} 
+          width={(enemy.hp / enemy.maxHp) * 30} 
+          height={4} 
+          fill="#ef4444" 
+        />
+    </Group>
+  )
+}
+
 export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: GAME_WIDTH, height: GAME_HEIGHT })
@@ -81,7 +166,10 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
         base: '/games/castle-defense/player-castle.png',
         towerBase: '/games/castle-defense/tower-base.png',
         towerBuilt: '/games/castle-defense/tower-built.png',
-        player: '/games/castle-defense/player_3x3_pose_sheet.png'
+        player: '/games/castle-defense/player_3x3_pose_sheet.png',
+        goblin: '/games/castle-defense/goblin_3x3_pose_sheet.png',
+        orc: '/games/castle-defense/orc_3x3_pose_sheet.png',
+        troll: '/games/castle-defense/troll_3x3_pose_sheet.png'
     }
     const loaded: Record<string, HTMLImageElement> = {}
     Object.entries(assets).forEach(([key, src]) => {
@@ -286,30 +374,20 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
 
           {/* Enemies */}
           {enemies.map((enemy) => {
-             const stats = CASTLE_DEFENSE_CONFIG.ENEMIES[enemy.type]
+             // Map enemy type to asset key. 
+             // Note: In current config, types are SOLDIER, TANK, BOSS. 
+             // We need to map these to visual assets (goblin, orc, troll).
+             let assetKey = 'goblin'
+             if (enemy.type === 'TANK') assetKey = 'orc'
+             if (enemy.type === 'BOSS') assetKey = 'troll'
+             
              return (
-                <Group key={enemy.id} x={enemy.x} y={enemy.y}>
-                    <Circle 
-                      radius={enemy.radius} 
-                      fill={stats.color} 
-                      stroke={enemy.type === 'BOSS' ? '#fcd34d' : '#7f1d1d'} 
-                      strokeWidth={enemy.type === 'BOSS' ? 4 : 2}
-                    />
-                    <Rect 
-                      x={-15} 
-                      y={-25} 
-                      width={30} 
-                      height={4} 
-                      fill="#000" 
-                    />
-                    <Rect 
-                      x={-15} 
-                      y={-25} 
-                      width={(enemy.hp / enemy.maxHp) * 30} 
-                      height={4} 
-                      fill="#ef4444" 
-                    />
-                </Group>
+                <EnemySprite 
+                    key={enemy.id} 
+                    enemy={enemy} 
+                    gameTime={useCastleDefenseStore.getState().gameTime}
+                    image={gameImages[assetKey]}
+                />
              )
           })}
 

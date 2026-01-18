@@ -16,12 +16,8 @@
 - [x] Task: Conductor - User Manual Verification 'Player Integration' (Protocol in workflow.md)
 
 ## Phase 3: Enemy Integration
-- [ ] Task: Update `CastleDefenseGame` to support multiple enemy types (Goblin, Orc, Troll).
-    - [ ] Update state to include `enemyType` property for enemies.
-    - [ ] Load `goblin_3x3_pose_sheet.png`, `orc_3x3_pose_sheet.png`, `troll_3x3_pose_sheet.png`.
-- [ ] Task: Update Enemy Rendering Loop.
-    - [ ] Render the correct sprite sheet based on `enemyType`.
-    - [ ] Apply the standard 3x3 animation logic (Row 1: Walk, Row 2: Attack, Row 3: Death).
-- [ ] Task: Update Spawner Logic.
+- [x] Task: Update `CastleDefenseGame` to support multiple enemy types (Goblin, Orc, Troll).
+- [x] Task: Update Enemy Rendering Loop.
+- [x] Task: Update Spawner Logic.
     - [ ] Randomize `enemyType` when spawning new enemies (Goblin, Orc, Troll).
 - [ ] Task: Conductor - User Manual Verification 'Enemy Integration' (Protocol in workflow.md)
