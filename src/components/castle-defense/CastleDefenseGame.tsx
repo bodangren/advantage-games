@@ -9,10 +9,63 @@ import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { type VocabularyItem } from '@/store/useGameStore'
 import { DPad } from '@/components/ui/DPad'
 import { BackgroundLayer } from './BackgroundLayer'
+import { useSpriteAnimation } from '@/hooks/useSpriteAnimation'
+import { SpriteSheetConfig, SpriteState } from '@/lib/spriteAnimation'
 
 interface CastleDefenseGameProps {
   vocabulary: VocabularyItem[]
   onComplete: (results: { xp: number; accuracy: number }) => void
+}
+
+const PLAYER_SPRITE_CONFIG: SpriteSheetConfig = {
+  states: {
+    idle: { row: 0, frames: 3, loop: true },
+    walk: { row: 1, frames: 3, loop: true },
+    attack: { row: 2, frames: 3, loop: true }
+  },
+  frameDuration: 150
+}
+
+function PlayerSprite({ player, input, gameTime, image }: { 
+  player: any, 
+  input: any, 
+  gameTime: number, 
+  image?: HTMLImageElement 
+}) {
+  const state: SpriteState = input.dx === 0 && input.dy === 0 ? 'idle' : 'walk'
+  const frame = useSpriteAnimation(state, gameTime, PLAYER_SPRITE_CONFIG)
+  
+  if (!image) {
+    return (
+        <Group x={player.x} y={player.y}>
+            <Circle radius={player.radius} fill="#fbbf24" shadowColor="black" shadowBlur={10} shadowOpacity={0.3} />
+            <Circle x={5} y={-5} radius={3} fill="black" />
+            <Circle x={5} y={5} radius={3} fill="black" />
+        </Group>
+    )
+  }
+
+  const fw = image.width / 3
+  const fh = image.height / 3
+
+  return (
+    <KonvaImage
+      image={image}
+      x={player.x}
+      y={player.y}
+      width={64}
+      height={64}
+      offsetX={32}
+      offsetY={32}
+      crop={{
+        x: frame.col * fw,
+        y: frame.row * fh,
+        width: fw,
+        height: fh
+      }}
+      scaleX={input.dx < 0 ? -1 : 1}
+    />
+  )
 }
 
 export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameProps) {
@@ -27,7 +80,8 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
     const assets = {
         base: '/games/castle-defense/player-castle.png',
         towerBase: '/games/castle-defense/tower-base.png',
-        towerBuilt: '/games/castle-defense/tower-built.png'
+        towerBuilt: '/games/castle-defense/tower-built.png',
+        player: '/games/castle-defense/player_3x3_pose_sheet.png'
     }
     const loaded: Record<string, HTMLImageElement> = {}
     Object.entries(assets).forEach(([key, src]) => {
@@ -381,11 +435,12 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
           </Group>
 
           {/* Player */}
-          <Group x={player.x} y={player.y}>
-            <Circle radius={player.radius} fill="#fbbf24" shadowColor="black" shadowBlur={10} shadowOpacity={0.3} />
-            <Circle x={5} y={-5} radius={3} fill="black" />
-            <Circle x={5} y={5} radius={3} fill="black" />
-          </Group>
+          <PlayerSprite 
+            player={player} 
+            input={input} 
+            gameTime={useCastleDefenseStore.getState().gameTime}
+            image={gameImages.player}
+          />
         </Layer>
       </Stage>
 
