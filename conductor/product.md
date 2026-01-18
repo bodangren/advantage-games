@@ -14,6 +14,7 @@ To develop a high-engagement "sandbox" of arcade-style vocabulary games designed
 
 ## Core Game Modes
 *   **Missile Command (Typing):** The primary focus. Players defend bases by typing the correct translations of incoming "missiles" representing vocabulary terms.
+*   **Castle Defense:** A tower defense game where players collect vocabulary words to build and upgrade towers, defending their base against waves of enemies.
 *   **Crossword Puzzles:** A classic interface where translations serve as clues to fill the grid.
 *   **Tetris/Stacker Variant:** A hybrid mechanic where players must successfully answer multiple-choice questions to gain temporary control over falling blocks.
 *   **Endless Runner:** A lane-switching or jumping game where the correct path is determined by identifying the right translation among several options.

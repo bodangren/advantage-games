@@ -6,7 +6,7 @@
     - [ ] Implement logic to switch Rows based on state (Idle/Walk -> Row 1, Attack -> Row 2, Death -> Row 3).
     - [ ] Implement frame looping logic (Columns 1-3).
     - [ ] Ensure "Death" state plays once and locks on the final frame.
-- [ ] Task: Conductor - User Manual Verification 'Sprite Logic Core' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Sprite Logic Core' (Protocol in workflow.md)
 
 ## Phase 2: Player Integration
 - [ ] Task: Update `CastleDefenseGame` to use the new `SpriteAnimation` logic for the Player.
