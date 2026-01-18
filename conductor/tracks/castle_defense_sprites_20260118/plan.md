@@ -13,7 +13,7 @@
     - [ ] Load `player_3x3_pose_sheet.png`.
     - [ ] Replace existing player rendering code with the new sprite rendering.
     - [ ] Verify Row/Col mapping matches the Player asset (Idle vs Walk vs Attack).
-- [ ] Task: Conductor - User Manual Verification 'Player Integration' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Player Integration' (Protocol in workflow.md)
 
 ## Phase 3: Enemy Integration
 - [ ] Task: Update `CastleDefenseGame` to support multiple enemy types (Goblin, Orc, Troll).
