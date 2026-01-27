@@ -664,7 +664,7 @@ export function advanceCastleDefenseTime(
   }
 
   // 12. Check game over
-  let status = state.status
+  let status: CastleDefenseState['status'] = state.status
   if (base.hp <= 0) {
     status = 'gameover'
   }
