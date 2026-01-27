@@ -1232,7 +1232,7 @@ export function useInterval(callback: () => void, delay: number | null) {
 ## Phase 5: Canvas Rendering
 
 ### Task 5.1: Add sprite grid helpers
-- [ ] Sub-task: Add these functions at the top of `CastleDefenseGameV2.tsx` (after imports):
+- [x] Sub-task: Add these functions at the top of `CastleDefenseGameV2.tsx` (after imports):
 ```typescript
 // Sprite sheet helpers (same as Wizard)
 const buildSpriteGrid = (width: number, height: number) => {
@@ -1250,7 +1250,7 @@ const getSpriteCrop = (fw: number, fh: number, col: number, row: number) => ({
 ```
 
 ### Task 5.2: Add sprite grid memo
-- [ ] Sub-task: Add inside the component (after useState declarations):
+- [x] Sub-task: Add inside the component (after useState declarations):
 ```typescript
 // Memoize sprite grids
 const grids = useMemo(() => {
@@ -1262,7 +1262,7 @@ const grids = useMemo(() => {
 ```
 
 ### Task 5.3: Replace the placeholder render with full Stage
-- [ ] Sub-task: Replace the `{/* Stage will be added in Phase 5 */}` section with:
+- [x] Sub-task: Replace the `{/* Stage will be added in Phase 5 */}` section with:
 ```typescript
 {/* KONVA STAGE */}
 <Stage width={dimensions.width} height={dimensions.height}>
@@ -1438,7 +1438,7 @@ const grids = useMemo(() => {
 ```
 
 ### Task 5.4: Update the HUD to be more informative
-- [ ] Sub-task: Replace the HUD div with:
+- [x] Sub-task: Replace the HUD div with:
 ```typescript
 {/* HUD - Top left */}
 <div className="absolute top-4 left-4 z-10 space-y-2">
@@ -1476,12 +1476,12 @@ const grids = useMemo(() => {
 ```
 
 ### Task 5.5: Run and verify rendering
-- [ ] Sub-task: Run `npm run dev`
+- [x] Sub-task: Run `npm run dev`
 - [ ] Sub-task: Open browser DevTools and switch to mobile emulation
 - [ ] Sub-task: Navigate to the Castle Defense V2 page
 - [ ] Sub-task: Verify: Stage renders, player visible, enemies spawn, words appear
 
-**Verification**: Game should render and be playable.
+**Verification**: Game should render and be playable. (Manual verification pending)
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Canvas Rendering' (Protocol in workflow.md)
 
