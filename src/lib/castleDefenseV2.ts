@@ -553,3 +553,133 @@ export function checkBaseDamage(
     damage: totalDamage,
   }
 }
+
+// Spawn words on the map
+function spawnWords(
+  vocabulary: { term: string; translation: string }[],
+  targetWord: string,
+  random: () => number = Math.random
+): Word[] {
+  if (vocabulary.length === 0) return []
+
+  const words: Word[] = []
+  const correctItem = vocabulary.find(v => v.translation === targetWord)
+
+  // Spawn 4 words: 1 correct + 3 distractors
+  if (correctItem) {
+    // Correct word
+    words.push({
+      id: generateId(),
+      x: 100 + random() * (GAME_WIDTH - 200),
+      y: 100 + random() * (GAME_HEIGHT - 200),
+      radius: WORD_RADIUS,
+      term: correctItem.term,
+      translation: correctItem.translation,
+      isCorrect: true,
+      isCollected: false,
+    })
+  }
+
+  // Distractors
+  const distractors = vocabulary.filter(v => v.translation !== targetWord)
+  for (let i = 0; i < 3 && i < distractors.length; i++) {
+    const distractor = distractors[Math.floor(random() * distractors.length)]
+    words.push({
+      id: generateId(),
+      x: 100 + random() * (GAME_WIDTH - 200),
+      y: 100 + random() * (GAME_HEIGHT - 200),
+      radius: WORD_RADIUS,
+      term: distractor.term,
+      translation: distractor.translation,
+      isCorrect: false,
+      isCollected: false,
+    })
+  }
+
+  return words
+}
+
+// Main game tick function (SAME PATTERN AS WIZARD VS ZOMBIE)
+export function advanceCastleDefenseTime(
+  state: CastleDefenseState,
+  dt: number,
+  input: InputState,
+  vocabulary: { term: string; translation: string }[]
+): CastleDefenseState {
+  if (state.status !== 'playing') {
+    return state
+  }
+
+  // 1. Update game time
+  const gameTime = state.gameTime + dt
+
+  // 2. Move player
+  let player = movePlayer(state.player, input, dt)
+
+  // 3. Collect words
+  let words = state.words
+  const collection = collectWords(player, words)
+  player = collection.player
+  words = collection.words
+
+  // 4. Check tower activation
+  let towers = state.towers
+  const activation = checkTowerActivation(player, state.towerSlots, towers)
+  player = activation.player
+  towers = activation.towers
+
+  // 5. Move enemies
+  let enemies = state.enemies.map(e => moveEnemy(e, state.path, dt))
+
+  // 6. Check base damage from enemies reaching end
+  const baseDamage = checkBaseDamage(enemies, state.base, state.path)
+  enemies = baseDamage.enemies
+  let base = baseDamage.base
+
+  // 7. Update towers (shoot at enemies)
+  let projectiles = state.projectiles
+  const towerUpdate = updateTowers(towers, enemies, projectiles, gameTime)
+  towers = towerUpdate.towers
+  projectiles = towerUpdate.projectiles
+
+  // 8. Update projectiles (move and damage enemies)
+  const projectileUpdate = updateProjectiles(projectiles, enemies, dt)
+  projectiles = projectileUpdate.projectiles
+  enemies = projectileUpdate.enemies
+
+  // 9. Calculate score (10 points per enemy killed)
+  const enemiesKilled = state.enemies.length - enemies.length - (baseDamage.enemies.length < state.enemies.length ? 1 : 0)
+  const score = state.score + (enemiesKilled > 0 ? enemiesKilled * 10 : 0)
+
+  // 10. Spawn enemies
+  let spawnTimer = state.spawnTimer + dt
+  if (spawnTimer >= SPAWN_RATE_MS && enemies.length < MAX_ENEMIES) {
+    enemies = [...enemies, spawnEnemy(state.path, state.wave)]
+    spawnTimer = 0
+  }
+
+  // 11. Respawn words if all collected
+  if (words.every(w => w.isCollected) || words.length === 0) {
+    words = spawnWords(vocabulary, state.targetWord)
+  }
+
+  // 12. Check game over
+  let status = state.status
+  if (base.hp <= 0) {
+    status = 'gameover'
+  }
+
+  return {
+    ...state,
+    status,
+    player,
+    enemies,
+    towers,
+    projectiles,
+    words,
+    base,
+    score,
+    spawnTimer,
+    gameTime,
+  }
+}

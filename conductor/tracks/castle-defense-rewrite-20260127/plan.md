@@ -755,7 +755,7 @@ describe('spawnEnemy', () => {
 ## Phase 3: Main Game Tick Function
 
 ### Task 3.1: Implement the main advanceTime function
-- [ ] Sub-task: Add this function to `src/lib/castleDefenseV2.ts`:
+- [~] Sub-task: Add this function to `src/lib/castleDefenseV2.ts`:
 ```typescript
 // Spawn words on the map
 function spawnWords(
@@ -889,7 +889,7 @@ export function advanceCastleDefenseTime(
 ```
 
 ### Task 3.2: Write tests for advanceCastleDefenseTime
-- [ ] Sub-task: Add tests:
+- [~] Sub-task: Add tests:
 ```typescript
 describe('advanceCastleDefenseTime', () => {
   const vocabulary = [

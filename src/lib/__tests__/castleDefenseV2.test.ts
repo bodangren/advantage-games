@@ -10,6 +10,7 @@ import {
   updateTowers,
   updateProjectiles,
   checkBaseDamage,
+  advanceCastleDefenseTime,
   GAME_WIDTH,
   GAME_HEIGHT,
   PLAYER_RADIUS,
@@ -186,6 +187,45 @@ describe('castleDefenseV2', () => {
       expect(result.base.hp).toBeLessThan(100)
       expect(result.enemies).toHaveLength(0)
       expect(result.damage).toBeGreaterThan(0)
+    })
+  })
+
+  describe('advanceCastleDefenseTime', () => {
+    const vocabulary = [
+      { term: 'hello', translation: 'hola' },
+      { term: 'world', translation: 'mundo' },
+      { term: 'goodbye', translation: 'adios' },
+      { term: 'friend', translation: 'amigo' },
+    ]
+
+    it('should move player based on input', () => {
+      const state = createInitialState(vocabulary)
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 1, dy: 0 }, vocabulary)
+      expect(nextState.player.x).toBeGreaterThan(state.player.x)
+    })
+
+    it('should increase game time', () => {
+      const state = createInitialState(vocabulary)
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.gameTime).toBe(50)
+    })
+
+    it('should spawn enemies after spawn timer', () => {
+      const state = { ...createInitialState(vocabulary), spawnTimer: SPAWN_RATE_MS - 10 }
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.enemies.length).toBeGreaterThan(0)
+    })
+
+    it('should set gameover when base HP reaches 0', () => {
+      const state = { ...createInitialState(vocabulary), base: { ...createInitialState(vocabulary).base, hp: 0 } }
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.status).toBe('gameover')
+    })
+
+    it('should not update when status is not playing', () => {
+      const state = { ...createInitialState(vocabulary), status: 'gameover' as const }
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 1, dy: 0 }, vocabulary)
+      expect(nextState.player.x).toBe(state.player.x)
     })
   })
 })
