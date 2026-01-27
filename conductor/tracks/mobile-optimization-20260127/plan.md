@@ -26,7 +26,7 @@
     - [x] Sub-task: Ensure no overlap with the bottom D-pad area.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Wizard vs Zombie Optimization' (Protocol in workflow.md)
 
-## Phase 4: Magic Defense Optimization
+## Phase 4: Magic Defense Optimization [checkpoint: 6d142d5]
 - [x] Task: Implement Responsive Canvas.
     - [x] Sub-task: Update game logic to calculate canvas size based on window width.
     - [x] Sub-task: Ensure assets scale or reposition correctly within the new bounds.
