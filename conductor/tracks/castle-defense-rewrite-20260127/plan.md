@@ -752,7 +752,7 @@ describe('spawnEnemy', () => {
 
 ---
 
-## Phase 3: Main Game Tick Function
+## Phase 3: Main Game Tick Function [checkpoint: e62fa54]
 
 ### Task 3.1: Implement the main advanceTime function
 - [~] Sub-task: Add this function to `src/lib/castleDefenseV2.ts`:
