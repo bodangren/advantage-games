@@ -11,6 +11,14 @@ export type GameCard = {
 
 export const gameCards: GameCard[] = [
   {
+    id: 'castle-defense',
+    title: 'Castle Defense',
+    description: 'Collect words to build towers and defend your castle!',
+    cover: withBasePath('/games/cover/castle-defense-cover.png'),
+    href: '/games/castle-defense',
+    status: 'playable',
+  },
+  {
     id: 'magic-defense',
     title: 'Magic Defense',
     description: 'Defend your castles from falling words by typing their translations.',
@@ -38,7 +46,7 @@ export const gameCards: GameCard[] = [
     id: 'wizard-vs-zombie',
     title: 'Wizard vs Zombie',
     description: 'Survive the horde by collecting vocabulary orbs.',
-    cover: withBasePath('/games/cover/zombie-escape-cover.png'), // Temporary placeholder
+    cover: withBasePath('/games/cover/wizard-vs-zombie-cover.png'),
     href: '/games/wizard-vs-zombie',
     status: 'playable',
   },
@@ -46,7 +54,7 @@ export const gameCards: GameCard[] = [
     id: 'rune-match',
     title: 'Rune Match',
     description: 'Match vocabulary runes to defeat monsters in this RPG puzzle battle.',
-    cover: withBasePath('/games/cover/word-collapse-cover.png'),
+    cover: withBasePath('/games/cover/rune-match-cover.png'),
     href: '/games/rune-match',
     status: 'playable',
   },
@@ -77,13 +85,5 @@ export const gameCards: GameCard[] = [
     description: 'Brew potions by selecting ingredients from a conveyor belt.',
     cover: withBasePath('/games/cover/potion-rush-cover.png'),
     status: 'coming-soon',
-  },
-  {
-    id: 'castle-defense',
-    title: 'Castle Defense',
-    description: 'Collect words to build towers and defend your castle!',
-    cover: withBasePath('/games/cover/castle-tower-stack-cover.png'),
-    href: '/games/castle-defense',
-    status: 'playable',
   },
 ]
