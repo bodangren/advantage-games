@@ -301,7 +301,7 @@ describe('castleDefenseV2', () => {
 ## Phase 2: Core Game Logic Functions
 
 ### Task 2.1: Implement player movement function
-- [ ] Sub-task: Add this function to `src/lib/castleDefenseV2.ts`:
+- [~] Sub-task: Add this function to `src/lib/castleDefenseV2.ts`:
 ```typescript
 // Move player based on input (same pattern as Wizard)
 export function movePlayer(
@@ -338,7 +338,7 @@ export function movePlayer(
 ```
 
 ### Task 2.2: Implement enemy spawning function
-- [ ] Sub-task: Add this function:
+- [~] Sub-task: Add this function:
 ```typescript
 // Create a new enemy at spawn point
 export function spawnEnemy(
@@ -692,7 +692,7 @@ export function checkBaseDamage(
 ```
 
 ### Task 2.10: Write tests for game logic functions
-- [ ] Sub-task: Add tests to `src/lib/__tests__/castleDefenseV2.test.ts`:
+- [x] Sub-task: Add tests to `src/lib/__tests__/castleDefenseV2.test.ts`:
 ```typescript
 describe('movePlayer', () => {
   it('should move player right', () => {

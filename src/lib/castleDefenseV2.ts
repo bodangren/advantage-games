@@ -198,3 +198,358 @@ export function createInitialState(vocabulary: { term: string; translation: stri
     targetWord: targetItem.translation,
   }
 }
+
+// Move player based on input (same pattern as Wizard)
+export function movePlayer(
+  player: Player,
+  input: InputState,
+  dt: number
+): Player {
+  // Normalize diagonal movement (prevent faster diagonal speed)
+  let moveX = input.dx
+  let moveY = input.dy
+  if (moveX !== 0 && moveY !== 0) {
+    const invSqrt2 = 0.70710678118  // 1 / sqrt(2)
+    moveX *= invSqrt2
+    moveY *= invSqrt2
+  }
+
+  // Calculate speed factor (normalize to 60fps equivalent)
+  const speedFactor = dt / 16.6
+
+  // Calculate new position
+  let newX = player.x + moveX * player.speed * speedFactor
+  let newY = player.y + moveY * player.speed * speedFactor
+
+  // Clamp to game bounds
+  newX = Math.max(player.radius, Math.min(GAME_WIDTH - player.radius, newX))
+  newY = Math.max(player.radius, Math.min(GAME_HEIGHT - player.radius, newY))
+
+  return {
+    ...player,
+    x: newX,
+    y: newY,
+  }
+}
+
+// Create a new enemy at spawn point
+export function spawnEnemy(
+  path: Waypoint[],
+  wave: number,
+  random: () => number = Math.random
+): Enemy {
+  // Determine enemy type based on wave and randomness
+  const roll = random()
+  let type: EnemyType
+  let hp: number
+  let speed: number
+  let radius: number
+
+  if (wave >= 5 && roll < 0.1) {
+    // Boss: 10% chance after wave 5
+    type = 'boss'
+    hp = ENEMY_BOSS_HP
+    speed = ENEMY_BOSS_SPEED
+    radius = ENEMY_BOSS_RADIUS
+  } else if (wave >= 2 && roll < 0.3) {
+    // Tank: 30% chance after wave 2
+    type = 'tank'
+    hp = ENEMY_TANK_HP
+    speed = ENEMY_TANK_SPEED
+    radius = ENEMY_TANK_RADIUS
+  } else {
+    // Soldier: default
+    type = 'soldier'
+    hp = ENEMY_SOLDIER_HP
+    speed = ENEMY_SOLDIER_SPEED
+    radius = ENEMY_SOLDIER_RADIUS
+  }
+
+  // Spawn at first waypoint (off-screen)
+  const spawnPoint = path[0] || { x: 0, y: GAME_HEIGHT / 2 }
+
+  return {
+    id: generateId(),
+    x: spawnPoint.x,
+    y: spawnPoint.y,
+    radius,
+    type,
+    hp,
+    maxHp: hp,
+    speed,
+    waypointIndex: 0,
+  }
+}
+
+// Move enemy along path toward next waypoint
+export function moveEnemy(
+  enemy: Enemy,
+  path: Waypoint[],
+  dt: number
+): Enemy {
+  // If no path or at end, don't move
+  if (path.length === 0 || enemy.waypointIndex >= path.length) {
+    return enemy
+  }
+
+  const target = path[enemy.waypointIndex]
+  const dx = target.x - enemy.x
+  const dy = target.y - enemy.y
+  const distance = Math.sqrt(dx * dx + dy * dy)
+
+  // Check if reached waypoint
+  if (distance < 5) {
+    // Move to next waypoint
+    return {
+      ...enemy,
+      waypointIndex: enemy.waypointIndex + 1,
+    }
+  }
+
+  // Calculate speed factor
+  const speedFactor = dt / 16.6
+
+  // Normalize and apply movement
+  const moveX = (dx / distance) * enemy.speed * speedFactor
+  const moveY = (dy / distance) * enemy.speed * speedFactor
+
+  return {
+    ...enemy,
+    x: enemy.x + moveX,
+    y: enemy.y + moveY,
+  }
+}
+
+// Check if two circles collide
+export function circlesCollide(
+  x1: number, y1: number, r1: number,
+  x2: number, y2: number, r2: number
+): boolean {
+  const dx = x1 - x2
+  const dy = y1 - y2
+  const distance = Math.sqrt(dx * dx + dy * dy)
+  return distance < r1 + r2
+}
+
+// Check if point is within range of another point
+export function inRange(
+  x1: number, y1: number,
+  x2: number, y2: number,
+  range: number
+): boolean {
+  const dx = x1 - x2
+  const dy = y1 - y2
+  return (dx * dx + dy * dy) < (range * range)
+}
+
+// Check if player collects any words
+export function collectWords(
+  player: Player,
+  words: Word[]
+): { player: Player; words: Word[]; collectedWord: Word | null } {
+  let collectedWord: Word | null = null
+  let newInventory = [...player.inventory]
+
+  const newWords = words.map(word => {
+    if (word.isCollected) return word
+
+    if (circlesCollide(player.x, player.y, player.radius, word.x, word.y, word.radius)) {
+      collectedWord = word
+      // Add translation to inventory
+      newInventory.push(word.translation)
+      return { ...word, isCollected: true }
+    }
+
+    return word
+  })
+
+  return {
+    player: { ...player, inventory: newInventory },
+    words: newWords,
+    collectedWord,
+  }
+}
+
+// Check if player can activate a tower slot
+export function checkTowerActivation(
+  player: Player,
+  towerSlots: TowerSlot[],
+  towers: Tower[]
+): { player: Player; towers: Tower[]; activated: boolean } {
+  // Check if player is near any inactive tower slot
+  for (const slot of towerSlots) {
+    // Skip if tower already exists at this slot
+    if (towers.some(t => t.id === `tower-${slot.id}`)) {
+      continue
+    }
+
+    // Check if player is close enough
+    if (!inRange(player.x, player.y, slot.x, slot.y, 50)) {
+      continue
+    }
+
+    // Check if player has the required word in inventory
+    const wordIndex = player.inventory.indexOf(slot.targetWord)
+    if (wordIndex === -1) {
+      continue
+    }
+
+    // Activate tower: remove word from inventory and create tower
+    const newInventory = [...player.inventory]
+    newInventory.splice(wordIndex, 1)
+
+    const newTower: Tower = {
+      id: `tower-${slot.id}`,
+      x: slot.x,
+      y: slot.y,
+      radius: 30,
+      isActive: true,
+      targetWord: slot.targetWord,
+      range: TOWER_RANGE,
+      lastFired: 0,
+      damage: TOWER_DAMAGE,
+    }
+
+    return {
+      player: { ...player, inventory: newInventory },
+      towers: [...towers, newTower],
+      activated: true,
+    }
+  }
+
+  return { player, towers, activated: false }
+}
+
+// Update towers and create projectiles
+export function updateTowers(
+  towers: Tower[],
+  enemies: Enemy[],
+  projectiles: Projectile[],
+  gameTime: number
+): { towers: Tower[]; projectiles: Projectile[] } {
+  const newProjectiles = [...projectiles]
+  const newTowers = towers.map(tower => {
+    if (!tower.isActive) return tower
+
+    // Check cooldown
+    if (gameTime - tower.lastFired < TOWER_FIRE_RATE_MS) {
+      return tower
+    }
+
+    // Find closest enemy in range
+    let closestEnemy: Enemy | null = null
+    let closestDistance = Infinity
+
+    for (const enemy of enemies) {
+      if (inRange(tower.x, tower.y, enemy.x, enemy.y, tower.range)) {
+        const dx = tower.x - enemy.x
+        const dy = tower.y - enemy.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closestEnemy = enemy
+        }
+      }
+    }
+
+    // Fire at closest enemy
+    if (closestEnemy) {
+      newProjectiles.push({
+        id: generateId(),
+        x: tower.x,
+        y: tower.y,
+        radius: PROJECTILE_RADIUS,
+        targetId: closestEnemy.id,
+        speed: PROJECTILE_SPEED,
+        damage: tower.damage,
+      })
+      return { ...tower, lastFired: gameTime }
+    }
+
+    return tower
+  })
+
+  return { towers: newTowers, projectiles: newProjectiles }
+}
+
+// Move projectiles and check for hits
+export function updateProjectiles(
+  projectiles: Projectile[],
+  enemies: Enemy[],
+  dt: number
+): { projectiles: Projectile[]; enemies: Enemy[]; hits: string[] } {
+  const speedFactor = dt / 16.6
+  const hits: string[] = []
+  let updatedEnemies = [...enemies]
+
+  const updatedProjectiles = projectiles
+    .map(projectile => {
+      // Find target enemy
+      const target = updatedEnemies.find(e => e.id === projectile.targetId)
+      if (!target) {
+        // Target died, remove projectile
+        return null
+      }
+
+      // Move toward target
+      const dx = target.x - projectile.x
+      const dy = target.y - projectile.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
+      // Check collision
+      if (distance < projectile.radius + target.radius) {
+        // Hit! Damage enemy
+        hits.push(target.id)
+        updatedEnemies = updatedEnemies.map(e => {
+          if (e.id === target.id) {
+            return { ...e, hp: e.hp - projectile.damage }
+          }
+          return e
+        })
+        return null  // Remove projectile
+      }
+
+      // Move projectile
+      const moveX = (dx / distance) * projectile.speed * speedFactor
+      const moveY = (dy / distance) * projectile.speed * speedFactor
+
+      return {
+        ...projectile,
+        x: projectile.x + moveX,
+        y: projectile.y + moveY,
+      }
+    })
+    .filter((p): p is Projectile => p !== null)
+
+  // Remove dead enemies
+  updatedEnemies = updatedEnemies.filter(e => e.hp > 0)
+
+  return { projectiles: updatedProjectiles, enemies: updatedEnemies, hits }
+}
+
+// Check if enemies reached the base
+export function checkBaseDamage(
+  enemies: Enemy[],
+  base: Base,
+  path: Waypoint[]
+): { enemies: Enemy[]; base: Base; damage: number } {
+  let totalDamage = 0
+
+  // Enemies that reached end of path damage the base
+  const remainingEnemies = enemies.filter(enemy => {
+    // Check if enemy reached end of path
+    if (enemy.waypointIndex >= path.length) {
+      // Damage based on enemy type
+      const damage = enemy.type === 'boss' ? 30 : enemy.type === 'tank' ? 15 : 10
+      totalDamage += damage
+      return false  // Remove enemy
+    }
+    return true
+  })
+
+  return {
+    enemies: remainingEnemies,
+    base: { ...base, hp: Math.max(0, base.hp - totalDamage) },
+    damage: totalDamage,
+  }
+}
