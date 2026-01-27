@@ -32,7 +32,7 @@
     - [x] Sub-task: Ensure assets scale or reposition correctly within the new bounds.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Magic Defense Optimization' (Protocol in workflow.md)
 
-## Phase 5: Rune Match Optimization
+## Phase 5: Rune Match Optimization [checkpoint: d4522d7]
 - [x] Task: Improve Text & Grid Visibility.
     - [x] Sub-task: Adjust font sizes and grid cell dimensions for narrow screens.
     - [x] Sub-task: Ensure contrast and padding are sufficient for readability.
