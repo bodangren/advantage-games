@@ -315,6 +315,8 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
     return () => cancelAnimationFrame(frameId)
   }, [dimensions, status])
 
+  // Wait for measure to avoid 0 size error
+  if (dimensions.width === 0 && status !== 'idle') return <div ref={containerRef} className="w-full h-[60vh] bg-slate-900" />
 
   return (
     <>
@@ -325,9 +327,11 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
           x={shake.x}
           y={shake.y}
         >
-          <BackgroundLayer grassMap={grassMap} />
-          
+          {/* Main Game Layer with Camera Transform */}
           <Layer x={camera.x} y={camera.y} scaleX={camera.scale} scaleY={camera.scale}>
+            {/* Background is now INSIDE the transformed layer */}
+            <BackgroundLayer grassMap={grassMap} />
+
             {/* Map: Tower Slots */}
             {MAP_CONFIG.towerSlots.map((slot, index) => (
               gameImages.towerBase ? (

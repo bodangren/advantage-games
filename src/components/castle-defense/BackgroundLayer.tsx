@@ -1,9 +1,9 @@
 'use client'
 
-import { Layer, Image as KonvaImage } from 'react-konva'
+import { Group, Image as KonvaImage } from 'react-konva'
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { getRoadTileInfo, TILE_SIZE } from '@/lib/castleDefense'
-import type { Layer as LayerType } from 'konva/lib/Layer'
+import type { Group as GroupType } from 'konva/lib/Group'
 import { withBasePath } from '@/lib/basePath'
 
 const ASSETS = {
@@ -25,7 +25,7 @@ interface BackgroundLayerProps {
 }
 
 export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
-  const layerRef = useRef<LayerType>(null)
+  const groupRef = useRef<GroupType>(null)
   const [images, setImages] = useState<Record<string, HTMLImageElement>>({})
   const [loaded, setLoaded] = useState(false)
 
@@ -52,9 +52,7 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
         }
       }
       img.onerror = () => {
-          // Fallback or just continue?
           console.error(`Failed to load image: ${src}`)
-          // Treat as loaded to avoid blocking?
           count++
            if (count === toLoad.length) {
             setImages(loadedImgs)
@@ -64,25 +62,27 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
     })
   }, [])
 
-  useEffect(() => {
-    if (loaded && layerRef.current) {
-        try {
-            // Clear previous cache if any
-            layerRef.current.clearCache()
-            // Cache the layer for performance
-            layerRef.current.cache()
-        } catch (e) {
-            console.error('Failed to cache background layer', e)
-        }
-    }
-  }, [loaded, grassMap])
+  // Caching temporarily disabled to debug InvalidStateError
+  // useEffect(() => {
+  //   if (loaded && groupRef.current) {
+  //       try {
+  //           // Ensure group has content and dimensions before caching
+  //           const { width, height } = groupRef.current.getClientRect()
+  //           if (width > 0 && height > 0) {
+  //               groupRef.current.clearCache()
+  //               groupRef.current.cache()
+  //           }
+  //       } catch (e) {
+  //           console.error('Failed to cache background layer', e)
+  //       }
+  //   }
+  // }, [loaded, grassMap])
 
   const tiles = useMemo(() => {
     if (!loaded) return null
 
     const grid: React.ReactNode[] = []
     
-    // Rows = Y, Cols = X
     for(let r=0; r<grassMap.length; r++) {
         for(let c=0; c<grassMap[0].length; c++) {
             const x = c * TILE_SIZE
@@ -104,15 +104,10 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
                 )
             }
 
-            // Road
             const roadInfo = getRoadTileInfo(c, r)
             if (roadInfo) {
                 const roadSrc = ASSETS.road[roadInfo.type]
                 if (images[roadSrc]) {
-                    // For rotation:
-                    // Konva rotation rotates around the (x,y) point.
-                    // We render at center (cx, cy) and set offset to center (half size)
-                    // So it rotates around its center.
                     const cx = x + TILE_SIZE / 2
                     const cy = y + TILE_SIZE / 2
                     
@@ -136,11 +131,11 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
     return grid
   }, [loaded, images, grassMap])
 
-  if (!loaded) return <Layer />
+  if (!loaded) return <Group />
 
   return (
-    <Layer ref={layerRef} listening={false}>
+    <Group ref={groupRef} listening={false}>
        {tiles}
-    </Layer>
+    </Group>
   )
 }
