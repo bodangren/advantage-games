@@ -22,6 +22,20 @@ import {
   InputState,
 } from '@/lib/castleDefenseV2'
 
+// Sprite sheet helpers (same as Wizard)
+const buildSpriteGrid = (width: number, height: number) => {
+  const fw = width / 3
+  const fh = height / 3
+  return { fw, fh }
+}
+
+const getSpriteCrop = (fw: number, fh: number, col: number, row: number) => ({
+  x: col * fw,
+  y: row * fh,
+  width: fw,
+  height: fh
+})
+
 // Types
 type GameAssets = {
   player: HTMLImageElement
@@ -56,6 +70,14 @@ export function CastleDefenseGameV2({ vocabulary, onGameOver }: Props) {
 
   // Input (REUSE from Wizard)
   const { input, setVirtualInput } = useDirectionalInput()
+
+  // Memoize sprite grids
+  const grids = useMemo(() => {
+    if (!assets) return null
+    return {
+      player: buildSpriteGrid(assets.player.width, assets.player.height),
+    }
+  }, [assets])
 
   // ============================================
   // ASSET LOADING (same pattern as Wizard)
@@ -223,23 +245,221 @@ export function CastleDefenseGameV2({ vocabulary, onGameOver }: Props) {
   }
 
   // ============================================
-  // MAIN GAME RENDER (placeholder - will be implemented in Phase 5)
+  // MAIN GAME RENDER
   // ============================================
+  if (!gameState) {
+    return null
+  }
+
   return (
     <div
       ref={containerRef}
       className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 touch-none md:aspect-video md:h-auto"
     >
-      {/* Stage will be added in Phase 5 */}
-      <div className="absolute inset-0 flex items-center justify-center text-white">
-        Game canvas coming in Phase 5...
+      {/* KONVA STAGE */}
+      <Stage width={dimensions.width} height={dimensions.height}>
+        <Layer scaleX={camera.scale} scaleY={camera.scale} x={camera.x} y={camera.y}>
+          {/* Floor background */}
+          <Rect
+            x={0}
+            y={0}
+            width={GAME_WIDTH}
+            height={GAME_HEIGHT}
+            fillPatternImage={assets.floor}
+            fillPatternRepeat="repeat"
+            fillPatternScaleX={0.5}
+            fillPatternScaleY={0.5}
+          />
+
+          {/* Base */}
+          <Circle
+            x={gameState.base.x}
+            y={gameState.base.y}
+            radius={gameState.base.radius}
+            fill="#8B4513"
+            stroke="#654321"
+            strokeWidth={3}
+          />
+          <Text
+            x={gameState.base.x - 25}
+            y={gameState.base.y - 8}
+            text="BASE"
+            fontSize={16}
+            fontStyle="bold"
+            fill="white"
+          />
+
+          {/* Tower slots */}
+          {gameState.towerSlots.map(slot => (
+            <Circle
+              key={slot.id}
+              x={slot.x}
+              y={slot.y}
+              radius={slot.radius}
+              fill="rgba(100, 100, 100, 0.5)"
+              stroke="#666"
+              strokeWidth={2}
+              dash={[5, 5]}
+            />
+          ))}
+
+          {/* Active towers */}
+          {gameState.towers.map(tower => (
+            <Group key={tower.id}>
+              <Circle
+                x={tower.x}
+                y={tower.y}
+                radius={tower.range}
+                stroke="rgba(255, 200, 0, 0.3)"
+                strokeWidth={1}
+                dash={[10, 5]}
+              />
+              <KonvaImage
+                image={assets.tower}
+                x={tower.x}
+                y={tower.y}
+                width={50}
+                height={50}
+                offsetX={25}
+                offsetY={25}
+              />
+            </Group>
+          ))}
+
+          {/* Projectiles */}
+          {gameState.projectiles.map(proj => (
+            <Circle
+              key={proj.id}
+              x={proj.x}
+              y={proj.y}
+              radius={proj.radius}
+              fill="yellow"
+              shadowColor="orange"
+              shadowBlur={10}
+            />
+          ))}
+
+          {/* Enemies */}
+          {gameState.enemies.map(enemy => {
+            const enemyImage = enemy.type === 'boss' ? assets.boss
+              : enemy.type === 'tank' ? assets.tank
+              : assets.soldier
+            const size = enemy.type === 'boss' ? 60
+              : enemy.type === 'tank' ? 48
+              : 36
+
+            return (
+              <Group key={enemy.id}>
+                <KonvaImage
+                  image={enemyImage}
+                  x={enemy.x}
+                  y={enemy.y}
+                  width={size}
+                  height={size}
+                  offsetX={size / 2}
+                  offsetY={size / 2}
+                />
+                {/* HP bar background */}
+                <Rect
+                  x={enemy.x - 20}
+                  y={enemy.y - size / 2 - 10}
+                  width={40}
+                  height={6}
+                  fill="#333"
+                  cornerRadius={2}
+                />
+                {/* HP bar fill */}
+                <Rect
+                  x={enemy.x - 20}
+                  y={enemy.y - size / 2 - 10}
+                  width={40 * (enemy.hp / enemy.maxHp)}
+                  height={6}
+                  fill={enemy.hp > enemy.maxHp * 0.5 ? '#22c55e' : '#ef4444'}
+                  cornerRadius={2}
+                />
+              </Group>
+            )
+          })}
+
+          {/* Words */}
+          {gameState.words.filter(w => !w.isCollected).map(word => (
+            <Group key={word.id}>
+              <Circle
+                x={word.x}
+                y={word.y}
+                radius={word.radius}
+                fill={word.isCorrect ? '#22c55e' : '#ef4444'}
+                stroke="white"
+                strokeWidth={2}
+                shadowColor={word.isCorrect ? 'green' : 'red'}
+                shadowBlur={10}
+              />
+              <Text
+                x={word.x}
+                y={word.y}
+                text={word.translation}
+                fontSize={12}
+                fontStyle="bold"
+                fill="white"
+                offsetX={word.translation.length * 3}
+                offsetY={6}
+              />
+            </Group>
+          ))}
+
+          {/* Player */}
+          {grids && (
+            <KonvaImage
+              image={assets.player}
+              x={gameState.player.x}
+              y={gameState.player.y}
+              width={64}
+              height={64}
+              offsetX={32}
+              offsetY={32}
+              crop={getSpriteCrop(
+                grids.player.fw,
+                grids.player.fh,
+                playerFrame,
+                input.dx === 0 && input.dy === 0 ? 0 : 1
+              )}
+            />
+          )}
+        </Layer>
+      </Stage>
+
+      {/* HUD - Top left - lower z-index to not block gameplay */}
+      <div className="absolute top-4 left-4 z-[5] space-y-2 pointer-events-none">
+        <div className="bg-black/60 px-3 py-1 rounded text-white text-sm">
+          Score: {gameState?.score || 0}
+        </div>
+        <div className="bg-black/60 px-3 py-1 rounded text-white text-sm">
+          Base HP: {gameState?.base.hp || 0} / {gameState?.base.maxHp || 100}
+        </div>
+        <div className="bg-black/60 px-3 py-1 rounded text-white text-sm">
+          Wave: {gameState?.wave || 1}
+        </div>
       </div>
 
-      {/* HUD */}
-      <div className="absolute top-4 left-4 z-10 text-white">
-        <div>Score: {gameState?.score || 0}</div>
-        <div>Base HP: {gameState?.base.hp || 0}</div>
-        <div>Inventory: {gameState?.player.inventory.join(', ') || 'empty'}</div>
+      {/* Target word - Top center - lower z-index */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-[5] pointer-events-none">
+        <div className="bg-amber-600/90 px-4 py-2 rounded-lg text-white font-bold text-lg">
+          Find: {gameState?.targetWord || ''}
+        </div>
+      </div>
+
+      {/* Inventory - Top right - lower z-index */}
+      <div className="absolute top-4 right-4 z-[5] pointer-events-none">
+        <div className="bg-black/60 px-3 py-2 rounded text-white text-sm">
+          <div className="font-bold mb-1">Inventory:</div>
+          {gameState?.player.inventory.length ? (
+            gameState.player.inventory.map((word, i) => (
+              <div key={i} className="text-amber-300">{word}</div>
+            ))
+          ) : (
+            <div className="text-gray-400">Empty</div>
+          )}
+        </div>
       </div>
 
       {/* D-Pad (REUSE from Wizard) */}
