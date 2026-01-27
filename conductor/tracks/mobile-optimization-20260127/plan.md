@@ -21,9 +21,9 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Castle Defense Optimization' (Protocol in workflow.md)
 
 ## Phase 3: Wizard vs Zombie Optimization
-- [ ] Task: Relocate UI Elements.
-    - [ ] Sub-task: Move Translation/Target text to the top of the screen.
-    - [ ] Sub-task: Ensure no overlap with the bottom D-pad area.
+- [x] Task: Relocate UI Elements.
+    - [x] Sub-task: Move Translation/Target text to the top of the screen.
+    - [x] Sub-task: Ensure no overlap with the bottom D-pad area.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Wizard vs Zombie Optimization' (Protocol in workflow.md)
 
 ## Phase 4: Magic Defense Optimization

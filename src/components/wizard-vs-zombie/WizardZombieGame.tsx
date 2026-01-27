@@ -398,7 +398,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                     Score: {gameState.score}
                 </div>
                 
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/50 px-6 py-2 rounded-full border border-white/20 backdrop-blur-sm pointer-events-none">
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-black/50 px-6 py-2 rounded-full border border-white/20 backdrop-blur-sm pointer-events-none">
                     <span className="text-white/70 mr-2">Find:</span>
                     <span className="text-xl font-bold text-yellow-400">{gameState.targetWord}</span>
                 </div>
