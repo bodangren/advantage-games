@@ -298,7 +298,7 @@ describe('castleDefenseV2', () => {
 
 ---
 
-## Phase 2: Core Game Logic Functions
+## Phase 2: Core Game Logic Functions [checkpoint: 8549c4b]
 
 ### Task 2.1: Implement player movement function [86463a7]
 - [x] Sub-task: Add this function to `src/lib/castleDefenseV2.ts`:
