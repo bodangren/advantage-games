@@ -14,10 +14,10 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Investigation & Analysis' (Protocol in workflow.md)
 
 ## Phase 2: Castle Defense Optimization
-- [ ] Task: Refactor Start Screen for Castle Defense.
-    - [ ] Sub-task: Implement adaptive styles to ensure the Start button is always visible.
-- [ ] Task: Optimize Castle Defense Main Game Layout.
-    - [ ] Sub-task: Adjust canvas sizing logic to fit mobile width.
+- [x] Task: Refactor Start Screen for Castle Defense.
+    - [x] Sub-task: Implement adaptive styles to ensure the Start button is always visible.
+- [x] Task: Optimize Castle Defense Main Game Layout.
+    - [x] Sub-task: Adjust canvas sizing logic to fit mobile width.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Castle Defense Optimization' (Protocol in workflow.md)
 
 ## Phase 3: Wizard vs Zombie Optimization
