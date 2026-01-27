@@ -11,7 +11,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 1: Setup and Type Definitions
+## Phase 1: Setup and Type Definitions [checkpoint: 9c9e624]
 
 ### Task 1.1: Create the V2 directory structure [55213c4]
 - [x] Sub-task: Create directory `src/components/castle-defense-v2/`
