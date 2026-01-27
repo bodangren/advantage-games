@@ -29,7 +29,7 @@ export const CASTLE_DEFENSE_CONFIG = {
     } as EnemyStats,
     TANK: {
       type: 'TANK',
-      hp: 30,
+      hp: 35,
       speed: 1.1, 
       reward: 25,
       cost: 4,
@@ -39,7 +39,7 @@ export const CASTLE_DEFENSE_CONFIG = {
     BOSS: {
       type: 'BOSS',
       hp: 150,
-      speed: 0.75, 
+      speed: 0.7, 
       reward: 100,
       cost: 15,
       radius: 35,
