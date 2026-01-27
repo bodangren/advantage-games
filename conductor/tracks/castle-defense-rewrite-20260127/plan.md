@@ -935,8 +935,8 @@ describe('advanceCastleDefenseTime', () => {
 ## Phase 4: Game Component Setup
 
 ### Task 4.1: Create the basic component shell
-- [ ] Sub-task: Open `src/components/castle-defense-v2/CastleDefenseGameV2.tsx`
-- [ ] Sub-task: Add the following (COPY EXACT STRUCTURE from WizardZombieGame.tsx):
+- [x] Sub-task: Open `src/components/castle-defense-v2/CastleDefenseGameV2.tsx`
+- [x] Sub-task: Add the following (COPY EXACT STRUCTURE from WizardZombieGame.tsx):
 ```typescript
 'use client'
 
@@ -1192,15 +1192,15 @@ export function CastleDefenseGameV2({ vocabulary, onGameOver }: Props) {
 ```
 
 ### Task 4.2: Export the component
-- [ ] Sub-task: Open `src/components/castle-defense-v2/index.ts`
-- [ ] Sub-task: Add:
+- [x] Sub-task: Open `src/components/castle-defense-v2/index.ts`
+- [x] Sub-task: Add:
 ```typescript
 export { CastleDefenseGameV2 } from './CastleDefenseGameV2'
 ```
 
 ### Task 4.3: Verify the useInterval hook exists
-- [ ] Sub-task: Check if `src/hooks/useInterval.ts` exists
-- [ ] Sub-task: If it doesn't exist, create it with this content:
+- [x] Sub-task: Check if `src/hooks/useInterval.ts` exists
+- [x] Sub-task: If it doesn't exist, create it with this content:
 ```typescript
 import { useEffect, useRef } from 'react'
 
@@ -1221,9 +1221,9 @@ export function useInterval(callback: () => void, delay: number | null) {
 ```
 
 ### Task 4.4: Run TypeScript check
-- [ ] Sub-task: Run `npx tsc --noEmit`
+- [x] Sub-task: Run `npx tsc --noEmit`
 
-**Verification**: No TypeScript errors.
+**Verification**: No TypeScript errors. ✅ PASSED
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Game Component Setup' (Protocol in workflow.md)
 
