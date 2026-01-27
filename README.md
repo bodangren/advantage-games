@@ -86,6 +86,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 - `src/app/games/`: Contains the individual game pages.
 - `src/components/game/`: Shared game components and game-specific logic.
+- `src/lib/`: Shared utilities and game-specific configuration (e.g., `castleDefenseConfig.ts`, `runeMatchConfig.ts`).
 - `src/lib/xp.ts`: Standardized XP calculation logic.
 - `public/`: Static assets (images, videos).
 
