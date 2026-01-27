@@ -300,8 +300,8 @@ describe('castleDefenseV2', () => {
 
 ## Phase 2: Core Game Logic Functions
 
-### Task 2.1: Implement player movement function
-- [~] Sub-task: Add this function to `src/lib/castleDefenseV2.ts`:
+### Task 2.1: Implement player movement function [86463a7]
+- [x] Sub-task: Add this function to `src/lib/castleDefenseV2.ts`:
 ```typescript
 // Move player based on input (same pattern as Wizard)
 export function movePlayer(
@@ -337,8 +337,8 @@ export function movePlayer(
 }
 ```
 
-### Task 2.2: Implement enemy spawning function
-- [~] Sub-task: Add this function:
+### Task 2.2: Implement enemy spawning function [86463a7]
+- [x] Sub-task: Add this function:
 ```typescript
 // Create a new enemy at spawn point
 export function spawnEnemy(
@@ -390,7 +390,7 @@ export function spawnEnemy(
 }
 ```
 
-### Task 2.3: Implement enemy movement function
+### Task 2.\1: [86463a7] Implement enemy movement function
 - [ ] Sub-task: Add this function:
 ```typescript
 // Move enemy along path toward next waypoint
@@ -433,7 +433,7 @@ export function moveEnemy(
 }
 ```
 
-### Task 2.4: Implement collision detection helpers
+### Task 2.\1: [86463a7] Implement collision detection helpers
 - [ ] Sub-task: Add these functions:
 ```typescript
 // Check if two circles collide
@@ -459,7 +459,7 @@ export function inRange(
 }
 ```
 
-### Task 2.5: Implement word collection function
+### Task 2.\1: [86463a7] Implement word collection function
 - [ ] Sub-task: Add this function:
 ```typescript
 // Check if player collects any words
@@ -491,7 +491,7 @@ export function collectWords(
 }
 ```
 
-### Task 2.6: Implement tower activation function
+### Task 2.\1: [86463a7] Implement tower activation function
 - [ ] Sub-task: Add this function:
 ```typescript
 // Check if player can activate a tower slot
@@ -545,7 +545,7 @@ export function checkTowerActivation(
 }
 ```
 
-### Task 2.7: Implement tower shooting function
+### Task 2.\1: [86463a7] Implement tower shooting function
 - [ ] Sub-task: Add this function:
 ```typescript
 // Update towers and create projectiles
@@ -601,7 +601,7 @@ export function updateTowers(
 }
 ```
 
-### Task 2.8: Implement projectile movement and collision
+### Task 2.\1: [86463a7] Implement projectile movement and collision
 - [ ] Sub-task: Add this function:
 ```typescript
 // Move projectiles and check for hits
@@ -660,7 +660,7 @@ export function updateProjectiles(
 }
 ```
 
-### Task 2.9: Implement base damage check
+### Task 2.\1: [86463a7] Implement base damage check
 - [ ] Sub-task: Add this function:
 ```typescript
 // Check if enemies reached the base
