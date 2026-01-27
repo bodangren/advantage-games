@@ -33,9 +33,9 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Magic Defense Optimization' (Protocol in workflow.md)
 
 ## Phase 5: Rune Match Optimization
-- [ ] Task: Improve Text & Grid Visibility.
-    - [ ] Sub-task: Adjust font sizes and grid cell dimensions for narrow screens.
-    - [ ] Sub-task: Ensure contrast and padding are sufficient for readability.
+- [x] Task: Improve Text & Grid Visibility.
+    - [x] Sub-task: Adjust font sizes and grid cell dimensions for narrow screens.
+    - [x] Sub-task: Ensure contrast and padding are sufficient for readability.
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Rune Match Optimization' (Protocol in workflow.md)
 
 ## Phase 6: Final Verification
