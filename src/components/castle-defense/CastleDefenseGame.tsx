@@ -11,6 +11,7 @@ import { DPad } from '@/components/ui/DPad'
 import { BackgroundLayer } from './BackgroundLayer'
 import { useSpriteAnimation } from '@/hooks/useSpriteAnimation'
 import { SpriteSheetConfig, SpriteState } from '@/lib/spriteAnimation'
+import { withBasePath } from '@/lib/basePath'
 
 interface CastleDefenseGameProps {
   vocabulary: VocabularyItem[]
@@ -166,13 +167,13 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
   
   useEffect(() => {
     const assets = {
-        base: '/games/castle-defense/player-castle.png',
-        towerBase: '/games/castle-defense/tower-base.png',
-        towerBuilt: '/games/castle-defense/tower-built.png',
-        player: '/games/castle-defense/player_3x3_pose_sheet.png',
-        goblin: '/games/castle-defense/goblin_3x3_pose_sheet.png',
-        orc: '/games/castle-defense/orc_3x3_pose_sheet.png',
-        troll: '/games/castle-defense/troll_3x3_pose_sheet.png'
+        base: withBasePath('/games/castle-defense/player-castle.png'),
+        towerBase: withBasePath('/games/castle-defense/tower-base.png'),
+        towerBuilt: withBasePath('/games/castle-defense/tower-built.png'),
+        player: withBasePath('/games/castle-defense/player_3x3_pose_sheet.png'),
+        goblin: withBasePath('/games/castle-defense/goblin_3x3_pose_sheet.png'),
+        orc: withBasePath('/games/castle-defense/orc_3x3_pose_sheet.png'),
+        troll: withBasePath('/games/castle-defense/troll_3x3_pose_sheet.png')
     }
     const loaded: Record<string, HTMLImageElement> = {}
     Object.entries(assets).forEach(([key, src]) => {

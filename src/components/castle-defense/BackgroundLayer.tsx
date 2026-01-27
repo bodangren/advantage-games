@@ -4,18 +4,19 @@ import { Layer, Image as KonvaImage } from 'react-konva'
 import { useEffect, useState, useMemo, useRef } from 'react'
 import { getRoadTileInfo, TILE_SIZE } from '@/lib/castleDefense'
 import type { Layer as LayerType } from 'konva/lib/Layer'
+import { withBasePath } from '@/lib/basePath'
 
 const ASSETS = {
   grass: [
-    '/games/castle-defense/grass_A.png',
-    '/games/castle-defense/grass_B.png',
-    '/games/castle-defense/grass_C.png',
-    '/games/castle-defense/grass-D.png'
+    withBasePath('/games/castle-defense/grass_A.png'),
+    withBasePath('/games/castle-defense/grass_B.png'),
+    withBasePath('/games/castle-defense/grass_C.png'),
+    withBasePath('/games/castle-defense/grass-D.png')
   ],
   road: {
-    EW: '/games/castle-defense/road_EW.png',
-    NS: '/games/castle-defense/road_NS.png',
-    CORNER: '/games/castle-defense/road_corner.png'
+    EW: withBasePath('/games/castle-defense/road_EW.png'),
+    NS: withBasePath('/games/castle-defense/road_NS.png'),
+    CORNER: withBasePath('/games/castle-defense/road_corner.png')
   }
 }
 
