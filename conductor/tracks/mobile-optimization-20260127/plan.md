@@ -13,7 +13,7 @@
     - [x] Sub-task: Determine the exact canvas dimensions vs. viewport width causing the cutoff.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Investigation & Analysis' (Protocol in workflow.md)
 
-## Phase 2: Castle Defense Optimization
+## Phase 2: Castle Defense Optimization [checkpoint: e15d81d]
 - [x] Task: Refactor Start Screen for Castle Defense.
     - [x] Sub-task: Implement adaptive styles to ensure the Start button is always visible.
 - [x] Task: Optimize Castle Defense Main Game Layout.
