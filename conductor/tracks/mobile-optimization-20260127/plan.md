@@ -20,7 +20,7 @@
     - [x] Sub-task: Adjust canvas sizing logic to fit mobile width.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Castle Defense Optimization' (Protocol in workflow.md)
 
-## Phase 3: Wizard vs Zombie Optimization
+## Phase 3: Wizard vs Zombie Optimization [checkpoint: 2d9e89c]
 - [x] Task: Relocate UI Elements.
     - [x] Sub-task: Move Translation/Target text to the top of the screen.
     - [x] Sub-task: Ensure no overlap with the bottom D-pad area.
