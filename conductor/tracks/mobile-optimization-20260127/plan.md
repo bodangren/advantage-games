@@ -39,5 +39,8 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Rune Match Optimization' (Protocol in workflow.md)
 
 ## Phase 6: Final Verification
-- [x] Task: Perform a final pass on all optimized games using DevTools mobile emulation to ensure consistency.
+- [ ] Task: Fix `InvalidStateError` in Castle Defense (Circle.drawScene).
+    - [ ] Sub-task: Investigate `fillPattern` usage or 0-dimension caching issues.
+    - [ ] Sub-task: Verify `BackgroundLayer` sync and rendering.
+- [ ] Task: Perform a final pass on all optimized games using DevTools mobile emulation to ensure consistency.
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Final Verification' (Protocol in workflow.md)

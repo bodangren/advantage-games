@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Circle, Group, Text, Image as KonvaImage } from 'react-konva'
 import { useCastleDefenseStore } from '@/store/useCastleDefenseStore'
 import { GAME_WIDTH, GAME_HEIGHT, MAP_CONFIG, TILE_SIZE, type Enemy, type Player } from '@/lib/castleDefense'
@@ -46,7 +46,7 @@ function PlayerSprite({ player, input, gameTime, image }: {
   const state: SpriteState = input.dx === 0 && input.dy === 0 ? 'idle' : 'walk'
   const frame = useSpriteAnimation(state, gameTime, PLAYER_SPRITE_CONFIG)
   
-  if (!image) {
+  if (!image || image.width === 0 || image.height === 0) {
     return (
         <Group x={player.x} y={player.y}>
             <Circle radius={player.radius} fill="#fbbf24" shadowColor="black" shadowBlur={10} shadowOpacity={0.3} />
@@ -87,7 +87,7 @@ function EnemySprite({ enemy, gameTime, image }: {
   const state: SpriteState = 'walk' 
   const frame = useSpriteAnimation(state, gameTime, ENEMY_SPRITE_CONFIG)
   
-  if (!image) {
+  if (!image || image.width === 0 || image.height === 0) {
      const stats = CASTLE_DEFENSE_CONFIG.ENEMIES[enemy.type]
      return (
         <Group x={enemy.x} y={enemy.y}>
@@ -158,7 +158,6 @@ function EnemySprite({ enemy, gameTime, image }: {
 export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-  const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 })
 
   // Asset Loading
   const [gameImages, setGameImages] = useState<Record<string, HTMLImageElement>>({})
@@ -267,96 +266,108 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
 
   // Responsive Scaling & Camera
   useEffect(() => {
+    const element = containerRef.current
+    if (!element) return
+
     const updateSize = () => {
-      if (!containerRef.current) return
-      const { clientWidth, clientHeight } = containerRef.current
-      setDimensions({ width: clientWidth, height: clientHeight })
+      const { clientWidth, clientHeight } = element
+      setDimensions(prev =>
+        prev.width === clientWidth && prev.height === clientHeight
+          ? prev
+          : { width: clientWidth, height: clientHeight }
+      )
     }
 
     updateSize()
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(() => updateSize())
+      observer.observe(element)
+      return () => observer.disconnect()
+    }
+
     window.addEventListener('resize', updateSize)
     return () => window.removeEventListener('resize', updateSize)
   }, [])
 
-  useEffect(() => {
-    let frameId: number
-    const updateCamera = () => {
-        if (dimensions.width === 0) return
-
-        const fitScale = dimensions.width / GAME_WIDTH
-        const minScale = 0.8 // Mobile zoom
-        const targetScale = Math.max(fitScale, minScale)
-
-        const player = useCastleDefenseStore.getState().player
-        
-        let camX = (dimensions.width / 2) - (player.x * targetScale)
-        let camY = (dimensions.height / 2) - (player.y * targetScale)
-
-        const mapW = GAME_WIDTH * targetScale
-        const mapH = GAME_HEIGHT * targetScale
-        
-        const minX = dimensions.width - mapW
-        const minY = dimensions.height - mapH
-        
-        if (minX > 0) camX = (dimensions.width - mapW) / 2
-        else camX = Math.max(minX, Math.min(0, camX))
-
-        if (minY > 0) camY = (dimensions.height - mapH) / 2
-        else camY = Math.max(minY, Math.min(0, camY))
-
-        setCamera({ x: camX, y: camY, scale: targetScale })
-        frameId = requestAnimationFrame(updateCamera)
+  const camera = useMemo(() => {
+    if (dimensions.width === 0 || dimensions.height === 0) {
+      return { x: 0, y: 0, scale: 1 }
     }
 
-    if (status === 'playing' || status === 'cooldown') {
-        frameId = requestAnimationFrame(updateCamera)
-    }
+    const fitScale = dimensions.width / GAME_WIDTH
+    const minScale = 0.8 // Mobile zoom
+    const targetScale = Math.max(fitScale, minScale)
 
-    return () => cancelAnimationFrame(frameId)
-  }, [dimensions, status])
+    let camX = (dimensions.width / 2) - (player.x * targetScale)
+    let camY = (dimensions.height / 2) - (player.y * targetScale)
 
-  // Wait for measure to avoid 0 size error
-  if (dimensions.width === 0 && status !== 'idle') return <div ref={containerRef} className="w-full h-[60vh] bg-slate-900" />
+    const mapW = GAME_WIDTH * targetScale
+    const mapH = GAME_HEIGHT * targetScale
+
+    const minX = dimensions.width - mapW
+    const minY = dimensions.height - mapH
+
+    if (minX > 0) camX = (dimensions.width - mapW) / 2
+    else camX = Math.max(minX, Math.min(0, camX))
+
+    if (minY > 0) camY = (dimensions.height - mapH) / 2
+    else camY = Math.max(minY, Math.min(0, camY))
+
+    return { x: camX, y: camY, scale: targetScale }
+  }, [dimensions, player.x, player.y])
+
+  const stagePixelRatio = useMemo(() => {
+    if (typeof window === 'undefined') return 1
+    const dpr = window.devicePixelRatio || 1
+    if (dimensions.width === 0 || dimensions.height === 0) return dpr
+    const isMobileViewport = dimensions.width < GAME_WIDTH || dimensions.height < GAME_HEIGHT
+    return isMobileViewport ? 1 : dpr
+  }, [dimensions])
+
+  const isStageReady = dimensions.width > 0 && dimensions.height > 0
 
   return (
     <>
       <div ref={containerRef} className="relative w-full h-[60vh] md:h-auto md:aspect-video max-w-[800px] overflow-hidden rounded-xl border border-slate-800 bg-slate-900 shadow-2xl">
-        <Stage 
-          width={dimensions.width} 
-          height={dimensions.height} 
-          x={shake.x}
-          y={shake.y}
-        >
-          {/* Main Game Layer with Camera Transform */}
-          <Layer x={camera.x} y={camera.y} scaleX={camera.scale} scaleY={camera.scale}>
-            {/* Background is now INSIDE the transformed layer */}
-            <BackgroundLayer grassMap={grassMap} />
+        {isStageReady ? (
+          <Stage 
+            width={dimensions.width} 
+            height={dimensions.height} 
+            x={shake.x}
+            y={shake.y}
+            pixelRatio={stagePixelRatio}
+          >
+            {/* Main Game Layer with Camera Transform */}
+            <Layer x={camera.x} y={camera.y} scaleX={camera.scale} scaleY={camera.scale}>
+              {/* Background is now INSIDE the transformed layer */}
+              <BackgroundLayer grassMap={grassMap} />
 
-            {/* Map: Tower Slots */}
-            {MAP_CONFIG.towerSlots.map((slot, index) => (
-              gameImages.towerBase ? (
-                  <KonvaImage
-                      key={`slot-${index}`}
-                      image={gameImages.towerBase}
-                      x={slot.x}
-                      y={slot.y}
-                      width={TILE_SIZE}
-                      height={TILE_SIZE}
-                      offsetX={TILE_SIZE / 2}
-                      offsetY={TILE_SIZE / 2}
-                      opacity={0.8}
-                  />
-              ) : (
-                  <Rect
-                      key={`slot-${index}`}
-                      x={slot.x - 20}
-                      y={slot.y - 20}
-                      width={40}
-                      height={40}
-                      fill="#475569" 
-                  />
-              )
-            ))}
+              {/* Map: Tower Slots */}
+              {MAP_CONFIG.towerSlots.map((slot, index) => (
+                gameImages.towerBase ? (
+                    <KonvaImage
+                        key={`slot-${index}`}
+                        image={gameImages.towerBase}
+                        x={slot.x}
+                        y={slot.y}
+                        width={TILE_SIZE}
+                        height={TILE_SIZE}
+                        offsetX={TILE_SIZE / 2}
+                        offsetY={TILE_SIZE / 2}
+                        opacity={0.8}
+                    />
+                ) : (
+                    <Rect
+                        key={`slot-${index}`}
+                        x={slot.x - 20}
+                        y={slot.y - 20}
+                        width={40}
+                        height={40}
+                        fill="#475569" 
+                    />
+                )
+              ))}
 
             {/* Towers */}
             {towers.map((tower) => (
@@ -438,15 +449,16 @@ export function CastleDefenseGame({ vocabulary, onComplete }: CastleDefenseGameP
               </Group>
             ))}
 
-            {/* Player */}
-            <PlayerSprite 
-              player={player} 
-              input={input} 
-              gameTime={useCastleDefenseStore.getState().gameTime}
-              image={gameImages.player}
-            />
-          </Layer>
-        </Stage>
+              {/* Player */}
+              <PlayerSprite 
+                player={player} 
+                input={input} 
+                gameTime={useCastleDefenseStore.getState().gameTime}
+                image={gameImages.player}
+              />
+            </Layer>
+          </Stage>
+        ) : null}
 
         {/* HUD Overlay */}
         <CastleDefenseHUD />

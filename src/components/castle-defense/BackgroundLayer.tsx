@@ -62,21 +62,25 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
     })
   }, [])
 
-  // Caching temporarily disabled to debug InvalidStateError
-  // useEffect(() => {
-  //   if (loaded && groupRef.current) {
-  //       try {
-  //           // Ensure group has content and dimensions before caching
-  //           const { width, height } = groupRef.current.getClientRect()
-  //           if (width > 0 && height > 0) {
-  //               groupRef.current.clearCache()
-  //               groupRef.current.cache()
-  //           }
-  //       } catch (e) {
-  //           console.error('Failed to cache background layer', e)
-  //       }
-  //   }
-  // }, [loaded, grassMap])
+  useEffect(() => {
+    if (!loaded || !groupRef.current) return
+
+    const node = groupRef.current
+    const applyCache = () => {
+      try {
+        const { width, height } = node.getClientRect()
+        if (width > 0 && height > 0) {
+          node.clearCache()
+          node.cache({ pixelRatio: 1 })
+        }
+      } catch (e) {
+        console.error('Failed to cache background layer', e)
+      }
+    }
+
+    const frameId = requestAnimationFrame(applyCache)
+    return () => cancelAnimationFrame(frameId)
+  }, [loaded, grassMap])
 
   const tiles = useMemo(() => {
     if (!loaded) return null

@@ -1,0 +1,10 @@
+{
+  "track_id": "castle-defense-rewrite-20260127",
+  "type": "rewrite",
+  "status": "new",
+  "created_at": "2026-01-27T14:00:00Z",
+  "updated_at": "2026-01-27T14:00:00Z",
+  "description": "Complete rewrite of Castle Defense game using Wizard vs Zombie architecture patterns for mobile performance.",
+  "priority": "high",
+  "estimated_phases": 8
+}
