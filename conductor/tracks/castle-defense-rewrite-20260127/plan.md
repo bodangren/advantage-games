@@ -1490,7 +1490,7 @@ const grids = useMemo(() => {
 ## Phase 6: Integration and Page Setup
 
 ### Task 6.1: Create the V2 game page
-- [ ] Sub-task: Create file `src/app/games/castle-defense-v2/page.tsx`:
+- [x] Sub-task: Create file `src/app/games/castle-defense-v2/page.tsx`:
 ```typescript
 'use client'
 
@@ -1549,16 +1549,16 @@ export default function CastleDefenseV2Page() {
 ```
 
 ### Task 6.2: Add link to navigation (if applicable)
-- [ ] Sub-task: Find the navigation component and add a link to `/games/castle-defense-v2`
-- [ ] Sub-task: Or verify the page is accessible directly at the URL
+- [x] Sub-task: Find the navigation component and add a link to `/games/castle-defense-v2`
+- [x] Sub-task: Or verify the page is accessible directly at the URL (Next.js auto-routing)
 
 ### Task 6.3: Verify the page works
-- [ ] Sub-task: Run `npm run dev`
+- [x] Sub-task: Run `npm run dev`
 - [ ] Sub-task: Navigate to `http://localhost:3000/games/castle-defense-v2`
 - [ ] Sub-task: Click "Start Game"
 - [ ] Sub-task: Verify game is playable
 
-**Verification**: Game loads and runs.
+**Verification**: Game loads and runs. (Manual verification pending - TypeScript check passed)
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Integration and Page Setup' (Protocol in workflow.md)
 
