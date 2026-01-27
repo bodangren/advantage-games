@@ -1,6 +1,6 @@
 # Plan: Mobile Optimization (Portrait Mode)
 
-## Phase 1: Investigation & Analysis
+## Phase 1: Investigation & Analysis [checkpoint: ae412cf]
 - [x] Task: Use Chrome DevTools to audit **Rune Match** in mobile portrait mode.
     - [x] Sub-task: Identify specific CSS/Layout issues causing unreadable text.
     - [x] Sub-task: Take screenshots or log specific element dimensions needing change.
