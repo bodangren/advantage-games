@@ -14,6 +14,13 @@ jest.mock('nanoid', () => ({
 
 const mockUseGameStore = useGameStore as unknown as jest.Mock
 
+// Mock ResizeObserver
+global.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
 describe('GameEngine', () => {
   beforeEach(() => {
     mockUseGameStore.mockReturnValue({

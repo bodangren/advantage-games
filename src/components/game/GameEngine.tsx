@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback, useRef } from 'react'
+import React, { useState, useCallback, useRef, useEffect } from 'react'
 import { useGameStore, VocabularyItem, CastleId, MAX_CASTLE_HP } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
 import { useInterval } from '@/hooks/useInterval'
@@ -108,6 +108,8 @@ export function GameEngine() {
   const [consecutiveCorrect, setConsecutiveCorrect] = useState(0)
   const [spawnRate, setSpawnRate] = useState(5000)
   const [missileDuration, setMissileDuration] = useState(15)
+  const [castleScale, setCastleScale] = useState(1)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const accuracy = totalAttempts > 0 ? correctAnswers / totalAttempts : 0
   const leftCastleRow = getCastleRowForHp(castles.left)
@@ -216,10 +218,26 @@ export function GameEngine() {
     }
   }, [activeMissiles, playSound, consecutiveCorrect, increaseScore, incrementAttempts, castles])
 
+  useEffect(() => {
+    if (!containerRef.current) return
+    const updateScale = () => {
+        if (!containerRef.current) return
+        const { clientWidth } = containerRef.current
+        const neededWidth = 640
+        const newScale = Math.min(clientWidth / neededWidth, 1)
+        setCastleScale(newScale)
+    }
+    const observer = new ResizeObserver(updateScale)
+    observer.observe(containerRef.current)
+    updateScale()
+    return () => observer.disconnect()
+  }, [])
+
   if (status !== 'playing') return null
 
   return (
     <div
+      ref={containerRef}
       className="relative w-full h-[600px] overflow-hidden border-x-4 border-slate-800 shadow-inner rounded-lg bg-slate-900"
       style={{
         backgroundImage: `url(${BACKGROUND_IMAGE})`,
@@ -277,7 +295,14 @@ export function GameEngine() {
         ))}
         
         {/* Bases/Castles at the bottom */}
-        <div className="absolute bottom-0 w-full flex justify-around p-2 items-end pointer-events-none">
+        <div 
+            className="absolute bottom-0 flex justify-around p-2 items-end pointer-events-none origin-bottom"
+            style={{
+                width: '640px',
+                left: '50%',
+                transform: `translateX(-50%) scale(${castleScale})`
+            }}
+        >
           {/* Left Castle */}
           <motion.div
             animate={getCastleMotion(castles.left)}
