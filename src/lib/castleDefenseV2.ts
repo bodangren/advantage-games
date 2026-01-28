@@ -1,243 +1,367 @@
-// Game world dimensions (MUST match Wizard vs Zombie)
-export const GAME_WIDTH = 800
-export const GAME_HEIGHT = 600
-export const TILE_SIZE = 50
+import type { VocabularyItem } from '@/store/useGameStore'
+import {
+  GAME_WIDTH,
+  GAME_HEIGHT,
+  TILE_SIZE,
+  PLAYER_RADIUS,
+  WORD_RADIUS,
+  PROJECTILE_RADIUS,
+  MAP_CONFIG,
+  createCastleDefenseState,
+  generateSpawnQueue,
+  spawnWords,
+  type CastleDefenseState,
+  type Player,
+  type Enemy,
+  type Tower,
+  type Projectile,
+  type Word,
+} from './castleDefense'
+import { CASTLE_DEFENSE_CONFIG } from './castleDefenseConfig'
 
-// Player constants
-export const PLAYER_RADIUS = 20
-export const PLAYER_SPEED = 3
-
-// Enemy constants
-export const ENEMY_SOLDIER_RADIUS = 12
-export const ENEMY_SOLDIER_HP = 30
-export const ENEMY_SOLDIER_SPEED = 1.5
-
-export const ENEMY_TANK_RADIUS = 18
-export const ENEMY_TANK_HP = 80
-export const ENEMY_TANK_SPEED = 0.8
-
-export const ENEMY_BOSS_RADIUS = 25
-export const ENEMY_BOSS_HP = 200
-export const ENEMY_BOSS_SPEED = 0.5
-
-// Tower constants
-export const TOWER_RANGE = 150
-export const TOWER_FIRE_RATE_MS = 1000
-export const TOWER_DAMAGE = 10
-
-// Projectile constants
-export const PROJECTILE_RADIUS = 5
-export const PROJECTILE_SPEED = 8
-
-// Word orb constants
-export const WORD_RADIUS = 25
-
-// Base constants
-export const BASE_HP = 100
-export const BASE_RADIUS = 40
-
-// Timing constants (CRITICAL - must match Wizard)
 export const GAME_TICK_MS = 50
-export const SPAWN_RATE_MS = 2000
-export const MAX_ENEMIES = 15
-
-// Animation timing
 export const ANIMATION_FRAME_MS = 150
 
-// --- Types ---
-
-// Base entity type (same pattern as Wizard)
-export type Entity = {
-  id: string
-  x: number
-  y: number
-  radius: number
-}
-
-// Player type
-export type Player = Entity & {
-  speed: number
-  inventory: string[]  // collected word translations
-}
-
-// Enemy types
-export type EnemyType = 'soldier' | 'tank' | 'boss'
-
-export type Enemy = Entity & {
-  type: EnemyType
-  hp: number
-  maxHp: number
-  speed: number
-  waypointIndex: number
-}
-
-// Tower types
-export type Tower = Entity & {
-  isActive: boolean
-  targetWord: string
-  range: number
-  lastFired: number
-  damage: number
-}
-
-export type TowerSlot = Entity & {
-  targetWord: string
-}
-
-// Projectile type
-export type Projectile = Entity & {
-  targetId: string
-  speed: number
-  damage: number
-}
-
-// Word orb type
-export type Word = Entity & {
-  term: string
-  translation: string
-  isCorrect: boolean
-  isCollected: boolean
-}
-
-// Base type
-export type Base = {
-  x: number
-  y: number
-  hp: number
-  maxHp: number
-  radius: number
-}
-
-// Waypoint for enemy path
-export type Waypoint = {
-  x: number
-  y: number
-}
-
-export type MapConfig = {
-  path: Waypoint[]
-  towerSlots: Waypoint[]
-  spawnPoint: Waypoint
-  basePoint: Waypoint
-  wordField: {
-    minX: number
-    maxX: number
-    minY: number
-    maxY: number
-  }
-}
-
-// Main game state type
-export type CastleDefenseState = {
-  status: 'playing' | 'gameover' | 'victory'
-  player: Player
-  enemies: Enemy[]
-  towers: Tower[]
-  towerSlots: TowerSlot[]
-  projectiles: Projectile[]
-  words: Word[]
-  base: Base
-  path: Waypoint[]
-  score: number
-  wave: number
-  spawnTimer: number
-  gameTime: number
-  targetWord: string  // current word player should collect
-}
-
-// Input state type (matches Wizard)
 export type InputState = {
   dx: number
   dy: number
   drop?: boolean
 }
 
-// --- Factory Functions ---
-
-// Helper to generate unique IDs
-const generateId = (): string => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-
-export const MAP_CONFIG: MapConfig = {
-  path: [
-    { x: 75, y: 75 },
-    { x: 75, y: 525 },
-    { x: 725, y: 525 },
-    { x: 725, y: 75 },
-  ],
-  spawnPoint: { x: 75, y: 75 },
-  basePoint: { x: 725, y: 75 },
-  towerSlots: [
-    { x: 175, y: 425 },
-    { x: 325, y: 425 },
-    { x: 475, y: 425 },
-    { x: 625, y: 425 },
-    { x: 175, y: 175 },
-    { x: 625, y: 175 },
-  ],
-  wordField: {
-    minX: 200,
-    maxX: 600,
-    minY: 100,
-    maxY: 300,
-  },
+export {
+  GAME_WIDTH,
+  GAME_HEIGHT,
+  TILE_SIZE,
+  PLAYER_RADIUS,
+  WORD_RADIUS,
+  PROJECTILE_RADIUS,
+  MAP_CONFIG,
 }
 
-// Default path from top-left to center (enemies follow this)
-const DEFAULT_PATH: Waypoint[] = [
-  { x: 0, y: 100 },      // Spawn point (off-screen left)
-  { x: 200, y: 100 },    // First waypoint
-  { x: 200, y: 300 },    // Turn down
-  { x: 400, y: 300 },    // Move right to center
-]
+export type {
+  CastleDefenseState,
+  Player,
+  Enemy,
+  Tower,
+  Projectile,
+  Word,
+}
 
-// Default tower slots
-const DEFAULT_TOWER_SLOTS: TowerSlot[] = [
-  { id: 'slot-1', x: 150, y: 200, radius: 30, targetWord: '' },
-  { id: 'slot-2', x: 300, y: 150, radius: 30, targetWord: '' },
-  { id: 'slot-3', x: 300, y: 450, radius: 30, targetWord: '' },
-  { id: 'slot-4', x: 500, y: 200, radius: 30, targetWord: '' },
-]
+export function createInitialState(vocabulary: VocabularyItem[]): CastleDefenseState {
+  return createCastleDefenseState(vocabulary)
+}
 
-// Create initial game state
-export function createInitialState(vocabulary: { term: string; translation: string }[]): CastleDefenseState {
-  // Pick a random target word
-  const targetItem = vocabulary.length > 0
-    ? vocabulary[Math.floor(Math.random() * vocabulary.length)]
-    : { term: 'default', translation: 'default' }
+export function advanceCastleDefenseTime(
+  state: CastleDefenseState,
+  dt: number,
+  input: InputState,
+  vocabulary: VocabularyItem[]
+): CastleDefenseState {
+  if (state.status === 'idle' || state.status === 'gameover' || state.status === 'victory') {
+    return state
+  }
 
-  // Assign target words to tower slots
-  const towerSlots = DEFAULT_TOWER_SLOTS.map((slot, i) => ({
-    ...slot,
-    targetWord: vocabulary[i % vocabulary.length]?.translation || 'word'
-  }))
+  if (state.status === 'cooldown') {
+    const nextCooldown = state.waveCooldownTimer - dt
+    if (nextCooldown <= 0) {
+      const nextWave = state.wave + 1
+      const nextBudget = Math.floor(
+        CASTLE_DEFENSE_CONFIG.WAVE.INITIAL_BUDGET * Math.pow(CASTLE_DEFENSE_CONFIG.WAVE.MULTIPLIER, nextWave - 1)
+      )
+      const nextQueue = generateSpawnQueue(nextBudget)
+      return {
+        ...state,
+        status: 'playing',
+        wave: nextWave,
+        waveBudget: nextBudget,
+        spawnQueue: nextQueue,
+        waveCooldownTimer: 0,
+        spawnTimer: 0,
+      }
+    }
+    return { ...state, waveCooldownTimer: nextCooldown }
+  }
+
+  const nextGameTime = state.gameTime + dt
+  let nextSpawnTimer = state.spawnTimer + dt
+  let nextHearts = state.hearts
+  let nextStatus: CastleDefenseState['status'] = state.status
+  let nextScore = state.score
+  let nextEvent: CastleDefenseState['lastEvent'] = null
+  const nextSpawnQueue = [...state.spawnQueue]
+  let nextWaveCooldown = state.waveCooldownTimer
+  let isGameOver = false
+
+  // 1. Move Player
+  let newX = state.player.x + input.dx * state.player.speed
+  let newY = state.player.y + input.dy * state.player.speed
+  newX = Math.max(state.player.radius, Math.min(GAME_WIDTH - state.player.radius, newX))
+  newY = Math.max(state.player.radius, Math.min(GAME_HEIGHT - state.player.radius, newY))
+  const nextPlayer: Player = { ...state.player, x: newX, y: newY }
+
+  // 2. Drop logic
+  let nextInventory = [...state.player.inventory]
+  let eruptionOccurred = false
+  let finalWords = [...state.words]
+
+  if (input.drop && nextInventory.length > 0) {
+    eruptionOccurred = true
+    nextEvent = { type: 'erupt', id: Date.now(), x: nextPlayer.x, y: nextPlayer.y }
+    nextInventory.forEach(w => {
+      finalWords.push({
+        ...w,
+        isCollected: false,
+        x: MAP_CONFIG.wordField.minX + Math.random() * (MAP_CONFIG.wordField.maxX - MAP_CONFIG.wordField.minX),
+        y: MAP_CONFIG.wordField.minY + Math.random() * (MAP_CONFIG.wordField.maxY - MAP_CONFIG.wordField.minY),
+      })
+    })
+    nextInventory = []
+  }
+
+  // 3. Spawn Enemies
+  const spawnedEnemies: Enemy[] = []
+  if (nextStatus === 'playing') {
+    if (
+      state.enemies.length < CASTLE_DEFENSE_CONFIG.WAVE.MAX_CONCURRENT_ENEMIES &&
+      nextSpawnQueue.length > 0
+    ) {
+      if (nextSpawnTimer >= 1500) {
+        nextSpawnTimer = 0
+        const type = nextSpawnQueue.shift()
+        if (type) {
+          const stats = CASTLE_DEFENSE_CONFIG.ENEMIES[type]
+          spawnedEnemies.push({
+            id: `enemy-${Date.now()}-${Math.random()}`,
+            x: MAP_CONFIG.spawnPoint.x,
+            y: MAP_CONFIG.spawnPoint.y,
+            radius: stats.radius,
+            hp: stats.hp,
+            maxHp: stats.hp,
+            speed: stats.speed,
+            pathIndex: 1,
+            distanceTraveled: 0,
+            type,
+          })
+        }
+      }
+    } else if (state.enemies.length === 0 && nextSpawnQueue.length === 0) {
+      nextStatus = 'cooldown'
+      nextWaveCooldown = CASTLE_DEFENSE_CONFIG.WAVE.COOLDOWN_MS
+    }
+  }
+
+  // 4. Move Enemies
+  const nextEnemies: Enemy[] = []
+  const currentEnemies = [...state.enemies, ...spawnedEnemies]
+  currentEnemies.forEach(enemy => {
+    const target = MAP_CONFIG.path[enemy.pathIndex]
+    if (!target) {
+      nextHearts -= 1
+      nextEvent = { type: 'damage', id: Date.now() }
+      if (nextHearts <= 0) {
+        nextStatus = 'gameover'
+        isGameOver = true
+      }
+      return
+    }
+    const dx = target.x - enemy.x
+    const dy = target.y - enemy.y
+    const dist = Math.sqrt(dx * dx + dy * dy)
+    if (dist < 5) {
+      nextEnemies.push({ ...enemy, pathIndex: enemy.pathIndex + 1 })
+    } else {
+      const moveX = (dx / dist) * enemy.speed
+      const moveY = (dy / dist) * enemy.speed
+      nextEnemies.push({
+        ...enemy,
+        x: enemy.x + moveX,
+        y: enemy.y + moveY,
+        distanceTraveled: enemy.distanceTraveled + enemy.speed,
+      })
+    }
+  })
+
+  // 5. Tower Shooting
+  const nextProjectiles: Projectile[] = []
+  const nextTowers = state.towers.map(tower => {
+    if (nextGameTime - tower.lastFired < tower.cooldown) return tower
+    let bestTarget: Enemy | null = null
+    let minDist = tower.range
+    for (const enemy of nextEnemies) {
+      const dx = enemy.x - tower.x
+      const dy = enemy.y - tower.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      if (dist < minDist) {
+        minDist = dist
+        bestTarget = enemy
+      }
+    }
+    if (bestTarget) {
+      nextProjectiles.push({
+        id: `proj-${Date.now()}-${Math.random()}`,
+        x: tower.x,
+        y: tower.y,
+        radius: PROJECTILE_RADIUS,
+        targetId: bestTarget.id,
+        damage: tower.damage,
+        speed: 8,
+      })
+      return { ...tower, lastFired: nextGameTime }
+    }
+    return tower
+  })
+
+  // 6. Projectile Collision
+  const liveProjectiles: Projectile[] = []
+  const currentProjectiles = [...state.projectiles, ...nextProjectiles]
+  let updatedEnemies = [...nextEnemies]
+
+  currentProjectiles.forEach(proj => {
+    const targetIndex = updatedEnemies.findIndex(e => e.id === proj.targetId)
+    if (targetIndex === -1) return
+
+    const target = updatedEnemies[targetIndex]
+    const dx = target.x - proj.x
+    const dy = target.y - proj.y
+    const dist = Math.sqrt(dx * dx + dy * dy)
+
+    if (dist < target.radius + proj.radius) {
+      const nextHp = target.hp - proj.damage
+      if (!nextEvent) nextEvent = { type: 'hit', id: Date.now(), x: target.x, y: target.y }
+
+      if (nextHp <= 0) {
+        const stats = CASTLE_DEFENSE_CONFIG.ENEMIES[target.type]
+        nextScore += stats.reward
+        updatedEnemies = updatedEnemies.filter(e => e.id !== target.id)
+      } else {
+        updatedEnemies[targetIndex] = { ...target, hp: nextHp }
+      }
+    } else {
+      const moveX = (dx / dist) * proj.speed
+      const moveY = (dy / dist) * proj.speed
+      liveProjectiles.push({ ...proj, x: proj.x + moveX, y: proj.y + moveY })
+    }
+  })
+
+  // 7. Win Condition
+  if (!isGameOver && nextTowers.length === MAP_CONFIG.towerSlots.length && updatedEnemies.length === 0 && nextSpawnQueue.length === 0) {
+    nextStatus = 'victory'
+  }
+
+  // 8. Word Collection (Only if didn't drop)
+  if (!eruptionOccurred) {
+    const collectedWords: Word[] = []
+    const remainingWords: Word[] = []
+    finalWords.forEach(word => {
+      const dx = nextPlayer.x - word.x
+      const dy = nextPlayer.y - word.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      if (dist < nextPlayer.radius + word.radius) {
+        collectedWords.push({ ...word, isCollected: true })
+      } else {
+        remainingWords.push(word)
+      }
+    })
+
+    if (collectedWords.length > 0) {
+      nextInventory = [...nextInventory, ...collectedWords]
+      finalWords = remainingWords
+    }
+  }
+
+  // 9. Tower Activation
+  let towerBuilt = false
+  const { towerSlots } = MAP_CONFIG
+
+  if (nextInventory.length > 0) {
+    for (const slot of towerSlots) {
+      if (nextTowers.some(t => t.x === slot.x && t.y === slot.y)) continue
+      const dx = nextPlayer.x - slot.x
+      const dy = nextPlayer.y - slot.y
+      if (Math.sqrt(dx * dx + dy * dy) < 40) {
+        const expectedWords = state.targetSentence.split(' ')
+        if (
+          nextInventory.length === expectedWords.length &&
+          nextInventory.every((w, i) => w.text === expectedWords[i])
+        ) {
+          nextTowers.push({
+            id: `tower-${Date.now()}`,
+            x: slot.x,
+            y: slot.y,
+            radius: 30,
+            range: CASTLE_DEFENSE_CONFIG.TOWER.RANGE,
+            damage: CASTLE_DEFENSE_CONFIG.TOWER.DAMAGE,
+            cooldown: CASTLE_DEFENSE_CONFIG.TOWER.COOLDOWN,
+            lastFired: 0,
+          })
+          nextInventory = []
+          towerBuilt = true
+          nextEvent = { type: 'build', id: Date.now(), x: slot.x, y: slot.y }
+        } else if (nextInventory.length >= expectedWords.length) {
+          eruptionOccurred = true
+          nextEvent = { type: 'erupt', id: Date.now(), x: slot.x, y: slot.y }
+          nextInventory.forEach(w => {
+            finalWords.push({
+              ...w,
+              isCollected: false,
+              x: MAP_CONFIG.wordField.minX + Math.random() * (MAP_CONFIG.wordField.maxX - MAP_CONFIG.wordField.minX),
+              y: MAP_CONFIG.wordField.minY + Math.random() * (MAP_CONFIG.wordField.maxY - MAP_CONFIG.wordField.minY),
+            })
+          })
+          nextInventory = []
+        }
+        break
+      }
+    }
+  }
+
+  if (towerBuilt) {
+    const vocabList = vocabulary.length > 0 ? vocabulary : state.vocabulary
+    let nextTargetSentence = state.targetSentence
+    let nextTargetTranslation = state.targetTranslation
+    let nextWords: Word[] = []
+
+    if (nextTowers.length < MAP_CONFIG.towerSlots.length) {
+      const nextTarget = vocabList[Math.floor(Math.random() * vocabList.length)]
+      nextTargetSentence = nextTarget.term
+      nextTargetTranslation = nextTarget.translation
+      nextWords = spawnWords(nextTarget)
+    }
+
+    return {
+      ...state,
+      gameTime: nextGameTime,
+      spawnTimer: nextSpawnTimer,
+      hearts: nextHearts,
+      status: nextStatus,
+      score: nextScore + 50,
+      player: { ...nextPlayer, inventory: [] },
+      enemies: updatedEnemies,
+      towers: nextTowers,
+      projectiles: liveProjectiles,
+      words: nextWords,
+      targetSentence: nextTargetSentence,
+      targetTranslation: nextTargetTranslation,
+      lastEvent: nextEvent,
+      spawnQueue: nextSpawnQueue,
+      waveCooldownTimer: nextWaveCooldown,
+    }
+  }
 
   return {
-    status: 'playing',
-    player: {
-      id: 'player',
-      x: GAME_WIDTH / 2,
-      y: GAME_HEIGHT - 100,
-      radius: PLAYER_RADIUS,
-      speed: PLAYER_SPEED,
-      inventory: [],
-    },
-    enemies: [],
-    towers: [],
-    towerSlots,
-    projectiles: [],
-    words: [],
-    base: {
-      x: 400,
-      y: 300,
-      hp: BASE_HP,
-      maxHp: BASE_HP,
-      radius: BASE_RADIUS,
-    },
-    path: DEFAULT_PATH,
-    score: 0,
-    wave: 1,
-    spawnTimer: 0,
-    gameTime: 0,
-    targetWord: targetItem.translation,
+    ...state,
+    gameTime: nextGameTime,
+    spawnTimer: nextSpawnTimer,
+    hearts: nextHearts,
+    status: nextStatus,
+    score: nextScore,
+    player: { ...nextPlayer, inventory: nextInventory },
+    enemies: updatedEnemies,
+    towers: nextTowers,
+    projectiles: liveProjectiles,
+    words: finalWords,
+    lastEvent: nextEvent,
+    spawnQueue: nextSpawnQueue,
+    waveCooldownTimer: nextWaveCooldown,
   }
 }
