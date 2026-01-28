@@ -123,10 +123,10 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
   )
 }
 
-function IngredientItem({ item, onDrop, images }: { 
+function IngredientItem({ item, onDrop, images, onDragStateChange }: { 
     item: Ingredient, 
     onDrop: (x: number, y: number, item: Ingredient) => void,
-    images: Record<string, HTMLImageElement>
+    images: Record<string, HTMLImageElement>;
     onDragStateChange: (ingredientId: string, isDragging: boolean) => void
 }) {
     const [isDragging, setIsDragging] = React.useState(false)
