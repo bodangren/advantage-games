@@ -37,7 +37,7 @@
     -   Valid -> Update progress.
     -   Invalid -> Set state to `Warning` (Green bubbles).
     -   Ruined -> Requires emptying.
-- [~] **Trash Component:** Implement the drop zone to clear a "Ruined" cauldron or discard an ingredient.
+- [x] **Trash Component:** Implement the drop zone to clear a "Ruined" cauldron or discard an ingredient. 3283a33
 
 ## Phase 4: Customers & Orders
 **Goal:** Tie the brewing to actual requests.
