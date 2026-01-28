@@ -50,7 +50,7 @@
 ## Phase 5: Game Loop Polish & Assets
 **Goal:** Make it look and feel like a game.
 
-- [~] **Asset Integration:** Replace placeholders with generated assets (Customers, Cauldron sprites, Ingredient icons).
+- [x] **Asset Integration:** Replace placeholders with generated assets (Customers, Cauldron sprites, Ingredient icons).
 - [ ] **Particle Effects:**
     -   Splash when dropping ingredients.
     -   Smoke/Explosion for errors.
