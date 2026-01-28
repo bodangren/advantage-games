@@ -68,6 +68,7 @@ interface PotionRushState {
   handleDropIngredient: (cauldronIndex: number, ingredientId: string) => void
   handleDumpCauldron: (cauldronIndex: number) => void
   handleServeCustomer: (customerId: string, cauldronIndex: number) => void
+  discardIngredient: (ingredientId: string) => void
   
   // Helpers
   reset: () => void
@@ -294,6 +295,11 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
      }
 
      set({ customers: nextCustomers, cauldrons: nextCauldrons, score: score + 100 })
+  },
+
+  discardIngredient: (ingredientId) => {
+    const { conveyorItems } = get()
+    set({ conveyorItems: conveyorItems.filter(item => item.id !== ingredientId) })
   }
 
 }))

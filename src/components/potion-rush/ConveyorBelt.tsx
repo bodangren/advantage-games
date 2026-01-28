@@ -13,6 +13,7 @@ interface ConveyorBeltProps {
 export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
   const items = usePotionRushStore(state => state.conveyorItems)
   const handleDrop = usePotionRushStore(state => state.handleDropIngredient)
+  const discardIngredient = usePotionRushStore(state => state.discardIngredient)
   const gameState = usePotionRushStore(state => state.gameState)
   const beltSpeed = usePotionRushStore(state => state.beltSpeed)
   
@@ -80,18 +81,8 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
       // Check Trash (Right Side)
       const trashDist = Math.sqrt(Math.pow(x - layout.trashX, 2) + Math.pow(y - layout.trashY, 2))
       if (trashDist < 100) {
-          // Just destroy it (no-op in store effectively removes it if we call a remove action, 
-          // but handleDrop removes it from belt. Let's just consume it.)
-          // Actually, we need a 'discard' action? 
-          // Re-using handleDrop with an invalid index or creating a specific remove action would be cleaner.
-          // For now, let's just use handleDrop to a non-existent index or just ignore?
-          // The store 'handleDrop' removes it from conveyor. So if we pass -1 maybe?
-          // Let's modify store to allow just removing? Or simpler:
-          // If dropped on trash, we just want it gone. 
-          // We can call handleDrop(-1) if we update store to handle that, 
-          // OR just let it snap back if we don't handle it.
-          // Let's assume for now dropping on 'nothing' returns it to belt (Konva default if we don't update store).
-          // But we WANT to trash it.
+          discardIngredient(item.id)
+          return
       }
   }
 
