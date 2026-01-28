@@ -1,34 +1,58 @@
-# Plan: Potion Rush
+# Implementation Plan: Potion Rush (Time Management)
 
-## Phase 1: Infrastructure & Scene Setup
-- [ ] Task: Create `PotionRushState` types and configuration (`src/lib/potionRush.ts`).
-- [ ] Task: Create `src/app/games/potion-rush` route and game container.
-- [ ] Task: Implement the **Game Loop** and basic **React-Konva Stage** setup (Responsive).
-- [ ] Task: Register game in Main Menu (using placeholder cover).
-- [ ] Conductor - User Manual Verification 'Phase 1: Infrastructure & Scene Setup'
+## Phase 1: Core Architecture & State Management
+**Goal:** Set up the game store and basic data structures to handle the complex state of multiple cauldrons and a moving conveyor belt.
 
-## Phase 2: The Conveyor Belt Engine
-- [ ] Task: Implement `ConveyorBelt` component (looping texture + rotating gears).
-- [ ] Task: Implement `IngredientBag` spawning logic (carrying Correct vs Distractor words).
-- [ ] Task: Implement "Physics" (Bags moving right, wrapping/despawning).
-- [ ] Conductor - User Manual Verification 'Phase 2: The Conveyor Belt Engine'
+- [x] **Data Models:** Define interfaces for `Ingredient` (Word), `Customer` (Request), and `Cauldron` (State: Empty, Brewing, Ruined, Done).
+- [x] **Zustand Store (`usePotionRushStore`):**
+    -   `cauldrons`: Array of 3 cauldron objects.
+    -   `conveyorBelt`: Array of active ingredients with `x, y` positions.
+    -   `customers`: Queue of active customers.
+    -   `gameState`: Playing, Paused, GameOver.
+    -   `score` & `timer`.
+- [ ] **Game Loop Hook:** Create a `useGameLoop` hook that updates the conveyor belt position and customer timers every frame.
 
-## Phase 3: Gameplay Interaction (The "Rush")
-- [ ] Task: Implement **Click-to-Throw** logic (Bag animates to Cauldron).
-- [ ] Task: Implement **Correct Answer** logic (Fill meter + Splash + New Sentence).
-- [ ] Task: Implement **Incorrect Answer** logic (Reset meter + Explosion effect).
-- [ ] Task: Implement **Sentence/Cloze Generation** (Hide 1 word from input data).
-- [ ] Conductor - User Manual Verification 'Phase 3: Gameplay Interaction'
+## Phase 2: The Conveyor Belt & Ingredients
+**Goal:** Get the "supply chain" working. Words should spawn and move across the screen.
 
-## Phase 4: The Threat (Visuals)
-- [ ] Task: Implement **Monster Animation** (Idle/Attack states) synced to a timer beat?
-- [ ] Task: Implement **Door Damage States** (Changing sprite based on Timer).
-- [ ] Task: Implement **Timer** display and Game Over trigger (0s).
-- [ ] Conductor - User Manual Verification 'Phase 4: The Threat'
+- [x] **Ingredient Component:** Create a React-Konva component for ingredients (Word + Visual Icon).
+- [x] **Spawner Logic:** Implement logic to spawn words from the current vocabulary set at the edge of the screen.
+- [x] **Movement Logic:** Update `x` coordinates in the store tick. Despawn items when they leave the screen.
+- [x] **Drag & Drop Basics:** Implement `onDragStart` and `onDragEnd` for ingredients.
 
-## Phase 5: Polish & Integration
-- [ ] Task: Add Screen Shake effect (on Door Hit and Explosion).
-- [ ] Task: Implement Victory/Defeat Screens.
-- [ ] Task: Integrate XP calculation and `useGameStore`.
-- [ ] Task: Final Asset Polish (Replace placeholders with final specs).
-- [ ] Conductor - User Manual Verification 'Phase 5: Polish & Integration'
+## Phase 3: The Workstations (Cauldrons)
+**Goal:** Allow players to drop words into cauldrons and validate them against active orders.
+
+- [x] **Cauldron Component:** Visual representation with states (Normal, Warning, Exploded).
+- [x] **Drop Logic:**
+    -   Detect when an ingredient is dropped on a cauldron.
+    -   **Assignment:** If empty, assign the cauldron to the sentence matching the word (if valid start).
+    -   **Validation:** Check if the dropped word is the *next* correct word in the sequence.
+- [x] **State Transitions:**
+    -   Valid -> Update progress.
+    -   Invalid -> Set state to `Warning` (Green bubbles).
+    -   Ruined -> Requires emptying.
+- [~] **Trash Component:** Implement the drop zone to clear a "Ruined" cauldron or discard an ingredient.
+
+## Phase 4: Customers & Orders
+**Goal:** Tie the brewing to actual requests.
+
+- [x] **Customer Component:** Display avatar and speech bubble with the **Native Language** sentence.
+- [~] **Queue Logic:** Spawn customers at intervals. limit to 3 at the counter.
+- [x] **Serving Logic:** When a cauldron is "Done", allow dragging it to the customer (or auto-complete) to clear the slot and award points.
+- [x] **Patience System:** Decrease customer timer; trigger "Leave Angry" event if 0.
+
+## Phase 5: Game Loop Polish & Assets
+**Goal:** Make it look and feel like a game.
+
+- [~] **Asset Integration:** Replace placeholders with generated assets (Customers, Cauldron sprites, Ingredient icons).
+- [ ] **Particle Effects:**
+    -   Splash when dropping ingredients.
+    -   Smoke/Explosion for errors.
+    -   Stars/Hearts for successful service.
+- [ ] **Sound Effects:** Bubbling, Clinking, Angry grunts, Cash register ding.
+- [ ] **Tutorial/Start Screen:** Brief explanation of "Native Request -> Target Ingredient".
+
+## Phase 6: Mobile Optimization
+- [ ] **Touch Controls:** Ensure drag targets are large enough.
+- [ ] **Responsive Layout:** Stack elements vertically if needed on portrait (or force landscape).

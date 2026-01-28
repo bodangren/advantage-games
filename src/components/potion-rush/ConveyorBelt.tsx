@@ -1,0 +1,191 @@
+import React, { useEffect, useRef, useState } from 'react'
+import { Group, Rect, Text, Image as KonvaImage, Circle } from 'react-konva'
+import { usePotionRushStore, Ingredient } from '@/store/usePotionRushStore'
+import { withBasePath } from '@/lib/basePath'
+
+interface ConveyorBeltProps {
+  y: number
+  width: number
+  dragBoundFunc: (pos: { x: number; y: number }) => { x: number; y: number }
+  layout: any
+}
+
+export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
+  const items = usePotionRushStore(state => state.conveyorItems)
+  const handleDrop = usePotionRushStore(state => state.handleDropIngredient)
+  const gameState = usePotionRushStore(state => state.gameState)
+  const beltSpeed = usePotionRushStore(state => state.beltSpeed)
+  
+  const [images, setImages] = useState<Record<string, HTMLImageElement>>({})
+  const [beltOffset, setBeltOffset] = useState(0)
+  const lastFrameRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    const assets = {
+      herb: withBasePath('/games/potion-rush/herb.png'),
+      mineral: withBasePath('/games/potion-rush/mineral.png'),
+      mushroom: withBasePath('/games/potion-rush/mushroom.png'),
+      potion: withBasePath('/games/potion-rush/potion.png'),
+    }
+    const loadedImgs: Record<string, HTMLImageElement> = {}
+    let count = 0
+    const sources = Object.entries(assets)
+    sources.forEach(([key, src]) => {
+      const img = new window.Image()
+      img.src = src
+      img.onload = () => {
+        loadedImgs[key] = img
+        count++
+        if (count === sources.length) setImages(loadedImgs)
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    if (gameState !== 'PLAYING') {
+      lastFrameRef.current = null
+      return
+    }
+
+    let frameId: number
+    const spacing = 100
+
+    const loop = (time: number) => {
+      if (lastFrameRef.current === null) {
+        lastFrameRef.current = time
+      }
+      const dt = (time - lastFrameRef.current) / 1000
+      lastFrameRef.current = time
+      setBeltOffset(prev => (prev + beltSpeed * dt) % spacing)
+      frameId = requestAnimationFrame(loop)
+    }
+
+    frameId = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(frameId)
+  }, [gameState, beltSpeed])
+
+  const checkDropZone = (x: number, y: number, item: Ingredient) => {
+      // Layout Logic (Must match CauldronStation logic)
+      const stationWidth = width / 3
+      const cauldronY = layout.cauldronY
+      const cauldronHeight = 150 // Approx
+      
+      // Check Cauldrons
+      if (y > cauldronY - 50 && y < cauldronY + cauldronHeight + 50) {
+          if (x < stationWidth) return handleDrop(0, item.id)
+          if (x < stationWidth * 2) return handleDrop(1, item.id)
+          return handleDrop(2, item.id)
+      }
+      
+      // Check Trash (Right Side)
+      const trashDist = Math.sqrt(Math.pow(x - layout.trashX, 2) + Math.pow(y - layout.trashY, 2))
+      if (trashDist < 100) {
+          // Just destroy it (no-op in store effectively removes it if we call a remove action, 
+          // but handleDrop removes it from belt. Let's just consume it.)
+          // Actually, we need a 'discard' action? 
+          // Re-using handleDrop with an invalid index or creating a specific remove action would be cleaner.
+          // For now, let's just use handleDrop to a non-existent index or just ignore?
+          // The store 'handleDrop' removes it from conveyor. So if we pass -1 maybe?
+          // Let's modify store to allow just removing? Or simpler:
+          // If dropped on trash, we just want it gone. 
+          // We can call handleDrop(-1) if we update store to handle that, 
+          // OR just let it snap back if we don't handle it.
+          // Let's assume for now dropping on 'nothing' returns it to belt (Konva default if we don't update store).
+          // But we WANT to trash it.
+      }
+  }
+
+  return (
+    <Group y={y}>
+        {/* Belt Visual */}
+        <Rect 
+            width={width} 
+            height={100} 
+            fill="#333" 
+            stroke="#111"
+            strokeWidth={4}
+        />
+        
+        {/* Gear/Pattern (Simple visual filler) */}
+        {Array.from({ length: Math.ceil(width / 100) + 2 }).map((_, i) => (
+            <Circle 
+                key={i} 
+                x={i * 100 + 50 - beltOffset} 
+                y={50} 
+                radius={10} 
+                fill="#555" 
+            />
+        ))}
+
+        {/* Items */}
+        {items.map(item => (
+            <IngredientItem 
+                key={item.id} 
+                item={item} 
+                onDrop={checkDropZone}
+                images={images}
+            />
+        ))}
+    </Group>
+  )
+}
+
+function IngredientItem({ item, onDrop, images }: { 
+    item: Ingredient, 
+    onDrop: (x: number, y: number, item: Ingredient) => void,
+    images: Record<string, HTMLImageElement>
+}) {
+    const [isDragging, setIsDragging] = React.useState(false)
+    const img = images[item.type]
+
+    return (
+        <Group
+            x={item.x}
+            y={isDragging ? 0 : 20} 
+            draggable
+            onDragStart={() => setIsDragging(true)}
+            onDragEnd={(e) => {
+                setIsDragging(false)
+                const stage = e.target.getStage()
+                const pointer = stage?.getPointerPosition()
+                if (pointer) {
+                    onDrop(pointer.x, pointer.y, item)
+                }
+                e.target.x(item.x)
+                e.target.y(20)
+            }}
+        >
+            {img ? (
+                <KonvaImage 
+                    image={img}
+                    x={-40}
+                    y={-40}
+                    width={80}
+                    height={80}
+                />
+            ) : (
+                <Rect width={40} height={40} x={-20} y={-20} fill="#fff" />
+            )}
+            
+            {/* The Word Label - Below the ingredient */}
+            <Group y={40}>
+                <Rect 
+                    x={-item.word.length * 4 - 5}
+                    width={item.word.length * 8 + 10}
+                    height={20}
+                    fill="rgba(0,0,0,0.7)"
+                    cornerRadius={4}
+                />
+                <Text 
+                    text={item.word} 
+                    fill="white" 
+                    fontSize={14} 
+                    fontStyle="bold"
+                    align="center"
+                    x={-item.word.length * 4}
+                    y={4}
+                />
+            </Group>
+        </Group>
+    )
+}

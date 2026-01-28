@@ -1,60 +1,63 @@
 # Asset Specification: Potion Rush
 
-## 1. The Threat (Background)
+## Visual Style
+- **Theme:** Magical Fantasy, slightly cartoonish/vector style (consistent with other games in the suite).
+- **Perspective:** 2D Side/Front view (like a stage).
+- **Palette:** Vibrant purples, greens, oranges, and deep stone grays.
 
-### 1.1 Monster (Ogre/Troll)
-**Style:** Large, menacing, cartoon-fantasy.
-**Format:** Sprite Sheet or Individual PNGs.
+## Required Sprites
 
-| State | Description | Frames |
-|-------|-------------|--------|
-| **Idle/Ready** | Standing outside, breathing, looking at door. | 2-3 |
-| **Attack** | Smashing the door with club/fist. (Synced with screen shake). | 2-3 |
-| **Roar/Win** | Arms raised, roaring (Game Over). | 2 |
-| **Defeated** | Turned into a frog OR blasted back. | 1 |
+### 1. The Cauldrons
+*   **Cauldron Base:** Large iron pot on a stand.
+*   **Liquid States (Overlays):**
+    *   `liquid-blue.png`: Standard brewing (looping bubble animation frames).
+    *   `liquid-green.png`: "Warning" / Ruined state (looping noxious bubble animation).
+    *   `liquid-gold.png`: Finished potion (glowing).
+*   **Effects:**
+    *   `smoke-puff.png`: For when an ingredient is added.
+    *   `explosion.png`: For when a potion fails completely.
 
-### 1.2 Dungeon Door
-**Style:** Heavy wood with iron reinforcements.
-**Format:** Individual PNGs (States).
+### 2. Ingredients (Words)
+*   **Container Backgrounds:** (The text will be rendered on top of these)
+    *   `flask-round-red.png`
+    *   `flask-tall-blue.png`
+    *   `herb-bundle.png`
+    *   `magic-stone.png`
+    *   `mushroom.png`
+*   **Icons:** Small icons to decorate the UI if needed.
 
-| State | Description |
-|-------|-------------|
-| **Solid** | Intact door. (Time: 30s - 20s) |
-| **Cracked** | Visible wood splinters. (Time: 20s - 10s) |
-| **Broken** | Holes appearing, hinges loose. (Time: 10s - 0s) |
-| **Shattered** | Debris on floor (Game Over). |
+### 3. Customers
+*   **Orc:**
+    *   `orc-idle.png`
+    *   `orc-happy.png`
+    *   `orc-angry.png`
+*   **Elf:**
+    *   `elf-idle.png`
+    *   `elf-happy.png`
+    *   `elf-angry.png`
+*   **Wizard:**
+    *   `wizard-idle.png`
+    *   `wizard-happy.png`
+    *   `wizard-angry.png`
 
----
+### 4. Environment
+*   **Background:** `shop-interior-bg.png`. Stone walls, shelves with jars, wooden floor.
+*   **Counter:** `wooden-counter.png`. Where customers stand.
+*   **Conveyor Belt:** `conveyor-belt-segment.png` (tileable) or a long strip.
+*   **Trash:** `magic-portal-trash.png`. A swirling vortex.
 
-## 2. The Lab (Foreground)
+### 5. UI Elements
+*   **Speech Bubble:** `speech-bubble-tail-down.png` (for customers).
+*   **Heart/Patience Meter:** `heart-full.png`, `heart-empty.png`.
+*   **Clock:** `sun-moon-dial.png`.
 
-### 2.1 Workstation
-*   **Conveyor Belt:**
-    *   **Belt Tile:** Seamless texture (leather/stone) for looping.
-    *   **Gears:** Rotating cogwheels for the ends of the belt.
-*   **Cauldron:**
-    *   **Empty:** Dark liquid level.
-    *   **Filling:** Liquid color (Green/Purple) overlay that scales up.
-    *   **Front/Rim:** The "lip" of the cauldron (to mask the liquid rising behind it).
-
-### 2.2 Ingredients (Interactables)
-*   **Ingredient Bag:**
-    *   **Closed:** Standard burlap sack. Text rendered on top.
-    *   **Flying:** Slightly rotated version for the "throw" animation.
-*   **Splash Effect:** Droplets rising (when bag hits cauldron).
-*   **Explosion Effect:** Smoke puff + Flash (when wrong bag chosen).
-
-### 2.3 Recipe UI
-*   **Scroll/Parchment:** Background panel for the sentence text.
-*   **Vial/Meter:** A glass tube on the UI showing 0-10 progress (Alternative to looking at Cauldron liquid).
-
----
-
-## 3. Audio (Suggested)
-*   **BGM:** "Hurry Up" style looping track.
+## Audio Requirements
+*   **BGM:** "Magical Shop" - Upbeat but slightly mysterious loop.
 *   **SFX:**
-    *   Conveyor hum (low volume).
-    *   Door Bang (Heavy thud).
-    *   Correct (Splash/Chime).
-    *   Incorrect (Explosion/Glass Break).
-    *   Monster Roar.
+    *   `bubble-loop.wav` (Ambience)
+    *   `splash.wav` (Drop ingredient)
+    *   `correct-ding.wav` (Potion complete)
+    *   `error-buzz.wav` (Wrong ingredient)
+    *   `explosion.wav` (Game over/Ruined pot)
+    *   `customer-happy.wav` (Cash register/Cheer)
+    *   `customer-angry.wav` (Grunt/Door slam)

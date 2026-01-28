@@ -1,46 +1,55 @@
-# Spec: Potion Rush
+# Specification: Potion Rush (Time Management Edition)
 
 ## Overview
-**Potion Rush** is a high-speed "Cloze" (fill-in-the-blank) game where players must select the correct missing word from a conveyor belt of ingredients to brew a potion before a monster breaks through the door.
+**Potion Rush** is a fast-paced time-management game set in a magical potion shop. Players act as an alchemist who must fulfill potion orders for a queue of fantasy customers. The core mechanic involves constructing sentences in the target language by collecting "ingredient" words from a conveyor belt and dropping them into the correct cauldron to brew the specific potion requested by a customer.
 
-## Visual Layout (2D Side View)
+## Core Gameplay Loop
 
-### Background Scene (The Threat)
-*   **Left Side:** A large Monster (Ogre/Troll) standing outside.
-*   **Center/Right:** A heavy Dungeon Door separating the monster from the lab.
-*   **Action:** The monster continuously bangs on the door. The door visually cracks/shakes as the timer counts down.
+### 1. The Shop Floor
+- **Customers:** A queue of customers (Orcs, Elves, Wizards) appears at the counter.
+- **Orders:** Each customer requests a specific potion using a sentence in their **Native Language** (e.g., "El gato duerme").
+- **Workstations:** The player has **3 Cauldrons** available to brew potions simultaneously.
+- **Supply Chain:** A **Conveyor Belt** at the bottom continuously scrolls "Ingredients" from right to left. Each ingredient represents a word in the **Target Language** (e.g., "The", "Cat", "Sleeps", "Run").
 
-### Foreground (The Lab)
-*   **Top Center:** The **Recipe Scroll**. Displays the target sentence with a blank (e.g., *"The cat is ____ on the mat"*).
-*   **Bottom:** A moving **Conveyor Belt** spanning the width of the screen.
-*   **Bottom Right:** A bubbling **Cauldron**.
-*   **Above Door:** The **Countdown Timer** (30s).
+### 2. Brewing Mechanics
+- **Assigning an Order:** The player starts brewing by dragging an "Order" (from a customer) or simply starting to drop ingredients into an empty cauldron. *Simplified:* The player just sees the customer's request and starts dropping words into *any* empty cauldron. The cauldron then becomes "assigned" to that target sentence.
+- **Cooking:**
+    - The player must drag words from the conveyor belt into the assigned cauldron.
+    - **Correct Ingredient:** If the word matches the *next* word in the target sentence, it is added to the pot. The pot bubbles happily (blue/gold).
+    - **Incorrect Ingredient:** If the word is wrong (wrong word or wrong order), the pot turns **Green/Noxious** and bubbles violently (Warning State).
+- **Recovery & Failure:**
+    - **Warning State:** The player cannot add more ingredients until the pot is fixed.
+    - **Trash:** To fix a ruined pot, the player must drag the entire cauldron content (or click a "Dump" button) to the **Magic Trash Portal**. This empties the cauldron, resetting progress for that specific sentence.
+    - **Explosion:** If the player tries to serve a ruined potion or adds *another* wrong ingredient to a warning pot, it explodes, reducing the time/score significantly and emptying the pot.
 
-## Gameplay Loop
+### 3. Serving
+- Once all words for a sentence are added in the correct order, the potion is complete.
+- The player drags the finished potion to the matching customer (or it auto-serves).
+- The customer leaves happy, awarding points and extending the timer slightly.
 
-### 1. The Challenge
-*   A sentence with a missing word appears.
-*   **Ingredient Bags** move along the conveyor belt from Left to Right.
-*   Each bag is labeled with a word (mix of the correct answer and distractors from other sentences).
+### 4. Game Over Conditions
+- **Time Limit:** The game runs on a global timer (e.g., "Daylight"). When night falls, the shop closes.
+- **Patience:** Each customer has a patience meter. If it runs out, they leave angry (penalty). If too many customers leave angry, the shop is shut down early.
 
-### 2. Player Action
-*   **Tap/Click a Bag:**
-    *   **Correct:** The bag flies into the Cauldron. A splash effect plays. The **Potion Meter** fills by 10%. A new sentence appears immediately.
-    *   **Incorrect:** The Cauldron explodes (screen shake, smoke). The **Potion Meter** resets to 0%. The current sentence remains.
+## Visuals & UI
 
-### 3. Win/Loss Conditions
-*   **Win:** Fill the Potion Meter (10 correct answers) before time runs out. The wizard throws the potion at the monster, turning it into something harmless (e.g., a frog) or blasting it away.
-*   **Loss:** Timer reaches 0. The Door shatters, and the Monster roars (Game Over).
+### Layout
+- **Top:** Counter with 3 Customer slots. Speech bubbles show the *Native Language* prompt.
+- **Middle:** 3 Cauldron stations.
+- **Bottom:** Conveyor belt with scrolling ingredients.
+- **Right/Corner:** Trash Portal.
+- **HUD:** Score, Day Timer, Pause Button.
 
-## Mechanics Details
-*   **Timer:** Starts at 30 seconds.
-*   **Conveyor Speed:**
-    *   Increases slightly with each correct answer to build tension.
-    *   Speed range: 100px/s to 300px/s.
-*   **Word Selection:**
-    *   Target word is hidden programmatically.
-    *   Distractors are chosen from the *current* vocabulary list to ensure relevance.
+### Entities
+- **Ingredients:** Visual representation of words (Flasks, Mushrooms, Crystals) with the text label clearly visible.
+- **Cauldrons:** Animated states (Empty, Brewing Blue, Warning Green, Finished Gold).
+- **Customers:** Animated reactions (Idle, Impatient/Foot tapping, Happy, Angry/Smoke).
 
-## Technical approach
-*   **Engine:** React-Konva (Canvas) for performance (handling moving belt, bags, monster animation).
-*   **State:** Standard Game Loop (requestAnimationFrame).
+## Technical Constraints
+- **Engine:** React-Konva (Canvas) for high performance with many moving elements.
+- **State Management:** Zustand for handling the complex state of 3 independent cauldrons, the conveyor belt, and customer timers.
+- **Input:** Mouse/Touch (Drag and Drop is central).
+
+## Accessibility & Settings
+- **Text Speed:** Option to slow down the conveyor belt.
+- **Color Blindness:** Ensure "Good" (Blue) and "Bad" (Green/Red) bubbles are distinguishable by shape or particle effects, not just color.

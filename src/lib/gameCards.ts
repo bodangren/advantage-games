@@ -82,8 +82,9 @@ export const gameCards: GameCard[] = [
   {
     id: 'potion-rush',
     title: 'Potion Rush',
-    description: 'Brew potions by selecting ingredients from a conveyor belt.',
+    description: 'Manage a busy potion shop! Brew orders by collecting the correct ingredients from the conveyor belt.',
     cover: withBasePath('/games/cover/potion-rush-cover.png'),
-    status: 'coming-soon',
+    href: '/games/potion-rush',
+    status: 'playable',
   },
 ]
