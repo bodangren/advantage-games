@@ -74,9 +74,9 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
       
       // Check Cauldrons
       if (y > cauldronY - 50 && y < cauldronY + cauldronHeight + 50) {
-          if (x < stationWidth) return handleDrop(0, item.id)
-          if (x < stationWidth * 2) return handleDrop(1, item.id)
-          return handleDrop(2, item.id)
+          if (x < stationWidth) return handleDrop(0, item.id, { x, y })
+          if (x < stationWidth * 2) return handleDrop(1, item.id, { x, y })
+          return handleDrop(2, item.id, { x, y })
       }
       
       // Check Trash (Right Side)

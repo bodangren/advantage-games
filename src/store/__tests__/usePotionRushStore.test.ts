@@ -132,3 +132,112 @@ describe('usePotionRushStore queue logic', () => {
     expect(usePotionRushStore.getState().customers).toHaveLength(0)
   })
 })
+
+describe('usePotionRushStore effects', () => {
+  const makeIngredient = (id: string, word: string): Ingredient => ({
+    id,
+    word,
+    x: 100,
+    y: 200,
+    type: 'herb',
+    width: 80,
+    isDragging: false,
+  })
+
+  const makeCustomer = (id: string, term: string): Customer => ({
+    id,
+    type: 'orc' as CustomerType,
+    request: { id: `${id}-v`, term, translation: 'hola', category: 'test' },
+    patience: 30,
+    maxPatience: 30,
+    state: 'WAITING',
+    leaveTimer: undefined,
+  })
+
+  beforeEach(() => {
+    usePotionRushStore.setState({
+      gameState: 'PLAYING',
+      score: 0,
+      lives: 3,
+      dayTime: 0,
+      effects: [],
+      cauldrons: [
+        { id: 0, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
+        { id: 1, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
+        { id: 2, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
+      ],
+      customers: [],
+      conveyorItems: [],
+    })
+  })
+
+  it('adds a splash effect when dropping a valid ingredient', () => {
+    const customer = makeCustomer('c1', 'hello world')
+    const ingredient = makeIngredient('i1', 'hello')
+    usePotionRushStore.setState({
+      customers: [customer],
+      conveyorItems: [ingredient],
+    })
+
+    usePotionRushStore
+      .getState()
+      .handleDropIngredient(0, ingredient.id, { x: 240, y: 480 })
+
+    const effects = usePotionRushStore.getState().effects
+    expect(effects).toHaveLength(1)
+    expect(effects[0].type).toBe('SPLASH')
+    expect(effects[0].x).toBe(240)
+    expect(effects[0].y).toBe(480)
+  })
+
+  it('adds smoke when dropping a wrong ingredient', () => {
+    const customer = makeCustomer('c1', 'hello world')
+    const ingredient = makeIngredient('i1', 'nope')
+    usePotionRushStore.setState({
+      customers: [customer],
+      conveyorItems: [ingredient],
+    })
+
+    usePotionRushStore
+      .getState()
+      .handleDropIngredient(0, ingredient.id, { x: 240, y: 480 })
+
+    const types = usePotionRushStore.getState().effects.map(effect => effect.type).sort()
+    expect(types).toEqual(['SMOKE', 'SPLASH'])
+    expect(usePotionRushStore.getState().cauldrons[0].state).toBe('WARNING')
+  })
+
+  it('adds success effects when serving a customer', () => {
+    const customer = makeCustomer('c1', 'hello world')
+    usePotionRushStore.setState({
+      customers: [customer],
+      cauldrons: [
+        {
+          id: 0,
+          state: 'COMPLETED',
+          targetSentence: customer.request,
+          currentWords: ['hello', 'world'],
+          shake: false,
+        },
+        { id: 1, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
+        { id: 2, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
+      ],
+    })
+
+    usePotionRushStore
+      .getState()
+      .handleServeCustomer(customer.id, 0, { x: 320, y: 140 })
+
+    const types = usePotionRushStore.getState().effects.map(effect => effect.type)
+    expect(types).toContain('SUCCESS')
+  })
+
+  it('expires effects after their duration', () => {
+    usePotionRushStore.getState().spawnEffect('SPLASH', 10, 10)
+    const [effect] = usePotionRushStore.getState().effects
+
+    usePotionRushStore.getState().tick(effect.duration + 0.1, 1280)
+
+    expect(usePotionRushStore.getState().effects).toHaveLength(0)
+  })
+})

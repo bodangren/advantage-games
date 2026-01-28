@@ -39,6 +39,18 @@ export interface Ingredient {
   isDragging: boolean
 }
 
+export type PotionRushEffectType = 'SPLASH' | 'SMOKE' | 'SUCCESS'
+
+export interface PotionRushEffect {
+  id: string
+  type: PotionRushEffectType
+  x: number
+  y: number
+  age: number
+  duration: number
+  seed: number
+}
+
 interface PotionRushState {
   // Game Status
   gameState: GameState
@@ -50,6 +62,7 @@ interface PotionRushState {
   cauldrons: Cauldron[]
   customers: Customer[]
   conveyorItems: Ingredient[]
+  effects: PotionRushEffect[]
   
   // Settings / Config
   beltSpeed: number
@@ -67,11 +80,20 @@ interface PotionRushState {
   spawnIngredient: (vocabList: VocabularyItem[], screenWidth: number) => void
   
   // Interaction
-  handleDropIngredient: (cauldronIndex: number, ingredientId: string) => void
+  handleDropIngredient: (
+    cauldronIndex: number,
+    ingredientId: string,
+    dropPosition?: { x: number; y: number }
+  ) => void
   handleDumpCauldron: (cauldronIndex: number) => void
-  handleServeCustomer: (customerId: string, cauldronIndex: number) => void
+  handleServeCustomer: (
+    customerId: string,
+    cauldronIndex: number,
+    servePosition?: { x: number; y: number }
+  ) => void
   discardIngredient: (ingredientId: string) => void
   setIngredientDragging: (ingredientId: string, isDragging: boolean) => void
+  spawnEffect: (type: PotionRushEffectType, x: number, y: number) => void
   
   // Helpers
   reset: () => void
@@ -82,6 +104,11 @@ const MAX_CUSTOMERS = 3 // Max allowed at the counter
 const BELT_Y = 500 // Placeholder
 const INGREDIENT_WIDTH = 80 // Placeholder
 const LEAVE_DURATION = 1.5 // seconds to keep leaving customers on screen
+const EFFECT_DURATIONS: Record<PotionRushEffectType, number> = {
+  SPLASH: 0.6,
+  SMOKE: 1.1,
+  SUCCESS: 0.9,
+}
 
 export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   gameState: 'MENU',
@@ -96,16 +123,25 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   ],
   customers: [],
   conveyorItems: [],
+  effects: [],
   
   beltSpeed: 100, // Pixels per second
   spawnRate: 2000, // ms
   
-  startGame: () => set({ gameState: 'PLAYING', score: 0, lives: 3, dayTime: 0, customers: [], conveyorItems: [], cauldrons: [
-      { id: 0, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
-      { id: 1, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
-      { id: 2, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
-    ] 
-  }),
+  startGame: () => set({
+      gameState: 'PLAYING',
+      score: 0,
+      lives: 3,
+      dayTime: 0,
+      customers: [],
+      conveyorItems: [],
+      effects: [],
+      cauldrons: [
+        { id: 0, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
+        { id: 1, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
+        { id: 2, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
+      ],
+    }),
   
   pauseGame: () => set({ gameState: 'PAUSED' }),
   resumeGame: () => set({ gameState: 'PLAYING' }),
@@ -115,6 +151,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       gameState: 'MENU',
       customers: [],
       conveyorItems: [],
+      effects: [],
       score: 0
   }),
 
@@ -165,7 +202,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   },
 
   tick: (dt, screenWidth) => {
-      const { gameState, conveyorItems, beltSpeed, customers, dayTime, lives } = get()
+      const { gameState, conveyorItems, beltSpeed, customers, dayTime, lives, effects } = get()
       if (gameState !== 'PLAYING') return
 
       // 1. Move Conveyor Items
@@ -196,15 +233,25 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
       // 3. Update Day Time
       const nextDayTime = dayTime + (dt * 0.01) // slow day progression
+
+      const nextEffects = effects
+        .map(effect => ({ ...effect, age: effect.age + dt }))
+        .filter(effect => effect.age < effect.duration)
       
       if (nextLives <= 0 || nextDayTime >= 1) {
-          set({ gameState: 'GAME_OVER', lives: nextLives })
+          set({ gameState: 'GAME_OVER', lives: nextLives, effects: nextEffects })
       } else {
-          set({ conveyorItems: nextItems, customers: nextCustomers, lives: nextLives, dayTime: nextDayTime })
+          set({
+            conveyorItems: nextItems,
+            customers: nextCustomers,
+            lives: nextLives,
+            dayTime: nextDayTime,
+            effects: nextEffects,
+          })
       }
   },
 
-  handleDropIngredient: (cauldronIndex, ingredientId) => {
+  handleDropIngredient: (cauldronIndex, ingredientId, dropPosition) => {
     const { cauldrons, conveyorItems, customers } = get()
     const ingredient = conveyorItems.find(i => i.id === ingredientId)
     const cauldron = cauldrons[cauldronIndex]
@@ -217,11 +264,18 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
     // If Cauldron is WARNING or COMPLETED, ignore drops (must be emptied first)
     if (cauldron.state === 'WARNING' || cauldron.state === 'COMPLETED') return
 
+    const emitEffect = (type: PotionRushEffectType) => {
+      if (!dropPosition) return
+      get().spawnEffect(type, dropPosition.x, dropPosition.y)
+    }
+
+    emitEffect('SPLASH')
+
     // LOGIC:
     // If IDLE: We need to see if this word starts ANY waiting customer's sentence.
     // If BREWING: Check against current assigned sentence.
 
-    let nextCauldron = { ...cauldron }
+    const nextCauldron = { ...cauldron }
 
     if (cauldron.state === 'IDLE') {
         // Find a customer whose sentence starts with this word
@@ -240,6 +294,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
             // Wrong start!
             nextCauldron.state = 'WARNING'
             nextCauldron.currentWords = [ingredient.word]
+            emitEffect('SMOKE')
         }
     } else if (cauldron.state === 'BREWING' && cauldron.targetSentence) {
         // Check next word
@@ -257,6 +312,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
             // WRONG INGREDIENT!
             nextCauldron.state = 'WARNING'
             nextCauldron.shake = true
+            emitEffect('SMOKE')
             // Reset shake after short delay usually, or handle in UI
         }
     }
@@ -279,7 +335,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       set({ cauldrons: nextCauldrons })
   },
 
-  handleServeCustomer: (customerId, cauldronIndex) => {
+  handleServeCustomer: (customerId, cauldronIndex, servePosition) => {
      const { customers, cauldrons, score } = get()
      const cauldron = cauldrons[cauldronIndex]
      
@@ -306,6 +362,10 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
      }
 
      set({ customers: nextCustomers, cauldrons: nextCauldrons, score: score + 100 })
+
+     if (servePosition) {
+       get().spawnEffect('SUCCESS', servePosition.x, servePosition.y)
+     }
   },
 
   discardIngredient: (ingredientId) => {
@@ -320,6 +380,20 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
         item.id === ingredientId ? { ...item, isDragging } : item
       )
     })
-  }
+  },
+
+  spawnEffect: (type, x, y) => {
+    const effect: PotionRushEffect = {
+      id: Math.random().toString(36).slice(2, 10),
+      type,
+      x,
+      y,
+      age: 0,
+      duration: EFFECT_DURATIONS[type],
+      seed: Math.random(),
+    }
+
+    set(state => ({ effects: [...state.effects, effect] }))
+  },
 
 }))

@@ -65,7 +65,7 @@ export default function CauldronStation({ y, width, layout }: CauldronStationPro
           const customerIndex = Math.floor(x / slotWidth)
           
           if (customers[customerIndex]) {
-              handleServe(customers[customerIndex].id, cauldronIndex)
+              handleServe(customers[customerIndex].id, cauldronIndex, { x, y })
           }
       }
   }

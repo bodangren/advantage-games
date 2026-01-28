@@ -12,6 +12,7 @@ import ConveyorBelt from './ConveyorBelt'
 import CauldronStation from './CauldronStation'
 import CustomerQueue from './CustomerQueue'
 import TrashPortal from './TrashPortal'
+import PotionRushEffectsLayer from './PotionRushEffectsLayer'
 
 interface PotionRushGameProps {
   vocabList: VocabularyItem[]
@@ -180,6 +181,8 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
                 dragBoundFunc={(pos) => pos}
                 layout={LAYOUT}
             />
+
+            <PotionRushEffectsLayer />
         </Layer>
       </Stage>
 
