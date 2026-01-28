@@ -51,7 +51,7 @@
 **Goal:** Make it look and feel like a game.
 
 - [x] **Asset Integration:** Replace placeholders with generated assets (Customers, Cauldron sprites, Ingredient icons). 7e06ead
-- [ ] **Particle Effects:**
+- [~] **Particle Effects:**
     -   Splash when dropping ingredients.
     -   Smoke/Explosion for errors.
     -   Stars/Hearts for successful service.
