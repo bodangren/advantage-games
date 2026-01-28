@@ -21,7 +21,7 @@ const CUSTOMER_ASSETS: Record<CustomerType, { sheetKey: 'sheet1' | 'sheet2', row
 
 export default function CustomerQueue({ y, width }: CustomerQueueProps) {
   const customers = usePotionRushStore(state => state.customers)
-  const slotWidth = width / 4
+  const slotWidth = width / 3
 
   // Load Sprite Sheets
   const [images, setImages] = useState<Record<string, HTMLImageElement>>({})

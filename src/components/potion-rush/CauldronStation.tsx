@@ -61,7 +61,7 @@ export default function CauldronStation({ y, width, layout }: CauldronStationPro
           // Let's implement a heuristic: X coordinate maps to Customer Slot 0, 1, 2, 3...
           
           const customers = usePotionRushStore.getState().customers
-          const slotWidth = width / 4 // 4 Max customers
+          const slotWidth = width / 3 // 3 max customers
           const customerIndex = Math.floor(x / slotWidth)
           
           if (customers[customerIndex]) {

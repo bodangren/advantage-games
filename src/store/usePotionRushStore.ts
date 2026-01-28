@@ -26,6 +26,7 @@ export interface Customer {
   maxPatience: number
   state: 'WAITING' | 'LEAVING_ANGRY' | 'LEAVING_HAPPY'
   cauldronId?: number // If served, which cauldron served them (for animation)
+  leaveTimer?: number
 }
 
 export interface Ingredient {
@@ -77,9 +78,10 @@ interface PotionRushState {
 }
 
 // --- Constants ---
-const MAX_CUSTOMERS = 4 // Max allowed in queue/counter
+const MAX_CUSTOMERS = 3 // Max allowed at the counter
 const BELT_Y = 500 // Placeholder
 const INGREDIENT_WIDTH = 80 // Placeholder
+const LEAVE_DURATION = 1.5 // seconds to keep leaving customers on screen
 
 export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   gameState: 'MENU',
@@ -131,7 +133,8 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           request: randomVocab,
           patience: 30, // seconds
           maxPatience: 30,
-          state: 'WAITING'
+          state: 'WAITING',
+          leaveTimer: undefined
       }
 
       set({ customers: [...customers, newCustomer] })
@@ -172,16 +175,21 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
       // 2. Update Customer Patience
       let nextLives = lives
-      const nextCustomers = customers.map(c => {
-          if (c.state !== 'WAITING') return c
+      const nextCustomers = customers
+        .map(c => {
+          if (c.state !== 'WAITING') {
+             const remaining = (c.leaveTimer ?? LEAVE_DURATION) - dt
+             return { ...c, leaveTimer: remaining }
+          }
           
           const newPatience = c.patience - dt
           if (newPatience <= 0) {
              nextLives -= 1
-             return { ...c, patience: 0, state: 'LEAVING_ANGRY' as const }
+             return { ...c, patience: 0, state: 'LEAVING_ANGRY' as const, leaveTimer: LEAVE_DURATION }
           }
           return { ...c, patience: newPatience }
-      })
+        })
+        .filter(c => c.state === 'WAITING' || (c.leaveTimer ?? 0) > 0)
 
       // Remove fully left customers (simple logic for now, usually animation handles this)
       // For now, let's keep them in state marked LEAVING until UI cleans them up or we add a cleanup phase
@@ -285,7 +293,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
      // Update Customer
      const nextCustomers = [...customers]
-     nextCustomers[customerIndex] = { ...nextCustomers[customerIndex], state: 'LEAVING_HAPPY' }
+     nextCustomers[customerIndex] = { ...nextCustomers[customerIndex], state: 'LEAVING_HAPPY', leaveTimer: LEAVE_DURATION }
 
      // Reset Cauldron
      const nextCauldrons = [...cauldrons]
