@@ -5,6 +5,7 @@ import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konv
 import { usePotionRushStore } from '@/store/usePotionRushStore'
 import { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
+import { useGameLoop } from '@/hooks/useGameLoop'
 
 // Components
 import ConveyorBelt from './ConveyorBelt'
@@ -105,24 +106,9 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Game Loop
-  useEffect(() => {
-      if (gameState !== 'PLAYING') return
-
-      let lastTime = performance.now()
-      let animationFrameId: number
-
-      const loop = (time: number) => {
-          const dt = (time - lastTime) / 1000
-          lastTime = time
-          
-          tick(dt, dimensions.width)
-          animationFrameId = requestAnimationFrame(loop)
-      }
-
-      animationFrameId = requestAnimationFrame(loop)
-      return () => cancelAnimationFrame(animationFrameId)
-  }, [gameState, tick, dimensions.width])
+  // Game Loop (fixed timestep to match other Konva games)
+  const isRunning = gameState === 'PLAYING' && dimensions.width > 0 && dimensions.height > 0
+  useGameLoop((dt) => tick(dt, dimensions.width), isRunning, 50)
 
   // Spawners (Intervals)
   useEffect(() => {
