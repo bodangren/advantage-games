@@ -1560,6 +1560,14 @@ export default function CastleDefenseV2Page() {
 
 **Verification**: Game loads and runs. (Manual verification pending - TypeScript check passed)
 
+- [x] Task 6.4: Visual parity with V1 (assets, tiles, sprites, HUD, sample sentences)
+- [x] Sub-task: Use Castle Defense assets and tile-based map rendering (BackgroundLayer + MAP_CONFIG)
+- [x] Sub-task: Match V1 sprite sheet animation and in-game visuals (player/enemy/base/towers/words)
+- [x] Sub-task: Match V1 HUD/start/gameover overlays and controls (DPad + drop)
+- [x] Sub-task: Use SAMPLE_SENTENCES like V1 in the V2 page
+
+**Status Update (2026-01-28):** V2 visuals are aligned to V1 (tiles, sprites, HUD/overlays) and the V2 page now uses `SAMPLE_SENTENCES` with the shared vocabulary store. Manual verification for Phase 6 remains pending.
+
 - [ ] Task: Conductor - User Manual Verification 'Phase 6: Integration and Page Setup' (Protocol in workflow.md)
 
 ---
