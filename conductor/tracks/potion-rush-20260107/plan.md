@@ -1,5 +1,10 @@
 # Implementation Plan: Potion Rush (Time Management)
 
+## Notes (2026-01-28)
+- Drag/drop feels unreliable; likely needs fixed timestep updates (50ms clock) aligned with other Konva games.
+- Conveyor belt height is ~25% too tall; adjust layout/scale during Phase 6.
+- Trash portal animation not implemented; tie into Phase 3 (Trash Component) and Phase 5 (Particle Effects).
+
 ## Phase 1: Core Architecture & State Management
 **Goal:** Set up the game store and basic data structures to handle the complex state of multiple cauldrons and a moving conveyor belt.
 
@@ -10,7 +15,7 @@
     -   `customers`: Queue of active customers.
     -   `gameState`: Playing, Paused, GameOver.
     -   `score` & `timer`.
-- [ ] **Game Loop Hook:** Create a `useGameLoop` hook that updates the conveyor belt position and customer timers every frame.
+- [x] **Game Loop Hook:** Create a `useGameLoop` hook that updates the conveyor belt position and customer timers every frame. fddf899
 
 ## Phase 2: The Conveyor Belt & Ingredients
 **Goal:** Get the "supply chain" working. Words should spawn and move across the screen.
