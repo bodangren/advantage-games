@@ -35,6 +35,7 @@ export interface Ingredient {
   y: number // usually fixed Y on the belt
   type: 'potion' | 'mushroom' | 'mineral' | 'herb'
   width: number
+  isDragging: boolean
 }
 
 interface PotionRushState {
@@ -69,6 +70,7 @@ interface PotionRushState {
   handleDumpCauldron: (cauldronIndex: number) => void
   handleServeCustomer: (customerId: string, cauldronIndex: number) => void
   discardIngredient: (ingredientId: string) => void
+  setIngredientDragging: (ingredientId: string, isDragging: boolean) => void
   
   // Helpers
   reset: () => void
@@ -152,7 +154,8 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           x: screenWidth + 100,
           y: BELT_Y,
           type: randomType,
-          width: INGREDIENT_WIDTH
+          width: INGREDIENT_WIDTH,
+          isDragging: false
       }
 
       set({ conveyorItems: [...conveyorItems, newItem] })
@@ -164,7 +167,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
       // 1. Move Conveyor Items
       const nextItems = conveyorItems
-        .map(item => ({ ...item, x: item.x - (beltSpeed * dt) }))
+        .map(item => item.isDragging ? item : ({ ...item, x: item.x - (beltSpeed * dt) }))
         .filter(item => item.x > -200) // Despawn off-screen
 
       // 2. Update Customer Patience
@@ -300,6 +303,15 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   discardIngredient: (ingredientId) => {
     const { conveyorItems } = get()
     set({ conveyorItems: conveyorItems.filter(item => item.id !== ingredientId) })
+  },
+
+  setIngredientDragging: (ingredientId, isDragging) => {
+    const { conveyorItems } = get()
+    set({
+      conveyorItems: conveyorItems.map(item =>
+        item.id === ingredientId ? { ...item, isDragging } : item
+      )
+    })
   }
 
 }))

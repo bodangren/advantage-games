@@ -14,6 +14,7 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
   const items = usePotionRushStore(state => state.conveyorItems)
   const handleDrop = usePotionRushStore(state => state.handleDropIngredient)
   const discardIngredient = usePotionRushStore(state => state.discardIngredient)
+  const setIngredientDragging = usePotionRushStore(state => state.setIngredientDragging)
   const gameState = usePotionRushStore(state => state.gameState)
   const beltSpeed = usePotionRushStore(state => state.beltSpeed)
   
@@ -115,6 +116,7 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
                 item={item} 
                 onDrop={checkDropZone}
                 images={images}
+                onDragStateChange={setIngredientDragging}
             />
         ))}
     </Group>
@@ -125,18 +127,32 @@ function IngredientItem({ item, onDrop, images }: {
     item: Ingredient, 
     onDrop: (x: number, y: number, item: Ingredient) => void,
     images: Record<string, HTMLImageElement>
+    onDragStateChange: (ingredientId: string, isDragging: boolean) => void
 }) {
     const [isDragging, setIsDragging] = React.useState(false)
+    const [dragPosition, setDragPosition] = React.useState<{ x: number; y: number } | null>(null)
     const img = images[item.type]
+
+    const renderX = isDragging && dragPosition ? dragPosition.x : item.x
+    const renderY = isDragging && dragPosition ? dragPosition.y : 20
 
     return (
         <Group
-            x={item.x}
-            y={isDragging ? 0 : 20} 
+            x={renderX}
+            y={renderY} 
             draggable
-            onDragStart={() => setIsDragging(true)}
+            onDragStart={(e) => {
+                setIsDragging(true)
+                setDragPosition({ x: e.target.x(), y: e.target.y() })
+                onDragStateChange(item.id, true)
+            }}
+            onDragMove={(e) => {
+                setDragPosition({ x: e.target.x(), y: e.target.y() })
+            }}
             onDragEnd={(e) => {
                 setIsDragging(false)
+                setDragPosition(null)
+                onDragStateChange(item.id, false)
                 const stage = e.target.getStage()
                 const pointer = stage?.getPointerPosition()
                 if (pointer) {
