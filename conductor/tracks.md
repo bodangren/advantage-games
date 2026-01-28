@@ -18,3 +18,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Link: [./conductor/tracks/castle-defense-rewrite-20260127/](./conductor/tracks/castle-defense-rewrite-20260127/)*
 *Description: Complete rewrite of Castle Defense using Wizard vs Zombie architecture for mobile performance (target: 30+ FPS)*
 *Priority: High*
+
+---
+
+- [~] **Track: Potion Rush (Time Management)**
+*Link: [./conductor/tracks/potion-rush-20260107/](./conductor/tracks/potion-rush-20260107/)*
