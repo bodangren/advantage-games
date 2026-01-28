@@ -43,7 +43,7 @@
 **Goal:** Tie the brewing to actual requests.
 
 - [x] **Customer Component:** Display avatar and speech bubble with the **Native Language** sentence.
-- [~] **Queue Logic:** Spawn customers at intervals. limit to 3 at the counter.
+- [x] **Queue Logic:** Spawn customers at intervals. limit to 3 at the counter. ff2840c
 - [x] **Serving Logic:** When a cauldron is "Done", allow dragging it to the customer (or auto-complete) to clear the slot and award points.
 - [x] **Patience System:** Decrease customer timer; trigger "Leave Angry" event if 0.
 
