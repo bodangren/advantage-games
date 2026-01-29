@@ -155,7 +155,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 4: Word Orb Visual Updates
+## Phase 4: Word Orb Visual Updates [checkpoint: 21f0c9c]
 
 ### Task 4.1: Update word orb rendering to white circles
 - [x] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx` 80b0b86
@@ -185,7 +185,7 @@ Before starting ANY phase, the implementer MUST:
 - [ ] Sub-task: Test highlighting with different sentence progress states
 *Note: Highlighting removed per user feedback (commit d36a1c2). Players choose the next word without hints.*
 
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Word Orb Visual Updates' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Word Orb Visual Updates' (Protocol in workflow.md) 21f0c9c
 
 ---
 
