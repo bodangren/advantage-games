@@ -56,7 +56,7 @@
     -   Smoke/Explosion for errors.
     -   Stars/Hearts for successful service.
 - [x] **Sound Effects:** Bubbling, Clinking, Angry grunts, Cash register ding. ba18ddc
-- [ ] **Tutorial/Start Screen:** Brief explanation of "Native Request -> Target Ingredient".
+- [x] **Tutorial/Start Screen:** Brief explanation of "Native Request -> Target Ingredient". 38fa58b
 
 ## Phase 6: Mobile Optimization
 - [ ] **Touch Controls:** Ensure drag targets are large enough.
