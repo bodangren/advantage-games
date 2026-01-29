@@ -64,13 +64,13 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 2: Sequential Word Collection Mechanics
 
 ### Task 2.1: Implement word collection validation
-- [ ] Sub-task: Write tests for `validateWordCollection(collectedIndices, nextWord, allWords): boolean`
+- [x] Sub-task: Write tests for `validateWordCollection(collectedIndices, nextWord, allWords): boolean` b6ae14e
   - Test: Collecting first word (index 0) → valid
   - Test: Collecting second word after first → valid
   - Test: Collecting third word before second → invalid
   - Test: Collecting already collected word → invalid
-- [ ] Sub-task: Implement `validateWordCollection()` in `src/lib/castleDefense.ts`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `validateWordCollection()` in `src/lib/castleDefense.ts` b6ae14e
+- [x] Sub-task: Run tests b6ae14e
 
 **Verification**: All tests pass. ✅
 
