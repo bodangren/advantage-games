@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva'
+import { Stage, Layer, Image as KonvaImage } from 'react-konva'
 import { usePotionRushStore } from '@/store/usePotionRushStore'
 import { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
 import { useGameLoop } from '@/hooks/useGameLoop'
+import { AnimatePresence } from 'framer-motion'
 
 // Components
 import ConveyorBelt from './ConveyorBelt'
@@ -13,6 +14,8 @@ import CauldronStation from './CauldronStation'
 import CustomerQueue from './CustomerQueue'
 import TrashPortal from './TrashPortal'
 import PotionRushEffectsLayer from './PotionRushEffectsLayer'
+import PotionRushSoundController from './PotionRushSoundController'
+import PotionRushStartScreen from './PotionRushStartScreen'
 
 interface PotionRushGameProps {
   vocabList: VocabularyItem[]
@@ -21,10 +24,10 @@ interface PotionRushGameProps {
 export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
+  const [hasStarted, setHasStarted] = useState(false)
   
   // Image Loading State
   const [images, setImages] = useState<Record<string, HTMLImageElement>>({})
-  const [imagesLoaded, setImagesLoaded] = useState(false)
 
   useEffect(() => {
     const assets = {
@@ -45,7 +48,6 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
         count++
         if (count === sources.length) {
           setImages(loadedImgs)
-          setImagesLoaded(true)
         }
       }
       img.onerror = () => {
@@ -53,7 +55,6 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
         count++
         if (count === sources.length) {
           setImages(loadedImgs)
-          setImagesLoaded(true)
         }
       }
     })
@@ -66,6 +67,8 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
   const spawnIngredient = usePotionRushStore(state => state.spawnIngredient)
   const gameState = usePotionRushStore(state => state.gameState)
   const reset = usePotionRushStore(state => state.reset)
+  const score = usePotionRushStore(state => state.score)
+  const lives = usePotionRushStore(state => state.lives)
 
   // Layout Constants (Based on 1280x720 internal coordinates)
   const VIRTUAL_WIDTH = 1280
@@ -109,7 +112,7 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
 
   // Game Loop (fixed timestep to match other Konva games)
   const isRunning = gameState === 'PLAYING' && dimensions.width > 0 && dimensions.height > 0
-  useGameLoop((dt) => tick(dt, dimensions.width), isRunning, 50)
+  useGameLoop((dt) => tick(dt), isRunning, 50)
 
   // Spawners (Intervals)
   useEffect(() => {
@@ -131,19 +134,35 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
 
   // Initial Start
   useEffect(() => {
-      startGame()
+      // startGame() // Don't start automatically anymore
       return () => reset()
-  }, []) // Run once on mount
+  }, [reset]) // Removed startGame from here
 
   if (dimensions.width === 0) return <div ref={containerRef} className="w-full h-full" />
 
   return (
     <div ref={containerRef} className="w-full h-full relative font-sans">
+      <PotionRushSoundController />
+      
+      <AnimatePresence>
+        {!hasStarted && (
+          <PotionRushStartScreen 
+            vocabulary={vocabList} 
+            onStart={() => {
+              setHasStarted(true)
+              startGame()
+            }} 
+          />
+        )}
+      </AnimatePresence>
+
       {/* HUD Overlay (HTML is easier for text overlays than Canvas sometimes) */}
-      <div className="absolute top-0 left-0 p-4 text-white z-10 pointer-events-none">
-         <div className="text-xl font-bold">Score: {usePotionRushStore.getState().score}</div>
-         <div className="text-sm">Lives: {usePotionRushStore.getState().lives}</div>
-      </div>
+      {hasStarted && (
+        <div className="absolute top-0 left-0 p-4 text-white z-10 pointer-events-none">
+           <div className="text-xl font-bold text-purple-400 drop-shadow-lg">Score: {score}</div>
+           <div className="text-sm text-slate-300 drop-shadow-md">Lives: {lives}</div>
+        </div>
+      )}
 
       <Stage 
         width={dimensions.width} 

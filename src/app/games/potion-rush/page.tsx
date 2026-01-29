@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic'
 import { SAMPLE_SENTENCES } from '@/lib/sampleSentences'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
 
 const PotionRushGame = dynamic(
   () => import('@/components/potion-rush/PotionRushGame'),

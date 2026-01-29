@@ -75,7 +75,7 @@ interface PotionRushState {
   endGame: () => void
   
   // Logic
-  tick: (dt: number, screenWidth: number) => void
+  tick: (dt: number) => void
   spawnCustomer: (vocabList: VocabularyItem[]) => void
   spawnIngredient: (vocabList: VocabularyItem[], screenWidth: number) => void
   
@@ -201,7 +201,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       set({ conveyorItems: [...conveyorItems, newItem] })
   },
 
-  tick: (dt, screenWidth) => {
+  tick: (dt) => {
       const { gameState, conveyorItems, beltSpeed, customers, dayTime, lives, effects } = get()
       if (gameState !== 'PLAYING') return
 
