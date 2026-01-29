@@ -1,7 +1,18 @@
 import { render, screen, fireEvent, act } from '@testing-library/react'
 import { CastleDefenseGame } from './CastleDefenseGame'
 import { VocabularyItem } from '@/store/useGameStore'
+import * as castleDefense from '@/lib/castleDefense'
 import type React from 'react'
+
+jest.mock('@/lib/castleDefense', () => {
+  const actual = jest.requireActual('@/lib/castleDefense')
+  return {
+    ...actual,
+    createCastleDefenseState: jest.fn(actual.createCastleDefenseState),
+  }
+})
+
+const actualCastleDefense = jest.requireActual('@/lib/castleDefense') as typeof castleDefense
 
 type KonvaBaseProps = React.PropsWithChildren<Record<string, unknown>>
 type CircleProps = KonvaBaseProps & { fill?: string; stroke?: string; radius?: number }
@@ -142,6 +153,41 @@ describe('CastleDefenseGame', () => {
 
     expect(await screen.findByText('แมวนั่ง')).toBeInTheDocument()
     expect(screen.queryByText(/find target/i)).not.toBeInTheDocument()
+  })
+
+  it('shows sentence progress and wave info', async () => {
+    const progressVocabulary: VocabularyItem[] = [
+      { term: 'The cat sits', translation: 'แมวนั่ง' },
+    ]
+    const createMock = castleDefense.createCastleDefenseState as jest.Mock
+    createMock.mockImplementation(vocab => {
+      const baseState = actualCastleDefense.createCastleDefenseState(vocab)
+      return {
+        ...baseState,
+        currentSentenceThai: 'แมวนั่ง',
+        sentenceWords: ['The', 'cat', 'sits'],
+        collectedWordIndices: [0, 1],
+        wave: 2,
+        enemiesKilledThisWave: 3,
+        totalEnemiesThisWave: 8,
+      }
+    })
+
+    try {
+      render(<CastleDefenseGame vocabulary={progressVocabulary} onComplete={jest.fn()} />)
+      const startButton = await screen.findByRole('button', { name: /start mission/i })
+      await act(async () => {
+        fireEvent.click(startButton)
+      })
+
+      expect(await screen.findByText(/progress/i)).toBeInTheDocument()
+      expect(screen.getByText('The')).toBeInTheDocument()
+      expect(screen.getByText('cat')).toBeInTheDocument()
+      expect(screen.getAllByText('___').length).toBeGreaterThan(0)
+      expect(screen.getByText(/Wave 2\/6 - Enemies: 3\/8/)).toBeInTheDocument()
+    } finally {
+      createMock.mockImplementation(actualCastleDefense.createCastleDefenseState)
+    }
   })
 
 })

@@ -548,6 +548,27 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
         </div>
       )}
 
+      {gameState && (
+        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2 max-w-[90vw]">
+          <div className="bg-slate-950/70 border border-white/10 px-4 py-2 rounded-xl shadow-lg backdrop-blur-md text-center">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block leading-none mb-1">Progress</span>
+            <div className="text-sm font-semibold text-white md:text-base">
+              {gameState.sentenceWords.map((word, idx) => (
+                <span
+                  key={`${word}-${idx}`}
+                  className={gameState.collectedWordIndices.includes(idx) ? 'text-emerald-300' : 'text-slate-400'}
+                >
+                  {gameState.collectedWordIndices.includes(idx) ? word : '___'}{' '}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="bg-slate-950/70 border border-white/10 px-3 py-1 rounded-full shadow-lg text-white text-[11px] font-bold uppercase tracking-widest md:text-xs">
+            Wave {gameState.wave}/6 - Enemies: {gameState.enemiesKilledThisWave}/{gameState.totalEnemiesThisWave}
+          </div>
+        </div>
+      )}
+
       {/* HUD - TOP */}
       <div className="absolute top-4 inset-x-4 z-10 flex justify-between items-start pointer-events-none">
         <div className="space-y-2">
