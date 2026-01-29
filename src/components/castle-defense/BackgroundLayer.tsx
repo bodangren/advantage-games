@@ -1,9 +1,8 @@
 'use client'
 
 import { Group, Image as KonvaImage } from 'react-konva'
-import { useEffect, useState, useMemo, useRef } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { getRoadTileInfo, TILE_SIZE } from '@/lib/castleDefense'
-import type { Group as GroupType } from 'konva/lib/Group'
 import { withBasePath } from '@/lib/basePath'
 
 const ASSETS = {
@@ -25,7 +24,6 @@ interface BackgroundLayerProps {
 }
 
 export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
-  const groupRef = useRef<GroupType>(null)
   const [images, setImages] = useState<Record<string, HTMLImageElement>>({})
   const [loaded, setLoaded] = useState(false)
 
@@ -62,26 +60,6 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
     })
   }, [])
 
-  useEffect(() => {
-    if (!loaded || !groupRef.current) return
-
-    const node = groupRef.current
-    const applyCache = () => {
-      try {
-        const { width, height } = node.getClientRect()
-        if (width > 0 && height > 0) {
-          node.clearCache()
-          node.cache({ pixelRatio: 1 })
-        }
-      } catch (e) {
-        console.error('Failed to cache background layer', e)
-      }
-    }
-
-    const frameId = requestAnimationFrame(applyCache)
-    return () => cancelAnimationFrame(frameId)
-  }, [loaded, grassMap])
-
   const tiles = useMemo(() => {
     if (!loaded) return null
 
@@ -95,7 +73,7 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
             const grassIdx = grassMap[r][c]
             const grassSrc = ASSETS.grass[grassIdx]
             
-            if (images[grassSrc]) {
+            if (images[grassSrc] && images[grassSrc].width > 0 && images[grassSrc].height > 0) {
                 grid.push(
                     <KonvaImage 
                         key={`grass-${r}-${c}`}
@@ -111,7 +89,7 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
             const roadInfo = getRoadTileInfo(c, r)
             if (roadInfo) {
                 const roadSrc = ASSETS.road[roadInfo.type]
-                if (images[roadSrc]) {
+                if (images[roadSrc] && images[roadSrc].width > 0 && images[roadSrc].height > 0) {
                     const cx = x + TILE_SIZE / 2
                     const cy = y + TILE_SIZE / 2
                     
@@ -138,7 +116,7 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
   if (!loaded) return <Group />
 
   return (
-    <Group ref={groupRef} listening={false}>
+    <Group listening={false}>
        {tiles}
     </Group>
   )

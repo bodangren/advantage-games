@@ -1,6 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import RuneMatchPage from './page'
 
+const mockPush = jest.fn()
+
 // Mock the dynamic import
 jest.mock('next/dynamic', () => ({
   __esModule: true,
@@ -9,6 +11,15 @@ jest.mock('next/dynamic', () => ({
     MockedComponent.displayName = 'RuneMatchGame'
     return MockedComponent
   },
+}))
+
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: mockPush,
+    back: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  }),
 }))
 
 // Mock useGameStore

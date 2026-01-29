@@ -12,7 +12,7 @@ describe('DPad', () => {
     // Or just fire events on all buttons.
     
     const buttons = screen.getAllByRole('button')
-    expect(buttons.length).toBe(4)
+    expect(buttons.length).toBe(5)
 
     // Click Top Button (first one usually in DOM order? No, grid layout makes it tricky)
     // Up is first rendered button

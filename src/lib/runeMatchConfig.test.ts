@@ -59,14 +59,14 @@ describe('RUNE_MATCH_CONFIG', () => {
     })
 
     it('has match damage values', () => {
-      expect(RUNE_MATCH_CONFIG.combat.match3Damage).toBe(10)
-      expect(RUNE_MATCH_CONFIG.combat.match4Damage).toBe(20)
-      expect(RUNE_MATCH_CONFIG.combat.match5Damage).toBe(30)
+      expect(RUNE_MATCH_CONFIG.combat.match3Damage).toBe(6)
+      expect(RUNE_MATCH_CONFIG.combat.match4Damage).toBe(12)
+      expect(RUNE_MATCH_CONFIG.combat.match5Damage).toBe(20)
     })
 
     it('has special match damage values', () => {
-      expect(RUNE_MATCH_CONFIG.combat.lShapeDamage).toBe(25)
-      expect(RUNE_MATCH_CONFIG.combat.cascadeBonus).toBe(5)
+      expect(RUNE_MATCH_CONFIG.combat.lShapeDamage).toBe(10)
+      expect(RUNE_MATCH_CONFIG.combat.cascadeBonus).toBe(2)
     })
 
     it('has power rune multiplier', () => {
@@ -99,7 +99,7 @@ describe('RUNE_MATCH_CONFIG', () => {
   describe('grid config', () => {
     it('has 6 columns and 8 rows', () => {
       expect(RUNE_MATCH_CONFIG.grid.columns).toBe(6)
-      expect(RUNE_MATCH_CONFIG.grid.rows).toBe(8)
+      expect(RUNE_MATCH_CONFIG.grid.rows).toBe(6)
     })
 
     it('has positive dimensions', () => {

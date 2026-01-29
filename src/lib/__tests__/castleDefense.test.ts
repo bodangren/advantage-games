@@ -1,0 +1,134 @@
+import {
+  createCastleDefenseState,
+  movePlayer,
+  circlesCollide,
+  spawnEnemy,
+  advanceCastleDefenseTime,
+  GAME_WIDTH,
+  GAME_HEIGHT,
+  PLAYER_RADIUS,
+  BASE_HP,
+  SPAWN_RATE_MS,
+} from '../castleDefense'
+
+describe('castleDefense', () => {
+  describe('createCastleDefenseState', () => {
+    it('should create valid initial state with empty vocabulary', () => {
+      const state = createCastleDefenseState([])
+
+      expect(state.status).toBe('playing')
+      expect(state.player.x).toBe(GAME_WIDTH / 2)
+      expect(state.player.y).toBe(GAME_HEIGHT - 100)
+      expect(state.player.radius).toBe(PLAYER_RADIUS)
+      expect(state.player.inventory).toEqual([])
+      expect(state.enemies).toEqual([])
+      expect(state.base.hp).toBe(BASE_HP)
+      expect(state.wave).toBe(1)
+    })
+
+    it('should assign target words to tower slots from vocabulary', () => {
+      const vocab = [
+        { term: 'hello', translation: 'hola' },
+        { term: 'world', translation: 'mundo' },
+      ]
+      const state = createCastleDefenseState(vocab)
+
+      expect(state.towerSlots.length).toBeGreaterThan(0)
+      expect(state.towerSlots[0].targetWord).toBe('hola')
+      expect(state.towerSlots[1].targetWord).toBe('mundo')
+    })
+
+    it('should set initial target word from vocabulary', () => {
+      const vocab = [{ term: 'test', translation: 'prueba' }]
+      const state = createCastleDefenseState(vocab)
+
+      expect(state.targetWord).toBe('prueba')
+    })
+  })
+
+  describe('movePlayer', () => {
+    it('should move player right', () => {
+      const player = createCastleDefenseState([]).player
+      const moved = movePlayer(player, { dx: 1, dy: 0 }, 50)
+      expect(moved.x).toBeGreaterThan(player.x)
+      expect(moved.y).toBe(player.y)
+    })
+
+    it('should clamp player to game bounds', () => {
+      const player = { ...createCastleDefenseState([]).player, x: GAME_WIDTH - 5 }
+      const moved = movePlayer(player, { dx: 1, dy: 0 }, 50)
+      expect(moved.x).toBeLessThanOrEqual(GAME_WIDTH - PLAYER_RADIUS)
+    })
+
+    it('should normalize diagonal movement', () => {
+      const player = createCastleDefenseState([]).player
+      const diagonal = movePlayer(player, { dx: 1, dy: 1 }, 50)
+      const straight = movePlayer(player, { dx: 1, dy: 0 }, 50)
+
+      // Diagonal distance should be same as straight distance
+      const diagDist = Math.sqrt(
+        (diagonal.x - player.x) ** 2 + (diagonal.y - player.y) ** 2
+      )
+      const straightDist = straight.x - player.x
+      expect(diagDist).toBeCloseTo(straightDist, 1)
+    })
+  })
+
+  describe('circlesCollide', () => {
+    it('should return true for overlapping circles', () => {
+      expect(circlesCollide(0, 0, 10, 15, 0, 10)).toBe(true)
+    })
+
+    it('should return false for non-overlapping circles', () => {
+      expect(circlesCollide(0, 0, 10, 30, 0, 10)).toBe(false)
+    })
+  })
+
+  describe('spawnEnemy', () => {
+    it('should spawn soldier by default', () => {
+      const enemy = spawnEnemy([{ x: 0, y: 100 }], 1, () => 0.5)
+      expect(enemy.type).toBe('soldier')
+    })
+
+    it('should spawn tank after wave 2 with right roll', () => {
+      const enemy = spawnEnemy([{ x: 0, y: 100 }], 3, () => 0.2)
+      expect(enemy.type).toBe('tank')
+    })
+  })
+
+  describe('advanceCastleDefenseTime', () => {
+    const vocabulary = [
+      { term: 'hello', translation: 'hola' },
+      { term: 'world', translation: 'mundo' },
+      { term: 'goodbye', translation: 'adios' },
+      { term: 'friend', translation: 'amigo' },
+    ]
+
+    it('should move player based on input', () => {
+      const state = createCastleDefenseState(vocabulary)
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 1, dy: 0 }, vocabulary)
+      expect(nextState.player.x).toBeGreaterThan(state.player.x)
+    })
+
+    it('should increase game time', () => {
+      const state = createCastleDefenseState(vocabulary)
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.gameTime).toBe(50)
+    })
+
+    it('should spawn enemies after spawn timer', () => {
+      const state = { ...createCastleDefenseState(vocabulary), spawnTimer: SPAWN_RATE_MS - 10 }
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.enemies.length).toBeGreaterThan(0)
+    })
+
+    it('should set gameover when base HP reaches 0', () => {
+      const state = { 
+        ...createCastleDefenseState(vocabulary), 
+        base: { ...createCastleDefenseState(vocabulary).base, hp: 0 } 
+      }
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.status).toBe('gameover')
+    })
+  })
+})

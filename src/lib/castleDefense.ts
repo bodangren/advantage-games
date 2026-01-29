@@ -1,161 +1,176 @@
-import type { VocabularyItem } from '@/store/useGameStore'
-import { EnemyType, CASTLE_DEFENSE_CONFIG } from './castleDefenseConfig'
-
-// --- Constants & Config ---
-
+// Game world dimensions (MUST match Wizard vs Zombie)
 export const GAME_WIDTH = 800
 export const GAME_HEIGHT = 600
-export const TILE_SIZE = 50 // Visual reference for grid alignment
-export const PLAYER_RADIUS = 20
-export const ENEMY_RADIUS = 15
-export const TOWER_RADIUS = 30
-export const WORD_RADIUS = 20
-export const PROJECTILE_RADIUS = 5
+export const TILE_SIZE = 50
 
-export const PLAYER_SPEED = 4
-export const BASE_ENEMY_SPEED = 1.5
+// Player constants
+export const PLAYER_RADIUS = 20
+export const PLAYER_SPEED = 3
+
+// Enemy constants
+export const ENEMY_SOLDIER_RADIUS = 12
+export const ENEMY_SOLDIER_HP = 30
+export const ENEMY_SOLDIER_SPEED = 1.5
+
+export const ENEMY_TANK_RADIUS = 18
+export const ENEMY_TANK_HP = 80
+export const ENEMY_TANK_SPEED = 0.8
+
+export const ENEMY_BOSS_RADIUS = 25
+export const ENEMY_BOSS_HP = 200
+export const ENEMY_BOSS_SPEED = 0.5
+
+// Tower constants
+export const TOWER_RANGE = 150
+export const TOWER_FIRE_RATE_MS = 1000
+export const TOWER_DAMAGE = 10
+
+// Projectile constants
+export const PROJECTILE_RADIUS = 5
 export const PROJECTILE_SPEED = 8
+
+// Word orb constants
+export const WORD_RADIUS = 25
+
+// Base constants
+export const BASE_HP = 100
+export const BASE_RADIUS = 40
+
+// Timing constants (CRITICAL - must match Wizard)
+export const GAME_TICK_MS = 50
+export const SPAWN_RATE_MS = 2000
+export const MAX_ENEMIES = 15
+
+// Animation timing
+export const ANIMATION_FRAME_MS = 150
 
 // --- Types ---
 
-export type Point = {
+// Base entity type (same pattern as Wizard)
+export type Entity = {
+  id: string
   x: number
   y: number
-}
-
-export type Entity = Point & {
-  id: string
   radius: number
 }
 
+// Player type
 export type Player = Entity & {
   speed: number
-  inventory: Word[] // Words currently carried by the player
+  inventory: string[]  // collected word translations
 }
 
-export type Word = Entity & {
-  text: string
-  translation: string // The translation this word belongs to
-  originalIndex: number // Position in the correct sentence (0, 1, 2...)
-  isDistractor: boolean
-  isCollected: boolean
-}
+// Enemy types
+export type EnemyType = 'soldier' | 'tank' | 'boss'
 
 export type Enemy = Entity & {
   type: EnemyType
   hp: number
   maxHp: number
   speed: number
-  pathIndex: number 
-  distanceTraveled: number
+  waypointIndex: number
 }
 
+// Tower types
 export type Tower = Entity & {
+  isActive: boolean
+  targetWord: string
   range: number
+  lastFired: number
   damage: number
-  cooldown: number // ms between shots
-  lastFired: number // Game time ms
-  targetId?: string // ID of currently targeted enemy
 }
 
+export type TowerSlot = Entity & {
+  targetWord: string
+}
+
+// Projectile type
 export type Projectile = Entity & {
-  targetId: string // Homing missile logic
-  damage: number
+  targetId: string
   speed: number
+  damage: number
 }
 
-export type GameEvent = {
-  type: 'damage' | 'build' | 'erupt' | 'hit'
-  id: number // Unique ID to trigger effects
-  x?: number
-  y?: number
+// Word orb type
+export type Word = Entity & {
+  term: string
+  translation: string
+  isCorrect: boolean
+  isCollected: boolean
 }
 
+// Base type
+export type Base = {
+  x: number
+  y: number
+  hp: number
+  maxHp: number
+  radius: number
+}
+
+// Waypoint for enemy path
+export type Waypoint = {
+  x: number
+  y: number
+}
+
+// Main game state type
 export type CastleDefenseState = {
-  status: 'idle' | 'playing' | 'gameover' | 'victory' | 'cooldown'
-  
-  // Map Data
-  grassMap: number[][] // 16x12 array of grass variant indices (0-3)
-
-  // Entities
+  status: 'playing' | 'gameover' | 'victory'
   player: Player
   enemies: Enemy[]
   towers: Tower[]
-  words: Word[] 
+  towerSlots: TowerSlot[]
   projectiles: Projectile[]
-  
-  // Game Logic
-  vocabulary: VocabularyItem[]
-  targetSentence: string 
-  targetTranslation: string 
-  hearts: number 
+  words: Word[]
+  base: Base
+  path: Waypoint[]
   score: number
   wave: number
-  
-  // Wave Logic
-  waveBudget: number
-  spawnQueue: EnemyType[]
-  waveCooldownTimer: number
-  
-  // Timers
-  gameTime: number
   spawnTimer: number
-  
-  // Events
-  lastEvent: GameEvent | null
+  gameTime: number
+  targetWord: string  // current word player should collect
+  grassMap: number[][] // 16x12 array of grass variant indices
 }
 
-export type MapConfig = {
-  path: Point[] // Array of waypoints for enemies to follow
-  towerSlots: Point[] // Locations where towers can be built
-  spawnPoint: Point // Where enemies appear
-  basePoint: Point // The "House" to defend
-  wordField: { // Area where words spawn
-    minX: number
-    maxX: number
-    minY: number
-    maxY: number
-  }
+// Input state type (matches Wizard)
+export type InputState = {
+  dx: number
+  dy: number
+  drop?: boolean
 }
 
-// --- Initial State Factory ---
-
-export const INITIAL_HEARTS = 5
-
-export const MAP_CONFIG: MapConfig = {
-  // Simple "U" shape path for now
-  path: [
-    { x: 75, y: 75 },
-    { x: 75, y: 525 },
-    { x: 725, y: 525 },
-    { x: 725, y: 75 },
-  ],
-  spawnPoint: { x: 75, y: 75 },
-  basePoint: { x: 725, y: 75 },
-  towerSlots: [
-    { x: 175, y: 425 },
-    { x: 325, y: 425 },
-    { x: 475, y: 425 },
-    { x: 625, y: 425 },
-    { x: 175, y: 175 }, // Inner defense
-    { x: 625, y: 175 },
-  ],
-  wordField: {
-    minX: 200,
-    maxX: 600,
-    minY: 100,
-    maxY: 300,
-  }
-}
-
+// Road tile info type
 export type RoadInfo = {
   type: 'EW' | 'NS' | 'CORNER'
   rotation: number
 }
 
+// --- Factory Functions ---
+
+// Helper to generate unique IDs
+const generateId = (): string => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
+// Default path from top-left to bottom-right (U-shape)
+export const DEFAULT_PATH: Waypoint[] = [
+  { x: 75, y: 75 },
+  { x: 75, y: 525 },
+  { x: 725, y: 525 },
+  { x: 725, y: 75 },
+]
+
+// Default tower slots
+const DEFAULT_TOWER_SLOTS: TowerSlot[] = [
+  { id: 'slot-1', x: 175, y: 425, radius: 30, targetWord: '' },
+  { id: 'slot-2', x: 325, y: 425, radius: 30, targetWord: '' },
+  { id: 'slot-3', x: 475, y: 425, radius: 30, targetWord: '' },
+  { id: 'slot-4', x: 625, y: 425, radius: 30, targetWord: '' },
+  { id: 'slot-5', x: 175, y: 175, radius: 30, targetWord: '' },
+  { id: 'slot-6', x: 625, y: 175, radius: 30, targetWord: '' },
+]
+
 /**
  * Returns road tile information for a given grid coordinate.
- * Grid coordinates are 0-indexed (0-15 for X, 0-11 for Y).
  */
 export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
   const worldX = gridX * TILE_SIZE + TILE_SIZE / 2
@@ -163,9 +178,9 @@ export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
 
   // 1. Identify if this point is on any path segment
   let segmentIndex = -1
-  for (let i = 0; i < MAP_CONFIG.path.length - 1; i++) {
-    const p1 = MAP_CONFIG.path[i]
-    const p2 = MAP_CONFIG.path[i + 1]
+  for (let i = 0; i < DEFAULT_PATH.length - 1; i++) {
+    const p1 = DEFAULT_PATH[i]
+    const p2 = DEFAULT_PATH[i + 1]
     
     const minX = Math.min(p1.x, p2.x)
     const maxX = Math.max(p1.x, p2.x)
@@ -174,174 +189,572 @@ export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
 
     if (worldX >= minX && worldX <= maxX && worldY >= minY && worldY <= maxY) {
       segmentIndex = i
-      // Keep checking because it might be a corner (belongs to two segments)
     }
   }
 
   if (segmentIndex === -1) return null
 
   // 2. Check if it's a corner
-  const cornerIndex = MAP_CONFIG.path.findIndex(p => p.x === worldX && p.y === worldY)
+  const cornerIndex = DEFAULT_PATH.findIndex(p => p.x === worldX && p.y === worldY)
   
-  if (cornerIndex !== -1 && cornerIndex > 0 && cornerIndex < MAP_CONFIG.path.length - 1) {
-    const prev = MAP_CONFIG.path[cornerIndex - 1]
-    const curr = MAP_CONFIG.path[cornerIndex]
-    const next = MAP_CONFIG.path[cornerIndex + 1]
+  if (cornerIndex !== -1 && cornerIndex > 0 && cornerIndex < DEFAULT_PATH.length - 1) {
+    const prev = DEFAULT_PATH[cornerIndex - 1]
+    const curr = DEFAULT_PATH[cornerIndex]
+    const next = DEFAULT_PATH[cornerIndex + 1]
 
     const dx1 = Math.sign(prev.x - curr.x)
     const dy1 = Math.sign(prev.y - curr.y)
     const dx2 = Math.sign(next.x - curr.x)
     const dy2 = Math.sign(next.y - curr.y)
 
-    // Directions relative to curr:
-    // dy -1 = North, dy 1 = South, dx 1 = East, dx -1 = West
     const dirs = new Set([`${dx1},${dy1}`, `${dx2},${dy2}`])
 
-    // road_corner.png default: West (-1,0) and South (0,1)
     if (dirs.has('-1,0') && dirs.has('0,1')) return { type: 'CORNER', rotation: 0 }
     if (dirs.has('0,-1') && dirs.has('-1,0')) return { type: 'CORNER', rotation: 90 }
     if (dirs.has('1,0') && dirs.has('0,-1')) return { type: 'CORNER', rotation: 180 }
     if (dirs.has('0,1') && dirs.has('1,0')) return { type: 'CORNER', rotation: 270 }
     
-    return { type: 'CORNER', rotation: 0 } // Fallback
+    return { type: 'CORNER', rotation: 0 }
   }
 
   // 3. If not corner, it's straight
-  const p1 = MAP_CONFIG.path[segmentIndex]
-  const p2 = MAP_CONFIG.path[segmentIndex + 1]
+  const p1 = DEFAULT_PATH[segmentIndex]
+  const p2 = DEFAULT_PATH[segmentIndex + 1]
   
   if (p1.x === p2.x) return { type: 'NS', rotation: 0 }
   return { type: 'EW', rotation: 0 }
 }
 
+// Create initial game state
+export function createCastleDefenseState(vocabulary: { term: string; translation: string }[]): CastleDefenseState {
+  // Pick a random target word
+  const targetItem = vocabulary.length > 0
+    ? vocabulary[Math.floor(Math.random() * vocabulary.length)]
+    : { term: 'default', translation: 'default' }
 
-export const createCastleDefenseState = (
-  vocabulary: VocabularyItem[],
-  config: Partial<CastleDefenseState> = {}
-): CastleDefenseState => {
-  // Fallback if no vocab provided (should be handled by caller)
-  const fallbackVocab = { term: 'Welcome', translation: 'Bienvenue' }
-  const targetItem = vocabulary.length > 0 ? vocabulary[0] : fallbackVocab
-  
-  const player: Player = {
-    id: 'player',
-    x: GAME_WIDTH / 2,
-    y: GAME_HEIGHT / 2,
-    radius: PLAYER_RADIUS,
-    speed: PLAYER_SPEED,
-    inventory: [],
-  }
+  // Assign target words to tower slots
+  const towerSlots = DEFAULT_TOWER_SLOTS.map((slot, i) => ({
+    ...slot,
+    targetWord: vocabulary[i % vocabulary.length]?.translation || 'word'
+  }))
 
-  const initialState: CastleDefenseState = {
-    status: 'idle',
+  return {
+    status: 'playing',
+    player: {
+      id: 'player',
+      x: GAME_WIDTH / 2,
+      y: GAME_HEIGHT - 100,
+      radius: PLAYER_RADIUS,
+      speed: PLAYER_SPEED,
+      inventory: [],
+    },
+    enemies: [],
+    towers: [],
+    towerSlots,
+    projectiles: [],
+    words: [],
+    base: {
+      x: 725,
+      y: 75,
+      hp: BASE_HP,
+      maxHp: BASE_HP,
+      radius: BASE_RADIUS,
+    },
+    path: DEFAULT_PATH,
+    score: 0,
+    wave: 1,
+    spawnTimer: 0,
+    gameTime: 0,
+    targetWord: targetItem.translation,
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
     ),
-    player,
-    enemies: [],
-    towers: [], // Starts empty
-    words: [], // Will be spawned by game loop
-    projectiles: [],
-    vocabulary,
-    targetSentence: targetItem.term,
-    targetTranslation: targetItem.translation,
-    hearts: INITIAL_HEARTS,
-    score: 0,
-    wave: 1,
-    waveBudget: CASTLE_DEFENSE_CONFIG.WAVE.INITIAL_BUDGET,
-    spawnQueue: generateSpawnQueue(CASTLE_DEFENSE_CONFIG.WAVE.INITIAL_BUDGET),
-    waveCooldownTimer: 0,
-    gameTime: 0,
-    spawnTimer: 0,
-    lastEvent: null,
-    ...config,
   }
-  
-  // Initial Spawn
-  const initialWords = spawnWords(targetItem)
+}
+
+// --- Game Logic Functions ---
+
+// Move player based on input (same pattern as Wizard)
+export function movePlayer(
+  player: Player,
+  input: InputState,
+  dt: number
+): Player {
+  // Normalize diagonal movement (prevent faster diagonal speed)
+  let moveX = input.dx
+  let moveY = input.dy
+  if (moveX !== 0 && moveY !== 0) {
+    const invSqrt2 = 0.70710678118  // 1 / sqrt(2)
+    moveX *= invSqrt2
+    moveY *= invSqrt2
+  }
+
+  // Calculate speed factor (normalize to 60fps equivalent)
+  const speedFactor = dt / 16.6
+
+  // Calculate new position
+  let newX = player.x + moveX * player.speed * speedFactor
+  let newY = player.y + moveY * player.speed * speedFactor
+
+  // Clamp to game bounds
+  newX = Math.max(player.radius, Math.min(GAME_WIDTH - player.radius, newX))
+  newY = Math.max(player.radius, Math.min(GAME_HEIGHT - player.radius, newY))
+
   return {
-      ...initialState,
-      words: initialWords
+    ...player,
+    x: newX,
+    y: newY,
   }
 }
 
-// Helper to generate queue based on budget
-export function generateSpawnQueue(budget: number): EnemyType[] {
-    const queue: EnemyType[] = []
-    let remaining = budget
-    const { SOLDIER, TANK, BOSS } = CASTLE_DEFENSE_CONFIG.ENEMIES
+// Create a new enemy at spawn point
+export function spawnEnemy(
+  path: Waypoint[],
+  wave: number,
+  random: () => number = Math.random
+): Enemy {
+  // Determine enemy type based on wave and randomness
+  const roll = random()
+  let type: EnemyType
+  let hp: number
+  let speed: number
+  let radius: number
 
-    // Simple Algorithm:
-    // 1. If budget > 100, buy a BOSS.
-    // 2. Buy Tanks with 40% of remaining budget.
-    // 3. Fill rest with Soldiers.
-    
-    while(remaining >= BOSS.cost && remaining > 100) {
-        queue.push('BOSS')
-        remaining -= BOSS.cost
-    }
+  if (wave >= 5 && roll < 0.1) {
+    // Boss: 10% chance after wave 5
+    type = 'boss'
+    hp = ENEMY_BOSS_HP
+    speed = ENEMY_BOSS_SPEED
+    radius = ENEMY_BOSS_RADIUS
+  } else if (wave >= 2 && roll < 0.3) {
+    // Tank: 30% chance after wave 2
+    type = 'tank'
+    hp = ENEMY_TANK_HP
+    speed = ENEMY_TANK_SPEED
+    radius = ENEMY_TANK_RADIUS
+  } else {
+    // Soldier: default
+    type = 'soldier'
+    hp = ENEMY_SOLDIER_HP
+    speed = ENEMY_SOLDIER_SPEED
+    radius = ENEMY_SOLDIER_RADIUS
+  }
 
-    // Tanks
-    const tankBudget = remaining * 0.4
-    let tankSpend = 0
-    while(tankSpend < tankBudget && remaining >= TANK.cost) {
-        queue.push('TANK')
-        remaining -= TANK.cost
-        tankSpend += TANK.cost
-    }
+  // Spawn at first waypoint (off-screen)
+  const spawnPoint = path[0] || { x: 0, y: GAME_HEIGHT / 2 }
 
-    // Soldiers
-    while(remaining >= SOLDIER.cost) {
-        queue.push('SOLDIER')
-        remaining -= SOLDIER.cost
-    }
-
-    // Shuffle queue for variety
-    return queue.sort(() => Math.random() - 0.5)
+  return {
+    id: generateId(),
+    x: spawnPoint.x,
+    y: spawnPoint.y,
+    radius,
+    type,
+    hp,
+    maxHp: hp,
+    speed,
+    waypointIndex: 0,
+  }
 }
 
-export function spawnWords(target: VocabularyItem): Word[] {
-    const words: Word[] = []
-    const sentenceParts = target.term.split(' ')
-    
-    // 1. Add Correct Words
-    sentenceParts.forEach((part, index) => {
-        words.push({
-            id: `word-${index}-${Date.now()}`,
-            x: 0, // Assigned below
-            y: 0,
-            radius: WORD_RADIUS,
-            text: part,
-            translation: target.translation,
-            originalIndex: index,
-            isDistractor: false,
-            isCollected: false
-        })
-    })
+// Move enemy along path toward next waypoint
+export function moveEnemy(
+  enemy: Enemy,
+  path: Waypoint[],
+  dt: number
+): Enemy {
+  // If no path or at end, don't move
+  if (path.length === 0 || enemy.waypointIndex >= path.length) {
+    return enemy
+  }
 
-    // 2. Assign Non-Overlapping Positions using a Grid
-    const field = MAP_CONFIG.wordField
-    const padding = 20
-    const cellSize = (WORD_RADIUS * 2) + padding
-    
-    const cols = Math.floor((field.maxX - field.minX) / cellSize)
-    const rows = Math.floor((field.maxY - field.minY) / cellSize)
-    
-    const availableCells: {r: number, c: number}[] = []
-    for(let r=0; r<rows; r++) {
-        for(let c=0; c<cols; c++) {
-            availableCells.push({r, c})
-        }
+  const target = path[enemy.waypointIndex]
+  const dx = target.x - enemy.x
+  const dy = target.y - enemy.y
+  const distance = Math.sqrt(dx * dx + dy * dy)
+
+  // Check if reached waypoint
+  if (distance < 5) {
+    // Move to next waypoint
+    return {
+      ...enemy,
+      waypointIndex: enemy.waypointIndex + 1,
+    }
+  }
+
+  // Calculate speed factor
+  const speedFactor = dt / 16.6
+
+  // Normalize and apply movement
+  const moveX = (dx / distance) * enemy.speed * speedFactor
+  const moveY = (dy / distance) * enemy.speed * speedFactor
+
+  return {
+    ...enemy,
+    x: enemy.x + moveX,
+    y: enemy.y + moveY,
+  }
+}
+
+// Check if two circles collide
+export function circlesCollide(
+  x1: number, y1: number, r1: number,
+  x2: number, y2: number, r2: number
+): boolean {
+  const dx = x1 - x2
+  const dy = y1 - y2
+  const distance = Math.sqrt(dx * dx + dy * dy)
+  return distance < r1 + r2
+}
+
+// Check if point is within range of another point
+export function inRange(
+  x1: number, y1: number,
+  x2: number, y2: number,
+  range: number
+): boolean {
+  const dx = x1 - x2
+  const dy = y1 - y2
+  return (dx * dx + dy * dy) < (range * range)
+}
+
+// Check if player collects any words
+export function collectWords(
+  player: Player,
+  words: Word[]
+): { player: Player; words: Word[]; collectedWord: Word | null } {
+  let collectedWord: Word | null = null
+  const newInventory = [...player.inventory]
+
+  const newWords = words.map(word => {
+    if (word.isCollected) return word
+
+    if (circlesCollide(player.x, player.y, player.radius, word.x, word.y, word.radius)) {
+      collectedWord = word
+      // Add translation to inventory
+      newInventory.push(word.translation)
+      return { ...word, isCollected: true }
     }
 
-    // Shuffle cells
-    availableCells.sort(() => Math.random() - 0.5)
+    return word
+  })
 
-    words.forEach((w, i) => {
-        const cell = availableCells[i % availableCells.length]
-        w.x = field.minX + cell.c * cellSize + cellSize / 2
-        w.y = field.minY + cell.r * cellSize + cellSize / 2
+  return {
+    player: { ...player, inventory: newInventory },
+    words: newWords,
+    collectedWord,
+  }
+}
+
+// Check if player can activate a tower slot
+export function checkTowerActivation(
+  player: Player,
+  towerSlots: TowerSlot[],
+  towers: Tower[]
+): { player: Player; towers: Tower[]; activated: boolean } {
+  // Check if player is near any inactive tower slot
+  for (const slot of towerSlots) {
+    // Skip if tower already exists at this slot
+    if (towers.some(t => t.id === `tower-${slot.id}`)) {
+      continue
+    }
+
+    // Check if player is close enough
+    if (!inRange(player.x, player.y, slot.x, slot.y, 50)) {
+      continue
+    }
+
+    // Check if player has the required word in inventory
+    const wordIndex = player.inventory.indexOf(slot.targetWord)
+    if (wordIndex === -1) {
+      continue
+    }
+
+    // Activate tower: remove word from inventory and create tower
+    const newInventory = [...player.inventory]
+    newInventory.splice(wordIndex, 1)
+
+    const newTower: Tower = {
+      id: `tower-${slot.id}`,
+      x: slot.x,
+      y: slot.y,
+      radius: 30,
+      isActive: true,
+      targetWord: slot.targetWord,
+      range: TOWER_RANGE,
+      lastFired: 0,
+      damage: TOWER_DAMAGE,
+    }
+
+    return {
+      player: { ...player, inventory: newInventory },
+      towers: [...towers, newTower],
+      activated: true,
+    }
+  }
+
+  return { player, towers, activated: false }
+}
+
+// Update towers and create projectiles
+export function updateTowers(
+  towers: Tower[],
+  enemies: Enemy[],
+  projectiles: Projectile[],
+  gameTime: number
+): { towers: Tower[]; projectiles: Projectile[] } {
+  const newProjectiles = [...projectiles]
+  const newTowers = towers.map(tower => {
+    if (!tower.isActive) return tower
+
+    // Check cooldown
+    if (gameTime - tower.lastFired < TOWER_FIRE_RATE_MS) {
+      return tower
+    }
+
+    // Find closest enemy in range
+    let closestEnemy: Enemy | null = null
+    let closestDistance = Infinity
+
+    for (const enemy of enemies) {
+      if (inRange(tower.x, tower.y, enemy.x, enemy.y, tower.range)) {
+        const dx = tower.x - enemy.x
+        const dy = tower.y - enemy.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        if (distance < closestDistance) {
+          closestDistance = distance
+          closestEnemy = enemy
+        }
+      }
+    }
+
+    // Fire at closest enemy
+    if (closestEnemy) {
+      newProjectiles.push({
+        id: generateId(),
+        x: tower.x,
+        y: tower.y,
+        radius: PROJECTILE_RADIUS,
+        targetId: closestEnemy.id,
+        speed: PROJECTILE_SPEED,
+        damage: tower.damage,
+      })
+      return { ...tower, lastFired: gameTime }
+    }
+
+    return tower
+  })
+
+  return { towers: newTowers, projectiles: newProjectiles }
+}
+
+// Move projectiles and check for hits
+export function updateProjectiles(
+  projectiles: Projectile[],
+  enemies: Enemy[],
+  dt: number
+): { projectiles: Projectile[]; enemies: Enemy[]; hits: string[] } {
+  const speedFactor = dt / 16.6
+  const hits: string[] = []
+  let updatedEnemies = [...enemies]
+
+  const updatedProjectiles = projectiles
+    .map(projectile => {
+      // Find target enemy
+      const target = updatedEnemies.find(e => e.id === projectile.targetId)
+      if (!target) {
+        // Target died, remove projectile
+        return null
+      }
+
+      // Move toward target
+      const dx = target.x - projectile.x
+      const dy = target.y - projectile.y
+      const distance = Math.sqrt(dx * dx + dy * dy)
+
+      // Check collision
+      if (distance < projectile.radius + target.radius) {
+        // Hit! Damage enemy
+        hits.push(target.id)
+        updatedEnemies = updatedEnemies.map(e => {
+          if (e.id === target.id) {
+            return { ...e, hp: e.hp - projectile.damage }
+          }
+          return e
+        })
+        return null  // Remove projectile
+      }
+
+      // Move projectile
+      const moveX = (dx / distance) * projectile.speed * speedFactor
+      const moveY = (dy / distance) * projectile.speed * speedFactor
+
+      return {
+        ...projectile,
+        x: projectile.x + moveX,
+        y: projectile.y + moveY,
+      }
     })
+    .filter((p): p is Projectile => p !== null)
 
-    return words
+  // Remove dead enemies
+  updatedEnemies = updatedEnemies.filter(e => e.hp > 0)
+
+  return { projectiles: updatedProjectiles, enemies: updatedEnemies, hits }
+}
+
+// Check if enemies reached the base
+export function checkBaseDamage(
+  enemies: Enemy[],
+  base: Base,
+  path: Waypoint[]
+): { enemies: Enemy[]; base: Base; damage: number } {
+  let totalDamage = 0
+
+  // Enemies that reached end of path damage the base
+  const remainingEnemies = enemies.filter(enemy => {
+    // Check if enemy reached end of path
+    if (enemy.waypointIndex >= path.length) {
+      // Damage based on enemy type
+      const damage = enemy.type === 'boss' ? 30 : enemy.type === 'tank' ? 15 : 10
+      totalDamage += damage
+      return false  // Remove enemy
+    }
+    return true
+  })
+
+  return {
+    enemies: remainingEnemies,
+    base: { ...base, hp: Math.max(0, base.hp - totalDamage) },
+    damage: totalDamage,
+  }
+}
+
+// Spawn words on the map
+export function spawnWords(
+  vocabulary: { term: string; translation: string }[],
+  targetWord: string,
+  random: () => number = Math.random
+): Word[] {
+  if (vocabulary.length === 0) return []
+
+  const words: Word[] = []
+  const correctItem = vocabulary.find(v => v.translation === targetWord)
+
+  // Spawn 4 words: 1 correct + 3 distractors
+  if (correctItem) {
+    // Correct word
+    words.push({
+      id: generateId(),
+      x: 100 + random() * (GAME_WIDTH - 200),
+      y: 100 + random() * (GAME_HEIGHT - 200),
+      radius: WORD_RADIUS,
+      term: correctItem.term,
+      translation: correctItem.translation,
+      isCorrect: true,
+      isCollected: false,
+    })
+  }
+
+  // Distractors
+  const distractors = vocabulary.filter(v => v.translation !== targetWord)
+  for (let i = 0; i < 3 && i < distractors.length; i++) {
+    const distractor = distractors[Math.floor(random() * distractors.length)]
+    words.push({
+      id: generateId(),
+      x: 100 + random() * (GAME_WIDTH - 200),
+      y: 100 + random() * (GAME_HEIGHT - 200),
+      radius: WORD_RADIUS,
+      term: distractor.term,
+      translation: distractor.translation,
+      isCorrect: false,
+      isCollected: false,
+    })
+  }
+
+  return words
+}
+
+// Main game tick function (SAME PATTERN AS WIZARD VS ZOMBIE)
+export function advanceCastleDefenseTime(
+  state: CastleDefenseState,
+  dt: number,
+  input: InputState,
+  vocabulary: { term: string; translation: string }[]
+): CastleDefenseState {
+  if (state.status !== 'playing') {
+    return state
+  }
+
+  // 1. Update game time
+  const gameTime = state.gameTime + dt
+
+  // 2. Move player
+  let player = movePlayer(state.player, input, dt)
+
+  // 3. Collect words
+  let words = state.words
+  const collection = collectWords(player, words)
+  player = collection.player
+  words = collection.words
+
+  // 4. Check tower activation
+  let towers = state.towers
+  const activation = checkTowerActivation(player, state.towerSlots, towers)
+  player = activation.player
+  towers = activation.towers
+
+  // 5. Move enemies
+  let enemies = state.enemies.map(e => moveEnemy(e, state.path, dt))
+
+  // 6. Check base damage from enemies reaching end
+  const baseDamage = checkBaseDamage(enemies, state.base, state.path)
+  enemies = baseDamage.enemies
+  const base = baseDamage.base
+
+  // 7. Update towers (shoot at enemies)
+  let projectiles = state.projectiles
+  const towerUpdate = updateTowers(towers, enemies, projectiles, gameTime)
+  towers = towerUpdate.towers
+  projectiles = towerUpdate.projectiles
+
+  // 8. Update projectiles (move and damage enemies)
+  const projectileUpdate = updateProjectiles(projectiles, enemies, dt)
+  projectiles = projectileUpdate.projectiles
+  enemies = projectileUpdate.enemies
+
+  // 9. Calculate score (10 points per enemy killed)
+  const enemiesKilled = state.enemies.length - enemies.length - (baseDamage.damage > 0 ? (baseDamage.damage / 10) : 0)
+  const score = state.score + (enemiesKilled > 0 ? Math.floor(enemiesKilled) * 10 : 0)
+
+  // 10. Spawn enemies
+  let spawnTimer = state.spawnTimer + dt
+  if (spawnTimer >= SPAWN_RATE_MS && enemies.length < MAX_ENEMIES) {
+    enemies = [...enemies, spawnEnemy(state.path, state.wave)]
+    spawnTimer = 0
+  }
+
+  // 11. Respawn words if all collected
+  if (words.every(w => w.isCollected) || words.length === 0) {
+    words = spawnWords(vocabulary, state.targetWord)
+  }
+
+  // 12. Check game over
+  let status: CastleDefenseState['status'] = state.status
+  if (base.hp <= 0) {
+    status = 'gameover'
+  }
+
+  return {
+    ...state,
+    status,
+    player,
+    enemies,
+    towers,
+    projectiles,
+    words,
+    base,
+    score,
+    spawnTimer,
+    gameTime,
+  }
 }

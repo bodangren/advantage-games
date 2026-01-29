@@ -36,7 +36,7 @@
 - [x] Task: Improve Text & Grid Visibility.
     - [x] Sub-task: Adjust font sizes and grid cell dimensions for narrow screens.
     - [x] Sub-task: Ensure contrast and padding are sufficient for readability.
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Rune Match Optimization' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 5: Rune Match Optimization' (Protocol in workflow.md)
 
 ## Phase 6: Final Verification
 - [ ] Task: Fix `InvalidStateError` in Castle Defense (Circle.drawScene).

@@ -7,7 +7,7 @@ import { SAMPLE_SENTENCES } from '@/lib/sampleSentences'
 import { useGameStore } from '@/store/useGameStore'
 
 const CastleDefenseGame = dynamic(
-  () => import('@/components/castle-defense/CastleDefenseGame').then((mod) => mod.CastleDefenseGame),
+  () => import('@/components/castle-defense').then((mod) => mod.CastleDefenseGame),
   { ssr: false }
 )
 
