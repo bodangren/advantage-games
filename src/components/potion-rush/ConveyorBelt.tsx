@@ -80,18 +80,18 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
       const cauldronY = layout.cauldronY
       const cauldronHeight = 150 // Approx
       
+      // Check Trash (Right Side) - PRIORITY
+      const trashDist = Math.sqrt(Math.pow(x - layout.trashX, 2) + Math.pow(y - layout.trashY, 2))
+      if (trashDist < 100) {
+          discardIngredient(item.id)
+          return
+      }
+
       // Check Cauldrons
       if (y > cauldronY - 50 && y < cauldronY + cauldronHeight + 50) {
           if (x < stationWidth) return handleDrop(0, item.id, { x, y })
           if (x < stationWidth * 2) return handleDrop(1, item.id, { x, y })
           return handleDrop(2, item.id, { x, y })
-      }
-      
-      // Check Trash (Right Side)
-      const trashDist = Math.sqrt(Math.pow(x - layout.trashX, 2) + Math.pow(y - layout.trashY, 2))
-      if (trashDist < 100) {
-          discardIngredient(item.id)
-          return
       }
   }
 
@@ -165,8 +165,12 @@ function IngredientItem({ item, onDrop, images, onDragStateChange }: {
                 onDragStateChange(item.id, false)
                 const stage = e.target.getStage()
                 const pointer = stage?.getPointerPosition()
-                if (pointer) {
-                    onDrop(pointer.x, pointer.y, item)
+                if (pointer && stage) {
+                    const scale = stage.scaleX()
+                    const stagePos = stage.position()
+                    const virtualX = (pointer.x - stagePos.x) / scale
+                    const virtualY = (pointer.y - stagePos.y) / scale
+                    onDrop(virtualX, virtualY, item)
                 }
                 e.target.x(item.x)
                 e.target.y(20)

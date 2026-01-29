@@ -121,8 +121,12 @@ function SingleCauldron({ cauldron, x, y, onDrop, images }: {
             onDragEnd={(e) => {
                 const stage = e.target.getStage()
                 const pt = stage?.getPointerPosition()
-                if (pt) {
-                   onDrop(pt.x, pt.y)
+                if (pt && stage) {
+                   const scale = stage.scaleX()
+                   const stagePos = stage.position()
+                   const virtualX = (pt.x - stagePos.x) / scale
+                   const virtualY = (pt.y - stagePos.y) / scale
+                   onDrop(virtualX, virtualY)
                 }
                 e.target.to({ x: x, y: y, duration: 0.2 }) // Snap back
             }}
