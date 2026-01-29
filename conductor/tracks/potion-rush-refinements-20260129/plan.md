@@ -25,7 +25,7 @@ This plan outlines the refactoring and enhancement of Potion Rush gameplay mecha
 
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Logic & State Refactoring' (Protocol in workflow.md) [fa256dc]
 
-## Phase 2: Refined Spawning & Cauldron Reset
+## Phase 2: Refined Spawning & Cauldron Reset [checkpoint: 440d0d6]
 **Goal:** Implement the intelligent word spawner and the cauldron-to-trash drag logic.
 
 - [x] **Task 2.1: Intelligent `spawnIngredient`** [1668788]
@@ -38,7 +38,7 @@ This plan outlines the refactoring and enhancement of Potion Rush gameplay mecha
     - [x] Verify `spawnIngredient` only pulls from the pool.
     - [x] Verify `handleDumpCauldron` resets state to `IDLE` immediately.
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Refined Spawning & Cauldron Reset' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Refined Spawning & Cauldron Reset' (Protocol in workflow.md) [440d0d6]
 
 ## Phase 3: HUD & Visual Feedback
 **Goal:** Update the UI to reflect reputation and sentence progress, and add the red flash/shake effects.
