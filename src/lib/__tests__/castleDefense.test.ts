@@ -302,6 +302,8 @@ describe('castleDefense', () => {
       expect(state.enemiesSpawnedThisWave).toBe(0)
       expect(state.enemiesKilledThisWave).toBe(0)
       expect(state.totalEnemiesThisWave).toBeGreaterThan(0)
+      expect(state.waveCompleteTimer).toBe(0)
+      expect(state.waveMessage).toBe(null)
     })
 
     it('should assign target words to tower slots from vocabulary', () => {
@@ -338,6 +340,8 @@ describe('castleDefense', () => {
       expect(state.enemiesSpawnedThisWave).toBe(0)
       expect(state.enemiesKilledThisWave).toBe(0)
       expect(state.totalEnemiesThisWave).toBeGreaterThan(0)
+      expect(state.waveCompleteTimer).toBe(0)
+      expect(state.waveMessage).toBe(null)
     })
   })
 
@@ -467,6 +471,29 @@ describe('castleDefense', () => {
 
       const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
       expect(nextState.enemies[0]?.type).toBe('tank')
+    })
+
+    it('advances to the next wave after completion delay', () => {
+      const state = {
+        ...createCastleDefenseState(vocabulary),
+        wave: 1,
+        enemies: [],
+        enemiesSpawnedThisWave: 1,
+        totalEnemiesThisWave: 1,
+        waveCompleteTimer: 0,
+        waveMessage: null,
+      }
+
+      const withMessage = advanceCastleDefenseTime(state, 0, { dx: 0, dy: 0 }, vocabulary)
+      expect(withMessage.waveMessage).toBe('Wave 1 Complete')
+      expect(withMessage.waveCompleteTimer).toBeGreaterThan(0)
+
+      const advanced = advanceCastleDefenseTime(withMessage, 2000, { dx: 0, dy: 0 }, vocabulary)
+      expect(advanced.wave).toBe(2)
+      expect(advanced.enemiesSpawnedThisWave).toBe(0)
+      expect(advanced.enemiesKilledThisWave).toBe(0)
+      expect(advanced.waveMessage).toBe(null)
+      expect(advanced.totalEnemiesThisWave).toBe(WAVE_CONFIGS[1].soldiers + WAVE_CONFIGS[1].tanks + WAVE_CONFIGS[1].bosses)
     })
 
     it('marks sentence complete and awards points when all words are collected', () => {

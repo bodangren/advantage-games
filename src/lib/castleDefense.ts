@@ -148,6 +148,8 @@ export type CastleDefenseState = {
   enemiesSpawnedThisWave: number
   enemiesKilledThisWave: number
   totalEnemiesThisWave: number
+  waveCompleteTimer: number
+  waveMessage: string | null
   grassMap: number[][] // 16x12 array of grass variant indices
 }
 
@@ -295,6 +297,8 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     enemiesSpawnedThisWave: 0,
     enemiesKilledThisWave: 0,
     totalEnemiesThisWave: WAVE_CONFIGS[0].soldiers + WAVE_CONFIGS[0].tanks + WAVE_CONFIGS[0].bosses,
+    waveCompleteTimer: 0,
+    waveMessage: null,
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
     ),
@@ -974,8 +978,21 @@ export function advanceCastleDefenseTime(
   let enemiesSpawnedThisWave = state.enemiesSpawnedThisWave
   let enemiesKilledThisWave = state.enemiesKilledThisWave + Math.max(0, Math.floor(enemiesKilled))
   const waveConfig = WAVE_CONFIGS[state.wave - 1]
+  let waveCompleteTimer = state.waveCompleteTimer
+  let waveMessage = state.waveMessage
 
-  if (spawnTimer >= SPAWN_RATE_MS && enemies.length < MAX_ENEMIES) {
+  if (isWaveComplete({ ...state, enemies, enemiesSpawnedThisWave })) {
+    if (waveCompleteTimer <= 0) {
+      waveCompleteTimer = 2000
+      waveMessage = `Wave ${state.wave} Complete`
+    }
+  }
+
+  if (waveCompleteTimer > 0) {
+    waveCompleteTimer = Math.max(0, waveCompleteTimer - dt)
+  }
+
+  if (waveCompleteTimer <= 0 && spawnTimer >= SPAWN_RATE_MS && enemies.length < MAX_ENEMIES) {
     if (enemiesSpawnedThisWave < state.totalEnemiesThisWave) {
       enemies = [
         ...enemies,
@@ -984,6 +1001,34 @@ export function advanceCastleDefenseTime(
       enemiesSpawnedThisWave += 1
       spawnTimer = 0
     }
+  }
+
+  if (waveCompleteTimer === 0 && waveMessage && isWaveComplete({ ...state, enemies, enemiesSpawnedThisWave })) {
+    if (state.wave < WAVE_CONFIGS.length) {
+      const nextWave = state.wave + 1
+      const nextConfig = WAVE_CONFIGS[nextWave - 1]
+      return {
+        ...state,
+        wave: nextWave,
+        enemies,
+        towers,
+        projectiles,
+        words,
+        base,
+        score,
+        spawnTimer: 0,
+        gameTime,
+        collectedWordIndices,
+        sentenceCompleted,
+        enemiesSpawnedThisWave: 0,
+        enemiesKilledThisWave: 0,
+        totalEnemiesThisWave: nextConfig.soldiers + nextConfig.tanks + nextConfig.bosses,
+        waveCompleteTimer: 0,
+        waveMessage: null,
+        player,
+      }
+    }
+    waveMessage = null
   }
 
   // 11. Respawn words if all collected
@@ -1013,5 +1058,7 @@ export function advanceCastleDefenseTime(
     enemiesSpawnedThisWave,
     enemiesKilledThisWave,
     gameTime,
+    waveCompleteTimer,
+    waveMessage,
   }
 }

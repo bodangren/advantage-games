@@ -548,6 +548,14 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
         </div>
       )}
 
+      {gameState?.waveMessage && (
+        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+          <div className="bg-amber-500/90 border border-amber-200/60 px-6 py-2 rounded-full shadow-xl text-white font-black uppercase tracking-widest text-xs">
+            {gameState.waveMessage}
+          </div>
+        </div>
+      )}
+
       {/* INVENTORY - BOTTOM LEFT */}
       <div className="absolute bottom-8 left-8 z-10 pointer-events-none">
         <AnimatePresence>
