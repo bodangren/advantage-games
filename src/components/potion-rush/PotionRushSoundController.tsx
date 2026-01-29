@@ -7,7 +7,7 @@ import { useSound } from '@/hooks/useSound'
 export default function PotionRushSoundController() {
   const { playSound } = useSound()
   const lastScore = useRef(0)
-  const lastLives = useRef(3)
+  const lastReputation = useRef(100)
   const lastCauldronStates = useRef<string[]>([])
   const lastCauldronWordCounts = useRef<number[]>([0, 0, 0])
 
@@ -15,7 +15,7 @@ export default function PotionRushSoundController() {
     // Initial state
     const state = usePotionRushStore.getState()
     lastScore.current = state.score
-    lastLives.current = state.lives
+    lastReputation.current = state.reputation
     lastCauldronStates.current = state.cauldrons.map(c => c.state)
     lastCauldronWordCounts.current = state.cauldrons.map(c => c.currentWords.length)
 
@@ -26,11 +26,11 @@ export default function PotionRushSoundController() {
       }
       lastScore.current = state.score
 
-      // 2. Lives decreased -> Angry Grunt
-      if (state.lives < lastLives.current) {
+      // 2. Reputation decreased -> Angry Grunt
+      if (state.reputation < lastReputation.current) {
         playSound('angry-grunt')
       }
-      lastLives.current = state.lives
+      lastReputation.current = state.reputation
 
       // 3. Cauldron Changes
       state.cauldrons.forEach((cauldron, index) => {

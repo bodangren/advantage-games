@@ -68,7 +68,7 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
   const gameState = usePotionRushStore(state => state.gameState)
   const reset = usePotionRushStore(state => state.reset)
   const score = usePotionRushStore(state => state.score)
-  const lives = usePotionRushStore(state => state.lives)
+  const reputation = usePotionRushStore(state => state.reputation)
 
   // Layout Constants
   const isPortrait = dimensions.height > dimensions.width
@@ -172,7 +172,7 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
       {hasStarted && (
         <div className="absolute top-0 left-0 p-4 text-white z-10 pointer-events-none">
            <div className="text-xl font-bold text-purple-400 drop-shadow-lg">Score: {score}</div>
-           <div className="text-sm text-slate-300 drop-shadow-md">Lives: {lives}</div>
+           <div className="text-sm text-slate-300 drop-shadow-md">Reputation: {reputation}%</div>
         </div>
       )}
 
