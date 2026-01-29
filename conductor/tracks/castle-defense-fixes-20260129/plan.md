@@ -482,6 +482,7 @@ Before starting ANY phase, the implementer MUST:
 - [ ] Sub-task: Review all UI elements for alignment and spacing
 - [ ] Sub-task: Ensure Thai text is readable (font size, contrast)
 - [ ] Sub-task: Verify word orbs don't spawn on top of roads/towers
+- [x] Sub-task: Ensure tower slots do not overlap road paths efe7471
 - [ ] Sub-task: Check HUD elements don't overlap on mobile
 - [ ] Sub-task: Test landscape and portrait modes
 
@@ -491,6 +492,7 @@ Before starting ANY phase, the implementer MUST:
 - [ ] Sub-task: Test with empty SAMPLE_SENTENCES array
 - [ ] Sub-task: Test with single-word sentences
 - [ ] Sub-task: Test with very long sentences (10+ words)
+- [x] Sub-task: Randomize sentence selection to avoid repeats efe7471
 - [ ] Sub-task: Add error boundaries or graceful degradation
 
 **Verification**: Game handles edge cases gracefully without crashes. ✅
