@@ -6,7 +6,7 @@ import { usePotionRushStore } from '@/store/usePotionRushStore'
 import { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
 import { useGameLoop } from '@/hooks/useGameLoop'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion, useAnimation } from 'framer-motion'
 
 // Components
 import ConveyorBelt from './ConveyorBelt'
@@ -70,6 +70,18 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
   const score = usePotionRushStore(state => state.score)
   const reputation = usePotionRushStore(state => state.reputation)
   const spawnRate = usePotionRushStore(state => state.spawnRate)
+  
+  // Visual Effects
+  const controls = useAnimation()
+  const prevReputation = useRef(reputation)
+
+  useEffect(() => {
+      if (reputation < prevReputation.current) {
+          // Trigger Damage Effect
+          controls.start("damage")
+      }
+      prevReputation.current = reputation
+  }, [reputation, controls])
 
   // Layout Constants
   const isPortrait = dimensions.height > dimensions.width
@@ -181,46 +193,72 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
         </div>
       )}
 
-      <Stage 
-        width={dimensions.width} 
-        height={dimensions.height} 
-        scaleX={scale} 
-        scaleY={scale}
-        x={stageX}
-        y={stageY}
+      <motion.div 
+        animate={controls}
+        variants={{
+            default: { x: 0 },
+            damage: { 
+                x: [0, -10, 10, -10, 10, 0],
+                transition: { duration: 0.4 }
+            }
+        }}
+        className="relative"
       >
-        <Layer>
-            {/* 1. Background Wall */}
-            {images.wall && <KonvaImage image={images.wall} width={VIRTUAL_WIDTH} height={LAYOUT.wallH} />}
-            
-            {/* 2. Background Floor */}
-            {images.floor && <KonvaImage image={images.floor} y={LAYOUT.wallH} width={VIRTUAL_WIDTH} height={LAYOUT.floorH} />}
+          <Stage 
+            width={dimensions.width} 
+            height={dimensions.height} 
+            scaleX={scale} 
+            scaleY={scale}
+            x={stageX}
+            y={stageY}
+          >
+            <Layer>
+                {/* 1. Background Wall */}
+                {images.wall && <KonvaImage image={images.wall} width={VIRTUAL_WIDTH} height={LAYOUT.wallH} />}
+                
+                {/* 2. Background Floor */}
+                {images.floor && <KonvaImage image={images.floor} y={LAYOUT.wallH} width={VIRTUAL_WIDTH} height={LAYOUT.floorH} />}
 
-            {/* 3. Customer Queue (Behind counter) */}
-            <CustomerQueue y={LAYOUT.customerY} width={VIRTUAL_WIDTH} />
-            
-            {/* 4. Counter (In front of customers) */}
-            {images.counter && <KonvaImage image={images.counter} y={LAYOUT.counterY} width={VIRTUAL_WIDTH} height={160} />}
+                {/* 3. Customer Queue (Behind counter) */}
+                <CustomerQueue y={LAYOUT.customerY} width={VIRTUAL_WIDTH} />
+                
+                {/* 4. Counter (In front of customers) */}
+                {images.counter && <KonvaImage image={images.counter} y={LAYOUT.counterY} width={VIRTUAL_WIDTH} height={160} />}
 
-            {/* 5. Active Stations */}
-            <CauldronStation 
-                y={LAYOUT.cauldronY} 
-                width={VIRTUAL_WIDTH} 
-                layout={LAYOUT}
-            />
+                {/* 5. Active Stations */}
+                <CauldronStation 
+                    y={LAYOUT.cauldronY} 
+                    width={VIRTUAL_WIDTH} 
+                    layout={LAYOUT}
+                />
 
-            <TrashPortal x={LAYOUT.trashX} y={LAYOUT.trashY} />
-            
-            <ConveyorBelt 
-                y={LAYOUT.beltY} 
-                width={VIRTUAL_WIDTH} 
-                dragBoundFunc={(pos) => pos}
-                layout={LAYOUT}
-            />
+                <TrashPortal x={LAYOUT.trashX} y={LAYOUT.trashY} />
+                
+                <ConveyorBelt 
+                    y={LAYOUT.beltY} 
+                    width={VIRTUAL_WIDTH} 
+                    dragBoundFunc={(pos) => pos}
+                    layout={LAYOUT}
+                />
 
-            <PotionRushEffectsLayer />
-        </Layer>
-      </Stage>
+                <PotionRushEffectsLayer />
+            </Layer>
+          </Stage>
+      </motion.div>
+
+      {/* Red Flash Overlay */}
+      <motion.div 
+          className="absolute inset-0 bg-red-500 pointer-events-none z-40"
+          initial={{ opacity: 0 }}
+          animate={controls}
+          variants={{
+              default: { opacity: 0 },
+              damage: { 
+                  opacity: [0, 0.3, 0],
+                  transition: { duration: 0.4 }
+              }
+          }}
+      />
 
       {gameState === 'GAME_OVER' && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-50 text-white">
