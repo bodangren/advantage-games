@@ -198,12 +198,12 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   },
 
   spawnIngredient: (vocabList, screenWidth) => {
-      const { conveyorItems, gameState } = get()
+      const { conveyorItems, gameState, activeWordPool } = get()
       if (gameState !== 'PLAYING') return
+      if (activeWordPool.length === 0) return
 
-      // Logic: Prioritize ingredients needed for current orders, but mix in randoms
-      const allWords = vocabList.flatMap(v => v.term.split(' '))
-      const randomWord = allWords[Math.floor(Math.random() * allWords.length)]
+      // Pick only from active pool
+      const randomWord = activeWordPool[Math.floor(Math.random() * activeWordPool.length)]
       
       const types: Ingredient['type'][] = ['potion', 'mushroom', 'mineral', 'herb']
       const randomType = types[Math.floor(Math.random() * types.length)]

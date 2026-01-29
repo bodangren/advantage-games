@@ -133,4 +133,34 @@ describe('usePotionRushStore Refinements', () => {
       
       expect(usePotionRushStore.getState().gameState).toBe('GAME_OVER')
   })
+
+  it('should only spawn ingredients from activeWordPool', () => {
+      const vocabList = [
+          { term: 'needed word', definition: 'desc', id: '1' },
+          { term: 'ignored word', definition: 'desc', id: '2' }
+      ]
+
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          // Only spawn the first one as customer
+          usePotionRushStore.getState().spawnCustomer([vocabList[0]])
+      })
+
+      // activeWordPool should be ['needed', 'word']
+      
+      act(() => {
+          // Try to spawn multiple ingredients
+          for (let i = 0; i < 10; i++) {
+              usePotionRushStore.getState().spawnIngredient(vocabList, 1000)
+          }
+      })
+
+      const state = usePotionRushStore.getState()
+      const spawnedWords = state.conveyorItems.map(i => i.word)
+      
+      spawnedWords.forEach(word => {
+          expect(['needed', 'word']).toContain(word)
+          expect(word).not.toBe('ignored')
+      })
+  })
 })
