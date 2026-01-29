@@ -2,11 +2,19 @@ import React, { useEffect, useState } from 'react'
 import { Group, Rect, Text, Image as KonvaImage } from 'react-konva'
 import { usePotionRushStore, Cauldron } from '@/store/usePotionRushStore'
 import { withBasePath } from '@/lib/basePath'
+import { useSound } from '@/hooks/useSound'
+
+interface LayoutConfig {
+  trashX: number
+  trashY: number
+  customerY: number
+  [key: string]: number
+}
 
 interface CauldronStationProps {
   y: number
   width: number
-  layout: any
+  layout: LayoutConfig
 }
 
 export default function CauldronStation({ y, width, layout }: CauldronStationProps) {
@@ -93,8 +101,7 @@ function SingleCauldron({ cauldron, x, y, onDrop, images }: {
     onDrop: (x: number, y: number) => void,
     images: Record<string, HTMLImageElement>
 }) {
-    const [isDragging, setIsDragging] = React.useState(false)
-
+    const { playSound } = useSound()
     const getImage = () => {
         if (cauldron.state === 'WARNING') return images.green
         if (cauldron.state === 'COMPLETED') return images.yellow
@@ -108,9 +115,10 @@ function SingleCauldron({ cauldron, x, y, onDrop, images }: {
             x={x}
             y={y}
             draggable
-            onDragStart={() => setIsDragging(true)}
+            onDragStart={() => {
+                playSound('clinking')
+            }} // Just to enable drag events if needed
             onDragEnd={(e) => {
-                setIsDragging(false)
                 const stage = e.target.getStage()
                 const pt = stage?.getPointerPosition()
                 if (pt) {

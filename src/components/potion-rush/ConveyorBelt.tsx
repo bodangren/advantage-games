@@ -2,12 +2,20 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Group, Rect, Text, Image as KonvaImage, Circle } from 'react-konva'
 import { usePotionRushStore, Ingredient } from '@/store/usePotionRushStore'
 import { withBasePath } from '@/lib/basePath'
+import { useSound } from '@/hooks/useSound'
+
+interface LayoutConfig {
+  cauldronY: number
+  trashX: number
+  trashY: number
+  [key: string]: number
+}
 
 interface ConveyorBeltProps {
   y: number
   width: number
   dragBoundFunc: (pos: { x: number; y: number }) => { x: number; y: number }
-  layout: any
+  layout: LayoutConfig
 }
 
 export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
@@ -129,6 +137,7 @@ function IngredientItem({ item, onDrop, images, onDragStateChange }: {
     images: Record<string, HTMLImageElement>;
     onDragStateChange: (ingredientId: string, isDragging: boolean) => void
 }) {
+    const { playSound } = useSound()
     const [isDragging, setIsDragging] = React.useState(false)
     const [dragPosition, setDragPosition] = React.useState<{ x: number; y: number } | null>(null)
     const img = images[item.type]
@@ -142,6 +151,7 @@ function IngredientItem({ item, onDrop, images, onDragStateChange }: {
             y={renderY} 
             draggable
             onDragStart={(e) => {
+                playSound('clinking')
                 setIsDragging(true)
                 setDragPosition({ x: e.target.x(), y: e.target.y() })
                 onDragStateChange(item.id, true)
