@@ -12,13 +12,13 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 1: Sentence Parsing and Word System
 
 ### Task 1.1: Create sentence parsing utilities
-- [ ] Sub-task: Write tests for `parseSentenceWords(sentence: string): string[]` in `src/lib/castleDefense.test.ts`
+- [x] Sub-task: Write tests for `parseSentenceWords(sentence: string): string[]` in `src/lib/castleDefense.test.ts` 6c3892d
   - Test: "The cat sits" → ["The", "cat", "sits"]
   - Test: Empty string → []
   - Test: Multiple spaces handled correctly
   - Test: Punctuation handling (if needed)
-- [ ] Sub-task: Implement `parseSentenceWords()` in `src/lib/castleDefense.ts`
-- [ ] Sub-task: Run tests: `CI=true npm test src/lib/castleDefense.test.ts`
+- [x] Sub-task: Implement `parseSentenceWords()` in `src/lib/castleDefense.ts` 6c3892d
+- [x] Sub-task: Run tests: `CI=true npm test src/lib/castleDefense.test.ts` 6c3892d
 
 **Verification**: All tests pass. ✅
 
