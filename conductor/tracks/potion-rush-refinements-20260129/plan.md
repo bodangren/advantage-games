@@ -43,15 +43,15 @@ This plan outlines the refactoring and enhancement of Potion Rush gameplay mecha
 ## Phase 3: HUD & Visual Feedback
 **Goal:** Update the UI to reflect reputation and sentence progress, and add the red flash/shake effects.
 
-- [ ] **Task 3.1: Sentence Progress Display**
-    - [ ] Update `CauldronStation.tsx` to display the `targetSentence` words below the cauldron, highlighting those in `currentWords`.
-- [ ] **Task 3.2: Reputation HUD**
-    - [ ] Update `PotionRushGame.tsx` HUD to display "Reputation" as a percentage.
-- [ ] **Task 3.3: Penalty Effects (Flash/Shake)**
-    - [ ] Create a `ScreenEffect` component or update `PotionRushEffectsLayer.tsx`.
-    - [ ] Add a state trigger for `lastPenaltyTime`.
-    - [ ] Use `framer-motion` to trigger a red flash or camera shake when `reputation` drops.
-- [ ] **Task 3.4: Manual UI Verification**
+- [x] **Task 3.1: Sentence Progress Display** [b73d8ac]
+    - [x] Update `CauldronStation.tsx` to display the `targetSentence` words below the cauldron, highlighting those in `currentWords`.
+- [x] **Task 3.2: Reputation HUD** [c984f23]
+    - [x] Update `PotionRushGame.tsx` HUD to display "Reputation" as a percentage.
+- [x] **Task 3.3: Penalty Effects (Flash/Shake)** [59e21e6]
+    - [x] Create a `ScreenEffect` component or update `PotionRushEffectsLayer.tsx`.
+    - [x] Add a state trigger for `lastPenaltyTime`.
+    - [x] Use `framer-motion` to trigger a red flash or camera shake when `reputation` drops.
+- [x] **Task 3.4: Manual UI Verification** [59e21e6]
     *   Verify HUD labels.
     *   Verify sentence text visibility below cauldrons.
 
