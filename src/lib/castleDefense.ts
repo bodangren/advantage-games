@@ -41,6 +41,15 @@ export const GAME_TICK_MS = 50
 export const SPAWN_RATE_MS = 2000
 export const MAX_ENEMIES = 15
 
+export const WAVE_CONFIGS = [
+  { wave: 1, soldiers: 10, tanks: 0, bosses: 0 },
+  { wave: 2, soldiers: 8, tanks: 4, bosses: 0 },
+  { wave: 3, soldiers: 10, tanks: 5, bosses: 1 },
+  { wave: 4, soldiers: 12, tanks: 8, bosses: 1 },
+  { wave: 5, soldiers: 15, tanks: 10, bosses: 2 },
+  { wave: 6, soldiers: 20, tanks: 12, bosses: 3 },
+]
+
 // Animation timing
 export const ANIMATION_FRAME_MS = 150
 

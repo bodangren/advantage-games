@@ -12,6 +12,7 @@ import {
   WORD_RADIUS,
   BASE_HP,
   SPAWN_RATE_MS,
+  WAVE_CONFIGS,
   parseSentenceWords,
   validateWordCollection,
   resetSentenceProgress,
@@ -78,6 +79,14 @@ describe('castleDefense', () => {
         expect(word.y).toBeGreaterThanOrEqual(minY)
         expect(word.y).toBeLessThanOrEqual(maxY)
       }
+    })
+  })
+
+  describe('WAVE_CONFIGS', () => {
+    it('defines wave configurations for 6 waves', () => {
+      expect(WAVE_CONFIGS).toHaveLength(6)
+      expect(WAVE_CONFIGS[0].wave).toBe(1)
+      expect(WAVE_CONFIGS[5].wave).toBe(6)
     })
   })
 
