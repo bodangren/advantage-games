@@ -216,4 +216,19 @@ describe('CastleDefenseGame', () => {
     }
   })
 
+  it('does not render the inventory HUD', async () => {
+    const inventoryVocabulary: VocabularyItem[] = [
+      { term: 'The cat sits', translation: 'แมวนั่ง' },
+    ]
+
+    render(<CastleDefenseGame vocabulary={inventoryVocabulary} onComplete={jest.fn()} />)
+    const startButton = await screen.findByRole('button', { name: /start mission/i })
+    await act(async () => {
+      fireEvent.click(startButton)
+    })
+
+    expect(screen.queryByText(/empty handed/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/inventory/i)).not.toBeInTheDocument()
+  })
+
 })

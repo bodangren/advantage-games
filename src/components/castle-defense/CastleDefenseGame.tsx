@@ -575,14 +575,14 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
       )}
 
       {/* HUD - TOP */}
-      <div className="absolute top-24 left-4 z-10 pointer-events-none md:top-4">
+      <div className="absolute top-32 left-4 z-30 pointer-events-none md:top-4">
         <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Score</span>
           <span className="text-xl font-black text-white leading-none">{gameState?.score || 0}</span>
         </div>
       </div>
 
-      <div className="absolute top-24 right-4 z-10 pointer-events-none md:top-4">
+      <div className="absolute top-32 right-4 z-30 pointer-events-none md:top-4">
         <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md text-right">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Castle HP</span>
           <div className="flex items-center gap-2">
@@ -612,39 +612,6 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
           </div>
         </div>
       )}
-
-      {/* INVENTORY - BOTTOM LEFT */}
-      <div className="absolute bottom-8 left-8 z-10 pointer-events-none">
-        <AnimatePresence>
-          {gameState?.player.inventory.length ? (
-            <motion.div 
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -20, opacity: 0 }}
-              className="bg-slate-900/90 border border-blue-500/30 p-4 rounded-[2rem] shadow-2xl backdrop-blur-md min-w-[140px]"
-            >
-              <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block mb-2 px-2">Inventory</span>
-              <div className="space-y-2">
-                {gameState.player.inventory.map((word, i) => (
-                  <motion.div 
-                    key={i} 
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className="text-white font-bold bg-blue-500/20 px-3 py-2 rounded-xl border border-blue-500/30 text-sm flex items-center justify-between gap-3"
-                  >
-                    {word}
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          ) : (
-            <div className="bg-slate-900/40 border border-white/5 p-4 rounded-[2rem] backdrop-blur-sm">
-               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block px-2 italic">Empty Handed</span>
-            </div>
-          )}
-        </AnimatePresence>
-      </div>
 
       {/* D-Pad */}
       <div className="absolute bottom-8 right-8 z-20">
