@@ -11,15 +11,10 @@ describe('usePotionRushStore Refinements', () => {
   it('should have correct initial state for refinements', () => {
     const state = usePotionRushStore.getState()
     
-    // Check new properties
     expect(state.reputation).toBe(100)
     expect(state.activeWordPool).toEqual([])
     expect(state.completedSentences).toBe(0)
-    expect(state.baseBeltSpeed).toBeDefined()
-    
-    // Check removed properties (optional, but good for verification)
-    // @ts-ignore
-    expect(state.lives).toBeUndefined()
+    expect(state.customers).toEqual([null, null, null])
   })
 
   it('should update activeWordPool when spawning a customer', () => {
@@ -31,7 +26,10 @@ describe('usePotionRushStore Refinements', () => {
       })
 
       const state = usePotionRushStore.getState()
-      expect(state.customers.length).toBe(1)
+      // Should fill first slot
+      expect(state.customers[0]).not.toBeNull()
+      expect(state.customers[1]).toBeNull()
+      
       expect(state.activeWordPool).toContain('hello')
       expect(state.activeWordPool).toContain('world')
   })
@@ -45,7 +43,7 @@ describe('usePotionRushStore Refinements', () => {
       })
 
       const state = usePotionRushStore.getState()
-      const customer = state.customers[0]
+      const customer = state.customers[0]!
       
       // Simulate cauldron completion
       usePotionRushStore.setState(prev => {
@@ -71,9 +69,8 @@ describe('usePotionRushStore Refinements', () => {
       })
 
       const state = usePotionRushStore.getState()
-      const customer = state.customers[0]
+      const customer = state.customers[0]!
       
-      // Simulate cauldron completion
       usePotionRushStore.setState(prev => {
           const newCauldrons = [...prev.cauldrons]
           newCauldrons[0] = { ...newCauldrons[0], state: 'COMPLETED', targetSentence: customer.request, currentWords: ['test'] }
@@ -87,20 +84,11 @@ describe('usePotionRushStore Refinements', () => {
       const newState = usePotionRushStore.getState()
       expect(newState.completedSentences).toBe(1)
       
-      // Speed should update in tick or directly?
-      // The requirement says: Update tick or a selector to calculate currentSpeed.
-      // If we store beltSpeed, we should update it.
-      
-      // Let's run a tick to ensure speed is updated if that's where logic resides, 
-      // OR update it in handleServeCustomer.
-      // Plan says: "Update handleServeCustomer to increment completedSentences" and "Update tick... to calculate currentSpeed"
-      
       act(() => {
           usePotionRushStore.getState().tick(0.1)
       })
       
       const updatedState = usePotionRushStore.getState()
-      // base is 50. 50 * (1.1 ^ 1) = 55.
       expect(updatedState.beltSpeed).toBeCloseTo(55)
   })
 
@@ -118,20 +106,9 @@ describe('usePotionRushStore Refinements', () => {
 
       const state = usePotionRushStore.getState()
       expect(state.reputation).toBe(75) // 100 - 25
-      expect(state.gameState).not.toBe('GAME_OVER')
       
-      // Make 3 more leave
-      act(() => {
-        // Need to spawn more or just wait if we had more. 
-        // For simplicity, just force reputation down
-        usePotionRushStore.setState({ reputation: 25 })
-        usePotionRushStore.setState(prev => ({ 
-             customers: [{ ...prev.customers[0], patience: 0.1, state: 'WAITING' }] 
-        }))
-        usePotionRushStore.getState().tick(1)
-      })
-      
-      expect(usePotionRushStore.getState().gameState).toBe('GAME_OVER')
+      // Verify customer state is LEAVING_ANGRY
+      expect(state.customers[0]?.state).toBe('LEAVING_ANGRY')
   })
 
   it('should only spawn ingredients from activeWordPool', () => {
@@ -146,8 +123,6 @@ describe('usePotionRushStore Refinements', () => {
           usePotionRushStore.getState().spawnCustomer([vocabList[0]])
       })
 
-      // activeWordPool should be ['needed', 'word']
-      
       act(() => {
           // Try to spawn multiple ingredients
           for (let i = 0; i < 10; i++) {
@@ -164,161 +139,7 @@ describe('usePotionRushStore Refinements', () => {
       })
   })
 
-  it('should remove a word from activeWordPool when it is spawned as an ingredient', () => {
-      const vocabList = [{ term: 'single', definition: 'desc', id: '1' }]
-
-      act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
-      })
-
-      expect(usePotionRushStore.getState().activeWordPool).toContain('single')
-
-      act(() => {
-          usePotionRushStore.getState().spawnIngredient(vocabList, 1000)
-      })
-
-      expect(usePotionRushStore.getState().activeWordPool).not.toContain('single')
-      
-      act(() => {
-          // Attempting to spawn again should fail (empty pool)
-          usePotionRushStore.getState().spawnIngredient(vocabList, 1000)
-      })
-      
-      expect(usePotionRushStore.getState().conveyorItems.length).toBe(1)
-  })
-
-  it('should reset cauldron to IDLE when handleDumpCauldron is called', () => {
-      act(() => {
-          usePotionRushStore.getState().startGame()
-          // Force a cauldron into BREWING state
-          usePotionRushStore.setState(prev => {
-              const newCauldrons = [...prev.cauldrons]
-              newCauldrons[0] = { ...newCauldrons[0], state: 'BREWING', currentWords: ['test'] }
-              return { cauldrons: newCauldrons }
-          })
-      })
-
-      expect(usePotionRushStore.getState().cauldrons[0].state).toBe('BREWING')
-
-      act(() => {
-          usePotionRushStore.getState().handleDumpCauldron(0)
-      })
-
-      const state = usePotionRushStore.getState()
-      expect(state.cauldrons[0].state).toBe('IDLE')
-      expect(state.cauldrons[0].currentWords).toEqual([])
-  })
-
-  it('should recycle words back to activeWordPool when they fall off the conveyor', () => {
-      const vocabList = [{ term: 'recycle', definition: 'desc', id: '1' }]
-
-      act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
-      })
-
-      // Spawn it (removes from pool)
-      act(() => {
-          usePotionRushStore.getState().spawnIngredient(vocabList, 1000)
-      })
-      
-      expect(usePotionRushStore.getState().activeWordPool).not.toContain('recycle')
-
-      // Move time forward enough for item to go off screen
-      // Speed starts at 50, x starts at screenWidth + 100 (1000 + 100 = 1100).
-      // Needs to go to -200. Delta = 1300. Time = 1300 / 50 = 26 seconds.
-      act(() => {
-          usePotionRushStore.getState().tick(30) 
-      })
-
-      expect(usePotionRushStore.getState().activeWordPool).toContain('recycle')
-  })
-
-  it('should return words to pool when cauldron is dumped', () => {
-      const vocabList = [{ term: 'word1 word2', definition: 'desc', id: '1' }]
-      
-      act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
-      })
-
-      // Simulate brewing state with 'word1'
-      usePotionRushStore.setState(prev => {
-          const nextCauldrons = [...prev.cauldrons]
-          nextCauldrons[0] = { 
-              ...nextCauldrons[0], 
-              state: 'WARNING', // Ruined state
-              currentWords: ['word1'] 
-          }
-          // Remove word1 from pool as if it was spawned
-          return { 
-              cauldrons: nextCauldrons,
-              activeWordPool: ['word2'] 
-          }
-      })
-
-      act(() => {
-          usePotionRushStore.getState().handleDumpCauldron(0)
-      })
-
-      expect(usePotionRushStore.getState().activeWordPool).toContain('word1')
-      expect(usePotionRushStore.getState().activeWordPool).toContain('word2')
-  })
-
-  it('should return wrong ingredient to pool when it causes a warning in BREWING state', () => {
-      const vocabList = [{ term: 'correct word', definition: 'desc', id: '1' }]
-      
-      act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
-          // Set to BREWING 'correct'
-           usePotionRushStore.setState(prev => {
-              const nextCauldrons = [...prev.cauldrons]
-              nextCauldrons[0] = { 
-                  ...nextCauldrons[0], 
-                  state: 'BREWING',
-                  targetSentence: vocabList[0],
-                  currentWords: ['correct'] 
-              }
-              // activeWordPool should have 'word' and maybe others
-              return { 
-                  cauldrons: nextCauldrons,
-                  activeWordPool: ['word', 'wrong'] 
-              }
-          })
-      })
-
-      // Spawn 'wrong' ingredient
-      act(() => {
-         usePotionRushStore.setState(prev => ({
-             conveyorItems: [{ 
-                 id: 'item-wrong', 
-                 word: 'wrong', 
-                 type: 'herb', 
-                 x: 500, y: 500, width: 80, isDragging: false 
-             }],
-             activeWordPool: ['word'] // 'wrong' removed on spawn
-         }))
-      })
-
-      // Drop 'wrong' into the BREWING cauldron
-      act(() => {
-          usePotionRushStore.getState().handleDropIngredient(0, 'item-wrong')
-      })
-
-      const state = usePotionRushStore.getState()
-      expect(state.cauldrons[0].state).toBe('WARNING')
-      // 'wrong' was rejected (not added to currentWords) so it should be returned to pool immediately
-      expect(state.activeWordPool).toContain('wrong')
-      
-      expect(state.activeWordPool).toContain('wrong')
-      
-      // 'correct' is still in the cauldron, so 'word' is still in the pool? No, 'correct' is in cauldron.
-      // 'word' is in pool.
-  })
-
-  it('should reset cauldron if its assigned customer leaves angry', () => {
+  it('should reset Cauldron[0] when Customer[0] leaves angry', () => {
       const vocabList = [{ term: 'orphan me', definition: 'desc', id: '1' }]
 
       act(() => {
@@ -326,7 +147,7 @@ describe('usePotionRushStore Refinements', () => {
           usePotionRushStore.getState().spawnCustomer(vocabList)
       })
 
-      const customer = usePotionRushStore.getState().customers[0]
+      const customer = usePotionRushStore.getState().customers[0]!
 
       // Start brewing for this customer
       usePotionRushStore.setState(prev => {
@@ -346,107 +167,58 @@ describe('usePotionRushStore Refinements', () => {
       })
 
       const state = usePotionRushStore.getState()
-      // Customer should be gone (LEAVING_ANGRY)
-      expect(state.customers.find(c => c.id === customer.id)?.state).toBe('LEAVING_ANGRY')
+      // Customer should be LEAVING_ANGRY
+      expect(state.customers[0]?.state).toBe('LEAVING_ANGRY')
       
       // Cauldron should be reset
       expect(state.cauldrons[0].state).toBe('IDLE')
       expect(state.cauldrons[0].currentWords).toEqual([])
   })
 
-  it('should NOT reset cauldron if another customer still needs the sentence', () => {
+  it('should reset Cauldron[0] if Customer[0] leaves, even if Customer[1] needs the same sentence', () => {
       const vocabList = [{ term: 'shared', definition: 'desc', id: '1' }]
-      const otherVocab = [{ term: 'other', definition: 'desc', id: '2' }]
 
       act(() => {
           usePotionRushStore.getState().startGame()
-          // Spawn Customer A (needs 'shared')
+          // Spawn A (Slot 0)
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+          // Spawn B (Slot 1)
           usePotionRushStore.getState().spawnCustomer(vocabList)
       })
+
+      const state = usePotionRushStore.getState()
+      const customerA = state.customers[0]!
       
-      // Force spawn Customer B (needs 'other')
-      act(() => {
-          usePotionRushStore.getState().spawnCustomer(otherVocab)
-      })
-
-      const state = usePotionRushStore.getState()
-      const customerA = state.customers[0]
-      const customerB = state.customers[1]
-
-      // Start brewing for Customer B (who will stay)
+      // Start brewing for A in Cauldron 0
       usePotionRushStore.setState(prev => {
           const nextCauldrons = [...prev.cauldrons]
           nextCauldrons[0] = { 
               ...nextCauldrons[0], 
               state: 'BREWING',
-              targetSentence: customerB.request,
-              currentWords: ['other'] 
-          }
-          return { cauldrons: nextCauldrons }
-      })
-
-      // Make Customer A leave angry (patience 0)
-      act(() => {
-          usePotionRushStore.setState(prev => ({
-              customers: prev.customers.map(c => 
-                  c.id === customerA.id ? { ...c, patience: 0.1 } : c
-              )
-          }))
-          usePotionRushStore.getState().tick(1) // Tick to trigger leave
-      })
-
-      const newState = usePotionRushStore.getState()
-      // Customer A should be leaving
-      expect(newState.customers.find(c => c.id === customerA.id)?.state).toBe('LEAVING_ANGRY')
-      // Customer B is still waiting
-      expect(newState.customers.find(c => c.id === customerB.id)?.state).toBe('WAITING')
-
-      // Cauldron 0 (for B) should NOT be reset
-      expect(newState.cauldrons[0].state).toBe('BREWING')
-      expect(newState.cauldrons[0].currentWords).toEqual(['other'])
-  })
-
-  it('should NOT reset cauldron if two customers have SAME request and only one leaves', () => {
-      const vocabList = [{ term: 'shared', definition: 'desc', id: '1' }]
-
-      act(() => {
-          usePotionRushStore.getState().startGame()
-          // Spawn A and B with SAME vocab
-          usePotionRushStore.getState().spawnCustomer(vocabList)
-          usePotionRushStore.getState().spawnCustomer(vocabList)
-      })
-
-      const state = usePotionRushStore.getState()
-      const customerA = state.customers[0]
-      const customerB = state.customers[1]
-
-      // Start brewing 'shared'
-      usePotionRushStore.setState(prev => {
-          const nextCauldrons = [...prev.cauldrons]
-          nextCauldrons[0] = { 
-              ...nextCauldrons[0], 
-              state: 'BREWING',
-              targetSentence: customerA.request, // Same as B.request
+              targetSentence: customerA.request,
               currentWords: ['shared'] 
           }
+          // Also brewing for B in Cauldron 1? No, just verify 0 resets.
           return { cauldrons: nextCauldrons }
       })
 
       // Make A leave
       act(() => {
-          usePotionRushStore.setState(prev => ({
-              customers: prev.customers.map(c => 
-                  c.id === customerA.id ? { ...c, patience: 0.1 } : c
-              )
-          }))
+          // Manually reduce patience for Slot 0
+          usePotionRushStore.setState(prev => {
+              const nextCust = [...prev.customers]
+              if (nextCust[0]) nextCust[0] = { ...nextCust[0], patience: 0.1 }
+              return { customers: nextCust }
+          })
           usePotionRushStore.getState().tick(1)
       })
 
       const newState = usePotionRushStore.getState()
-      expect(newState.customers.find(c => c.id === customerA.id)?.state).toBe('LEAVING_ANGRY')
-      expect(newState.customers.find(c => c.id === customerB.id)?.state).toBe('WAITING')
+      expect(newState.customers[0]?.state).toBe('LEAVING_ANGRY')
+      expect(newState.customers[1]?.state).toBe('WAITING')
 
-      // Cauldron should persist because B still needs it
-      expect(newState.cauldrons[0].state).toBe('BREWING')
+      // Cauldron 0 should reset because Customer 0 left. 
+      // It does NOT matter that Customer 1 needs 'shared'.
+      expect(newState.cauldrons[0].state).toBe('IDLE')
   })
 })

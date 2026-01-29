@@ -60,7 +60,7 @@ interface PotionRushState {
 
   // Entities
   cauldrons: Cauldron[]
-  customers: Customer[]
+  customers: (Customer | null)[]
   conveyorItems: Ingredient[]
   effects: PotionRushEffect[]
   
@@ -126,7 +126,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
     { id: 1, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
     { id: 2, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
   ],
-  customers: [],
+  customers: [null, null, null],
   conveyorItems: [],
   effects: [],
   
@@ -142,7 +142,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       score: 0,
       reputation: 100,
       dayTime: 0,
-      customers: [],
+      customers: [null, null, null],
       conveyorItems: [],
       effects: [],
       activeWordPool: [],
@@ -161,7 +161,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   
   reset: () => set({
       gameState: 'MENU',
-      customers: [],
+      customers: [null, null, null],
       conveyorItems: [],
       effects: [],
       score: 0,
@@ -173,7 +173,10 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   spawnCustomer: (vocabList) => {
       const { customers, gameState, activeWordPool } = get()
       if (gameState !== 'PLAYING') return
-      if (customers.length >= MAX_CUSTOMERS) return
+      
+      // Find first empty slot
+      const emptySlotIndex = customers.findIndex(c => c === null)
+      if (emptySlotIndex === -1) return
 
       const randomVocab = vocabList[Math.floor(Math.random() * vocabList.length)]
       const types: CustomerType[] = ['orc', 'elf', 'wizard', 'dwarf', 'goblin', 'human', 'skeleton']
@@ -191,8 +194,11 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
       // Add words to active pool
       const newWords = randomVocab.term.split(' ')
+      const nextCustomers = [...customers]
+      nextCustomers[emptySlotIndex] = newCustomer
+      
       set({ 
-          customers: [...customers, newCustomer],
+          customers: nextCustomers,
           activeWordPool: [...activeWordPool, ...newWords]
       })
   },
@@ -258,10 +264,13 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       let nextReputation = reputation
       let wordsToRemove: string[] = []
 
-      const nextCustomers = customers
-        .map(c => {
+      // Iterate fixed slots
+      const nextCustomers = customers.map(c => {
+          if (!c) return null
+          
           if (c.state !== 'WAITING') {
              const remaining = (c.leaveTimer ?? LEAVE_DURATION) - dt
+             if (remaining <= 0) return null // Despawn (free the slot)
              return { ...c, leaveTimer: remaining }
           }
           
@@ -272,23 +281,30 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
              return { ...c, patience: 0, state: 'LEAVING_ANGRY' as const, leaveTimer: LEAVE_DURATION }
           }
           return { ...c, patience: newPatience }
-        })
-        .filter(c => c.state === 'WAITING' || (c.leaveTimer ?? 0) > 0)
-        
-      // Reset orphaned cauldrons (Continuous Check)
-      // If a cauldron is active but NO WAITING customer needs its sentence, reset it.
-      const activeCustomers = nextCustomers.filter(c => c.state === 'WAITING')
+      })
       
-      const nextCauldrons = cauldrons.map(cauldron => {
-          if (cauldron.state !== 'IDLE' && cauldron.targetSentence) {
-              const isNeeded = activeCustomers.some(c => c.request.id === cauldron.targetSentence?.id)
-              
-              if (!isNeeded) {
-                  return { ...cauldron, state: 'IDLE' as const, targetSentence: null, currentWords: [], shake: false }
+      // Simple Reset Logic: 
+      // If Customer[i] is null or not WAITING, reset Cauldron[i]
+      const nextCauldrons = cauldrons.map((cauldron, i) => {
+          const customer = nextCustomers[i]
+          
+          // If customer is gone (null) OR is leaving (LEAVING_ANGRY), reset cauldron.
+          // Because cauldron i corresponds strictly to customer i.
+          // Exception: If we just served them? 'LEAVING_HAPPY'
+          // If LEAVING_HAPPY, we probably want to keep the "COMPLETED" state until drag?
+          // Actually, handleServe resets cauldron immediately. So state is IDLE.
+          // So if customer is LEAVING_HAPPY, cauldron is likely already IDLE.
+          
+          // But if customer is LEAVING_ANGRY or NULL, we MUST reset to IDLE.
+          if (!customer || customer.state === 'LEAVING_ANGRY') {
+              if (cauldron.state !== 'IDLE') {
+                   return { ...cauldron, state: 'IDLE' as const, targetSentence: null, currentWords: [], shake: false }
               }
           }
           return cauldron
       })
+
+      // Update activeWordPool
 
       // Update activeWordPool
 
@@ -370,27 +386,23 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
     const nextCauldron = { ...cauldron }
     const { activeWordPool } = get()
+    
+    // Strict 1:1 Mapping: Cauldron matches Customer[cauldronIndex]
+    const targetCustomer = customers[cauldronIndex]
 
     if (cauldron.state === 'IDLE') {
-        // Find a customer whose sentence starts with this word
-        // And who ISN'T already being served by another cauldron? (Optional complexity)
-        // For simplicity: Match any waiting customer.
-        const potentialMatch = customers.find(c => 
-            c.state === 'WAITING' && 
-            c.request.term.split(' ')[0].toLowerCase() === ingredient.word.toLowerCase()
-        )
-
-        if (potentialMatch) {
+        // Must match THIS customer's request start
+        if (targetCustomer && targetCustomer.state === 'WAITING' && 
+            targetCustomer.request.term.split(' ')[0].toLowerCase() === ingredient.word.toLowerCase()) {
+            
             nextCauldron.state = 'BREWING'
-            nextCauldron.targetSentence = potentialMatch.request
+            nextCauldron.targetSentence = targetCustomer.request
             nextCauldron.currentWords = [ingredient.word]
         } else {
-            // Wrong start!
+            // Wrong start! (Or no customer in that slot)
             nextCauldron.state = 'WARNING'
             nextCauldron.currentWords = [ingredient.word]
             emitEffect('SMOKE')
-            // Don't recycle here because it's technically IN the cauldron now (as the single wrong word)
-            // It will be recycled when dumped.
         }
     } else if (cauldron.state === 'BREWING' && cauldron.targetSentence) {
         // Check next word
@@ -450,18 +462,20 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
      
      if (cauldron.state !== 'COMPLETED') return
 
-     const customerIndex = customers.findIndex(c => c.id === customerId)
-     if (customerIndex === -1) return
+     // Strict Index Match
+     const customer = customers[cauldronIndex]
+     if (!customer || customer.id !== customerId) return
 
      // Verify match (should be guaranteed by UI allowing drag, but double check)
-     if (customers[customerIndex].request.term !== cauldron.targetSentence?.term) return
+     if (customer.request.term !== cauldron.targetSentence?.term) return
 
      // Update Customer
      const nextCustomers = [...customers]
-     nextCustomers[customerIndex] = { ...nextCustomers[customerIndex], state: 'LEAVING_HAPPY', leaveTimer: LEAVE_DURATION }
+     // We replace the customer object in the slot with updated state
+     nextCustomers[cauldronIndex] = { ...customer, state: 'LEAVING_HAPPY', leaveTimer: LEAVE_DURATION }
 
      // Remove words from pool
-     const wordsToRemove = customers[customerIndex].request.term.split(' ')
+     const wordsToRemove = customer.request.term.split(' ')
      let nextActiveWordPool = [...activeWordPool]
      wordsToRemove.forEach(word => {
          const idx = nextActiveWordPool.indexOf(word)

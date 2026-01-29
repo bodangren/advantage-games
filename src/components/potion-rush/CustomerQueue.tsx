@@ -49,16 +49,20 @@ export default function CustomerQueue({ y, width }: CustomerQueueProps) {
 
   return (
     <Group y={y}>
-        {customers.map((customer, i) => (
-             <SingleCustomer 
-                key={customer.id} 
-                customer={customer} 
-                x={slotWidth * i + slotWidth / 2} 
-                y={0} 
-                sheet={images[CUSTOMER_ASSETS[customer.type].sheetKey]}
-                row={CUSTOMER_ASSETS[customer.type].row}
-             />
-        ))}
+        {customers.map((customer, i) => {
+             if (!customer) return null
+             
+             return (
+                 <SingleCustomer 
+                    key={customer.id} 
+                    customer={customer} 
+                    x={slotWidth * i + slotWidth / 2} 
+                    y={0} 
+                    sheet={images[CUSTOMER_ASSETS[customer.type].sheetKey]}
+                    row={CUSTOMER_ASSETS[customer.type].row}
+                 />
+             )
+        })}
     </Group>
   )
 }
