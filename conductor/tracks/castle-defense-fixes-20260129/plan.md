@@ -41,7 +41,7 @@ Before starting ANY phase, the implementer MUST:
   sentenceWords: string[]  // parsed words in order
   collectedWordIndices: number[]  // which words collected so far
   ```
-- [ ] Sub-task: Update `createCastleDefenseState()` to initialize with first sentence
+- [x] Sub-task: Update `createCastleDefenseState()` to initialize with first sentence 1cb0a1e
 - [ ] Sub-task: Update `advanceCastleDefenseTime()` to spawn sentence words instead of translation orbs
 - [ ] Sub-task: Write tests for updated state initialization
 - [ ] Sub-task: Run tests
