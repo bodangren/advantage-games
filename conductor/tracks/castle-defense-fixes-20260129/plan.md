@@ -256,7 +256,7 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 6: Six Unique Maps and Win Condition
 
 ### Task 6.1: Define map configurations
-- [ ] Sub-task: Create `MAP_CONFIGS` constant in `src/lib/castleDefense.ts`:
+- [x] Sub-task: Create `MAP_CONFIGS` constant in `src/lib/castleDefense.ts`: a2829a9
   ```typescript
   export const MAP_CONFIGS = [
     {
@@ -268,18 +268,18 @@ Before starting ANY phase, the implementer MUST:
     // ... 5 more map configs
   ]
   ```
-- [ ] Sub-task: Design 6 unique paths (varying difficulty, length, curves)
-- [ ] Sub-task: Position 3-5 tower slots per map
-- [ ] Sub-task: Write tests for map config retrieval
+- [x] Sub-task: Design 6 unique paths (varying difficulty, length, curves) a2829a9
+- [x] Sub-task: Position 3-5 tower slots per map a2829a9
+- [x] Sub-task: Write tests for map config retrieval a2829a9
 
 **Verification**: All 6 maps defined, tests pass. ✅
 
 ### Task 6.2: Load map based on current wave
-- [ ] Sub-task: Write tests for `loadMapForWave(wave): MapConfig`
-- [ ] Sub-task: Implement `loadMapForWave()` function
-- [ ] Sub-task: Update `createCastleDefenseState()` to load map for wave 1
-- [ ] Sub-task: Update wave transition to load next map
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for `loadMapForWave(wave): MapConfig` a2829a9
+- [x] Sub-task: Implement `loadMapForWave()` function a2829a9
+- [x] Sub-task: Update `createCastleDefenseState()` to load map for wave 1 a2829a9
+- [x] Sub-task: Update wave transition to load next map a2829a9
+- [x] Sub-task: Run tests a2829a9
 
 **Verification**: All tests pass, maps load correctly. ✅
 
