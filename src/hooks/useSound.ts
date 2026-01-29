@@ -9,11 +9,7 @@ declare global {
 }
 
 export function useSound() {
-  const playSound = useCallback((type: 'success' | 'error' | 'missile-hit') => {
-    // In a real browser environment, we would load and play audio files.
-    // For this sandbox, we'll implement a simple placeholder using the Web Audio API 
-    // to generate simple beep sounds if possible, or just log.
-    
+  const playSynth = useCallback((type: 'success' | 'error' | 'missile-hit' | 'bubbling' | 'clinking' | 'angry-grunt' | 'cash-register') => {
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext
       if (!AudioContextClass) return
@@ -25,32 +21,50 @@ export function useSound() {
       oscillator.connect(gainNode)
       gainNode.connect(ctx.destination)
 
-      if (type === 'success') {
+      if (type === 'success' || type === 'cash-register') {
         oscillator.type = 'sine'
         oscillator.frequency.setValueAtTime(880, ctx.currentTime) // A5
         gainNode.gain.setValueAtTime(0.1, ctx.currentTime)
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.1)
         oscillator.start()
         oscillator.stop(ctx.currentTime + 0.1)
-      } else if (type === 'error') {
+      } else if (type === 'error' || type === 'angry-grunt') {
         oscillator.type = 'square'
         oscillator.frequency.setValueAtTime(220, ctx.currentTime) // A3
         gainNode.gain.setValueAtTime(0.1, ctx.currentTime)
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2)
         oscillator.start()
         oscillator.stop(ctx.currentTime + 0.2)
-      } else if (type === 'missile-hit') {
+      } else if (type === 'missile-hit' || type === 'bubbling') {
         oscillator.type = 'sawtooth'
         oscillator.frequency.setValueAtTime(110, ctx.currentTime) // A2
         gainNode.gain.setValueAtTime(0.2, ctx.currentTime)
         gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3)
         oscillator.start()
         oscillator.stop(ctx.currentTime + 0.3)
+      } else if (type === 'clinking') {
+        oscillator.type = 'sine'
+        oscillator.frequency.setValueAtTime(1320, ctx.currentTime) // E6
+        gainNode.gain.setValueAtTime(0.05, ctx.currentTime)
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05)
+        oscillator.start()
+        oscillator.stop(ctx.currentTime + 0.05)
       }
     } catch (e) {
-      console.warn('Audio play failed', e)
+      console.warn('Audio synth failed', e)
     }
   }, [])
+
+  const playSound = useCallback((type: 'success' | 'error' | 'missile-hit' | 'bubbling' | 'clinking' | 'angry-grunt' | 'cash-register') => {
+    // Try to play file first
+    const audio = new Audio(`/sounds/${type}.mp3`)
+    audio.volume = 0.5
+    
+    audio.play().catch(() => {
+      // Fallback to synth if file missing or play blocked
+      playSynth(type)
+    })
+  }, [playSynth])
 
   return { playSound }
 }

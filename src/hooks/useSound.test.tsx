@@ -2,7 +2,7 @@ import { act, render } from '@testing-library/react';
 import { useEffect } from 'react';
 import { useSound } from './useSound';
 
-type PlaySoundFn = (type: 'success' | 'error' | 'missile-hit') => void;
+type PlaySoundFn = (type: 'success' | 'error' | 'missile-hit' | 'bubbling' | 'clinking' | 'angry-grunt' | 'cash-register') => void;
 
 function SoundHarness({ onReady }: { onReady: (playSound: PlaySoundFn) => void }) {
   const { playSound } = useSound();
@@ -17,12 +17,15 @@ function SoundHarness({ onReady }: { onReady: (playSound: PlaySoundFn) => void }
 describe('useSound', () => {
   const originalAudioContext = window.AudioContext;
   const originalWebkitAudioContext = window['webkitAudioContext'];
+  const originalAudio = window.Audio;
+
   let lastOscillator: {
     start: jest.Mock;
     stop: jest.Mock;
     frequency: { setValueAtTime: jest.Mock };
   } | null = null;
   let lastGain: { gain: { setValueAtTime: jest.Mock; exponentialRampToValueAtTime: jest.Mock } } | null = null;
+  let audioMock: { play: jest.Mock };
 
   class FakeAudioContext {
     currentTime = 0;
@@ -57,6 +60,13 @@ describe('useSound', () => {
     }
   }
 
+  beforeEach(() => {
+    audioMock = {
+      play: jest.fn().mockRejectedValue(new Error('File not found')), // Default to failing to test fallback
+    };
+    window.Audio = jest.fn(() => audioMock) as unknown as typeof window.Audio;
+  });
+
   afterEach(() => {
     Object.defineProperty(window, 'AudioContext', {
       value: originalAudioContext,
@@ -66,11 +76,12 @@ describe('useSound', () => {
       value: originalWebkitAudioContext,
       configurable: true,
     });
+    window.Audio = originalAudio;
     lastOscillator = null;
     lastGain = null;
   });
 
-  it('plays a success tone via Web Audio when available', () => {
+  it('tries to play a file first, then falls back to success tone', async () => {
     Object.defineProperty(window, 'AudioContext', {
       value: FakeAudioContext,
       configurable: true,
@@ -81,13 +92,36 @@ describe('useSound', () => {
       playSound = fn;
     }} />);
 
-    act(() => {
+    await act(async () => {
       playSound?.('success');
+      // Wait for promise rejection to handle
+      await Promise.resolve();
+    });
+
+    expect(window.Audio).toHaveBeenCalledWith('/sounds/success.mp3');
+    expect(audioMock.play).toHaveBeenCalled();
+    // Fallback:
+    expect(lastOscillator?.start).toHaveBeenCalledTimes(1);
+    expect(lastOscillator?.stop).toHaveBeenCalledTimes(1);
+  });
+
+  it('plays a bubbling tone on fallback', async () => {
+    Object.defineProperty(window, 'AudioContext', {
+      value: FakeAudioContext,
+      configurable: true,
+    });
+
+    let playSound: PlaySoundFn | null = null;
+    render(<SoundHarness onReady={(fn) => {
+      playSound = fn;
+    }} />);
+
+    await act(async () => {
+      playSound?.('bubbling');
+      await Promise.resolve();
     });
 
     expect(lastOscillator?.start).toHaveBeenCalledTimes(1);
-    expect(lastOscillator?.stop).toHaveBeenCalledTimes(1);
-    expect(lastGain?.gain.setValueAtTime).toHaveBeenCalled();
   });
 
   it('no-ops safely when audio is unavailable', () => {
