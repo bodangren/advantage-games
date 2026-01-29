@@ -340,33 +340,55 @@ export function movePlayer(
 export function spawnEnemy(
   path: Waypoint[],
   wave: number,
-  random: () => number = Math.random
+  random: () => number = Math.random,
+  waveConfig?: { soldiers: number; tanks: number; bosses: number },
+  enemiesSpawnedThisWave: number = 0
 ): Enemy {
-  // Determine enemy type based on wave and randomness
-  const roll = random()
   let type: EnemyType
   let hp: number
   let speed: number
   let radius: number
 
-  if (wave >= 5 && roll < 0.1) {
-    // Boss: 10% chance after wave 5
-    type = 'boss'
-    hp = ENEMY_BOSS_HP
-    speed = ENEMY_BOSS_SPEED
-    radius = ENEMY_BOSS_RADIUS
-  } else if (wave >= 2 && roll < 0.3) {
-    // Tank: 30% chance after wave 2
-    type = 'tank'
-    hp = ENEMY_TANK_HP
-    speed = ENEMY_TANK_SPEED
-    radius = ENEMY_TANK_RADIUS
+  if (waveConfig) {
+    const bossStart = waveConfig.soldiers + waveConfig.tanks
+    if (enemiesSpawnedThisWave >= bossStart) {
+      type = 'boss'
+      hp = ENEMY_BOSS_HP
+      speed = ENEMY_BOSS_SPEED
+      radius = ENEMY_BOSS_RADIUS
+    } else if (enemiesSpawnedThisWave >= waveConfig.soldiers) {
+      type = 'tank'
+      hp = ENEMY_TANK_HP
+      speed = ENEMY_TANK_SPEED
+      radius = ENEMY_TANK_RADIUS
+    } else {
+      type = 'soldier'
+      hp = ENEMY_SOLDIER_HP
+      speed = ENEMY_SOLDIER_SPEED
+      radius = ENEMY_SOLDIER_RADIUS
+    }
   } else {
-    // Soldier: default
-    type = 'soldier'
-    hp = ENEMY_SOLDIER_HP
-    speed = ENEMY_SOLDIER_SPEED
-    radius = ENEMY_SOLDIER_RADIUS
+    // Determine enemy type based on wave and randomness (legacy behavior)
+    const roll = random()
+    if (wave >= 5 && roll < 0.1) {
+      // Boss: 10% chance after wave 5
+      type = 'boss'
+      hp = ENEMY_BOSS_HP
+      speed = ENEMY_BOSS_SPEED
+      radius = ENEMY_BOSS_RADIUS
+    } else if (wave >= 2 && roll < 0.3) {
+      // Tank: 30% chance after wave 2
+      type = 'tank'
+      hp = ENEMY_TANK_HP
+      speed = ENEMY_TANK_SPEED
+      radius = ENEMY_TANK_RADIUS
+    } else {
+      // Soldier: default
+      type = 'soldier'
+      hp = ENEMY_SOLDIER_HP
+      speed = ENEMY_SOLDIER_SPEED
+      radius = ENEMY_SOLDIER_RADIUS
+    }
   }
 
   // Spawn at first waypoint (off-screen)
@@ -941,9 +963,19 @@ export function advanceCastleDefenseTime(
 
   // 10. Spawn enemies
   let spawnTimer = state.spawnTimer + dt
+  let enemiesSpawnedThisWave = state.enemiesSpawnedThisWave
+  let enemiesKilledThisWave = state.enemiesKilledThisWave + Math.max(0, Math.floor(enemiesKilled))
+  const waveConfig = WAVE_CONFIGS[state.wave - 1]
+
   if (spawnTimer >= SPAWN_RATE_MS && enemies.length < MAX_ENEMIES) {
-    enemies = [...enemies, spawnEnemy(state.path, state.wave)]
-    spawnTimer = 0
+    if (enemiesSpawnedThisWave < state.totalEnemiesThisWave) {
+      enemies = [
+        ...enemies,
+        spawnEnemy(state.path, state.wave, Math.random, waveConfig, enemiesSpawnedThisWave),
+      ]
+      enemiesSpawnedThisWave += 1
+      spawnTimer = 0
+    }
   }
 
   // 11. Respawn words if all collected
@@ -970,6 +1002,8 @@ export function advanceCastleDefenseTime(
     base,
     score,
     spawnTimer,
+    enemiesSpawnedThisWave,
+    enemiesKilledThisWave,
     gameTime,
   }
 }

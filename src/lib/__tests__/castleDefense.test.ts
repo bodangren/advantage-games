@@ -373,7 +373,11 @@ describe('castleDefense', () => {
     })
 
     it('should spawn enemies after spawn timer', () => {
-      const state = { ...createCastleDefenseState(vocabulary), spawnTimer: SPAWN_RATE_MS - 10 }
+      const state = { 
+        ...createCastleDefenseState(vocabulary), 
+        spawnTimer: SPAWN_RATE_MS - 10,
+        totalEnemiesThisWave: 10,
+      }
       const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
       expect(nextState.enemies.length).toBeGreaterThan(0)
     })
@@ -385,6 +389,45 @@ describe('castleDefense', () => {
       }
       const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
       expect(nextState.status).toBe('gameover')
+    })
+
+    it('stops spawning when wave spawn quota is reached', () => {
+      const state = {
+        ...createCastleDefenseState(vocabulary),
+        spawnTimer: SPAWN_RATE_MS,
+        enemiesSpawnedThisWave: 3,
+        totalEnemiesThisWave: 3,
+      }
+
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.enemiesSpawnedThisWave).toBe(3)
+      expect(nextState.enemies.length).toBe(0)
+    })
+
+    it('increments spawned count when enemy spawns', () => {
+      const state = {
+        ...createCastleDefenseState(vocabulary),
+        spawnTimer: SPAWN_RATE_MS,
+        enemiesSpawnedThisWave: 0,
+        totalEnemiesThisWave: 2,
+      }
+
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.enemiesSpawnedThisWave).toBe(1)
+      expect(nextState.enemies.length).toBe(1)
+    })
+
+    it('spawns tank enemies when wave config includes tanks', () => {
+      const state = {
+        ...createCastleDefenseState(vocabulary),
+        wave: 2,
+        spawnTimer: SPAWN_RATE_MS,
+        enemiesSpawnedThisWave: WAVE_CONFIGS[1].soldiers,
+        totalEnemiesThisWave: WAVE_CONFIGS[1].soldiers + 1,
+      }
+
+      const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
+      expect(nextState.enemies[0]?.type).toBe('tank')
     })
 
     it('marks sentence complete and awards points when all words are collected', () => {
