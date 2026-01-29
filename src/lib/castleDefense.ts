@@ -417,6 +417,15 @@ export function inRange(
   return (dx * dx + dy * dy) < (range * range)
 }
 
+// Parse an English sentence into individual words
+export function parseSentenceWords(sentence: string): string[] {
+  return sentence
+    .trim()
+    .split(/\s+/)
+    .map(word => word.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, ''))
+    .filter(word => word.length > 0)
+}
+
 // Check if player collects any words
 export function collectWords(
   player: Player,

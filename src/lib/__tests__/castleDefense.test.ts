@@ -9,9 +9,28 @@ import {
   PLAYER_RADIUS,
   BASE_HP,
   SPAWN_RATE_MS,
+  parseSentenceWords,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
+  describe('parseSentenceWords', () => {
+    it('splits a sentence into words', () => {
+      expect(parseSentenceWords('The cat sits')).toEqual(['The', 'cat', 'sits'])
+    })
+
+    it('returns empty array for empty string', () => {
+      expect(parseSentenceWords('')).toEqual([])
+    })
+
+    it('handles multiple spaces', () => {
+      expect(parseSentenceWords('The   cat   sits')).toEqual(['The', 'cat', 'sits'])
+    })
+
+    it('strips common punctuation', () => {
+      expect(parseSentenceWords('Hello, world!')).toEqual(['Hello', 'world'])
+    })
+  })
+
   describe('createCastleDefenseState', () => {
     it('should create valid initial state with empty vocabulary', () => {
       const state = createCastleDefenseState([])
