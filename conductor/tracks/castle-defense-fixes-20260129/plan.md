@@ -34,7 +34,7 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 1.3: Update game state to use sentences
-- [ ] Sub-task: Add new fields to `CastleDefenseState`:
+- [x] Sub-task: Add new fields to `CastleDefenseState`: f7f30c3
   ```typescript
   currentSentenceThai: string
   currentSentenceEnglish: string
