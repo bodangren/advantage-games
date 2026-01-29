@@ -130,6 +130,10 @@ export type CastleDefenseState = {
   spawnTimer: number
   gameTime: number
   targetWord: string  // current word player should collect
+  currentSentenceThai: string
+  currentSentenceEnglish: string
+  sentenceWords: string[]
+  collectedWordIndices: number[]
   grassMap: number[][] // 16x12 array of grass variant indices
 }
 
@@ -266,6 +270,10 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     spawnTimer: 0,
     gameTime: 0,
     targetWord: targetItem.translation,
+    currentSentenceThai: '',
+    currentSentenceEnglish: '',
+    sentenceWords: [],
+    collectedWordIndices: [],
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
     ),
