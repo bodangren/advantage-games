@@ -65,6 +65,9 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 })
   const [hasStarted, setHasStarted] = useState(false)
+  const [buildEffects, setBuildEffects] = useState<
+    { id: string; x: number; y: number; createdAt: number }[]
+  >([])
 
   // Animation frames
   const [playerFrame, setPlayerFrame] = useState(0)
@@ -72,6 +75,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null)
+  const previousTowerIds = useRef<string[]>([])
 
   // Input
   const { input, setVirtualInput, consumeCast } = useDirectionalInput()
@@ -112,6 +116,27 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     load()
     return () => { mounted = false }
   }, [])
+
+  useEffect(() => {
+    if (!gameState) return
+    const currentIds = gameState.towers.map(tower => tower.id)
+    const newTowers = gameState.towers.filter(tower => !previousTowerIds.current.includes(tower.id))
+
+    if (newTowers.length > 0) {
+      const now = Date.now()
+      setBuildEffects(prev => [
+        ...prev,
+        ...newTowers.map(tower => ({
+          id: `${tower.id}-${now}`,
+          x: tower.x,
+          y: tower.y,
+          createdAt: now,
+        })),
+      ])
+    }
+
+    previousTowerIds.current = currentIds
+  }, [gameState?.towers])
 
   // ============================================
   // RESPONSIVE CONTAINER
@@ -190,6 +215,12 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
       setEnemyFrame(f => (f + 1) % 3)
     }
   }, ANIMATION_FRAME_MS)
+
+  useInterval(() => {
+    setBuildEffects(prev =>
+      prev.filter(effect => Date.now() - effect.createdAt < 600)
+    )
+  }, buildEffects.length > 0 ? 100 : null)
 
   // Memoize sprite grids
   const grids = useMemo(() => {
@@ -340,6 +371,24 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
                 />
               </Group>
             ))}
+
+            {/* Tower build effects */}
+            {buildEffects.map(effect => {
+              const age = Date.now() - effect.createdAt
+              const progress = Math.min(age / 600, 1)
+              const radius = TILE_SIZE * (0.6 + progress * 0.8)
+              const opacity = 1 - progress
+              return (
+                <Circle
+                  key={effect.id}
+                  x={effect.x}
+                  y={effect.y}
+                  radius={radius}
+                  stroke={`rgba(34, 197, 94, ${opacity})`}
+                  strokeWidth={3}
+                />
+              )
+            })}
 
             {/* Base (Castle) */}
             <KonvaImage
