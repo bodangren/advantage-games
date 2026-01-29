@@ -151,7 +151,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Visual inspection - tower building flow is clear and intuitive. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Tower Building Logic' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 3: Tower Building Logic' (Protocol in workflow.md)
 
 ---
 
