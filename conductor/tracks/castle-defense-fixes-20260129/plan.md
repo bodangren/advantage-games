@@ -130,17 +130,17 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 3.2: Implement tower building activation
-- [ ] Sub-task: Write tests for `buildTowerAtSlot(state, slotId): CastleDefenseState`
+- [x] Sub-task: Write tests for `buildTowerAtSlot(state, slotId): CastleDefenseState` 2ccbad5
   - Test: Creates tower at specified slot
   - Test: Consumes completed sentence (sets sentenceCompleted = false)
   - Test: Resets collectedWordIndices
   - Test: Spawns new sentence words
-- [ ] Sub-task: Implement `buildTowerAtSlot()` function
+- [x] Sub-task: Implement `buildTowerAtSlot()` function 2ccbad5
 - [ ] Sub-task: Integrate into `advanceCastleDefenseTime()`:
   - Check if player near tower base AND sentenceCompleted
   - Auto-build tower (or require input, TBD)
   - Call `buildTowerAtSlot()`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Run tests 2ccbad5
 
 **Verification**: All tests pass. ✅
 
