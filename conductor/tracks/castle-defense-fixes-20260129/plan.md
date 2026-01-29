@@ -75,12 +75,12 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 2.2: Update word collection logic
-- [ ] Sub-task: Modify `collectWords()` to validate sequential order:
+- [x] Sub-task: Modify `collectWords()` to validate sequential order: 811476e
   - Check if collected word is the next required word in sentence
   - If valid: add to `collectedWordIndices`
   - If invalid: trigger reset (handled in next task)
-- [ ] Sub-task: Write tests for updated `collectWords()` with sentence validation
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for updated `collectWords()` with sentence validation 811476e
+- [x] Sub-task: Run tests 811476e
 
 **Verification**: All tests pass. ✅
 
