@@ -13,6 +13,8 @@ import {
   BASE_HP,
   SPAWN_RATE_MS,
   WAVE_CONFIGS,
+  MAP_CONFIGS,
+  loadMapForWave,
   parseSentenceWords,
   validateWordCollection,
   resetSentenceProgress,
@@ -38,6 +40,24 @@ describe('castleDefense', () => {
 
     it('strips common punctuation', () => {
       expect(parseSentenceWords('Hello, world!')).toEqual(['Hello', 'world'])
+    })
+  })
+
+  describe('MAP_CONFIGS', () => {
+    it('defines six map configs with paths and tower slots', () => {
+      expect(MAP_CONFIGS).toHaveLength(6)
+      for (const config of MAP_CONFIGS) {
+        expect(config.path.length).toBeGreaterThan(1)
+        expect(config.towerSlots.length).toBeGreaterThanOrEqual(3)
+      }
+    })
+  })
+
+  describe('loadMapForWave', () => {
+    it('returns the map config for the requested wave', () => {
+      const config = loadMapForWave(3)
+      expect(config.wave).toBe(3)
+      expect(config.path.length).toBeGreaterThan(1)
     })
   })
 

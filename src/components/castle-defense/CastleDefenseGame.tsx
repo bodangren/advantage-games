@@ -321,7 +321,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
       {gameState && dimensions.width > 0 && dimensions.height > 0 && (
         <Stage width={dimensions.width} height={dimensions.height}>
           <Layer scaleX={camera.scale} scaleY={camera.scale} x={camera.x} y={camera.y}>
-            <BackgroundLayer grassMap={gameState.grassMap} />
+            <BackgroundLayer grassMap={gameState.grassMap} path={gameState.path} />
 
             {/* Tower slots */}
             {gameState.towerSlots.map(slot => (

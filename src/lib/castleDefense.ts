@@ -50,6 +50,13 @@ export const WAVE_CONFIGS = [
   { wave: 6, soldiers: 20, tanks: 12, bosses: 3 },
 ]
 
+export type MapConfig = {
+  wave: number
+  path: Waypoint[]
+  towerSlots: TowerSlot[]
+  basePosition: { x: number; y: number }
+}
+
 // Animation timing
 export const ANIMATION_FRAME_MS = 150
 
@@ -189,18 +196,131 @@ const DEFAULT_TOWER_SLOTS: TowerSlot[] = [
   { id: 'slot-6', x: 625, y: 175, radius: 30, targetWord: '' },
 ]
 
+export const MAP_CONFIGS: MapConfig[] = [
+  {
+    wave: 1,
+    path: [
+      { x: 75, y: 75 },
+      { x: 75, y: 525 },
+      { x: 725, y: 525 },
+      { x: 725, y: 75 },
+    ],
+    towerSlots: [
+      { id: 'w1-slot-1', x: 175, y: 425, radius: 30, targetWord: '' },
+      { id: 'w1-slot-2', x: 325, y: 425, radius: 30, targetWord: '' },
+      { id: 'w1-slot-3', x: 475, y: 425, radius: 30, targetWord: '' },
+      { id: 'w1-slot-4', x: 625, y: 425, radius: 30, targetWord: '' },
+      { id: 'w1-slot-5', x: 175, y: 175, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 75 },
+  },
+  {
+    wave: 2,
+    path: [
+      { x: 75, y: 275 },
+      { x: 525, y: 275 },
+      { x: 525, y: 75 },
+      { x: 725, y: 75 },
+      { x: 725, y: 525 },
+    ],
+    towerSlots: [
+      { id: 'w2-slot-1', x: 175, y: 175, radius: 30, targetWord: '' },
+      { id: 'w2-slot-2', x: 375, y: 175, radius: 30, targetWord: '' },
+      { id: 'w2-slot-3', x: 625, y: 175, radius: 30, targetWord: '' },
+      { id: 'w2-slot-4', x: 375, y: 425, radius: 30, targetWord: '' },
+      { id: 'w2-slot-5', x: 625, y: 425, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 525 },
+  },
+  {
+    wave: 3,
+    path: [
+      { x: 75, y: 75 },
+      { x: 725, y: 75 },
+      { x: 725, y: 275 },
+      { x: 175, y: 275 },
+      { x: 175, y: 525 },
+      { x: 725, y: 525 },
+    ],
+    towerSlots: [
+      { id: 'w3-slot-1', x: 325, y: 175, radius: 30, targetWord: '' },
+      { id: 'w3-slot-2', x: 575, y: 175, radius: 30, targetWord: '' },
+      { id: 'w3-slot-3', x: 325, y: 375, radius: 30, targetWord: '' },
+      { id: 'w3-slot-4', x: 575, y: 375, radius: 30, targetWord: '' },
+      { id: 'w3-slot-5', x: 325, y: 525, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 525 },
+  },
+  {
+    wave: 4,
+    path: [
+      { x: 725, y: 75 },
+      { x: 725, y: 525 },
+      { x: 275, y: 525 },
+      { x: 275, y: 275 },
+      { x: 525, y: 275 },
+      { x: 525, y: 375 },
+    ],
+    towerSlots: [
+      { id: 'w4-slot-1', x: 625, y: 175, radius: 30, targetWord: '' },
+      { id: 'w4-slot-2', x: 425, y: 175, radius: 30, targetWord: '' },
+      { id: 'w4-slot-3', x: 175, y: 375, radius: 30, targetWord: '' },
+      { id: 'w4-slot-4', x: 375, y: 475, radius: 30, targetWord: '' },
+      { id: 'w4-slot-5', x: 575, y: 475, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 525, y: 375 },
+  },
+  {
+    wave: 5,
+    path: [
+      { x: 75, y: 525 },
+      { x: 75, y: 175 },
+      { x: 375, y: 175 },
+      { x: 375, y: 525 },
+      { x: 725, y: 525 },
+    ],
+    towerSlots: [
+      { id: 'w5-slot-1', x: 175, y: 375, radius: 30, targetWord: '' },
+      { id: 'w5-slot-2', x: 325, y: 275, radius: 30, targetWord: '' },
+      { id: 'w5-slot-3', x: 475, y: 375, radius: 30, targetWord: '' },
+      { id: 'w5-slot-4', x: 625, y: 275, radius: 30, targetWord: '' },
+      { id: 'w5-slot-5', x: 525, y: 475, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 525 },
+  },
+  {
+    wave: 6,
+    path: [
+      { x: 75, y: 375 },
+      { x: 725, y: 375 },
+    ],
+    towerSlots: [
+      { id: 'w6-slot-1', x: 325, y: 275, radius: 30, targetWord: '' },
+      { id: 'w6-slot-2', x: 325, y: 475, radius: 30, targetWord: '' },
+      { id: 'w6-slot-3', x: 525, y: 275, radius: 30, targetWord: '' },
+      { id: 'w6-slot-4', x: 525, y: 475, radius: 30, targetWord: '' },
+      { id: 'w6-slot-5', x: 425, y: 375, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 375 },
+  },
+]
+
 /**
  * Returns road tile information for a given grid coordinate.
  */
-export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
+export function getRoadTileInfo(
+  gridX: number,
+  gridY: number,
+  path: Waypoint[] = DEFAULT_PATH
+): RoadInfo | null {
   const worldX = gridX * TILE_SIZE + TILE_SIZE / 2
   const worldY = gridY * TILE_SIZE + TILE_SIZE / 2
 
   // 1. Identify if this point is on any path segment
   let segmentIndex = -1
-  for (let i = 0; i < DEFAULT_PATH.length - 1; i++) {
-    const p1 = DEFAULT_PATH[i]
-    const p2 = DEFAULT_PATH[i + 1]
+  for (let i = 0; i < path.length - 1; i++) {
+    const p1 = path[i]
+    const p2 = path[i + 1]
     
     const minX = Math.min(p1.x, p2.x)
     const maxX = Math.max(p1.x, p2.x)
@@ -215,12 +335,12 @@ export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
   if (segmentIndex === -1) return null
 
   // 2. Check if it's a corner
-  const cornerIndex = DEFAULT_PATH.findIndex(p => p.x === worldX && p.y === worldY)
+  const cornerIndex = path.findIndex(p => p.x === worldX && p.y === worldY)
   
-  if (cornerIndex !== -1 && cornerIndex > 0 && cornerIndex < DEFAULT_PATH.length - 1) {
-    const prev = DEFAULT_PATH[cornerIndex - 1]
-    const curr = DEFAULT_PATH[cornerIndex]
-    const next = DEFAULT_PATH[cornerIndex + 1]
+  if (cornerIndex !== -1 && cornerIndex > 0 && cornerIndex < path.length - 1) {
+    const prev = path[cornerIndex - 1]
+    const curr = path[cornerIndex]
+    const next = path[cornerIndex + 1]
 
     const dx1 = Math.sign(prev.x - curr.x)
     const dy1 = Math.sign(prev.y - curr.y)
@@ -238,8 +358,8 @@ export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
   }
 
   // 3. If not corner, it's straight
-  const p1 = DEFAULT_PATH[segmentIndex]
-  const p2 = DEFAULT_PATH[segmentIndex + 1]
+  const p1 = path[segmentIndex]
+  const p2 = path[segmentIndex + 1]
   
   if (p1.x === p2.x) return { type: 'NS', rotation: 0 }
   return { type: 'EW', rotation: 0 }
@@ -255,10 +375,10 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
   const firstSentence = vocabulary[0] || { term: '', translation: '' }
   const sentenceWords = parseSentenceWords(firstSentence.term)
 
-  // Assign target words to tower slots
-  const towerSlots = DEFAULT_TOWER_SLOTS.map((slot, i) => ({
+  const mapConfig = MAP_CONFIGS[0] || { path: DEFAULT_PATH, towerSlots: DEFAULT_TOWER_SLOTS, basePosition: { x: 725, y: 75 } }
+  const towerSlots = mapConfig.towerSlots.map((slot, i) => ({
     ...slot,
-    targetWord: vocabulary[i % vocabulary.length]?.translation || 'word'
+    targetWord: vocabulary[i % vocabulary.length]?.translation || 'word',
   }))
 
   return {
@@ -277,13 +397,13 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     projectiles: [],
     words: [],
     base: {
-      x: 725,
-      y: 75,
+      x: mapConfig.basePosition.x,
+      y: mapConfig.basePosition.y,
       hp: BASE_HP,
       maxHp: BASE_HP,
       radius: BASE_RADIUS,
     },
-    path: DEFAULT_PATH,
+    path: mapConfig.path,
     score: 0,
     wave: 1,
     spawnTimer: 0,
@@ -627,6 +747,10 @@ export function buildTowerAtSlot(state: CastleDefenseState, slotId: string): Cas
     ...resetState,
     towers: [...resetState.towers, newTower],
   }
+}
+
+export function loadMapForWave(wave: number): MapConfig {
+  return MAP_CONFIGS.find(config => config.wave === wave) || MAP_CONFIGS[0]
 }
 
 // Check if the current wave is complete
@@ -1007,14 +1131,21 @@ export function advanceCastleDefenseTime(
     if (state.wave < WAVE_CONFIGS.length) {
       const nextWave = state.wave + 1
       const nextConfig = WAVE_CONFIGS[nextWave - 1]
+      const mapConfig = loadMapForWave(nextWave)
+      const nextTowerSlots = mapConfig.towerSlots.map((slot, i) => ({
+        ...slot,
+        targetWord: vocabulary[i % vocabulary.length]?.translation || 'word',
+      }))
       return {
         ...state,
         wave: nextWave,
         enemies,
-        towers,
-        projectiles,
-        words,
-        base,
+        towers: [],
+        projectiles: [],
+        words: spawnSentenceWords(state.currentSentenceEnglish),
+        base: { ...base, x: mapConfig.basePosition.x, y: mapConfig.basePosition.y },
+        path: mapConfig.path,
+        towerSlots: nextTowerSlots,
         score,
         spawnTimer: 0,
         gameTime,
