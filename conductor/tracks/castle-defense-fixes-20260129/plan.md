@@ -116,16 +116,16 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 3: Tower Building Logic
 
 ### Task 3.1: Implement tower building mechanics
-- [ ] Sub-task: Update game state to track tower building:
+- [x] Sub-task: Update game state to track tower building: 3ef296b
   ```typescript
   sentenceCompleted: boolean  // true when player completes a sentence
   ```
-- [ ] Sub-task: Write tests for `canBuildTower(state): boolean`
+- [x] Sub-task: Write tests for `canBuildTower(state): boolean` 4d69d41
   - Test: Returns true if sentence completed and near tower base
   - Test: Returns false if sentence not completed
   - Test: Returns false if not near tower base
-- [ ] Sub-task: Implement `canBuildTower()` in `src/lib/castleDefense.ts`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `canBuildTower()` in `src/lib/castleDefense.ts` 4d69d41
+- [x] Sub-task: Run tests 4d69d41
 
 **Verification**: All tests pass. ✅
 
