@@ -96,15 +96,15 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 2.4: Implement sentence completion logic
-- [ ] Sub-task: Create `isSentenceComplete(collectedIndices, totalWords): boolean`
-- [ ] Sub-task: Write tests for sentence completion check
-- [ ] Sub-task: Add `sentenceCompleted` boolean field to `CastleDefenseState`
-- [ ] Sub-task: Update `advanceCastleDefenseTime()` to:
+- [x] Sub-task: Create `isSentenceComplete(collectedIndices, totalWords): boolean` 3ef296b
+- [x] Sub-task: Write tests for sentence completion check 3ef296b
+- [x] Sub-task: Add `sentenceCompleted` boolean field to `CastleDefenseState` 3ef296b
+- [x] Sub-task: Update `advanceCastleDefenseTime()` to: 3ef296b
   - Check if sentence complete
   - Set `sentenceCompleted = true` (enables tower building)
   - Award points (e.g., 50 points per completed sentence)
-- [ ] Sub-task: Write tests for sentence completion flow
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for sentence completion flow 3ef296b
+- [x] Sub-task: Run tests 3ef296b
 
 **Verification**: All tests pass. ✅
 
