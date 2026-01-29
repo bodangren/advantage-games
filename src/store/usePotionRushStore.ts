@@ -55,7 +55,7 @@ interface PotionRushState {
   // Game Status
   gameState: GameState
   score: number
-  lives: number // Shop reputation?
+  reputation: number // 0-100%
   dayTime: number // 0 to 1 (Day progress)
 
   // Entities
@@ -65,9 +65,14 @@ interface PotionRushState {
   effects: PotionRushEffect[]
   
   // Settings / Config
+  baseBeltSpeed: number
   beltSpeed: number
   spawnRate: number
   
+  // Logic State
+  activeWordPool: string[]
+  completedSentences: number
+
   // Actions
   startGame: () => void
   pauseGame: () => void
@@ -113,7 +118,7 @@ const EFFECT_DURATIONS: Record<PotionRushEffectType, number> = {
 export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   gameState: 'MENU',
   score: 0,
-  lives: 3,
+  reputation: 100,
   dayTime: 0,
   
   cauldrons: [
@@ -125,17 +130,24 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   conveyorItems: [],
   effects: [],
   
-  beltSpeed: 100, // Pixels per second
+  baseBeltSpeed: 50,
+  beltSpeed: 50, // Pixels per second
   spawnRate: 2000, // ms
+  
+  activeWordPool: [],
+  completedSentences: 0,
   
   startGame: () => set({
       gameState: 'PLAYING',
       score: 0,
-      lives: 3,
+      reputation: 100,
       dayTime: 0,
       customers: [],
       conveyorItems: [],
       effects: [],
+      activeWordPool: [],
+      completedSentences: 0,
+      beltSpeed: 50,
       cauldrons: [
         { id: 0, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
         { id: 1, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
@@ -152,11 +164,14 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       customers: [],
       conveyorItems: [],
       effects: [],
-      score: 0
+      score: 0,
+      reputation: 100,
+      activeWordPool: [],
+      completedSentences: 0
   }),
 
   spawnCustomer: (vocabList) => {
-      const { customers, gameState } = get()
+      const { customers, gameState, activeWordPool } = get()
       if (gameState !== 'PLAYING') return
       if (customers.length >= MAX_CUSTOMERS) return
 
@@ -174,7 +189,12 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           leaveTimer: undefined
       }
 
-      set({ customers: [...customers, newCustomer] })
+      // Add words to active pool
+      const newWords = randomVocab.term.split(' ')
+      set({ 
+          customers: [...customers, newCustomer],
+          activeWordPool: [...activeWordPool, ...newWords]
+      })
   },
 
   spawnIngredient: (vocabList, screenWidth) => {
@@ -202,16 +222,24 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   },
 
   tick: (dt) => {
-      const { gameState, conveyorItems, beltSpeed, customers, dayTime, lives, effects } = get()
+      const { gameState, conveyorItems, beltSpeed, customers, dayTime, reputation, effects, activeWordPool, baseBeltSpeed, completedSentences } = get()
       if (gameState !== 'PLAYING') return
 
+      // Calculate speed
+      const targetSpeed = baseBeltSpeed * Math.pow(1.1, completedSentences)
+
       // 1. Move Conveyor Items
+      // Use targetSpeed instead of beltSpeed? Or stick to beltSpeed in state?
+      // Let's use targetSpeed for movement and update state.
+      
       const nextItems = conveyorItems
-        .map(item => item.isDragging ? item : ({ ...item, x: item.x - (beltSpeed * dt) }))
+        .map(item => item.isDragging ? item : ({ ...item, x: item.x - (targetSpeed * dt) }))
         .filter(item => item.x > -200) // Despawn off-screen
 
       // 2. Update Customer Patience
-      let nextLives = lives
+      let nextReputation = reputation
+      let wordsToRemove: string[] = []
+
       const nextCustomers = customers
         .map(c => {
           if (c.state !== 'WAITING') {
@@ -221,15 +249,23 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           
           const newPatience = c.patience - dt
           if (newPatience <= 0) {
-             nextLives -= 1
+             nextReputation -= 25
+             wordsToRemove.push(...c.request.term.split(' '))
              return { ...c, patience: 0, state: 'LEAVING_ANGRY' as const, leaveTimer: LEAVE_DURATION }
           }
           return { ...c, patience: newPatience }
         })
         .filter(c => c.state === 'WAITING' || (c.leaveTimer ?? 0) > 0)
 
-      // Remove fully left customers (simple logic for now, usually animation handles this)
-      // For now, let's keep them in state marked LEAVING until UI cleans them up or we add a cleanup phase
+      // Update activeWordPool
+      let nextActiveWordPool = activeWordPool
+      if (wordsToRemove.length > 0) {
+          nextActiveWordPool = [...activeWordPool]
+          wordsToRemove.forEach(word => {
+               const idx = nextActiveWordPool.indexOf(word)
+               if (idx > -1) nextActiveWordPool.splice(idx, 1)
+          })
+      }
 
       // 3. Update Day Time
       const nextDayTime = dayTime + (dt * 0.01) // slow day progression
@@ -238,15 +274,17 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
         .map(effect => ({ ...effect, age: effect.age + dt }))
         .filter(effect => effect.age < effect.duration)
       
-      if (nextLives <= 0 || nextDayTime >= 1) {
-          set({ gameState: 'GAME_OVER', lives: nextLives, effects: nextEffects })
+      if (nextReputation <= 0 || nextDayTime >= 1) {
+          set({ gameState: 'GAME_OVER', reputation: nextReputation, effects: nextEffects })
       } else {
           set({
             conveyorItems: nextItems,
             customers: nextCustomers,
-            lives: nextLives,
+            reputation: nextReputation,
             dayTime: nextDayTime,
             effects: nextEffects,
+            activeWordPool: nextActiveWordPool,
+            beltSpeed: targetSpeed
           })
       }
   },
@@ -336,7 +374,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   },
 
   handleServeCustomer: (customerId, cauldronIndex, servePosition) => {
-     const { customers, cauldrons, score } = get()
+     const { customers, cauldrons, score, activeWordPool } = get()
      const cauldron = cauldrons[cauldronIndex]
      
      if (cauldron.state !== 'COMPLETED') return
@@ -351,6 +389,14 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
      const nextCustomers = [...customers]
      nextCustomers[customerIndex] = { ...nextCustomers[customerIndex], state: 'LEAVING_HAPPY', leaveTimer: LEAVE_DURATION }
 
+     // Remove words from pool
+     const wordsToRemove = customers[customerIndex].request.term.split(' ')
+     let nextActiveWordPool = [...activeWordPool]
+     wordsToRemove.forEach(word => {
+         const idx = nextActiveWordPool.indexOf(word)
+         if (idx > -1) nextActiveWordPool.splice(idx, 1)
+     })
+
      // Reset Cauldron
      const nextCauldrons = [...cauldrons]
      nextCauldrons[cauldronIndex] = {
@@ -361,7 +407,13 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
          shake: false
      }
 
-     set({ customers: nextCustomers, cauldrons: nextCauldrons, score: score + 100 })
+     set({ 
+         customers: nextCustomers, 
+         cauldrons: nextCauldrons, 
+         score: score + 100, 
+         activeWordPool: nextActiveWordPool,
+         completedSentences: get().completedSentences + 1
+     })
 
      if (servePosition) {
        get().spawnEffect('SUCCESS', servePosition.x, servePosition.y)
