@@ -5,7 +5,7 @@ import type React from 'react'
 
 type KonvaBaseProps = React.PropsWithChildren<Record<string, unknown>>
 type CircleProps = KonvaBaseProps & { fill?: string; stroke?: string; radius?: number }
-type TextProps = KonvaBaseProps & { text?: string }
+type TextProps = KonvaBaseProps & { text?: string; offsetX?: number }
 
 jest.mock('react-konva', () => ({
   Stage: ({ children }: KonvaBaseProps) => <div data-testid="stage">{children}</div>,
@@ -15,7 +15,9 @@ jest.mock('react-konva', () => ({
   ),
   Rect: () => <div data-testid="rect" />,
   Image: () => <div data-testid="image" />,
-  Text: ({ text }: TextProps) => <span>{text}</span>,
+  Text: ({ text, offsetX }: TextProps) => (
+    <span data-offset-x={offsetX}>{text}</span>
+  ),
   Group: ({ children }: KonvaBaseProps) => <div>{children}</div>,
 }))
 
@@ -99,6 +101,30 @@ describe('CastleDefenseGame', () => {
     const circles = screen.getAllByTestId('circle')
     const whiteCircles = circles.filter(circle => circle.getAttribute('data-fill') === 'white')
     expect(whiteCircles.length).toBeGreaterThan(0)
+
+    jest.useRealTimers()
+  })
+
+  it('centers word text with a length-based offset', async () => {
+    jest.useFakeTimers()
+
+    render(<CastleDefenseGame vocabulary={vocabulary} onComplete={jest.fn()} />)
+    await act(async () => {
+      jest.advanceTimersByTime(1)
+    })
+
+    const startButton = screen.getByRole('button', { name: /start mission/i })
+    await act(async () => {
+      fireEvent.click(startButton)
+    })
+
+    await act(async () => {
+      jest.advanceTimersByTime(60)
+    })
+
+    const wordText = screen.getByText('hello')
+    const offsetValue = Number(wordText.getAttribute('data-offset-x'))
+    expect(offsetValue).toBeCloseTo('hello'.length * 3.5, 1)
 
     jest.useRealTimers()
   })

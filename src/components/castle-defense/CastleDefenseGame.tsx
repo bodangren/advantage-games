@@ -475,7 +475,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
                   fontSize={11}
                   fontStyle="bold"
                   fill="black"
-                  offsetX={word.radius}
+                  offsetX={word.translation.length * 3.5}
                   offsetY={word.radius}
                   width={word.radius * 2}
                   height={word.radius * 2}
