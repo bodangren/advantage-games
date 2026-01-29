@@ -5,7 +5,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 ## [x] Track: Castle Defense Game
-*Link: [./conductor/tracks/castle-defense-20260115/](./conductor/tracks/castle-defense-20260115/)*
+*Link: [./conductor/archive/castle-defense-20260115/](./conductor/archive/castle-defense-20260115/)*
 
 ---
 
@@ -15,7 +15,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Castle Defense Rewrite**
-*Link: [./conductor/tracks/castle-defense-rewrite-20260127/](./conductor/tracks/castle-defense-rewrite-20260127/)*
+*Link: [./conductor/archive/castle-defense-rewrite-20260127/](./conductor/archive/castle-defense-rewrite-20260127/)*
 *Description: Complete rewrite of Castle Defense using Wizard vs Zombie architecture for mobile performance (target: 30+ FPS)*
 *Priority: High*
 *Status: ✅ COMPLETE - Achieved 30+ FPS on mobile, architecture aligned with Wizard vs Zombie*
