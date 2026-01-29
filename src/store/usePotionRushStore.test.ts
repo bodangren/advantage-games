@@ -209,4 +209,29 @@ describe('usePotionRushStore Refinements', () => {
       expect(state.cauldrons[0].state).toBe('IDLE')
       expect(state.cauldrons[0].currentWords).toEqual([])
   })
+
+  it('should recycle words back to activeWordPool when they fall off the conveyor', () => {
+      const vocabList = [{ term: 'recycle', definition: 'desc', id: '1' }]
+
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+      })
+
+      // Spawn it (removes from pool)
+      act(() => {
+          usePotionRushStore.getState().spawnIngredient(vocabList, 1000)
+      })
+      
+      expect(usePotionRushStore.getState().activeWordPool).not.toContain('recycle')
+
+      // Move time forward enough for item to go off screen
+      // Speed starts at 50, x starts at screenWidth + 100 (1000 + 100 = 1100).
+      // Needs to go to -200. Delta = 1300. Time = 1300 / 50 = 26 seconds.
+      act(() => {
+          usePotionRushStore.getState().tick(30) 
+      })
+
+      expect(usePotionRushStore.getState().activeWordPool).toContain('recycle')
+  })
 })

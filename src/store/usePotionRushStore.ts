@@ -236,13 +236,23 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       // Calculate speed
       const targetSpeed = baseBeltSpeed * Math.pow(1.1, completedSentences)
 
-      // 1. Move Conveyor Items
-      // Use targetSpeed instead of beltSpeed? Or stick to beltSpeed in state?
-      // Let's use targetSpeed for movement and update state.
+      // 1. Move Conveyor Items & Recycle Words
+      let recycledWords: string[] = []
+      const nextItems: Ingredient[] = []
       
-      const nextItems = conveyorItems
-        .map(item => item.isDragging ? item : ({ ...item, x: item.x - (targetSpeed * dt) }))
-        .filter(item => item.x > -200) // Despawn off-screen
+      conveyorItems.forEach(item => {
+          if (item.isDragging) {
+              nextItems.push(item)
+          } else {
+              const nextX = item.x - (targetSpeed * dt)
+              if (nextX > -200) {
+                  nextItems.push({ ...item, x: nextX })
+              } else {
+                  // Despawned - recycle word
+                  recycledWords.push(item.word)
+              }
+          }
+      })
 
       // 2. Update Customer Patience
       let nextReputation = reputation
@@ -267,8 +277,27 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
       // Update activeWordPool
       let nextActiveWordPool = activeWordPool
+      
+      // Add recycled words
+      if (recycledWords.length > 0) {
+          nextActiveWordPool = [...nextActiveWordPool, ...recycledWords]
+      }
+
+      // Remove words from angry customers
       if (wordsToRemove.length > 0) {
-          nextActiveWordPool = [...activeWordPool]
+          // If recycled words were just added, we use that list.
+          // Note: If a word is recycled AND the customer leaves at the same exact tick, 
+          // we should technically remove it. 
+          // Current Logic: 
+          // 1. Recycle words (add to pool)
+          // 2. Angry customer (remove from pool)
+          // This seems correct. If customer leaves, we don't want those words anymore, even if they just fell off the belt.
+          
+          // However, we need to be careful not to mutate if we haven't already
+          if (nextActiveWordPool === activeWordPool) {
+              nextActiveWordPool = [...activeWordPool]
+          }
+          
           wordsToRemove.forEach(word => {
                const idx = nextActiveWordPool.indexOf(word)
                if (idx > -1) nextActiveWordPool.splice(idx, 1)
