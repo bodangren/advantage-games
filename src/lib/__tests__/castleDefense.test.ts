@@ -4,6 +4,7 @@ import {
   circlesCollide,
   spawnEnemy,
   advanceCastleDefenseTime,
+  collectWords,
   spawnSentenceWords,
   GAME_WIDTH,
   GAME_HEIGHT,
@@ -78,6 +79,44 @@ describe('castleDefense', () => {
 
     it('rejects collecting an already collected word', () => {
       expect(validateWordCollection([0, 1], 1, sentenceWords)).toBe(false)
+    })
+  })
+
+  describe('collectWords', () => {
+    const sentenceWords = ['The', 'cat', 'sits']
+
+    const makeWord = (index: number) => ({
+      id: `word-${index}`,
+      x: 100,
+      y: 100,
+      radius: WORD_RADIUS,
+      term: sentenceWords[index],
+      translation: sentenceWords[index],
+      isCorrect: true,
+      isCollected: false,
+      sentenceIndex: index,
+    })
+
+    it('adds the next sequential word index when collected', () => {
+      const player = { ...createCastleDefenseState([]).player, x: 100, y: 100 }
+      const words = [makeWord(0)]
+
+      const result = collectWords(player, words, sentenceWords, [])
+
+      expect(result.collectedWordIndices).toEqual([0])
+      expect(result.words[0].isCollected).toBe(true)
+      expect(result.invalidCollection).toBe(false)
+    })
+
+    it('flags invalid collection when a later word is collected', () => {
+      const player = { ...createCastleDefenseState([]).player, x: 100, y: 100 }
+      const words = [makeWord(2)]
+
+      const result = collectWords(player, words, sentenceWords, [0])
+
+      expect(result.collectedWordIndices).toEqual([0])
+      expect(result.words[0].isCollected).toBe(false)
+      expect(result.invalidCollection).toBe(true)
     })
   })
 

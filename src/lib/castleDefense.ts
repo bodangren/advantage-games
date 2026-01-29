@@ -97,6 +97,7 @@ export type Word = Entity & {
   translation: string
   isCorrect: boolean
   isCollected: boolean
+  sentenceIndex?: number
 }
 
 // Base type
@@ -462,7 +463,7 @@ export function spawnSentenceWords(
 ): Word[] {
   const sentenceWords = parseSentenceWords(sentence)
 
-  return sentenceWords.map(word => ({
+  return sentenceWords.map((word, index) => ({
     id: generateId(),
     x: WORD_RADIUS + random() * (GAME_WIDTH - WORD_RADIUS * 2),
     y: WORD_RADIUS + random() * (GAME_HEIGHT - WORD_RADIUS * 2),
@@ -471,25 +472,36 @@ export function spawnSentenceWords(
     translation: word,
     isCorrect: true,
     isCollected: false,
+    sentenceIndex: index,
   }))
 }
 
 // Check if player collects any words
 export function collectWords(
   player: Player,
-  words: Word[]
-): { player: Player; words: Word[]; collectedWord: Word | null } {
+  words: Word[],
+  sentenceWords: string[],
+  collectedWordIndices: number[]
+): { player: Player; words: Word[]; collectedWord: Word | null; collectedWordIndices: number[]; invalidCollection: boolean } {
   let collectedWord: Word | null = null
+  let invalidCollection = false
   const newInventory = [...player.inventory]
+  let updatedCollectedIndices = [...collectedWordIndices]
 
   const newWords = words.map(word => {
     if (word.isCollected) return word
 
     if (circlesCollide(player.x, player.y, player.radius, word.x, word.y, word.radius)) {
       collectedWord = word
-      // Add translation to inventory
-      newInventory.push(word.translation)
-      return { ...word, isCollected: true }
+      const wordIndex = word.sentenceIndex ?? -1
+      if (validateWordCollection(updatedCollectedIndices, wordIndex, sentenceWords)) {
+        updatedCollectedIndices = [...updatedCollectedIndices, wordIndex]
+        // Add translation to inventory (legacy tower activation)
+        newInventory.push(word.translation)
+        return { ...word, isCollected: true }
+      }
+      invalidCollection = true
+      return word
     }
 
     return word
@@ -499,6 +511,8 @@ export function collectWords(
     player: { ...player, inventory: newInventory },
     words: newWords,
     collectedWord,
+    collectedWordIndices: updatedCollectedIndices,
+    invalidCollection,
   }
 }
 
@@ -750,9 +764,10 @@ export function advanceCastleDefenseTime(
 
   // 3. Collect words
   let words = state.words
-  const collection = collectWords(player, words)
+  const collection = collectWords(player, words, state.sentenceWords, state.collectedWordIndices)
   player = collection.player
   words = collection.words
+  const collectedWordIndices = collection.collectedWordIndices
 
   // 4. Check tower activation
   let towers = state.towers
@@ -809,6 +824,7 @@ export function advanceCastleDefenseTime(
     towers,
     projectiles,
     words,
+    collectedWordIndices,
     base,
     score,
     spawnTimer,
