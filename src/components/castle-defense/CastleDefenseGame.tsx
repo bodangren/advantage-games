@@ -466,15 +466,15 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
               <Group key={word.term + word.x} x={word.x} y={word.y}>
                 <Circle
                   radius={WORD_RADIUS}
-                  fill={word.isCorrect ? '#22c55e' : '#ef4444'}
-                  stroke="white"
+                  fill="white"
+                  stroke="#111"
                   strokeWidth={2}
                 />
                 <Text
                   text={word.translation}
                   fontSize={11}
                   fontStyle="bold"
-                  fill="white"
+                  fill="black"
                   offsetX={word.radius}
                   offsetY={word.radius}
                   width={word.radius * 2}

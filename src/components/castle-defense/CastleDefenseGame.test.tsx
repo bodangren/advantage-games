@@ -4,12 +4,15 @@ import { VocabularyItem } from '@/store/useGameStore'
 import type React from 'react'
 
 type KonvaBaseProps = React.PropsWithChildren<Record<string, unknown>>
+type CircleProps = KonvaBaseProps & { fill?: string; stroke?: string; radius?: number }
 type TextProps = KonvaBaseProps & { text?: string }
 
 jest.mock('react-konva', () => ({
   Stage: ({ children }: KonvaBaseProps) => <div data-testid="stage">{children}</div>,
   Layer: ({ children }: KonvaBaseProps) => <div data-testid="layer">{children}</div>,
-  Circle: () => <div data-testid="circle" />,
+  Circle: ({ fill, stroke, radius }: CircleProps) => (
+    <div data-testid="circle" data-fill={fill} data-stroke={stroke} data-radius={radius} />
+  ),
   Rect: () => <div data-testid="rect" />,
   Image: () => <div data-testid="image" />,
   Text: ({ text }: TextProps) => <span>{text}</span>,
@@ -74,5 +77,29 @@ describe('CastleDefenseGame', () => {
   it('renders the game stage after starting', async () => {
     await startGame()
     expect(await screen.findByTestId('stage')).toBeInTheDocument()
+  })
+
+  it('renders word orbs as white circles', async () => {
+    jest.useFakeTimers()
+
+    render(<CastleDefenseGame vocabulary={vocabulary} onComplete={jest.fn()} />)
+    await act(async () => {
+      jest.advanceTimersByTime(1)
+    })
+
+    const startButton = screen.getByRole('button', { name: /start mission/i })
+    await act(async () => {
+      fireEvent.click(startButton)
+    })
+
+    await act(async () => {
+      jest.advanceTimersByTime(60)
+    })
+
+    const circles = screen.getAllByTestId('circle')
+    const whiteCircles = circles.filter(circle => circle.getAttribute('data-fill') === 'white')
+    expect(whiteCircles.length).toBeGreaterThan(0)
+
+    jest.useRealTimers()
   })
 })
