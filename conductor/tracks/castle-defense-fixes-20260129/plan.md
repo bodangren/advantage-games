@@ -23,13 +23,13 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 1.2: Create sentence word spawning logic
-- [ ] Sub-task: Write tests for `spawnSentenceWords(sentence: string, random?): Word[]`
+- [x] Sub-task: Write tests for `spawnSentenceWords(sentence: string, random?): Word[]` e5ec942
   - Test: Returns correct number of word orbs
   - Test: Each orb has one word from sentence
   - Test: All words from sentence are present
   - Test: Orbs have valid x,y positions within game bounds
-- [ ] Sub-task: Implement `spawnSentenceWords()` function
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `spawnSentenceWords()` function e5ec942
+- [x] Sub-task: Run tests e5ec942
 
 **Verification**: All tests pass. ✅
 
