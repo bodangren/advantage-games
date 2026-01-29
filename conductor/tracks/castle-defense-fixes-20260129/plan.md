@@ -209,15 +209,15 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: TypeScript check passes. ✅
 
 ### Task 5.2: Update game state for wave tracking
-- [ ] Sub-task: Add fields to `CastleDefenseState`:
+- [x] Sub-task: Add fields to `CastleDefenseState`: ca487b5
   ```typescript
   enemiesSpawnedThisWave: number  // count of enemies spawned so far
   enemiesKilledThisWave: number   // count of enemies killed
   totalEnemiesThisWave: number    // total enemies for this wave
   ```
-- [ ] Sub-task: Update `createCastleDefenseState()` to initialize wave tracking
-- [ ] Sub-task: Write tests for state initialization
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Update `createCastleDefenseState()` to initialize wave tracking ca487b5
+- [x] Sub-task: Write tests for state initialization ca487b5
+- [x] Sub-task: Run tests ca487b5
 
 **Verification**: All tests pass. ✅
 
