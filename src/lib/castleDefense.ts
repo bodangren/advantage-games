@@ -774,7 +774,7 @@ export function advanceCastleDefenseTime(
 
   // 11. Respawn words if all collected
   if (words.every(w => w.isCollected) || words.length === 0) {
-    words = spawnWords(vocabulary, state.targetWord)
+    words = spawnSentenceWords(state.currentSentenceEnglish)
   }
 
   // 12. Check game over
