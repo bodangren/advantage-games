@@ -57,8 +57,8 @@ Object.defineProperty(global.Image.prototype, 'src', {
 })
 
 const vocabulary: VocabularyItem[] = [
-  { term: 'hello', translation: 'hola' },
-  { term: 'world', translation: 'mundo' },
+  { term: 'hello world', translation: 'hola mundo' },
+  { term: 'good morning', translation: 'buenos dias' },
 ]
 
 describe('CastleDefenseGame', () => {
@@ -125,6 +125,30 @@ describe('CastleDefenseGame', () => {
     const wordText = screen.getByText('hello')
     const offsetValue = Number(wordText.getAttribute('data-offset-x'))
     expect(offsetValue).toBeCloseTo('hello'.length * 3.5, 1)
+
+    jest.useRealTimers()
+  })
+
+  it('highlights the next required word', async () => {
+    jest.useFakeTimers()
+
+    render(<CastleDefenseGame vocabulary={vocabulary} onComplete={jest.fn()} />)
+    await act(async () => {
+      jest.advanceTimersByTime(1)
+    })
+
+    const startButton = screen.getByRole('button', { name: /start mission/i })
+    await act(async () => {
+      fireEvent.click(startButton)
+    })
+
+    await act(async () => {
+      jest.advanceTimersByTime(60)
+    })
+
+    const circles = screen.getAllByTestId('circle')
+    const highlighted = circles.filter(circle => circle.getAttribute('data-fill') === '#22c55e')
+    expect(highlighted.length).toBeGreaterThan(0)
 
     jest.useRealTimers()
   })
