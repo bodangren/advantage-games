@@ -55,7 +55,7 @@
     -   Splash when dropping ingredients.
     -   Smoke/Explosion for errors.
     -   Stars/Hearts for successful service.
-- [ ] **Sound Effects:** Bubbling, Clinking, Angry grunts, Cash register ding.
+- [x] **Sound Effects:** Bubbling, Clinking, Angry grunts, Cash register ding. ba18ddc
 - [ ] **Tutorial/Start Screen:** Brief explanation of "Native Request -> Target Ingredient".
 
 ## Phase 6: Mobile Optimization
