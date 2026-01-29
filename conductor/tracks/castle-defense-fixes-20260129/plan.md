@@ -147,7 +147,7 @@ Before starting ANY phase, the implementer MUST:
 ### Task 3.3: Add visual indicator for tower building
 - [x] Sub-task: When player has completed sentence, highlight available tower bases 3842746
 - [x] Sub-task: Show "Build Tower" message when player is near a tower base 3842746
-- [ ] Sub-task: Add visual feedback when tower is built (particle effect, flash, etc.)
+- [x] Sub-task: Add visual feedback when tower is built (particle effect, flash, etc.) 5abdf0d
 
 **Verification**: Visual inspection - tower building flow is clear and intuitive. ✅
 
