@@ -42,7 +42,7 @@ Before starting ANY phase, the implementer MUST:
   collectedWordIndices: number[]  // which words collected so far
   ```
 - [x] Sub-task: Update `createCastleDefenseState()` to initialize with first sentence 1cb0a1e
-- [ ] Sub-task: Update `advanceCastleDefenseTime()` to spawn sentence words instead of translation orbs
+- [x] Sub-task: Update `advanceCastleDefenseTime()` to spawn sentence words instead of translation orbs ebb1e06
 - [ ] Sub-task: Write tests for updated state initialization
 - [ ] Sub-task: Run tests
 
