@@ -133,21 +133,21 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
 
       // Initial Spawn immediately
       spawnCustomer(vocabList)
-      spawnIngredient(vocabList, dimensions.width)
+      spawnIngredient(vocabList, VIRTUAL_WIDTH)
 
       const customerInterval = setInterval(() => {
           spawnCustomer(vocabList)
       }, 4000) // Every 4 seconds try to spawn customer
 
       const ingredientInterval = setInterval(() => {
-          spawnIngredient(vocabList, dimensions.width)
+          spawnIngredient(vocabList, VIRTUAL_WIDTH)
       }, spawnRate) 
 
       return () => {
           clearInterval(customerInterval)
           clearInterval(ingredientInterval)
       }
-  }, [gameState, spawnCustomer, spawnIngredient, vocabList, dimensions.width, spawnRate])
+  }, [gameState, spawnCustomer, spawnIngredient, vocabList, VIRTUAL_WIDTH, spawnRate])
 
   // Initial Start
   useEffect(() => {
