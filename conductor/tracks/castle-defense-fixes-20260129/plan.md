@@ -249,7 +249,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: All tests pass. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Wave System with Finite Enemies' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 5: Wave System with Finite Enemies' (Protocol in workflow.md)
 
 ---
 
