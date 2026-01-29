@@ -178,6 +178,25 @@ export type RoadInfo = {
 // Helper to generate unique IDs
 const generateId = (): string => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
+const pickRandomSentence = (
+  vocabulary: { term: string; translation: string }[],
+  currentTerm?: string,
+  random: () => number = Math.random
+): { term: string; translation: string } => {
+  if (vocabulary.length === 0) {
+    return { term: '', translation: '' }
+  }
+  let pool = vocabulary
+  if (currentTerm && vocabulary.length > 1) {
+    const filtered = vocabulary.filter(item => item.term !== currentTerm)
+    if (filtered.length > 0) {
+      pool = filtered
+    }
+  }
+  const index = Math.floor(random() * pool.length)
+  return pool[index] ?? pool[0]
+}
+
 // Default path from top-left to bottom-right (U-shape)
 export const DEFAULT_PATH: Waypoint[] = [
   { x: 75, y: 75 },
@@ -247,7 +266,7 @@ export const MAP_CONFIGS: MapConfig[] = [
       { id: 'w3-slot-2', x: 575, y: 175, radius: 30, targetWord: '' },
       { id: 'w3-slot-3', x: 325, y: 375, radius: 30, targetWord: '' },
       { id: 'w3-slot-4', x: 575, y: 375, radius: 30, targetWord: '' },
-      { id: 'w3-slot-5', x: 325, y: 525, radius: 30, targetWord: '' },
+      { id: 'w3-slot-5', x: 325, y: 475, radius: 30, targetWord: '' },
     ],
     basePosition: { x: 725, y: 525 },
   },
@@ -299,7 +318,7 @@ export const MAP_CONFIGS: MapConfig[] = [
       { id: 'w6-slot-2', x: 325, y: 475, radius: 30, targetWord: '' },
       { id: 'w6-slot-3', x: 525, y: 275, radius: 30, targetWord: '' },
       { id: 'w6-slot-4', x: 525, y: 475, radius: 30, targetWord: '' },
-      { id: 'w6-slot-5', x: 425, y: 375, radius: 30, targetWord: '' },
+      { id: 'w6-slot-5', x: 425, y: 325, radius: 30, targetWord: '' },
     ],
     basePosition: { x: 725, y: 375 },
   },
@@ -372,7 +391,7 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     ? vocabulary[Math.floor(Math.random() * vocabulary.length)]
     : { term: 'default', translation: 'default' }
 
-  const firstSentence = vocabulary[0] || { term: '', translation: '' }
+  const firstSentence = pickRandomSentence(vocabulary)
   const sentenceWords = parseSentenceWords(firstSentence.term)
 
   const mapConfig = MAP_CONFIGS[0] || { path: DEFAULT_PATH, towerSlots: DEFAULT_TOWER_SLOTS, basePosition: { x: 725, y: 75 } }
@@ -719,7 +738,11 @@ export function canBuildTower(state: CastleDefenseState): boolean {
 }
 
 // Build a tower at a specific slot and consume the completed sentence
-export function buildTowerAtSlot(state: CastleDefenseState, slotId: string): CastleDefenseState {
+export function buildTowerAtSlot(
+  state: CastleDefenseState,
+  slotId: string,
+  vocabulary: { term: string; translation: string }[]
+): CastleDefenseState {
   const slot = state.towerSlots.find(candidate => candidate.id === slotId)
   if (!slot) {
     return state
@@ -729,7 +752,9 @@ export function buildTowerAtSlot(state: CastleDefenseState, slotId: string): Cas
     return state
   }
 
-  const resetState = resetSentenceProgress(state)
+  const nextSentence = pickRandomSentence(vocabulary, state.currentSentenceEnglish)
+  const nextSentenceWords = parseSentenceWords(nextSentence.term)
+  const nextWords = spawnSentenceWords(nextSentence.term)
 
   const newTower: Tower = {
     id: `tower-${slot.id}`,
@@ -744,8 +769,18 @@ export function buildTowerAtSlot(state: CastleDefenseState, slotId: string): Cas
   }
 
   return {
-    ...resetState,
-    towers: [...resetState.towers, newTower],
+    ...state,
+    player: {
+      ...state.player,
+      inventory: [],
+    },
+    currentSentenceThai: nextSentence.translation,
+    currentSentenceEnglish: nextSentence.term,
+    sentenceWords: nextSentenceWords,
+    collectedWordIndices: [],
+    sentenceCompleted: false,
+    words: nextWords,
+    towers: [...state.towers, newTower],
   }
 }
 
@@ -1056,7 +1091,8 @@ export function advanceCastleDefenseTime(
           collectedWordIndices,
           sentenceCompleted,
         },
-        buildSlot.id
+        buildSlot.id,
+        vocabulary
       )
 
       player = buildState.player
@@ -1132,6 +1168,8 @@ export function advanceCastleDefenseTime(
       const nextWave = state.wave + 1
       const nextConfig = WAVE_CONFIGS[nextWave - 1]
       const mapConfig = loadMapForWave(nextWave)
+      const nextSentence = pickRandomSentence(vocabulary, state.currentSentenceEnglish)
+      const nextSentenceWords = parseSentenceWords(nextSentence.term)
       const nextTowerSlots = mapConfig.towerSlots.map((slot, i) => ({
         ...slot,
         targetWord: vocabulary[i % vocabulary.length]?.translation || 'word',
@@ -1142,15 +1180,18 @@ export function advanceCastleDefenseTime(
         enemies,
         towers: [],
         projectiles: [],
-        words: spawnSentenceWords(state.currentSentenceEnglish),
+        words: spawnSentenceWords(nextSentence.term),
         base: { ...base, x: mapConfig.basePosition.x, y: mapConfig.basePosition.y },
         path: mapConfig.path,
         towerSlots: nextTowerSlots,
         score,
         spawnTimer: 0,
         gameTime,
-        collectedWordIndices,
-        sentenceCompleted,
+        currentSentenceThai: nextSentence.translation,
+        currentSentenceEnglish: nextSentence.term,
+        sentenceWords: nextSentenceWords,
+        collectedWordIndices: [],
+        sentenceCompleted: false,
         enemiesSpawnedThisWave: 0,
         enemiesKilledThisWave: 0,
         totalEnemiesThisWave: nextConfig.soldiers + nextConfig.tanks + nextConfig.bosses,

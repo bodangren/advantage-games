@@ -51,6 +51,33 @@ describe('castleDefense', () => {
         expect(config.towerSlots.length).toBeGreaterThanOrEqual(3)
       }
     })
+
+    it('keeps tower slots off the road path', () => {
+      const isOnPathSegment = (
+        slot: { x: number; y: number },
+        p1: { x: number; y: number },
+        p2: { x: number; y: number }
+      ) => {
+        if (p1.x === p2.x) {
+          return slot.x === p1.x && slot.y >= Math.min(p1.y, p2.y) && slot.y <= Math.max(p1.y, p2.y)
+        }
+        if (p1.y === p2.y) {
+          return slot.y === p1.y && slot.x >= Math.min(p1.x, p2.x) && slot.x <= Math.max(p1.x, p2.x)
+        }
+        return false
+      }
+
+      for (const config of MAP_CONFIGS) {
+        for (const slot of config.towerSlots) {
+          const onPath = config.path.some((point, index) => {
+            const next = config.path[index + 1]
+            if (!next) return false
+            return isOnPathSegment(slot, point, next)
+          })
+          expect(onPath).toBe(false)
+        }
+      }
+    })
   })
 
   describe('loadMapForWave', () => {
@@ -280,24 +307,37 @@ describe('castleDefense', () => {
 
   describe('buildTowerAtSlot', () => {
     it('creates a tower, consumes sentence completion, and resets progress', () => {
-      const state = createCastleDefenseState([])
+      const vocabulary = [
+        { term: 'The cat is on the mat', translation: 'แมวอยู่บนพรม' },
+        { term: 'I like to eat apples', translation: 'ฉันชอบกินแอปเปิ้ล' },
+      ]
+      const state = createCastleDefenseState(vocabulary)
       const slot = state.towerSlots[0]
       const seededWords = spawnSentenceWords(state.currentSentenceEnglish, () => 0.5).map((word, index) => ({
         ...word,
         isCollected: index === 0,
       }))
 
-      const nextState = buildTowerAtSlot({
-        ...state,
-        sentenceCompleted: true,
-        collectedWordIndices: [0],
-        words: seededWords,
-      }, slot.id)
+      const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0)
+
+      const nextState = buildTowerAtSlot(
+        {
+          ...state,
+          sentenceCompleted: true,
+          collectedWordIndices: [0],
+          words: seededWords,
+        },
+        slot.id,
+        vocabulary
+      )
+
+      randomSpy.mockRestore()
 
       expect(nextState.towers.some(tower => tower.id === `tower-${slot.id}`)).toBe(true)
       expect(nextState.sentenceCompleted).toBe(false)
       expect(nextState.collectedWordIndices).toEqual([])
-      expect(nextState.words).toHaveLength(state.sentenceWords.length)
+      expect(nextState.currentSentenceEnglish).not.toBe(state.currentSentenceEnglish)
+      expect(nextState.words).toHaveLength(nextState.sentenceWords.length)
       expect(nextState.words.every(word => !word.isCollected)).toBe(true)
     })
   })
@@ -352,9 +392,10 @@ describe('castleDefense', () => {
       ]
       const state = createCastleDefenseState(vocab)
 
-      expect(state.currentSentenceEnglish).toBe('The cat is on the mat')
-      expect(state.currentSentenceThai).toBe('แมวอยู่บนพรม')
-      expect(state.sentenceWords).toEqual(['The', 'cat', 'is', 'on', 'the', 'mat'])
+      const chosen = vocab.find(item => item.term === state.currentSentenceEnglish)
+      expect(chosen).toBeDefined()
+      expect(state.currentSentenceThai).toBe(chosen?.translation)
+      expect(state.sentenceWords).toEqual(parseSentenceWords(state.currentSentenceEnglish))
       expect(state.collectedWordIndices).toEqual([])
       expect(state.sentenceCompleted).toBe(false)
       expect(state.enemiesSpawnedThisWave).toBe(0)
