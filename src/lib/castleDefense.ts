@@ -540,6 +540,19 @@ export function resetSentenceProgress(state: CastleDefenseState): CastleDefenseS
   }
 }
 
+// Determine if player can build a tower (sentence complete + near an empty slot)
+export function canBuildTower(state: CastleDefenseState): boolean {
+  if (!state.sentenceCompleted) {
+    return false
+  }
+
+  return state.towerSlots.some(slot => {
+    const hasTower = state.towers.some(tower => tower.id === `tower-${slot.id}`)
+    if (hasTower) return false
+    return inRange(state.player.x, state.player.y, slot.x, slot.y, 50)
+  })
+}
+
 // Check if player can activate a tower slot
 export function checkTowerActivation(
   player: Player,

@@ -16,6 +16,7 @@ import {
   validateWordCollection,
   resetSentenceProgress,
   isSentenceComplete,
+  canBuildTower,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
@@ -153,6 +154,43 @@ describe('castleDefense', () => {
 
     it('returns false when words are missing', () => {
       expect(isSentenceComplete([0, 1], 3)).toBe(false)
+    })
+  })
+
+  describe('canBuildTower', () => {
+    it('returns true when sentence is complete and player is near a tower slot', () => {
+      const state = createCastleDefenseState([])
+      const slot = state.towerSlots[0]
+      const nearState = {
+        ...state,
+        sentenceCompleted: true,
+        player: { ...state.player, x: slot.x, y: slot.y },
+      }
+
+      expect(canBuildTower(nearState)).toBe(true)
+    })
+
+    it('returns false when sentence is not complete', () => {
+      const state = createCastleDefenseState([])
+      const slot = state.towerSlots[0]
+      const nearState = {
+        ...state,
+        sentenceCompleted: false,
+        player: { ...state.player, x: slot.x, y: slot.y },
+      }
+
+      expect(canBuildTower(nearState)).toBe(false)
+    })
+
+    it('returns false when player is not near a tower slot', () => {
+      const state = createCastleDefenseState([])
+      const farState = {
+        ...state,
+        sentenceCompleted: true,
+        player: { ...state.player, x: 0, y: 0 },
+      }
+
+      expect(canBuildTower(farState)).toBe(false)
     })
   })
 
