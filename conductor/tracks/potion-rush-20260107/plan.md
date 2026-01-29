@@ -59,5 +59,5 @@
 - [x] **Tutorial/Start Screen:** Brief explanation of "Native Request -> Target Ingredient". 38fa58b
 
 ## Phase 6: Mobile Optimization
-- [ ] **Touch Controls:** Ensure drag targets are large enough.
-- [ ] **Responsive Layout:** Stack elements vertically if needed on portrait (or force landscape).
+- [x] **Touch Controls:** Ensure drag targets are large enough.
+- [x] **Responsive Layout:** Stack elements vertically if needed on portrait (or force landscape).
