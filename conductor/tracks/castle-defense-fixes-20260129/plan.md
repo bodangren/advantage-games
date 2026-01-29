@@ -49,11 +49,11 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Tests pass, TypeScript compiles without errors. ✅
 
 ### Task 1.4: Update page to use SAMPLE_SENTENCES
-- [ ] Sub-task: Open `src/app/games/castle-defense/page.tsx`
-- [ ] Sub-task: Change import from `SAMPLE_VOCABULARY` to `SAMPLE_SENTENCES`
-- [ ] Sub-task: Update import statement: `import { SAMPLE_SENTENCES } from '@/lib/sampleSentences'`
-- [ ] Sub-task: Pass `SAMPLE_SENTENCES` to `CastleDefenseGame` component
-- [ ] Sub-task: Run `npx tsc --noEmit` to verify no TypeScript errors
+- [x] Sub-task: Open `src/app/games/castle-defense/page.tsx` a687089
+- [x] Sub-task: Change import from `SAMPLE_VOCABULARY` to `SAMPLE_SENTENCES` a687089
+- [x] Sub-task: Update import statement: `import { SAMPLE_SENTENCES } from '@/lib/sampleSentences'` a687089
+- [x] Sub-task: Pass `SAMPLE_SENTENCES` to `CastleDefenseGame` component a687089
+- [x] Sub-task: Run `npx tsc --noEmit` to verify no TypeScript errors
 
 **Verification**: TypeScript check passes. ✅
 
