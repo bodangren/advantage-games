@@ -253,7 +253,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 6: Six Unique Maps and Win Condition
+## Phase 6: Six Unique Maps and Win Condition [checkpoint: 8f27455]
 
 ### Task 6.1: Define map configurations
 - [x] Sub-task: Create `MAP_CONFIGS` constant in `src/lib/castleDefense.ts`: a2829a9
@@ -313,7 +313,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Victory screen appears after wave 6 completion. ✅
 
-- [~] Task: Conductor - User Manual Verification 'Phase 6: Six Unique Maps and Win Condition' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Six Unique Maps and Win Condition' (Protocol in workflow.md) 8f27455
 
 ---
 
