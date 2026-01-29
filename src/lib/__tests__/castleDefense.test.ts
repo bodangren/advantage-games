@@ -72,6 +72,10 @@ describe('castleDefense', () => {
       expect(state.enemies).toEqual([])
       expect(state.base.hp).toBe(BASE_HP)
       expect(state.wave).toBe(1)
+      expect(state.currentSentenceEnglish).toBe('')
+      expect(state.currentSentenceThai).toBe('')
+      expect(state.sentenceWords).toEqual([])
+      expect(state.collectedWordIndices).toEqual([])
     })
 
     it('should assign target words to tower slots from vocabulary', () => {
@@ -91,6 +95,19 @@ describe('castleDefense', () => {
       const state = createCastleDefenseState(vocab)
 
       expect(state.targetWord).toBe('prueba')
+    })
+
+    it('should initialize sentence fields from first vocabulary item', () => {
+      const vocab = [
+        { term: 'The cat is on the mat', translation: 'แมวอยู่บนพรม' },
+        { term: 'I like to eat apples', translation: 'ฉันชอบกินแอปเปิ้ล' },
+      ]
+      const state = createCastleDefenseState(vocab)
+
+      expect(state.currentSentenceEnglish).toBe('The cat is on the mat')
+      expect(state.currentSentenceThai).toBe('แมวอยู่บนพรม')
+      expect(state.sentenceWords).toEqual(['The', 'cat', 'is', 'on', 'the', 'mat'])
+      expect(state.collectedWordIndices).toEqual([])
     })
   })
 
