@@ -231,4 +231,18 @@ describe('CastleDefenseGame', () => {
     expect(screen.queryByText(/inventory/i)).not.toBeInTheDocument()
   })
 
+  it('renders the virtual d-pad', async () => {
+    const dpadVocabulary: VocabularyItem[] = [
+      { term: 'The cat sits', translation: 'แมวนั่ง' },
+    ]
+
+    render(<CastleDefenseGame vocabulary={dpadVocabulary} onComplete={jest.fn()} />)
+    const startButton = await screen.findByRole('button', { name: /start mission/i })
+    await act(async () => {
+      fireEvent.click(startButton)
+    })
+
+    expect(await screen.findByTestId('virtual-dpad')).toBeInTheDocument()
+  })
+
 })

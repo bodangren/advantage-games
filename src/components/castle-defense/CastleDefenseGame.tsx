@@ -144,15 +144,28 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
   useEffect(() => {
     if (!containerRef.current) return
 
-    const observer = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect
+    const updateDimensions = (rect?: DOMRectReadOnly) => {
+      if (!containerRef.current && !rect) return
+      const { width, height } = rect ?? containerRef.current!.getBoundingClientRect()
       if (width > 0 && height > 0) {
         setDimensions({ width, height })
       }
+    }
+
+    updateDimensions()
+
+    const observer = new ResizeObserver(entries => {
+      updateDimensions(entries[0]?.contentRect)
     })
 
     observer.observe(containerRef.current)
-    return () => observer.disconnect()
+    window.addEventListener('resize', updateDimensions)
+    window.addEventListener('orientationchange', updateDimensions)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', updateDimensions)
+      window.removeEventListener('orientationchange', updateDimensions)
+    }
   }, [hasStarted]) // Re-run when game starts and container becomes available
 
   // ============================================
@@ -538,18 +551,15 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
         </Stage>
       )}
 
-      {gameState?.currentSentenceThai && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none max-w-[90vw]">
-          <div className="bg-blue-900/90 border border-blue-400/40 px-6 py-3 rounded-2xl shadow-xl backdrop-blur-md">
-            <div className="text-white text-base font-black text-center md:text-xl">
-              {gameState.currentSentenceThai}
-            </div>
-          </div>
-        </div>
-      )}
-
       {gameState && (
-        <div className="absolute top-20 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2 max-w-[90vw]">
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2 max-w-[92vw]">
+          {gameState.currentSentenceThai && (
+            <div className="bg-blue-900/90 border border-blue-400/40 px-5 py-2 rounded-2xl shadow-xl backdrop-blur-md">
+              <div className="text-white text-sm font-black text-center leading-snug md:text-xl">
+                {gameState.currentSentenceThai}
+              </div>
+            </div>
+          )}
           <div className="bg-slate-950/70 border border-white/10 px-4 py-2 rounded-xl shadow-lg backdrop-blur-md text-center">
             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block leading-none mb-1">Progress</span>
             <div className="text-sm font-semibold text-white md:text-base">
@@ -575,14 +585,14 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
       )}
 
       {/* HUD - TOP */}
-      <div className="absolute top-32 left-4 z-30 pointer-events-none md:top-4">
+      <div className="absolute top-44 left-4 z-30 pointer-events-none md:top-4">
         <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Score</span>
           <span className="text-xl font-black text-white leading-none">{gameState?.score || 0}</span>
         </div>
       </div>
 
-      <div className="absolute top-32 right-4 z-30 pointer-events-none md:top-4">
+      <div className="absolute top-44 right-4 z-30 pointer-events-none md:top-4">
         <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md text-right">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Castle HP</span>
           <div className="flex items-center gap-2">
@@ -614,7 +624,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
       )}
 
       {/* D-Pad */}
-      <div className="absolute bottom-8 right-8 z-20">
+      <div className="absolute bottom-6 right-6 z-30 pointer-events-auto" data-testid="virtual-dpad">
         <VirtualDPad onInput={setVirtualInput} />
       </div>
     </div>
