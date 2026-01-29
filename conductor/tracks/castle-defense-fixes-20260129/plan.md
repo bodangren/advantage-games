@@ -91,6 +91,7 @@ Before starting ANY phase, the implementer MUST:
   - Returns updated state
 - [x] Sub-task: Write tests for `resetSentenceProgress()` 1117d63
 - [x] Sub-task: Integrate reset into `collectWords()` when wrong word collected 1117d63
+- [x] Sub-task: Clear player inventory when sentence resets 13f2772
 - [x] Sub-task: Run tests 1117d63
 
 **Verification**: All tests pass. ✅
@@ -108,7 +109,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: All tests pass. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Sequential Word Collection Mechanics' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 2: Sequential Word Collection Mechanics' (Protocol in workflow.md)
 
 ---
 
