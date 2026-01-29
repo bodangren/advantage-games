@@ -234,4 +234,85 @@ describe('usePotionRushStore Refinements', () => {
 
       expect(usePotionRushStore.getState().activeWordPool).toContain('recycle')
   })
+
+  it('should return words to pool when cauldron is dumped', () => {
+      const vocabList = [{ term: 'word1 word2', definition: 'desc', id: '1' }]
+      
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+      })
+
+      // Simulate brewing state with 'word1'
+      usePotionRushStore.setState(prev => {
+          const nextCauldrons = [...prev.cauldrons]
+          nextCauldrons[0] = { 
+              ...nextCauldrons[0], 
+              state: 'WARNING', // Ruined state
+              currentWords: ['word1'] 
+          }
+          // Remove word1 from pool as if it was spawned
+          return { 
+              cauldrons: nextCauldrons,
+              activeWordPool: ['word2'] 
+          }
+      })
+
+      act(() => {
+          usePotionRushStore.getState().handleDumpCauldron(0)
+      })
+
+      expect(usePotionRushStore.getState().activeWordPool).toContain('word1')
+      expect(usePotionRushStore.getState().activeWordPool).toContain('word2')
+  })
+
+  it('should return wrong ingredient to pool when it causes a warning in BREWING state', () => {
+      const vocabList = [{ term: 'correct word', definition: 'desc', id: '1' }]
+      
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+          // Set to BREWING 'correct'
+           usePotionRushStore.setState(prev => {
+              const nextCauldrons = [...prev.cauldrons]
+              nextCauldrons[0] = { 
+                  ...nextCauldrons[0], 
+                  state: 'BREWING',
+                  targetSentence: vocabList[0],
+                  currentWords: ['correct'] 
+              }
+              // activeWordPool should have 'word' and maybe others
+              return { 
+                  cauldrons: nextCauldrons,
+                  activeWordPool: ['word', 'wrong'] 
+              }
+          })
+      })
+
+      // Spawn 'wrong' ingredient
+      act(() => {
+         usePotionRushStore.setState(prev => ({
+             conveyorItems: [{ 
+                 id: 'item-wrong', 
+                 word: 'wrong', 
+                 type: 'herb', 
+                 x: 500, y: 500, width: 80, isDragging: false 
+             }],
+             activeWordPool: ['word'] // 'wrong' removed on spawn
+         }))
+      })
+
+      // Drop 'wrong' into the BREWING cauldron
+      act(() => {
+          usePotionRushStore.getState().handleDropIngredient(0, 'item-wrong')
+      })
+
+      const state = usePotionRushStore.getState()
+      expect(state.cauldrons[0].state).toBe('WARNING')
+      // 'wrong' was rejected (not added to currentWords) so it should be returned to pool immediately
+      expect(state.activeWordPool).toContain('wrong')
+      
+      // 'correct' is still in the cauldron, so 'word' is still in the pool? No, 'correct' is in cauldron.
+      // 'word' is in pool.
+  })
 })

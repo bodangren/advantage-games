@@ -351,6 +351,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
     // If BREWING: Check against current assigned sentence.
 
     const nextCauldron = { ...cauldron }
+    const { activeWordPool } = get()
 
     if (cauldron.state === 'IDLE') {
         // Find a customer whose sentence starts with this word
@@ -370,6 +371,8 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
             nextCauldron.state = 'WARNING'
             nextCauldron.currentWords = [ingredient.word]
             emitEffect('SMOKE')
+            // Don't recycle here because it's technically IN the cauldron now (as the single wrong word)
+            // It will be recycled when dumped.
         }
     } else if (cauldron.state === 'BREWING' && cauldron.targetSentence) {
         // Check next word
@@ -389,6 +392,10 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
             nextCauldron.shake = true
             emitEffect('SMOKE')
             // Reset shake after short delay usually, or handle in UI
+            
+            // Recycle the wrong ingredient back to pool immediately
+            // because it is NOT added to currentWords in this branch
+            set({ activeWordPool: [...activeWordPool, ingredient.word] })
         }
     }
 
@@ -398,7 +405,13 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   },
 
   handleDumpCauldron: (cauldronIndex) => {
-      const { cauldrons } = get()
+      const { cauldrons, activeWordPool } = get()
+      const cauldronToDump = cauldrons[cauldronIndex]
+      
+      // Recycle words in the cauldron
+      const recycledWords = [...cauldronToDump.currentWords]
+      const nextActiveWordPool = [...activeWordPool, ...recycledWords]
+
       const nextCauldrons = [...cauldrons]
       nextCauldrons[cauldronIndex] = {
           id: cauldronIndex,
@@ -407,7 +420,10 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           currentWords: [],
           shake: false
       }
-      set({ cauldrons: nextCauldrons })
+      set({ 
+          cauldrons: nextCauldrons,
+          activeWordPool: nextActiveWordPool
+      })
   },
 
   handleServeCustomer: (customerId, cauldronIndex, servePosition) => {
