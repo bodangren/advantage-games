@@ -145,6 +145,9 @@ export type CastleDefenseState = {
   sentenceWords: string[]
   collectedWordIndices: number[]
   sentenceCompleted: boolean
+  enemiesSpawnedThisWave: number
+  enemiesKilledThisWave: number
+  totalEnemiesThisWave: number
   grassMap: number[][] // 16x12 array of grass variant indices
 }
 
@@ -289,6 +292,9 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     sentenceWords,
     collectedWordIndices: [],
     sentenceCompleted: false,
+    enemiesSpawnedThisWave: 0,
+    enemiesKilledThisWave: 0,
+    totalEnemiesThisWave: WAVE_CONFIGS[0].soldiers + WAVE_CONFIGS[0].tanks + WAVE_CONFIGS[0].bosses,
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
     ),

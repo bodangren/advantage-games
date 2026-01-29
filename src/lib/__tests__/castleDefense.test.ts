@@ -260,6 +260,9 @@ describe('castleDefense', () => {
       expect(state.sentenceWords).toEqual([])
       expect(state.collectedWordIndices).toEqual([])
       expect(state.sentenceCompleted).toBe(false)
+      expect(state.enemiesSpawnedThisWave).toBe(0)
+      expect(state.enemiesKilledThisWave).toBe(0)
+      expect(state.totalEnemiesThisWave).toBeGreaterThan(0)
     })
 
     it('should assign target words to tower slots from vocabulary', () => {
@@ -293,6 +296,9 @@ describe('castleDefense', () => {
       expect(state.sentenceWords).toEqual(['The', 'cat', 'is', 'on', 'the', 'mat'])
       expect(state.collectedWordIndices).toEqual([])
       expect(state.sentenceCompleted).toBe(false)
+      expect(state.enemiesSpawnedThisWave).toBe(0)
+      expect(state.enemiesKilledThisWave).toBe(0)
+      expect(state.totalEnemiesThisWave).toBeGreaterThan(0)
     })
   })
 
