@@ -189,7 +189,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 5: Wave System with Finite Enemies
+## Phase 5: Wave System with Finite Enemies [checkpoint: fc72821]
 
 ### Task 5.1: Define wave configurations
 - [x] Sub-task: Create `WAVE_CONFIGS` constant in `src/lib/castleDefense.ts`: a698166
@@ -249,7 +249,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: All tests pass. ✅
 
-- [~] Task: Conductor - User Manual Verification 'Phase 5: Wave System with Finite Enemies' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Wave System with Finite Enemies' (Protocol in workflow.md) fc72821
 
 ---
 
