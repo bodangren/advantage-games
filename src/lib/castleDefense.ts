@@ -625,6 +625,14 @@ export function buildTowerAtSlot(state: CastleDefenseState, slotId: string): Cas
   }
 }
 
+// Check if the current wave is complete
+export function isWaveComplete(state: CastleDefenseState): boolean {
+  return (
+    state.enemiesSpawnedThisWave >= state.totalEnemiesThisWave &&
+    state.enemies.length === 0
+  )
+}
+
 // Check if player can activate a tower slot
 export function checkTowerActivation(
   player: Player,

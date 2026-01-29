@@ -19,6 +19,7 @@ import {
   isSentenceComplete,
   canBuildTower,
   buildTowerAtSlot,
+  isWaveComplete,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
@@ -216,6 +217,44 @@ describe('castleDefense', () => {
       }
 
       expect(canBuildTower(farState)).toBe(false)
+    })
+  })
+
+  describe('isWaveComplete', () => {
+    it('returns true when all enemies spawned and defeated', () => {
+      const state = createCastleDefenseState([])
+      const completeState = {
+        ...state,
+        enemies: [],
+        enemiesSpawnedThisWave: 5,
+        totalEnemiesThisWave: 5,
+      }
+
+      expect(isWaveComplete(completeState)).toBe(true)
+    })
+
+    it('returns false when enemies remain alive', () => {
+      const state = createCastleDefenseState([])
+      const incompleteState = {
+        ...state,
+        enemies: [spawnEnemy(state.path, 1)],
+        enemiesSpawnedThisWave: 5,
+        totalEnemiesThisWave: 5,
+      }
+
+      expect(isWaveComplete(incompleteState)).toBe(false)
+    })
+
+    it('returns false when there are still enemies to spawn', () => {
+      const state = createCastleDefenseState([])
+      const incompleteState = {
+        ...state,
+        enemies: [],
+        enemiesSpawnedThisWave: 3,
+        totalEnemiesThisWave: 5,
+      }
+
+      expect(isWaveComplete(incompleteState)).toBe(false)
     })
   })
 
