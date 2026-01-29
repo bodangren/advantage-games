@@ -168,13 +168,13 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Visual inspection - all word orbs are white with black text. ✅
 
 ### Task 4.2: Ensure single words per orb
-- [ ] Sub-task: Verify word orbs receive individual words (not phrases)
-- [ ] Sub-task: Adjust text offsetX calculation for centering:
+- [x] Sub-task: Verify word orbs receive individual words (not phrases) cfbbe40
+- [x] Sub-task: Adjust text offsetX calculation for centering: cfbbe40
   ```typescript
   offsetX={word.translation.length * 3.5}  // Approximate centering
   ```
-- [ ] Sub-task: Test with short words ("I", "am") and long words ("beautiful", "extraordinary")
-- [ ] Sub-task: Adjust font size if needed for readability
+- [x] Sub-task: Test with short words ("I", "am") and long words ("beautiful", "extraordinary") cfbbe40
+- [x] Sub-task: Adjust font size if needed for readability cfbbe40
 
 **Verification**: Visual inspection - each orb contains one word, properly centered. ✅
 
