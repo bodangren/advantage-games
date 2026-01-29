@@ -158,12 +158,12 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 4: Word Orb Visual Updates
 
 ### Task 4.1: Update word orb rendering to white circles
-- [ ] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx`
-- [ ] Sub-task: Find word orb rendering code (Group with Circle + Text for words)
-- [ ] Sub-task: Change circle fill to white: `fill="white"`
-- [ ] Sub-task: Add black text for contrast: `fill="black"`
-- [ ] Sub-task: Remove color-based logic (isCorrect → green, incorrect → red)
-- [ ] Sub-task: Ensure all words render identically (white circles, black text)
+- [x] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx` 80b0b86
+- [x] Sub-task: Find word orb rendering code (Group with Circle + Text for words) 80b0b86
+- [x] Sub-task: Change circle fill to white: `fill="white"` 80b0b86
+- [x] Sub-task: Add black text for contrast: `fill="black"` 80b0b86
+- [x] Sub-task: Remove color-based logic (isCorrect → green, incorrect → red) 80b0b86
+- [x] Sub-task: Ensure all words render identically (white circles, black text) 80b0b86
 
 **Verification**: Visual inspection - all word orbs are white with black text. ✅
 
