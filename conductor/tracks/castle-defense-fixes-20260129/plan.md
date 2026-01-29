@@ -168,29 +168,24 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Visual inspection - all word orbs are white with black text. ✅
 
 ### Task 4.2: Ensure single words per orb
-- [x] Sub-task: Verify word orbs receive individual words (not phrases) cfbbe40
-- [x] Sub-task: Adjust text offsetX calculation for centering: cfbbe40
+- [x] Sub-task: Verify word orbs receive individual words (not phrases) d36a1c2
+- [x] Sub-task: Adjust text offsetX calculation for centering: d36a1c2
   ```typescript
-  offsetX={word.translation.length * 3.5}  // Approximate centering
+  offsetX={word.radius}  // Center using orb radius
   ```
-- [x] Sub-task: Test with short words ("I", "am") and long words ("beautiful", "extraordinary") cfbbe40
-- [x] Sub-task: Adjust font size if needed for readability cfbbe40
+- [x] Sub-task: Constrain word orb spawns to middle 50% of the board d36a1c2
+- [x] Sub-task: Test with short words ("I", "am") and long words ("beautiful", "extraordinary") d36a1c2
+- [x] Sub-task: Adjust font size if needed for readability d36a1c2
 
 **Verification**: Visual inspection - each orb contains one word, properly centered. ✅
 
 ### Task 4.3: (Optional) Highlight next required word
-- [x] Sub-task: Determine next required word from `collectedWordIndices` and `sentenceWords` 74b5ea3
-- [x] Sub-task: Add conditional rendering for next word orb: 74b5ea3
-  ```typescript
-  fill={isNextRequiredWord ? '#22c55e' : 'white'}  // Green if next word
-  stroke={isNextRequiredWord ? '#16a34a' : '#666'}
-  strokeWidth={isNextRequiredWord ? 3 : 2}
-  ```
-- [x] Sub-task: Test highlighting with different sentence progress states 74b5ea3
+- [ ] Sub-task: Determine next required word from `collectedWordIndices` and `sentenceWords`
+- [ ] Sub-task: Add conditional rendering for next word orb
+- [ ] Sub-task: Test highlighting with different sentence progress states
+*Note: Highlighting removed per user feedback (commit d36a1c2). Players choose the next word without hints.*
 
-**Verification**: Next required word visually distinct (green circle). ✅
-
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Word Orb Visual Updates' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Word Orb Visual Updates' (Protocol in workflow.md)
 
 ---
 
