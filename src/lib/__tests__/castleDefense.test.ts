@@ -134,10 +134,12 @@ describe('castleDefense', () => {
       const resetState = resetSentenceProgress({
         ...state,
         collectedWordIndices: [0],
+        player: { ...state.player, inventory: ['The'] },
         words: seededWords,
       })
 
       expect(resetState.collectedWordIndices).toEqual([])
+      expect(resetState.player.inventory).toEqual([])
       expect(resetState.words).toHaveLength(state.sentenceWords.length)
       expect(resetState.words.every(word => !word.isCollected)).toBe(true)
       expect(new Set(resetState.words.map(word => word.translation))).toEqual(new Set(state.sentenceWords))

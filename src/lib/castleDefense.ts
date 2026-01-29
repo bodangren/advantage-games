@@ -530,6 +530,10 @@ export function collectWords(
 export function resetSentenceProgress(state: CastleDefenseState): CastleDefenseState {
   return {
     ...state,
+    player: {
+      ...state.player,
+      inventory: [],
+    },
     collectedWordIndices: [],
     sentenceCompleted: false,
     words: spawnSentenceWords(state.currentSentenceEnglish),
@@ -797,6 +801,7 @@ export function advanceCastleDefenseTime(
       words,
       collectedWordIndices,
     })
+    player = resetState.player
     words = resetState.words
     collectedWordIndices = resetState.collectedWordIndices
     sentenceCompleted = resetState.sentenceCompleted
