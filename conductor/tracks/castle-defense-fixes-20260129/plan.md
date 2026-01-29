@@ -359,8 +359,8 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Progress display shows collected words and wave info. ✅
 
 ### Task 7.3: Update HUD layout
-- [ ] Sub-task: Show "Sentence Complete - Build Tower!" message when sentenceCompleted is true
-- [ ] Sub-task: Clean up HUD layout for clarity and mobile responsiveness
+- [x] Sub-task: Show "Sentence Complete - Build Tower!" message when sentenceCompleted is true 50813b6
+- [x] Sub-task: Clean up HUD layout for clarity and mobile responsiveness 50813b6
 
 **Verification**: HUD is clean, uncluttered, and informative. ✅
 
