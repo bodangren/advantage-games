@@ -29,5 +29,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Potion Rush (Time Management)**
+- [x] **Track: Potion Rush (Time Management)**
 *Link: [./conductor/tracks/potion-rush-20260107/](./conductor/tracks/potion-rush-20260107/)*
+
+---
