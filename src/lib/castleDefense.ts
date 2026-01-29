@@ -9,16 +9,16 @@ export const PLAYER_SPEED = 3
 
 // Enemy constants
 export const ENEMY_SOLDIER_RADIUS = 12
-export const ENEMY_SOLDIER_HP = 30
-export const ENEMY_SOLDIER_SPEED = 1.5
+export const ENEMY_SOLDIER_HP = 40
+export const ENEMY_SOLDIER_SPEED = 0.8
 
 export const ENEMY_TANK_RADIUS = 18
-export const ENEMY_TANK_HP = 80
-export const ENEMY_TANK_SPEED = 0.8
+export const ENEMY_TANK_HP = 120
+export const ENEMY_TANK_SPEED = 0.7
 
 export const ENEMY_BOSS_RADIUS = 25
-export const ENEMY_BOSS_HP = 200
-export const ENEMY_BOSS_SPEED = 0.5
+export const ENEMY_BOSS_HP = 360
+export const ENEMY_BOSS_SPEED = 0.6
 
 // Tower constants
 export const TOWER_RANGE = 150

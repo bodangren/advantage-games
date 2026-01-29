@@ -409,9 +409,48 @@ describe('castleDefense', () => {
       expect(enemy.type).toBe('soldier')
     })
 
+    it('should apply soldier stats for wave config spawns', () => {
+      const enemy = spawnEnemy(
+        [{ x: 0, y: 100 }],
+        1,
+        () => 0.5,
+        { soldiers: 1, tanks: 0, bosses: 0 },
+        0
+      )
+      expect(enemy.type).toBe('soldier')
+      expect(enemy.hp).toBe(40)
+      expect(enemy.speed).toBe(0.8)
+    })
+
     it('should spawn tank after wave 2 with right roll', () => {
       const enemy = spawnEnemy([{ x: 0, y: 100 }], 3, () => 0.2)
       expect(enemy.type).toBe('tank')
+    })
+
+    it('should apply tank stats for wave config spawns', () => {
+      const enemy = spawnEnemy(
+        [{ x: 0, y: 100 }],
+        2,
+        () => 0.5,
+        { soldiers: 0, tanks: 1, bosses: 0 },
+        0
+      )
+      expect(enemy.type).toBe('tank')
+      expect(enemy.hp).toBe(120)
+      expect(enemy.speed).toBe(0.7)
+    })
+
+    it('should apply boss stats for wave config spawns', () => {
+      const enemy = spawnEnemy(
+        [{ x: 0, y: 100 }],
+        5,
+        () => 0.5,
+        { soldiers: 0, tanks: 0, bosses: 1 },
+        0
+      )
+      expect(enemy.type).toBe('boss')
+      expect(enemy.hp).toBe(360)
+      expect(enemy.speed).toBe(0.6)
     })
   })
 
