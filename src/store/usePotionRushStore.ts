@@ -280,17 +280,16 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       // Reset orphaned cauldrons
       let nextCauldrons = cauldrons
       if (leavingCustomerIds.length > 0) {
+           // Get list of remaining active customers
+           // Note: nextCustomers contains ALL customers, including the ones just marked LEAVING_ANGRY
+           const activeCustomers = nextCustomers.filter(c => c.state === 'WAITING')
+
            nextCauldrons = cauldrons.map(cauldron => {
               if (cauldron.state !== 'IDLE' && cauldron.targetSentence) {
-                  // Find if the target sentence belongs to a leaving customer
-                  // Note: targetSentence is a copy, so we match by ID or Term. ID is safer if available.
-                  // Store logic spawns with same ID? No, vocabList has ID.
-                  const isOrphaned = leavingCustomerIds.some(cid => {
-                      const customer = customers.find(c => c.id === cid)
-                      return customer?.request.id === cauldron.targetSentence?.id
-                  })
+                  // Check if ANY active customer needs this sentence
+                  const isNeeded = activeCustomers.some(c => c.request.id === cauldron.targetSentence?.id)
                   
-                  if (isOrphaned) {
+                  if (!isNeeded) {
                       return { ...cauldron, state: 'IDLE' as const, targetSentence: null, currentWords: [], shake: false }
                   }
               }

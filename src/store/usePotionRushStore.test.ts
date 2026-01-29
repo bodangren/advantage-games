@@ -353,4 +353,100 @@ describe('usePotionRushStore Refinements', () => {
       expect(state.cauldrons[0].state).toBe('IDLE')
       expect(state.cauldrons[0].currentWords).toEqual([])
   })
+
+  it('should NOT reset cauldron if another customer still needs the sentence', () => {
+      const vocabList = [{ term: 'shared', definition: 'desc', id: '1' }]
+      const otherVocab = [{ term: 'other', definition: 'desc', id: '2' }]
+
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          // Spawn Customer A (needs 'shared')
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+      })
+      
+      // Force spawn Customer B (needs 'other')
+      act(() => {
+          usePotionRushStore.getState().spawnCustomer(otherVocab)
+      })
+
+      const state = usePotionRushStore.getState()
+      const customerA = state.customers[0]
+      const customerB = state.customers[1]
+
+      // Start brewing for Customer B (who will stay)
+      usePotionRushStore.setState(prev => {
+          const nextCauldrons = [...prev.cauldrons]
+          nextCauldrons[0] = { 
+              ...nextCauldrons[0], 
+              state: 'BREWING',
+              targetSentence: customerB.request,
+              currentWords: ['other'] 
+          }
+          return { cauldrons: nextCauldrons }
+      })
+
+      // Make Customer A leave angry (patience 0)
+      act(() => {
+          usePotionRushStore.setState(prev => ({
+              customers: prev.customers.map(c => 
+                  c.id === customerA.id ? { ...c, patience: 0.1 } : c
+              )
+          }))
+          usePotionRushStore.getState().tick(1) // Tick to trigger leave
+      })
+
+      const newState = usePotionRushStore.getState()
+      // Customer A should be leaving
+      expect(newState.customers.find(c => c.id === customerA.id)?.state).toBe('LEAVING_ANGRY')
+      // Customer B is still waiting
+      expect(newState.customers.find(c => c.id === customerB.id)?.state).toBe('WAITING')
+
+      // Cauldron 0 (for B) should NOT be reset
+      expect(newState.cauldrons[0].state).toBe('BREWING')
+      expect(newState.cauldrons[0].currentWords).toEqual(['other'])
+  })
+
+  it('should NOT reset cauldron if two customers have SAME request and only one leaves', () => {
+      const vocabList = [{ term: 'shared', definition: 'desc', id: '1' }]
+
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          // Spawn A and B with SAME vocab
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+      })
+
+      const state = usePotionRushStore.getState()
+      const customerA = state.customers[0]
+      const customerB = state.customers[1]
+
+      // Start brewing 'shared'
+      usePotionRushStore.setState(prev => {
+          const nextCauldrons = [...prev.cauldrons]
+          nextCauldrons[0] = { 
+              ...nextCauldrons[0], 
+              state: 'BREWING',
+              targetSentence: customerA.request, // Same as B.request
+              currentWords: ['shared'] 
+          }
+          return { cauldrons: nextCauldrons }
+      })
+
+      // Make A leave
+      act(() => {
+          usePotionRushStore.setState(prev => ({
+              customers: prev.customers.map(c => 
+                  c.id === customerA.id ? { ...c, patience: 0.1 } : c
+              )
+          }))
+          usePotionRushStore.getState().tick(1)
+      })
+
+      const newState = usePotionRushStore.getState()
+      expect(newState.customers.find(c => c.id === customerA.id)?.state).toBe('LEAVING_ANGRY')
+      expect(newState.customers.find(c => c.id === customerB.id)?.state).toBe('WAITING')
+
+      // Cauldron should persist because B still needs it
+      expect(newState.cauldrons[0].state).toBe('BREWING')
+  })
 })
