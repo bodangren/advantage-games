@@ -179,14 +179,14 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Visual inspection - each orb contains one word, properly centered. ✅
 
 ### Task 4.3: (Optional) Highlight next required word
-- [ ] Sub-task: Determine next required word from `collectedWordIndices` and `sentenceWords`
-- [ ] Sub-task: Add conditional rendering for next word orb:
+- [x] Sub-task: Determine next required word from `collectedWordIndices` and `sentenceWords` 74b5ea3
+- [x] Sub-task: Add conditional rendering for next word orb: 74b5ea3
   ```typescript
   fill={isNextRequiredWord ? '#22c55e' : 'white'}  // Green if next word
   stroke={isNextRequiredWord ? '#16a34a' : '#666'}
   strokeWidth={isNextRequiredWord ? 3 : 2}
   ```
-- [ ] Sub-task: Test highlighting with different sentence progress states
+- [x] Sub-task: Test highlighting with different sentence progress states 74b5ea3
 
 **Verification**: Next required word visually distinct (green circle). ✅
 
