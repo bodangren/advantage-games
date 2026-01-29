@@ -516,6 +516,22 @@ describe('castleDefense', () => {
       expect(advanced.totalEnemiesThisWave).toBe(WAVE_CONFIGS[1].soldiers + WAVE_CONFIGS[1].tanks + WAVE_CONFIGS[1].bosses)
     })
 
+    it('sets victory status when wave 6 completes', () => {
+      const state = {
+        ...createCastleDefenseState(vocabulary),
+        wave: 6,
+        enemies: [],
+        enemiesSpawnedThisWave: 1,
+        totalEnemiesThisWave: 1,
+        waveCompleteTimer: 0,
+        waveMessage: null,
+      }
+
+      const withMessage = advanceCastleDefenseTime(state, 0, { dx: 0, dy: 0 }, vocabulary)
+      const finalState = advanceCastleDefenseTime(withMessage, 2000, { dx: 0, dy: 0 }, vocabulary)
+      expect(finalState.status).toBe('victory')
+    })
+
     it('marks sentence complete and awards points when all words are collected', () => {
       const baseState = createCastleDefenseState(vocabulary)
       const state = {

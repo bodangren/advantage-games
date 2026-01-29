@@ -1159,7 +1159,24 @@ export function advanceCastleDefenseTime(
         player,
       }
     }
-    waveMessage = null
+    return {
+      ...state,
+      status: 'victory',
+      waveCompleteTimer: 0,
+      waveMessage: null,
+      enemies,
+      towers,
+      projectiles,
+      words,
+      base,
+      score,
+      spawnTimer,
+      gameTime,
+      collectedWordIndices,
+      sentenceCompleted,
+      enemiesSpawnedThisWave,
+      enemiesKilledThisWave,
+    }
   }
 
   // 11. Respawn words if all collected

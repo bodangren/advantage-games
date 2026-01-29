@@ -313,6 +313,36 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     )
   }
 
+  if (gameState?.status === 'victory') {
+    return (
+      <div className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 flex items-center justify-center border border-white/10 md:aspect-video md:h-auto">
+        <div className="absolute inset-0 bg-emerald-900/20 backdrop-blur-sm" />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="relative text-center space-y-6 p-8 bg-slate-900/80 border border-emerald-500/30 rounded-[2.5rem] shadow-2xl backdrop-blur-md"
+        >
+          <div className="space-y-1">
+            <h2 className="text-5xl font-black text-emerald-400 uppercase tracking-tighter">Victory!</h2>
+            <p className="text-emerald-200 text-sm uppercase tracking-widest font-bold">The castle stands strong</p>
+          </div>
+          <div className="py-4">
+            <span className="text-slate-500 text-xs uppercase tracking-widest font-black block mb-1">Final Score</span>
+            <span className="text-5xl font-black text-white">{gameState.score}</span>
+          </div>
+          <motion.button
+            onClick={startGame}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full py-4 bg-white text-slate-950 font-black rounded-xl shadow-lg uppercase tracking-widest"
+          >
+            Play Again
+          </motion.button>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div
       ref={containerRef}
