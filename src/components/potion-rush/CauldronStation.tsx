@@ -114,7 +114,7 @@ function SingleCauldron({ cauldron, x, y, onDrop, images }: {
         <Group
             x={x}
             y={y}
-            draggable
+            draggable={cauldron.state !== 'IDLE'}
             onDragStart={() => {
                 playSound('clinking')
             }} // Just to enable drag events if needed
