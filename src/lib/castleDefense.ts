@@ -516,6 +516,15 @@ export function collectWords(
   }
 }
 
+// Reset sentence progress after incorrect word collection
+export function resetSentenceProgress(state: CastleDefenseState): CastleDefenseState {
+  return {
+    ...state,
+    collectedWordIndices: [],
+    words: spawnSentenceWords(state.currentSentenceEnglish),
+  }
+}
+
 // Check if player can activate a tower slot
 export function checkTowerActivation(
   player: Player,
@@ -767,7 +776,18 @@ export function advanceCastleDefenseTime(
   const collection = collectWords(player, words, state.sentenceWords, state.collectedWordIndices)
   player = collection.player
   words = collection.words
-  const collectedWordIndices = collection.collectedWordIndices
+  let collectedWordIndices = collection.collectedWordIndices
+
+  if (collection.invalidCollection) {
+    const resetState = resetSentenceProgress({
+      ...state,
+      player,
+      words,
+      collectedWordIndices,
+    })
+    words = resetState.words
+    collectedWordIndices = resetState.collectedWordIndices
+  }
 
   // 4. Check tower activation
   let towers = state.towers

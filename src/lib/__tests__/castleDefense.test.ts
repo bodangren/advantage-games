@@ -14,6 +14,7 @@ import {
   SPAWN_RATE_MS,
   parseSentenceWords,
   validateWordCollection,
+  resetSentenceProgress,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
@@ -117,6 +118,28 @@ describe('castleDefense', () => {
       expect(result.collectedWordIndices).toEqual([0])
       expect(result.words[0].isCollected).toBe(false)
       expect(result.invalidCollection).toBe(true)
+    })
+  })
+
+  describe('resetSentenceProgress', () => {
+    it('clears collected indices and respawns sentence words', () => {
+      const vocabulary = [{ term: 'The cat sits', translation: 'แมวนั่งอยู่' }]
+      const state = createCastleDefenseState(vocabulary)
+      const seededWords = spawnSentenceWords(state.currentSentenceEnglish, () => 0.5).map((word, index) => ({
+        ...word,
+        isCollected: index === 0,
+      }))
+
+      const resetState = resetSentenceProgress({
+        ...state,
+        collectedWordIndices: [0],
+        words: seededWords,
+      })
+
+      expect(resetState.collectedWordIndices).toEqual([])
+      expect(resetState.words).toHaveLength(state.sentenceWords.length)
+      expect(resetState.words.every(word => !word.isCollected)).toBe(true)
+      expect(new Set(resetState.words.map(word => word.translation))).toEqual(new Set(state.sentenceWords))
     })
   })
 
