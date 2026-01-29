@@ -222,15 +222,15 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 5.3: Implement finite enemy spawning
-- [ ] Sub-task: Write tests for wave spawn logic:
+- [x] Sub-task: Write tests for wave spawn logic: 7cd587b
   - Test: Stops spawning when `enemiesSpawnedThisWave >= totalEnemiesThisWave`
   - Test: Respects spawn timer between enemies
   - Test: Spawns correct enemy types based on wave config
-- [ ] Sub-task: Update `advanceCastleDefenseTime()` spawn logic:
+- [x] Sub-task: Update `advanceCastleDefenseTime()` spawn logic: 7cd587b
   - Check if `enemiesSpawnedThisWave < totalEnemiesThisWave` before spawning
   - Increment `enemiesSpawnedThisWave` when enemy spawns
   - Use wave config to determine enemy type distribution
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Run tests 7cd587b
 
 **Verification**: All tests pass. ✅
 
