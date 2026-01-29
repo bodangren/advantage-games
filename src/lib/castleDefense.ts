@@ -236,6 +236,9 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     ? vocabulary[Math.floor(Math.random() * vocabulary.length)]
     : { term: 'default', translation: 'default' }
 
+  const firstSentence = vocabulary[0] || { term: '', translation: '' }
+  const sentenceWords = parseSentenceWords(firstSentence.term)
+
   // Assign target words to tower slots
   const towerSlots = DEFAULT_TOWER_SLOTS.map((slot, i) => ({
     ...slot,
@@ -270,9 +273,9 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     spawnTimer: 0,
     gameTime: 0,
     targetWord: targetItem.translation,
-    currentSentenceThai: '',
-    currentSentenceEnglish: '',
-    sentenceWords: [],
+    currentSentenceThai: firstSentence.translation,
+    currentSentenceEnglish: firstSentence.term,
+    sentenceWords,
     collectedWordIndices: [],
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
