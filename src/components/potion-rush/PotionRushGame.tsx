@@ -90,7 +90,7 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
       customerY: 402, // 2px below counter top
       cauldronY: 550,
       beltY: 600,
-      trashX: 1220,
+      trashX: 1230,
       trashY: 550
   }
 

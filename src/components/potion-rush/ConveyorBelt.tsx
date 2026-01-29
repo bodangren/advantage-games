@@ -82,7 +82,7 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
       
       // Check Trash (Right Side) - PRIORITY
       const trashDist = Math.sqrt(Math.pow(x - layout.trashX, 2) + Math.pow(y - layout.trashY, 2))
-      if (trashDist < 100) {
+      if (trashDist < 70) {
           discardIngredient(item.id)
           return
       }

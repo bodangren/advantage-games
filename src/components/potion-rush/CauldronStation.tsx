@@ -49,7 +49,7 @@ export default function CauldronStation({ y, width, layout }: CauldronStationPro
   const checkDrop = (cauldronIndex: number, x: number, y: number) => {
       // Check Trash
       const trashDist = Math.sqrt(Math.pow(x - layout.trashX, 2) + Math.pow(y - layout.trashY, 2))
-      if (trashDist < 100) {
+      if (trashDist < 70) {
           handleDump(cauldronIndex)
           return
       }
