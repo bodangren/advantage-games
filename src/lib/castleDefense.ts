@@ -437,6 +437,24 @@ export function parseSentenceWords(sentence: string): string[] {
     .filter(word => word.length > 0)
 }
 
+// Validate sequential word collection based on sentence order
+export function validateWordCollection(
+  collectedIndices: number[],
+  nextWordIndex: number,
+  allWords: string[]
+): boolean {
+  if (nextWordIndex < 0 || nextWordIndex >= allWords.length) {
+    return false
+  }
+
+  if (collectedIndices.includes(nextWordIndex)) {
+    return false
+  }
+
+  const expectedIndex = collectedIndices.length
+  return nextWordIndex === expectedIndex
+}
+
 // Spawn word orbs for a full sentence
 export function spawnSentenceWords(
   sentence: string,

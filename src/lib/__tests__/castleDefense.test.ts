@@ -12,6 +12,7 @@ import {
   BASE_HP,
   SPAWN_RATE_MS,
   parseSentenceWords,
+  validateWordCollection,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
@@ -57,6 +58,26 @@ describe('castleDefense', () => {
         expect(word.y).toBeGreaterThanOrEqual(WORD_RADIUS)
         expect(word.y).toBeLessThanOrEqual(GAME_HEIGHT - WORD_RADIUS)
       }
+    })
+  })
+
+  describe('validateWordCollection', () => {
+    const sentenceWords = ['The', 'cat', 'sits']
+
+    it('allows collecting the first word', () => {
+      expect(validateWordCollection([], 0, sentenceWords)).toBe(true)
+    })
+
+    it('allows collecting the second word after the first', () => {
+      expect(validateWordCollection([0], 1, sentenceWords)).toBe(true)
+    })
+
+    it('rejects collecting a later word out of order', () => {
+      expect(validateWordCollection([0], 2, sentenceWords)).toBe(false)
+    })
+
+    it('rejects collecting an already collected word', () => {
+      expect(validateWordCollection([0, 1], 1, sentenceWords)).toBe(false)
     })
   })
 
