@@ -851,11 +851,44 @@ export function advanceCastleDefenseTime(
     sentenceCompleted = resetState.sentenceCompleted
   }
 
-  // 4. Check tower activation
+  // 4. Check tower activation (sentence-complete flow)
   let towers = state.towers
-  const activation = checkTowerActivation(player, state.towerSlots, towers)
-  player = activation.player
-  towers = activation.towers
+  if (
+    canBuildTower({
+      ...state,
+      player,
+      towers,
+      words,
+      collectedWordIndices,
+      sentenceCompleted,
+    })
+  ) {
+    const buildSlot = state.towerSlots.find(slot => {
+      const hasTower = towers.some(tower => tower.id === `tower-${slot.id}`)
+      if (hasTower) return false
+      return inRange(player.x, player.y, slot.x, slot.y, 50)
+    })
+
+    if (buildSlot) {
+      const buildState = buildTowerAtSlot(
+        {
+          ...state,
+          player,
+          towers,
+          words,
+          collectedWordIndices,
+          sentenceCompleted,
+        },
+        buildSlot.id
+      )
+
+      player = buildState.player
+      towers = buildState.towers
+      words = buildState.words
+      collectedWordIndices = buildState.collectedWordIndices
+      sentenceCompleted = buildState.sentenceCompleted
+    }
+  }
 
   // 5. Move enemies
   let enemies = state.enemies.map(e => moveEnemy(e, state.path, dt))
