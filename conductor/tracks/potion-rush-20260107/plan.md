@@ -47,7 +47,7 @@
 - [x] **Serving Logic:** When a cauldron is "Done", allow dragging it to the customer (or auto-complete) to clear the slot and award points.
 - [x] **Patience System:** Decrease customer timer; trigger "Leave Angry" event if 0.
 
-## Phase 5: Game Loop Polish & Assets
+## Phase 5: Game Loop Polish & Assets [checkpoint: fdc8327]
 **Goal:** Make it look and feel like a game.
 
 - [x] **Asset Integration:** Replace placeholders with generated assets (Customers, Cauldron sprites, Ingredient icons). 7e06ead
