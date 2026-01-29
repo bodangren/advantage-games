@@ -235,17 +235,17 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 5.4: Implement wave completion detection
-- [ ] Sub-task: Write tests for `isWaveComplete(state): boolean`
+- [x] Sub-task: Write tests for `isWaveComplete(state): boolean` 7a35f4f
   - Test: Returns true when all enemies spawned AND all defeated
   - Test: Returns false if enemies still alive
   - Test: Returns false if more enemies to spawn
-- [ ] Sub-task: Implement `isWaveComplete()` function
+- [x] Sub-task: Implement `isWaveComplete()` function 7a35f4f
 - [ ] Sub-task: Update `advanceCastleDefenseTime()` to:
   - Check wave completion
   - Show "Wave X Complete" message
   - Advance to next wave after brief delay
   - Reset wave tracking variables
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Run tests 7a35f4f
 
 **Verification**: All tests pass. ✅
 
