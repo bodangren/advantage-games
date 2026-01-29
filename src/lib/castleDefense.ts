@@ -553,6 +553,37 @@ export function canBuildTower(state: CastleDefenseState): boolean {
   })
 }
 
+// Build a tower at a specific slot and consume the completed sentence
+export function buildTowerAtSlot(state: CastleDefenseState, slotId: string): CastleDefenseState {
+  const slot = state.towerSlots.find(candidate => candidate.id === slotId)
+  if (!slot) {
+    return state
+  }
+
+  if (state.towers.some(tower => tower.id === `tower-${slot.id}`)) {
+    return state
+  }
+
+  const resetState = resetSentenceProgress(state)
+
+  const newTower: Tower = {
+    id: `tower-${slot.id}`,
+    x: slot.x,
+    y: slot.y,
+    radius: 30,
+    isActive: true,
+    targetWord: slot.targetWord,
+    range: TOWER_RANGE,
+    lastFired: 0,
+    damage: TOWER_DAMAGE,
+  }
+
+  return {
+    ...resetState,
+    towers: [...resetState.towers, newTower],
+  }
+}
+
 // Check if player can activate a tower slot
 export function checkTowerActivation(
   player: Player,

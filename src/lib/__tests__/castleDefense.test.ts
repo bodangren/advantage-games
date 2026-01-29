@@ -17,6 +17,7 @@ import {
   resetSentenceProgress,
   isSentenceComplete,
   canBuildTower,
+  buildTowerAtSlot,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
@@ -191,6 +192,30 @@ describe('castleDefense', () => {
       }
 
       expect(canBuildTower(farState)).toBe(false)
+    })
+  })
+
+  describe('buildTowerAtSlot', () => {
+    it('creates a tower, consumes sentence completion, and resets progress', () => {
+      const state = createCastleDefenseState([])
+      const slot = state.towerSlots[0]
+      const seededWords = spawnSentenceWords(state.currentSentenceEnglish, () => 0.5).map((word, index) => ({
+        ...word,
+        isCollected: index === 0,
+      }))
+
+      const nextState = buildTowerAtSlot({
+        ...state,
+        sentenceCompleted: true,
+        collectedWordIndices: [0],
+        words: seededWords,
+      }, slot.id)
+
+      expect(nextState.towers.some(tower => tower.id === `tower-${slot.id}`)).toBe(true)
+      expect(nextState.sentenceCompleted).toBe(false)
+      expect(nextState.collectedWordIndices).toEqual([])
+      expect(nextState.words).toHaveLength(state.sentenceWords.length)
+      expect(nextState.words.every(word => !word.isCollected)).toBe(true)
     })
   })
 
