@@ -43,8 +43,8 @@ Before starting ANY phase, the implementer MUST:
   ```
 - [x] Sub-task: Update `createCastleDefenseState()` to initialize with first sentence 1cb0a1e
 - [x] Sub-task: Update `advanceCastleDefenseTime()` to spawn sentence words instead of translation orbs ebb1e06
-- [ ] Sub-task: Write tests for updated state initialization
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for updated state initialization 9c4bc8e
+- [x] Sub-task: Run tests 9c4bc8e
 
 **Verification**: Tests pass, TypeScript compiles without errors. ✅
 
