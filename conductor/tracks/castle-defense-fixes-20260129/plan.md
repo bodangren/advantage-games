@@ -61,7 +61,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 2: Sequential Word Collection Mechanics
+## Phase 2: Sequential Word Collection Mechanics [checkpoint: 8e0e50f]
 
 ### Task 2.1: Implement word collection validation
 - [x] Sub-task: Write tests for `validateWordCollection(collectedIndices, nextWord, allWords): boolean` b6ae14e
@@ -109,7 +109,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: All tests pass. ✅
 
-- [~] Task: Conductor - User Manual Verification 'Phase 2: Sequential Word Collection Mechanics' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Sequential Word Collection Mechanics' (Protocol in workflow.md) 8e0e50f
 
 ---
 
