@@ -135,6 +135,7 @@ export type CastleDefenseState = {
   currentSentenceEnglish: string
   sentenceWords: string[]
   collectedWordIndices: number[]
+  sentenceCompleted: boolean
   grassMap: number[][] // 16x12 array of grass variant indices
 }
 
@@ -278,6 +279,7 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     currentSentenceEnglish: firstSentence.term,
     sentenceWords,
     collectedWordIndices: [],
+    sentenceCompleted: false,
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
     ),
@@ -456,6 +458,14 @@ export function validateWordCollection(
   return nextWordIndex === expectedIndex
 }
 
+// Check if sentence is complete based on collected indices
+export function isSentenceComplete(collectedIndices: number[], totalWords: number): boolean {
+  if (totalWords <= 0) {
+    return false
+  }
+  return collectedIndices.length >= totalWords
+}
+
 // Spawn word orbs for a full sentence
 export function spawnSentenceWords(
   sentence: string,
@@ -521,6 +531,7 @@ export function resetSentenceProgress(state: CastleDefenseState): CastleDefenseS
   return {
     ...state,
     collectedWordIndices: [],
+    sentenceCompleted: false,
     words: spawnSentenceWords(state.currentSentenceEnglish),
   }
 }
@@ -777,6 +788,7 @@ export function advanceCastleDefenseTime(
   player = collection.player
   words = collection.words
   let collectedWordIndices = collection.collectedWordIndices
+  let sentenceCompleted = state.sentenceCompleted
 
   if (collection.invalidCollection) {
     const resetState = resetSentenceProgress({
@@ -787,6 +799,7 @@ export function advanceCastleDefenseTime(
     })
     words = resetState.words
     collectedWordIndices = resetState.collectedWordIndices
+    sentenceCompleted = resetState.sentenceCompleted
   }
 
   // 4. Check tower activation
@@ -816,7 +829,14 @@ export function advanceCastleDefenseTime(
 
   // 9. Calculate score (10 points per enemy killed)
   const enemiesKilled = state.enemies.length - enemies.length - (baseDamage.damage > 0 ? (baseDamage.damage / 10) : 0)
-  const score = state.score + (enemiesKilled > 0 ? Math.floor(enemiesKilled) * 10 : 0)
+  let score = state.score + (enemiesKilled > 0 ? Math.floor(enemiesKilled) * 10 : 0)
+
+  if (isSentenceComplete(collectedWordIndices, state.sentenceWords.length)) {
+    if (!sentenceCompleted) {
+      sentenceCompleted = true
+      score += 50
+    }
+  }
 
   // 10. Spawn enemies
   let spawnTimer = state.spawnTimer + dt
@@ -826,7 +846,7 @@ export function advanceCastleDefenseTime(
   }
 
   // 11. Respawn words if all collected
-  if (words.every(w => w.isCollected) || words.length === 0) {
+  if (!sentenceCompleted && (words.every(w => w.isCollected) || words.length === 0)) {
     words = spawnSentenceWords(state.currentSentenceEnglish)
   }
 
@@ -845,6 +865,7 @@ export function advanceCastleDefenseTime(
     projectiles,
     words,
     collectedWordIndices,
+    sentenceCompleted,
     base,
     score,
     spawnTimer,

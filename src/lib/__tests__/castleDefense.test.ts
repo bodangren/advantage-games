@@ -15,6 +15,7 @@ import {
   parseSentenceWords,
   validateWordCollection,
   resetSentenceProgress,
+  isSentenceComplete,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
@@ -143,6 +144,16 @@ describe('castleDefense', () => {
     })
   })
 
+  describe('isSentenceComplete', () => {
+    it('returns true when all words are collected', () => {
+      expect(isSentenceComplete([0, 1, 2], 3)).toBe(true)
+    })
+
+    it('returns false when words are missing', () => {
+      expect(isSentenceComplete([0, 1], 3)).toBe(false)
+    })
+  })
+
   describe('createCastleDefenseState', () => {
     it('should create valid initial state with empty vocabulary', () => {
       const state = createCastleDefenseState([])
@@ -159,6 +170,7 @@ describe('castleDefense', () => {
       expect(state.currentSentenceThai).toBe('')
       expect(state.sentenceWords).toEqual([])
       expect(state.collectedWordIndices).toEqual([])
+      expect(state.sentenceCompleted).toBe(false)
     })
 
     it('should assign target words to tower slots from vocabulary', () => {
@@ -191,6 +203,7 @@ describe('castleDefense', () => {
       expect(state.currentSentenceThai).toBe('แมวอยู่บนพรม')
       expect(state.sentenceWords).toEqual(['The', 'cat', 'is', 'on', 'the', 'mat'])
       expect(state.collectedWordIndices).toEqual([])
+      expect(state.sentenceCompleted).toBe(false)
     })
   })
 
@@ -277,6 +290,23 @@ describe('castleDefense', () => {
       }
       const nextState = advanceCastleDefenseTime(state, 50, { dx: 0, dy: 0 }, vocabulary)
       expect(nextState.status).toBe('gameover')
+    })
+
+    it('marks sentence complete and awards points when all words are collected', () => {
+      const baseState = createCastleDefenseState(vocabulary)
+      const state = {
+        ...baseState,
+        sentenceWords: ['hello', 'world'],
+        collectedWordIndices: [0, 1],
+        sentenceCompleted: false,
+        words: [],
+        enemies: [],
+      }
+
+      const nextState = advanceCastleDefenseTime(state, 0, { dx: 0, dy: 0 }, vocabulary)
+
+      expect(nextState.sentenceCompleted).toBe(true)
+      expect(nextState.score).toBe(state.score + 50)
     })
   })
 })
