@@ -113,7 +113,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 3: Tower Building Logic
+## Phase 3: Tower Building Logic [checkpoint: 19019cb]
 
 ### Task 3.1: Implement tower building mechanics
 - [x] Sub-task: Update game state to track tower building: 3ef296b
@@ -151,7 +151,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Visual inspection - tower building flow is clear and intuitive. ✅
 
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Tower Building Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Tower Building Logic' (Protocol in workflow.md) 19019cb
 
 ---
 
