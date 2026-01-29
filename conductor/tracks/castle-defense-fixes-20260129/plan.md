@@ -240,7 +240,7 @@ Before starting ANY phase, the implementer MUST:
   - Test: Returns false if enemies still alive
   - Test: Returns false if more enemies to spawn
 - [x] Sub-task: Implement `isWaveComplete()` function 7a35f4f
-- [ ] Sub-task: Update `advanceCastleDefenseTime()` to:
+- [x] Sub-task: Update `advanceCastleDefenseTime()` to: cb1098f
   - Check wave completion
   - Show "Wave X Complete" message
   - Advance to next wave after brief delay
