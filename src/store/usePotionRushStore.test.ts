@@ -163,4 +163,50 @@ describe('usePotionRushStore Refinements', () => {
           expect(word).not.toBe('ignored')
       })
   })
+
+  it('should remove a word from activeWordPool when it is spawned as an ingredient', () => {
+      const vocabList = [{ term: 'single', definition: 'desc', id: '1' }]
+
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+      })
+
+      expect(usePotionRushStore.getState().activeWordPool).toContain('single')
+
+      act(() => {
+          usePotionRushStore.getState().spawnIngredient(vocabList, 1000)
+      })
+
+      expect(usePotionRushStore.getState().activeWordPool).not.toContain('single')
+      
+      act(() => {
+          // Attempting to spawn again should fail (empty pool)
+          usePotionRushStore.getState().spawnIngredient(vocabList, 1000)
+      })
+      
+      expect(usePotionRushStore.getState().conveyorItems.length).toBe(1)
+  })
+
+  it('should reset cauldron to IDLE when handleDumpCauldron is called', () => {
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          // Force a cauldron into BREWING state
+          usePotionRushStore.setState(prev => {
+              const newCauldrons = [...prev.cauldrons]
+              newCauldrons[0] = { ...newCauldrons[0], state: 'BREWING', currentWords: ['test'] }
+              return { cauldrons: newCauldrons }
+          })
+      })
+
+      expect(usePotionRushStore.getState().cauldrons[0].state).toBe('BREWING')
+
+      act(() => {
+          usePotionRushStore.getState().handleDumpCauldron(0)
+      })
+
+      const state = usePotionRushStore.getState()
+      expect(state.cauldrons[0].state).toBe('IDLE')
+      expect(state.cauldrons[0].currentWords).toEqual([])
+  })
 })

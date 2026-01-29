@@ -203,7 +203,8 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       if (activeWordPool.length === 0) return
 
       // Pick only from active pool
-      const randomWord = activeWordPool[Math.floor(Math.random() * activeWordPool.length)]
+      const poolIndex = Math.floor(Math.random() * activeWordPool.length)
+      const randomWord = activeWordPool[poolIndex]
       
       const types: Ingredient['type'][] = ['potion', 'mushroom', 'mineral', 'herb']
       const randomType = types[Math.floor(Math.random() * types.length)]
@@ -218,7 +219,14 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           isDragging: false
       }
 
-      set({ conveyorItems: [...conveyorItems, newItem] })
+      // Remove the word from the active pool
+      const nextActiveWordPool = [...activeWordPool]
+      nextActiveWordPool.splice(poolIndex, 1)
+
+      set({ 
+          conveyorItems: [...conveyorItems, newItem],
+          activeWordPool: nextActiveWordPool
+      })
   },
 
   tick: (dt) => {
