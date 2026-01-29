@@ -4,9 +4,11 @@ import {
   circlesCollide,
   spawnEnemy,
   advanceCastleDefenseTime,
+  spawnSentenceWords,
   GAME_WIDTH,
   GAME_HEIGHT,
   PLAYER_RADIUS,
+  WORD_RADIUS,
   BASE_HP,
   SPAWN_RATE_MS,
   parseSentenceWords,
@@ -28,6 +30,33 @@ describe('castleDefense', () => {
 
     it('strips common punctuation', () => {
       expect(parseSentenceWords('Hello, world!')).toEqual(['Hello', 'world'])
+    })
+  })
+
+  describe('spawnSentenceWords', () => {
+    it('returns correct number of word orbs', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      expect(words).toHaveLength(3)
+    })
+
+    it('assigns one sentence word to each orb', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      expect(words.map(word => word.translation)).toEqual(['The', 'cat', 'sits'])
+    })
+
+    it('includes all words from the sentence', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      expect(new Set(words.map(word => word.translation))).toEqual(new Set(['The', 'cat', 'sits']))
+    })
+
+    it('spawns orbs within game bounds', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      for (const word of words) {
+        expect(word.x).toBeGreaterThanOrEqual(WORD_RADIUS)
+        expect(word.x).toBeLessThanOrEqual(GAME_WIDTH - WORD_RADIUS)
+        expect(word.y).toBeGreaterThanOrEqual(WORD_RADIUS)
+        expect(word.y).toBeLessThanOrEqual(GAME_HEIGHT - WORD_RADIUS)
+      }
     })
   })
 

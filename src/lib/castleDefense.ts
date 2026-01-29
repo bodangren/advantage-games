@@ -426,6 +426,25 @@ export function parseSentenceWords(sentence: string): string[] {
     .filter(word => word.length > 0)
 }
 
+// Spawn word orbs for a full sentence
+export function spawnSentenceWords(
+  sentence: string,
+  random: () => number = Math.random
+): Word[] {
+  const sentenceWords = parseSentenceWords(sentence)
+
+  return sentenceWords.map(word => ({
+    id: generateId(),
+    x: WORD_RADIUS + random() * (GAME_WIDTH - WORD_RADIUS * 2),
+    y: WORD_RADIUS + random() * (GAME_HEIGHT - WORD_RADIUS * 2),
+    radius: WORD_RADIUS,
+    term: word,
+    translation: word,
+    isCorrect: true,
+    isCollected: false,
+  }))
+}
+
 // Check if player collects any words
 export function collectWords(
   player: Player,
