@@ -58,6 +58,6 @@
 - [x] **Sound Effects:** Bubbling, Clinking, Angry grunts, Cash register ding. ba18ddc
 - [x] **Tutorial/Start Screen:** Brief explanation of "Native Request -> Target Ingredient". 38fa58b
 
-## Phase 6: Mobile Optimization
+## Phase 6: Mobile Optimization [checkpoint: ca7d2c8]
 - [x] **Touch Controls:** Ensure drag targets are large enough.
 - [x] **Responsive Layout:** Stack elements vertically if needed on portrait (or force landscape).
