@@ -57,7 +57,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: TypeScript check passes. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Sentence Parsing and Word System' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Sentence Parsing and Word System' (Protocol in workflow.md)
 
 ---
 
