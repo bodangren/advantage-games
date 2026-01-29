@@ -4,14 +4,62 @@ import {
   circlesCollide,
   spawnEnemy,
   advanceCastleDefenseTime,
+  spawnSentenceWords,
   GAME_WIDTH,
   GAME_HEIGHT,
   PLAYER_RADIUS,
+  WORD_RADIUS,
   BASE_HP,
   SPAWN_RATE_MS,
+  parseSentenceWords,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
+  describe('parseSentenceWords', () => {
+    it('splits a sentence into words', () => {
+      expect(parseSentenceWords('The cat sits')).toEqual(['The', 'cat', 'sits'])
+    })
+
+    it('returns empty array for empty string', () => {
+      expect(parseSentenceWords('')).toEqual([])
+    })
+
+    it('handles multiple spaces', () => {
+      expect(parseSentenceWords('The   cat   sits')).toEqual(['The', 'cat', 'sits'])
+    })
+
+    it('strips common punctuation', () => {
+      expect(parseSentenceWords('Hello, world!')).toEqual(['Hello', 'world'])
+    })
+  })
+
+  describe('spawnSentenceWords', () => {
+    it('returns correct number of word orbs', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      expect(words).toHaveLength(3)
+    })
+
+    it('assigns one sentence word to each orb', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      expect(words.map(word => word.translation)).toEqual(['The', 'cat', 'sits'])
+    })
+
+    it('includes all words from the sentence', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      expect(new Set(words.map(word => word.translation))).toEqual(new Set(['The', 'cat', 'sits']))
+    })
+
+    it('spawns orbs within game bounds', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      for (const word of words) {
+        expect(word.x).toBeGreaterThanOrEqual(WORD_RADIUS)
+        expect(word.x).toBeLessThanOrEqual(GAME_WIDTH - WORD_RADIUS)
+        expect(word.y).toBeGreaterThanOrEqual(WORD_RADIUS)
+        expect(word.y).toBeLessThanOrEqual(GAME_HEIGHT - WORD_RADIUS)
+      }
+    })
+  })
+
   describe('createCastleDefenseState', () => {
     it('should create valid initial state with empty vocabulary', () => {
       const state = createCastleDefenseState([])
@@ -24,6 +72,10 @@ describe('castleDefense', () => {
       expect(state.enemies).toEqual([])
       expect(state.base.hp).toBe(BASE_HP)
       expect(state.wave).toBe(1)
+      expect(state.currentSentenceEnglish).toBe('')
+      expect(state.currentSentenceThai).toBe('')
+      expect(state.sentenceWords).toEqual([])
+      expect(state.collectedWordIndices).toEqual([])
     })
 
     it('should assign target words to tower slots from vocabulary', () => {
@@ -43,6 +95,19 @@ describe('castleDefense', () => {
       const state = createCastleDefenseState(vocab)
 
       expect(state.targetWord).toBe('prueba')
+    })
+
+    it('should initialize sentence fields from first vocabulary item', () => {
+      const vocab = [
+        { term: 'The cat is on the mat', translation: 'แมวอยู่บนพรม' },
+        { term: 'I like to eat apples', translation: 'ฉันชอบกินแอปเปิ้ล' },
+      ]
+      const state = createCastleDefenseState(vocab)
+
+      expect(state.currentSentenceEnglish).toBe('The cat is on the mat')
+      expect(state.currentSentenceThai).toBe('แมวอยู่บนพรม')
+      expect(state.sentenceWords).toEqual(['The', 'cat', 'is', 'on', 'the', 'mat'])
+      expect(state.collectedWordIndices).toEqual([])
     })
   })
 

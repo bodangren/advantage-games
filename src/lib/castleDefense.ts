@@ -130,6 +130,10 @@ export type CastleDefenseState = {
   spawnTimer: number
   gameTime: number
   targetWord: string  // current word player should collect
+  currentSentenceThai: string
+  currentSentenceEnglish: string
+  sentenceWords: string[]
+  collectedWordIndices: number[]
   grassMap: number[][] // 16x12 array of grass variant indices
 }
 
@@ -232,6 +236,9 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     ? vocabulary[Math.floor(Math.random() * vocabulary.length)]
     : { term: 'default', translation: 'default' }
 
+  const firstSentence = vocabulary[0] || { term: '', translation: '' }
+  const sentenceWords = parseSentenceWords(firstSentence.term)
+
   // Assign target words to tower slots
   const towerSlots = DEFAULT_TOWER_SLOTS.map((slot, i) => ({
     ...slot,
@@ -266,6 +273,10 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     spawnTimer: 0,
     gameTime: 0,
     targetWord: targetItem.translation,
+    currentSentenceThai: firstSentence.translation,
+    currentSentenceEnglish: firstSentence.term,
+    sentenceWords,
+    collectedWordIndices: [],
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
     ),
@@ -415,6 +426,34 @@ export function inRange(
   const dx = x1 - x2
   const dy = y1 - y2
   return (dx * dx + dy * dy) < (range * range)
+}
+
+// Parse an English sentence into individual words
+export function parseSentenceWords(sentence: string): string[] {
+  return sentence
+    .trim()
+    .split(/\s+/)
+    .map(word => word.replace(/^[^A-Za-z0-9]+|[^A-Za-z0-9]+$/g, ''))
+    .filter(word => word.length > 0)
+}
+
+// Spawn word orbs for a full sentence
+export function spawnSentenceWords(
+  sentence: string,
+  random: () => number = Math.random
+): Word[] {
+  const sentenceWords = parseSentenceWords(sentence)
+
+  return sentenceWords.map(word => ({
+    id: generateId(),
+    x: WORD_RADIUS + random() * (GAME_WIDTH - WORD_RADIUS * 2),
+    y: WORD_RADIUS + random() * (GAME_HEIGHT - WORD_RADIUS * 2),
+    radius: WORD_RADIUS,
+    term: word,
+    translation: word,
+    isCorrect: true,
+    isCollected: false,
+  }))
 }
 
 // Check if player collects any words
@@ -735,7 +774,7 @@ export function advanceCastleDefenseTime(
 
   // 11. Respawn words if all collected
   if (words.every(w => w.isCollected) || words.length === 0) {
-    words = spawnWords(vocabulary, state.targetWord)
+    words = spawnSentenceWords(state.currentSentenceEnglish)
   }
 
   // 12. Check game over

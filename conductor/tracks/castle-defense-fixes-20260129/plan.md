@@ -12,39 +12,39 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 1: Sentence Parsing and Word System
 
 ### Task 1.1: Create sentence parsing utilities
-- [ ] Sub-task: Write tests for `parseSentenceWords(sentence: string): string[]` in `src/lib/castleDefense.test.ts`
+- [x] Sub-task: Write tests for `parseSentenceWords(sentence: string): string[]` in `src/lib/castleDefense.test.ts` 6c3892d
   - Test: "The cat sits" → ["The", "cat", "sits"]
   - Test: Empty string → []
   - Test: Multiple spaces handled correctly
   - Test: Punctuation handling (if needed)
-- [ ] Sub-task: Implement `parseSentenceWords()` in `src/lib/castleDefense.ts`
-- [ ] Sub-task: Run tests: `CI=true npm test src/lib/castleDefense.test.ts`
+- [x] Sub-task: Implement `parseSentenceWords()` in `src/lib/castleDefense.ts` 6c3892d
+- [x] Sub-task: Run tests: `CI=true npm test src/lib/castleDefense.test.ts` 6c3892d
 
 **Verification**: All tests pass. ✅
 
 ### Task 1.2: Create sentence word spawning logic
-- [ ] Sub-task: Write tests for `spawnSentenceWords(sentence: string, random?): Word[]`
+- [x] Sub-task: Write tests for `spawnSentenceWords(sentence: string, random?): Word[]` e5ec942
   - Test: Returns correct number of word orbs
   - Test: Each orb has one word from sentence
   - Test: All words from sentence are present
   - Test: Orbs have valid x,y positions within game bounds
-- [ ] Sub-task: Implement `spawnSentenceWords()` function
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `spawnSentenceWords()` function e5ec942
+- [x] Sub-task: Run tests e5ec942
 
 **Verification**: All tests pass. ✅
 
 ### Task 1.3: Update game state to use sentences
-- [ ] Sub-task: Add new fields to `CastleDefenseState`:
+- [x] Sub-task: Add new fields to `CastleDefenseState`: f7f30c3
   ```typescript
   currentSentenceThai: string
   currentSentenceEnglish: string
   sentenceWords: string[]  // parsed words in order
   collectedWordIndices: number[]  // which words collected so far
   ```
-- [ ] Sub-task: Update `createCastleDefenseState()` to initialize with first sentence
-- [ ] Sub-task: Update `advanceCastleDefenseTime()` to spawn sentence words instead of translation orbs
-- [ ] Sub-task: Write tests for updated state initialization
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Update `createCastleDefenseState()` to initialize with first sentence 1cb0a1e
+- [x] Sub-task: Update `advanceCastleDefenseTime()` to spawn sentence words instead of translation orbs ebb1e06
+- [x] Sub-task: Write tests for updated state initialization 9c4bc8e
+- [x] Sub-task: Run tests 9c4bc8e
 
 **Verification**: Tests pass, TypeScript compiles without errors. ✅
 

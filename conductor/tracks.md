@@ -22,7 +22,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Castle Defense - Core Fixes and Polish**
+- [~] **Track: Castle Defense - Core Fixes and Polish**
 *Link: [./conductor/tracks/castle-defense-fixes-20260129/](./conductor/tracks/castle-defense-fixes-20260129/)*
 *Description: Fix sentence loading, word collection mechanics, visual display, and add fullscreen support*
 *Priority: High*
