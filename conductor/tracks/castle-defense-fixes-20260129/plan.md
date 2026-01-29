@@ -136,7 +136,7 @@ Before starting ANY phase, the implementer MUST:
   - Test: Resets collectedWordIndices
   - Test: Spawns new sentence words
 - [x] Sub-task: Implement `buildTowerAtSlot()` function 2ccbad5
-- [ ] Sub-task: Integrate into `advanceCastleDefenseTime()`:
+- [x] Sub-task: Integrate into `advanceCastleDefenseTime()`: c8cf442
   - Check if player near tower base AND sentenceCompleted
   - Auto-build tower (or require input, TBD)
   - Call `buildTowerAtSlot()`
