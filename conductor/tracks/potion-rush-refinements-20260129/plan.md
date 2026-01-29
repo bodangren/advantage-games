@@ -2,7 +2,7 @@
 
 This plan outlines the refactoring and enhancement of Potion Rush gameplay mechanics, focusing on word spawning, cauldron management, and the reputation system.
 
-## Phase 1: Logic & State Refactoring
+## Phase 1: Logic & State Refactoring [checkpoint: fa256dc]
 **Goal:** Update the Zustand store to handle the new word pool logic, reputation score, and dynamic belt speed.
 
 - [x] **Task 1.1: Update State Interfaces** [e253d3b]
@@ -23,7 +23,7 @@ This plan outlines the refactoring and enhancement of Potion Rush gameplay mecha
     - [x] Test reputation decrease and game over trigger.
     - [x] Test speed increment calculation.
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Logic & State Refactoring' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Logic & State Refactoring' (Protocol in workflow.md) [fa256dc]
 
 ## Phase 2: Refined Spawning & Cauldron Reset
 **Goal:** Implement the intelligent word spawner and the cauldron-to-trash drag logic.
