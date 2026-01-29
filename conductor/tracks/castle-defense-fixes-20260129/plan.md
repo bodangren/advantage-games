@@ -192,7 +192,7 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 5: Wave System with Finite Enemies
 
 ### Task 5.1: Define wave configurations
-- [ ] Sub-task: Create `WAVE_CONFIGS` constant in `src/lib/castleDefense.ts`:
+- [x] Sub-task: Create `WAVE_CONFIGS` constant in `src/lib/castleDefense.ts`: a698166
   ```typescript
   export const WAVE_CONFIGS = [
     { wave: 1, soldiers: 10, tanks: 0, bosses: 0 },
@@ -203,8 +203,8 @@ Before starting ANY phase, the implementer MUST:
     { wave: 6, soldiers: 20, tanks: 12, bosses: 3 },
   ]
   ```
-- [ ] Sub-task: Write tests for wave config retrieval
-- [ ] Sub-task: Run `npx tsc --noEmit`
+- [x] Sub-task: Write tests for wave config retrieval a698166
+- [x] Sub-task: Run `npx tsc --noEmit` a698166
 
 **Verification**: TypeScript check passes. ✅
 
