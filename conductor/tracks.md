@@ -34,5 +34,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Potion Rush Gameplay Refinements**
+- [~] **Track: Potion Rush Gameplay Refinements**
 *Link: [./conductor/tracks/potion-rush-refinements-20260129/](./conductor/tracks/potion-rush-refinements-20260129/)*

@@ -21,8 +21,8 @@ describe('usePotionRushStore Refinements', () => {
       const vocabList = [{ term: 'hello world', definition: 'greeting', id: '1' }]
       
       act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
+          usePotionRushStore.getState().startGame(vocabList)
+          usePotionRushStore.getState().spawnCustomer()
       })
 
       const state = usePotionRushStore.getState()
@@ -38,8 +38,8 @@ describe('usePotionRushStore Refinements', () => {
       const vocabList = [{ term: 'test', definition: 'test', id: '1' }]
       
       act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
+          usePotionRushStore.getState().startGame(vocabList)
+          usePotionRushStore.getState().spawnCustomer()
       })
 
       const state = usePotionRushStore.getState()
@@ -64,8 +64,8 @@ describe('usePotionRushStore Refinements', () => {
       const vocabList = [{ term: 'test', definition: 'test', id: '1' }]
       
       act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
+          usePotionRushStore.getState().startGame(vocabList)
+          usePotionRushStore.getState().spawnCustomer()
       })
 
       const state = usePotionRushStore.getState()
@@ -85,7 +85,7 @@ describe('usePotionRushStore Refinements', () => {
       expect(newState.completedSentences).toBe(1)
       
       act(() => {
-          usePotionRushStore.getState().tick(0.1)
+          usePotionRushStore.getState().tick(0.1, 1000)
       })
       
       const updatedState = usePotionRushStore.getState()
@@ -95,13 +95,13 @@ describe('usePotionRushStore Refinements', () => {
   it('should reduce reputation when customer leaves angry', () => {
       const vocabList = [{ term: 'test', definition: 'test', id: '1' }]
       act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
+          usePotionRushStore.getState().startGame(vocabList)
+          usePotionRushStore.getState().spawnCustomer()
       })
 
       // Fast forward time to make patience 0
       act(() => {
-          usePotionRushStore.getState().tick(61) // Patience is 60
+          usePotionRushStore.getState().tick(61, 1000) // Patience is 60
       })
 
       const state = usePotionRushStore.getState()
@@ -118,17 +118,31 @@ describe('usePotionRushStore Refinements', () => {
       ]
 
       act(() => {
-          usePotionRushStore.getState().startGame()
-          // Only spawn the first one as customer
-          usePotionRushStore.getState().spawnCustomer([vocabList[0]])
+          usePotionRushStore.getState().startGame(vocabList)
+          // Only spawn the first one as customer (random, but wait, random is used inside spawnCustomer)
+          // We can't guarantee 'needed word' is picked unless we force randomness or iterate until it is.
+          // Or we assume the store picks randomly.
+          // Let's force randomness mock or just try to fill customers until we get it?
+          // Actually, 'vocabList[0]' passed to spawnCustomer old test was specific. Now it picks from stored vocabList.
+          // So we should pass a list of 1 item to startGame to guarantee it picks what we want?
+          // BUT the test wants to verify 'ignored word' is NOT picked.
+          // So we need startGame to have both options available? No, startGame has the full list.
+          // spawnCustomer picks one.
+          
+          // Workaround: Mock Math.random to pick index 0.
+          jest.spyOn(Math, 'random').mockReturnValue(0)
+          
+          usePotionRushStore.getState().spawnCustomer()
       })
 
       act(() => {
           // Try to spawn multiple ingredients
           for (let i = 0; i < 10; i++) {
-              usePotionRushStore.getState().spawnIngredient(vocabList, 1000)
+              usePotionRushStore.getState().spawnIngredient(1000)
           }
       })
+      
+      jest.restoreAllMocks()
 
       const state = usePotionRushStore.getState()
       const spawnedWords = state.conveyorItems.map(i => i.word)
@@ -143,8 +157,8 @@ describe('usePotionRushStore Refinements', () => {
       const vocabList = [{ term: 'orphan me', definition: 'desc', id: '1' }]
 
       act(() => {
-          usePotionRushStore.getState().startGame()
-          usePotionRushStore.getState().spawnCustomer(vocabList)
+          usePotionRushStore.getState().startGame(vocabList)
+          usePotionRushStore.getState().spawnCustomer()
       })
 
       const customer = usePotionRushStore.getState().customers[0]!
@@ -163,7 +177,7 @@ describe('usePotionRushStore Refinements', () => {
 
       // Fast forward to make customer leave
       act(() => {
-          usePotionRushStore.getState().tick(61)
+          usePotionRushStore.getState().tick(61, 1000)
       })
 
       const state = usePotionRushStore.getState()
@@ -179,11 +193,11 @@ describe('usePotionRushStore Refinements', () => {
       const vocabList = [{ term: 'shared', definition: 'desc', id: '1' }]
 
       act(() => {
-          usePotionRushStore.getState().startGame()
+          usePotionRushStore.getState().startGame(vocabList)
           // Spawn A (Slot 0)
-          usePotionRushStore.getState().spawnCustomer(vocabList)
+          usePotionRushStore.getState().spawnCustomer()
           // Spawn B (Slot 1)
-          usePotionRushStore.getState().spawnCustomer(vocabList)
+          usePotionRushStore.getState().spawnCustomer()
       })
 
       const state = usePotionRushStore.getState()
@@ -210,7 +224,7 @@ describe('usePotionRushStore Refinements', () => {
               if (nextCust[0]) nextCust[0] = { ...nextCust[0], patience: 0.1 }
               return { customers: nextCust }
           })
-          usePotionRushStore.getState().tick(1)
+          usePotionRushStore.getState().tick(1, 1000)
       })
 
       const newState = usePotionRushStore.getState()

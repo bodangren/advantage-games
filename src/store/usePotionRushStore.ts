@@ -68,21 +68,25 @@ interface PotionRushState {
   baseBeltSpeed: number
   beltSpeed: number
   spawnRate: number
+  vocabList: VocabularyItem[]
   
   // Logic State
   activeWordPool: string[]
   completedSentences: number
+  totalXpEarned: number
+  timeToNextCustomerSpawn: number
+  timeToNextIngredientSpawn: number
 
   // Actions
-  startGame: () => void
+  startGame: (vocabList: VocabularyItem[]) => void
   pauseGame: () => void
   resumeGame: () => void
   endGame: () => void
   
   // Logic
-  tick: (dt: number) => void
-  spawnCustomer: (vocabList: VocabularyItem[]) => void
-  spawnIngredient: (vocabList: VocabularyItem[], screenWidth: number) => void
+  tick: (dt: number, screenWidth: number) => void
+  spawnCustomer: () => void
+  spawnIngredient: (screenWidth: number) => void
   
   // Interaction
   handleDropIngredient: (
@@ -114,6 +118,7 @@ const EFFECT_DURATIONS: Record<PotionRushEffectType, number> = {
   SMOKE: 1.1,
   SUCCESS: 0.9,
 }
+const BASE_PATIENCE = 60
 
 export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   gameState: 'MENU',
@@ -133,11 +138,15 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   baseBeltSpeed: 50,
   beltSpeed: 50, // Pixels per second
   spawnRate: 2100, // ms
+  vocabList: [],
   
   activeWordPool: [],
   completedSentences: 0,
+  totalXpEarned: 0,
+  timeToNextCustomerSpawn: 0,
+  timeToNextIngredientSpawn: 0,
   
-  startGame: () => set({
+  startGame: (vocabList) => set({
       gameState: 'PLAYING',
       score: 0,
       reputation: 100,
@@ -147,7 +156,11 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       effects: [],
       activeWordPool: [],
       completedSentences: 0,
+      totalXpEarned: 0,
       beltSpeed: 50,
+      vocabList,
+      timeToNextCustomerSpawn: 1, // Short delay before first customer
+      timeToNextIngredientSpawn: 0.5,
       cauldrons: [
         { id: 0, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
         { id: 1, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
@@ -167,12 +180,14 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       score: 0,
       reputation: 100,
       activeWordPool: [],
-      completedSentences: 0
+      completedSentences: 0,
+      vocabList: [],
+      totalXpEarned: 0
   }),
 
-  spawnCustomer: (vocabList) => {
-      const { customers, gameState, activeWordPool } = get()
-      if (gameState !== 'PLAYING') return
+  spawnCustomer: () => {
+      const { customers, gameState, activeWordPool, vocabList, completedSentences } = get()
+      if (gameState !== 'PLAYING' || vocabList.length === 0) return
       
       // Find first empty slot
       const emptySlotIndex = customers.findIndex(c => c === null)
@@ -182,12 +197,16 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       const types: CustomerType[] = ['orc', 'elf', 'wizard', 'dwarf', 'goblin', 'human', 'skeleton']
       const randomType = types[Math.floor(Math.random() * types.length)]
 
+      // Difficulty Scaling
+      // Patience decreases by 10% per sentence
+      const scaledPatience = BASE_PATIENCE * Math.pow(0.9, completedSentences)
+
       const newCustomer: Customer = {
           id: Math.random().toString(36).substr(2, 9),
           type: randomType,
           request: randomVocab,
-          patience: 60, // seconds
-          maxPatience: 60,
+          patience: scaledPatience,
+          maxPatience: scaledPatience,
           state: 'WAITING',
           leaveTimer: undefined
       }
@@ -203,7 +222,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       })
   },
 
-  spawnIngredient: (vocabList, screenWidth) => {
+  spawnIngredient: (screenWidth) => {
       const { conveyorItems, gameState, activeWordPool } = get()
       if (gameState !== 'PLAYING') return
       if (activeWordPool.length === 0) return
@@ -235,14 +254,54 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       })
   },
 
-  tick: (dt) => {
-      const { gameState, conveyorItems, beltSpeed, customers, dayTime, reputation, effects, activeWordPool, baseBeltSpeed, completedSentences, cauldrons } = get()
+  tick: (dt, screenWidth) => {
+      const { 
+          gameState, conveyorItems, beltSpeed, customers, dayTime, reputation, 
+          effects, activeWordPool, baseBeltSpeed, completedSentences, cauldrons,
+          timeToNextCustomerSpawn, timeToNextIngredientSpawn, spawnRate
+      } = get()
+      
       if (gameState !== 'PLAYING') return
+
+      // --- SPAWN LOGIC ---
+      
+      // 1. Customers
+      // Calculate current patience for spawn rate
+      const currentPatience = BASE_PATIENCE * Math.pow(0.9, completedSentences)
+      const customerSpawnInterval = currentPatience / 3
+      
+      let nextCustomerTimer = timeToNextCustomerSpawn - dt
+      if (nextCustomerTimer <= 0) {
+          // Attempt spawn
+          const emptySlotIndex = customers.findIndex(c => c === null)
+          if (emptySlotIndex !== -1) {
+             get().spawnCustomer()
+             // Only reset timer if successful? Or always?
+             // Usually always to prevent spamming if full.
+             nextCustomerTimer = customerSpawnInterval
+          } else {
+             // If full, retry sooner? or same interval?
+             // Let's retry sooner
+             nextCustomerTimer = 1 
+          }
+      }
+
+      // 2. Ingredients
+      let nextIngredientTimer = timeToNextIngredientSpawn - dt
+      if (nextIngredientTimer <= 0) {
+          get().spawnIngredient(screenWidth)
+          nextIngredientTimer = spawnRate / 1000 // spawnRate is in ms
+      }
+
+      // --- UPDATE STATE ---
+      // (Optimized: we could batch this set at the end)
+      // But we need to use 'set' to update timers for next frame?
+      // Yes, we will set them at the end.
 
       // Calculate speed
       const targetSpeed = baseBeltSpeed * Math.pow(1.1, completedSentences)
 
-      // 1. Move Conveyor Items & Recycle Words
+      // 3. Move Conveyor Items & Recycle Words
       let recycledWords: string[] = []
       const nextItems: Ingredient[] = []
       
@@ -260,7 +319,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           }
       })
 
-      // 2. Update Customer Patience
+      // 4. Update Customer Patience
       let nextReputation = reputation
       let wordsToRemove: string[] = []
 
@@ -283,19 +342,9 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           return { ...c, patience: newPatience }
       })
       
-      // Simple Reset Logic: 
-      // If Customer[i] is null or not WAITING, reset Cauldron[i]
+      // Simple Reset Logic
       const nextCauldrons = cauldrons.map((cauldron, i) => {
           const customer = nextCustomers[i]
-          
-          // If customer is gone (null) OR is leaving (LEAVING_ANGRY), reset cauldron.
-          // Because cauldron i corresponds strictly to customer i.
-          // Exception: If we just served them? 'LEAVING_HAPPY'
-          // If LEAVING_HAPPY, we probably want to keep the "COMPLETED" state until drag?
-          // Actually, handleServe resets cauldron immediately. So state is IDLE.
-          // So if customer is LEAVING_HAPPY, cauldron is likely already IDLE.
-          
-          // But if customer is LEAVING_ANGRY or NULL, we MUST reset to IDLE.
           if (!customer || customer.state === 'LEAVING_ANGRY') {
               if (cauldron.state !== 'IDLE') {
                    return { ...cauldron, state: 'IDLE' as const, targetSentence: null, currentWords: [], shake: false }
@@ -305,40 +354,20 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       })
 
       // Update activeWordPool
-
-      // Update activeWordPool
-
-      // Update activeWordPool
       let nextActiveWordPool = activeWordPool
-      
-      // Add recycled words
       if (recycledWords.length > 0) {
           nextActiveWordPool = [...nextActiveWordPool, ...recycledWords]
       }
-
-      // Remove words from angry customers
       if (wordsToRemove.length > 0) {
-          // If recycled words were just added, we use that list.
-          // Note: If a word is recycled AND the customer leaves at the same exact tick, 
-          // we should technically remove it. 
-          // Current Logic: 
-          // 1. Recycle words (add to pool)
-          // 2. Angry customer (remove from pool)
-          // This seems correct. If customer leaves, we don't want those words anymore, even if they just fell off the belt.
-          
-          // However, we need to be careful not to mutate if we haven't already
-          if (nextActiveWordPool === activeWordPool) {
-              nextActiveWordPool = [...activeWordPool]
-          }
-          
+          if (nextActiveWordPool === activeWordPool) nextActiveWordPool = [...activeWordPool]
           wordsToRemove.forEach(word => {
                const idx = nextActiveWordPool.indexOf(word)
                if (idx > -1) nextActiveWordPool.splice(idx, 1)
           })
       }
 
-      // 3. Update Day Time
-      const nextDayTime = dayTime + (dt * 0.01) // slow day progression
+      // 5. Update Day Time (can be linked to sentences too, or just time)
+      const nextDayTime = dayTime + (dt * 0.01) 
 
       const nextEffects = effects
         .map(effect => ({ ...effect, age: effect.age + dt }))
@@ -355,7 +384,9 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
             effects: nextEffects,
             activeWordPool: nextActiveWordPool,
             beltSpeed: targetSpeed,
-            cauldrons: nextCauldrons
+            cauldrons: nextCauldrons,
+            timeToNextCustomerSpawn: nextCustomerTimer,
+            timeToNextIngredientSpawn: nextIngredientTimer
           })
       }
   },
@@ -379,10 +410,6 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
     }
 
     emitEffect('SPLASH')
-
-    // LOGIC:
-    // If IDLE: We need to see if this word starts ANY waiting customer's sentence.
-    // If BREWING: Check against current assigned sentence.
 
     const nextCauldron = { ...cauldron }
     const { activeWordPool } = get()
@@ -421,10 +448,6 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
             nextCauldron.state = 'WARNING'
             nextCauldron.shake = true
             emitEffect('SMOKE')
-            // Reset shake after short delay usually, or handle in UI
-            
-            // Recycle the wrong ingredient back to pool immediately
-            // because it is NOT added to currentWords in this branch
             set({ activeWordPool: [...activeWordPool, ingredient.word] })
         }
     }
@@ -438,7 +461,6 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       const { cauldrons, activeWordPool } = get()
       const cauldronToDump = cauldrons[cauldronIndex]
       
-      // Recycle words in the cauldron
       const recycledWords = [...cauldronToDump.currentWords]
       const nextActiveWordPool = [...activeWordPool, ...recycledWords]
 
@@ -457,7 +479,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   },
 
   handleServeCustomer: (customerId, cauldronIndex, servePosition) => {
-     const { customers, cauldrons, score, activeWordPool } = get()
+     const { customers, cauldrons, score, activeWordPool, completedSentences, totalXpEarned } = get()
      const cauldron = cauldrons[cauldronIndex]
      
      if (cauldron.state !== 'COMPLETED') return
@@ -466,12 +488,10 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
      const customer = customers[cauldronIndex]
      if (!customer || customer.id !== customerId) return
 
-     // Verify match (should be guaranteed by UI allowing drag, but double check)
      if (customer.request.term !== cauldron.targetSentence?.term) return
 
      // Update Customer
      const nextCustomers = [...customers]
-     // We replace the customer object in the slot with updated state
      nextCustomers[cauldronIndex] = { ...customer, state: 'LEAVING_HAPPY', leaveTimer: LEAVE_DURATION }
 
      // Remove words from pool
@@ -492,12 +512,29 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
          shake: false
      }
 
+     // SCORING LOGIC
+     // Score = Remaining Seconds (Patience)
+     const points = Math.floor(customer.patience)
+     const xp = Math.floor(points * 0.1)
+     
+     // Note: We need to access addXp from global GameStore? 
+     // The prompt says: "We will also award XP equal to 10% of score."
+     // Ideally we call the hook or store outside, but we can't easily call other stores inside here unless we import it directly.
+     // Importing `useGameStore` directly works.
+     
+     // IMPORTANT: The instruction says "We will also award XP equal to 10% of score."
+     // It implies persisting it. 
+     // But strictly inside this store, we just track it. 
+     // We will add the actual XP sync in the endGame or realtime component.
+     // Let's just track it here for the Summary first.
+
      set({ 
          customers: nextCustomers, 
          cauldrons: nextCauldrons, 
-         score: score + 100, 
+         score: score + points,
+         totalXpEarned: totalXpEarned + xp, 
          activeWordPool: nextActiveWordPool,
-         completedSentences: get().completedSentences + 1
+         completedSentences: completedSentences + 1
      })
 
      if (servePosition) {

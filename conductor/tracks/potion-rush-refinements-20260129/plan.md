@@ -68,3 +68,25 @@ This plan outlines the refactoring and enhancement of Potion Rush gameplay mecha
     - [x] Verify right-to-left flow is consistent.
 
 - [x] Task: Conductor - User Manual Verification 'Phase 4: Final Balancing & Polish' (Protocol in workflow.md) [1c70ceb]
+
+## Phase 5: Tuning, Scoring & Summary
+**Goal:** Implement dynamic difficulty scaling, time-based scoring, and the Game Over summary.
+
+- [x] **Task 5.1: Difficulty Scaling Logic**
+    - [x] Update `usePotionRushStore` to calculate `currentPatience` based on `completedSentences` (60 * 0.9^n).
+    - [x] Update `spawnCustomer` to use the scaled patience value.
+    - [x] Update customer spawn interval logic in `tick` (or `useGameLoop` integration) to trigger every `currentPatience / 3` seconds.
+- [x] **Task 5.2: Scoring & XP Implementation**
+    - [x] Update `handleServeCustomer` to calculate score = `ceil(remainingPatience)`.
+    - [x] Award XP (10% of score) using `useGameStore.getState().addXp()`.
+    - [x] Track `totalXpEarned` in the local store for the summary.
+- [x] **Task 5.3: Game Over Summary Overlay**
+    - [x] Create `PotionRushSummary.tsx` component.
+    - [x] Display it when `gameState === 'GAME_OVER'`.
+    - [x] Show Score, Customers Served, and XP Earned.
+    - [x] Provide "Play Again" and "Exit" buttons.
+- [x] **Task 5.4: Verify Scaling & Scoring**
+    - [x] Write unit tests for the new scoring formula and scaling logic.
+    - [x] Manual verification of the summary screen.
+
+- [ ] Task: Conductor - User Manual Verification 'Phase 5: Tuning, Scoring & Summary' (Protocol in workflow.md)

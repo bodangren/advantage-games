@@ -7,6 +7,7 @@ import { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
 import { useGameLoop } from '@/hooks/useGameLoop'
 import { AnimatePresence, motion, useAnimation } from 'framer-motion'
+import { useRouter } from 'next/navigation'
 
 // Components
 import ConveyorBelt from './ConveyorBelt'
@@ -16,12 +17,14 @@ import TrashPortal from './TrashPortal'
 import PotionRushEffectsLayer from './PotionRushEffectsLayer'
 import PotionRushSoundController from './PotionRushSoundController'
 import PotionRushStartScreen from './PotionRushStartScreen'
+import PotionRushSummary from './PotionRushSummary'
 
 interface PotionRushGameProps {
   vocabList: VocabularyItem[]
 }
 
 export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
+  const router = useRouter()
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const containerRef = useRef<HTMLDivElement>(null)
   const [hasStarted, setHasStarted] = useState(false)
@@ -137,35 +140,12 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
 
   // Game Loop (fixed timestep to match other Konva games)
   const isRunning = gameState === 'PLAYING' && dimensions.width > 0 && dimensions.height > 0
-  useGameLoop((dt) => tick(dt), isRunning, 50)
-
-  // Spawners (Intervals)
-  useEffect(() => {
-      if (gameState !== 'PLAYING') return
-
-      // Initial Spawn immediately
-      spawnCustomer(vocabList)
-      spawnIngredient(vocabList, VIRTUAL_WIDTH)
-
-      const customerInterval = setInterval(() => {
-          spawnCustomer(vocabList)
-      }, 4000) // Every 4 seconds try to spawn customer
-
-      const ingredientInterval = setInterval(() => {
-          spawnIngredient(vocabList, VIRTUAL_WIDTH)
-      }, spawnRate) 
-
-      return () => {
-          clearInterval(customerInterval)
-          clearInterval(ingredientInterval)
-      }
-  }, [gameState, spawnCustomer, spawnIngredient, vocabList, VIRTUAL_WIDTH, spawnRate])
+  useGameLoop((dt) => tick(dt, VIRTUAL_WIDTH), isRunning, 50)
 
   // Initial Start
   useEffect(() => {
-      // startGame() // Don't start automatically anymore
       return () => reset()
-  }, [reset]) // Removed startGame from here
+  }, [reset])
 
   if (dimensions.width === 0) return <div ref={containerRef} className="w-full h-full" />
 
@@ -179,7 +159,7 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
             vocabulary={vocabList} 
             onStart={() => {
               setHasStarted(true)
-              startGame()
+              startGame(vocabList)
             }} 
           />
         )}
@@ -261,17 +241,10 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
       />
 
       {gameState === 'GAME_OVER' && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/80 z-50 text-white">
-              <div className="text-center">
-                  <h1 className="text-4xl font-bold mb-4">Shop Closed!</h1>
-                  <button 
-                    onClick={() => startGame()}
-                    className="px-6 py-3 bg-purple-600 rounded-lg hover:bg-purple-500 font-bold"
-                  >
-                      Open Again
-                  </button>
-              </div>
-          </div>
+          <PotionRushSummary 
+            onRestart={() => startGame(vocabList)}
+            onExit={() => router.push('/')}
+          />
       )}
     </div>
   )

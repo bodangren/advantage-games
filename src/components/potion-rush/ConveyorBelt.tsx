@@ -8,7 +8,7 @@ interface LayoutConfig {
   cauldronY: number
   trashX: number
   trashY: number
-  [key: string]: number
+  [key: string]: any
 }
 
 interface ConveyorBeltProps {
