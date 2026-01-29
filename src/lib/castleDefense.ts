@@ -1042,9 +1042,13 @@ export function advanceCastleDefenseTime(
   // 2. Move player
   let player = movePlayer(state.player, input, dt)
 
+  let currentSentenceEnglish = state.currentSentenceEnglish
+  let currentSentenceThai = state.currentSentenceThai
+  let sentenceWords = state.sentenceWords
+
   // 3. Collect words
   let words = state.words
-  const collection = collectWords(player, words, state.sentenceWords, state.collectedWordIndices)
+  const collection = collectWords(player, words, sentenceWords, state.collectedWordIndices)
   player = collection.player
   words = collection.words
   let collectedWordIndices = collection.collectedWordIndices
@@ -1100,6 +1104,9 @@ export function advanceCastleDefenseTime(
       words = buildState.words
       collectedWordIndices = buildState.collectedWordIndices
       sentenceCompleted = buildState.sentenceCompleted
+      currentSentenceEnglish = buildState.currentSentenceEnglish
+      currentSentenceThai = buildState.currentSentenceThai
+      sentenceWords = buildState.sentenceWords
     }
   }
 
@@ -1126,7 +1133,7 @@ export function advanceCastleDefenseTime(
   const enemiesKilled = state.enemies.length - enemies.length - (baseDamage.damage > 0 ? (baseDamage.damage / 10) : 0)
   let score = state.score + (enemiesKilled > 0 ? Math.floor(enemiesKilled) * 10 : 0)
 
-  if (isSentenceComplete(collectedWordIndices, state.sentenceWords.length)) {
+  if (isSentenceComplete(collectedWordIndices, sentenceWords.length)) {
     if (!sentenceCompleted) {
       sentenceCompleted = true
       score += 50
@@ -1234,6 +1241,9 @@ export function advanceCastleDefenseTime(
     towers,
     projectiles,
     words,
+    currentSentenceThai,
+    currentSentenceEnglish,
+    sentenceWords,
     collectedWordIndices,
     sentenceCompleted,
     base,

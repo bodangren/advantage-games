@@ -342,6 +342,32 @@ describe('castleDefense', () => {
     })
   })
 
+  describe('advanceCastleDefenseTime sentence sync', () => {
+    it('updates sentence fields after building a tower', () => {
+      const vocabulary = [
+        { term: 'The cat is on the mat', translation: 'แมวอยู่บนพรม' },
+        { term: 'I like to eat apples', translation: 'ฉันชอบกินแอปเปิ้ล' },
+      ]
+      const randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0)
+      const state = createCastleDefenseState(vocabulary)
+      const slot = state.towerSlots[0]
+
+      const readyState = {
+        ...state,
+        sentenceCompleted: true,
+        collectedWordIndices: state.sentenceWords.map((_, idx) => idx),
+        player: { ...state.player, x: slot.x, y: slot.y },
+      }
+
+      const nextState = advanceCastleDefenseTime(readyState, 0, { dx: 0, dy: 0 }, vocabulary)
+
+      expect(nextState.currentSentenceEnglish).not.toBe(state.currentSentenceEnglish)
+      expect(nextState.sentenceWords).toEqual(parseSentenceWords(nextState.currentSentenceEnglish))
+
+      randomSpy.mockRestore()
+    })
+  })
+
   describe('createCastleDefenseState', () => {
     it('should create valid initial state with empty vocabulary', () => {
       const state = createCastleDefenseState([])
