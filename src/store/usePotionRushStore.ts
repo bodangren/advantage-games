@@ -183,8 +183,8 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           id: Math.random().toString(36).substr(2, 9),
           type: randomType,
           request: randomVocab,
-          patience: 30, // seconds
-          maxPatience: 30,
+          patience: 60, // seconds
+          maxPatience: 60,
           state: 'WAITING',
           leaveTimer: undefined
       }

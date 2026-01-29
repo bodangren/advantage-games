@@ -113,7 +113,7 @@ describe('usePotionRushStore Refinements', () => {
 
       // Fast forward time to make patience 0
       act(() => {
-          usePotionRushStore.getState().tick(31) // Patience is 30
+          usePotionRushStore.getState().tick(61) // Patience is 60
       })
 
       const state = usePotionRushStore.getState()
