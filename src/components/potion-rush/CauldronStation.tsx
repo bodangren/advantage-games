@@ -150,13 +150,14 @@ function SingleCauldron({ cauldron, x, y, onDrop, images }: {
                     <Text 
                         key={i}
                         text={word}
-                        x={-30}
-                        y={-20 * i} // Stack upwards
+                        x={-40}
+                        y={-25 * (cauldron.currentWords.length - 1 - i)} // Stack upwards from bottom, so first word is top
                         fill="white"
-                        fontSize={14}
+                        fontSize={16}
                         fontStyle="bold"
                         stroke="black"
-                        strokeWidth={1}
+                        strokeWidth={4}
+                        fillAfterStrokeEnabled={true}
                     />
                 ))}
             </Group>

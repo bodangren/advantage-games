@@ -230,7 +230,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   },
 
   tick: (dt) => {
-      const { gameState, conveyorItems, beltSpeed, customers, dayTime, reputation, effects, activeWordPool, baseBeltSpeed, completedSentences } = get()
+      const { gameState, conveyorItems, beltSpeed, customers, dayTime, reputation, effects, activeWordPool, baseBeltSpeed, completedSentences, cauldrons } = get()
       if (gameState !== 'PLAYING') return
 
       // Calculate speed
@@ -257,6 +257,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       // 2. Update Customer Patience
       let nextReputation = reputation
       let wordsToRemove: string[] = []
+      let leavingCustomerIds: string[] = []
 
       const nextCustomers = customers
         .map(c => {
@@ -269,11 +270,33 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           if (newPatience <= 0) {
              nextReputation -= 25
              wordsToRemove.push(...c.request.term.split(' '))
+             leavingCustomerIds.push(c.id)
              return { ...c, patience: 0, state: 'LEAVING_ANGRY' as const, leaveTimer: LEAVE_DURATION }
           }
           return { ...c, patience: newPatience }
         })
         .filter(c => c.state === 'WAITING' || (c.leaveTimer ?? 0) > 0)
+        
+      // Reset orphaned cauldrons
+      let nextCauldrons = cauldrons
+      if (leavingCustomerIds.length > 0) {
+           nextCauldrons = cauldrons.map(cauldron => {
+              if (cauldron.state !== 'IDLE' && cauldron.targetSentence) {
+                  // Find if the target sentence belongs to a leaving customer
+                  // Note: targetSentence is a copy, so we match by ID or Term. ID is safer if available.
+                  // Store logic spawns with same ID? No, vocabList has ID.
+                  const isOrphaned = leavingCustomerIds.some(cid => {
+                      const customer = customers.find(c => c.id === cid)
+                      return customer?.request.id === cauldron.targetSentence?.id
+                  })
+                  
+                  if (isOrphaned) {
+                      return { ...cauldron, state: 'IDLE' as const, targetSentence: null, currentWords: [], shake: false }
+                  }
+              }
+              return cauldron
+           })
+      }
 
       // Update activeWordPool
       let nextActiveWordPool = activeWordPool
@@ -321,7 +344,8 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
             dayTime: nextDayTime,
             effects: nextEffects,
             activeWordPool: nextActiveWordPool,
-            beltSpeed: targetSpeed
+            beltSpeed: targetSpeed,
+            cauldrons: nextCauldrons
           })
       }
   },

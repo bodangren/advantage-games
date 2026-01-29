@@ -312,7 +312,45 @@ describe('usePotionRushStore Refinements', () => {
       // 'wrong' was rejected (not added to currentWords) so it should be returned to pool immediately
       expect(state.activeWordPool).toContain('wrong')
       
+      expect(state.activeWordPool).toContain('wrong')
+      
       // 'correct' is still in the cauldron, so 'word' is still in the pool? No, 'correct' is in cauldron.
       // 'word' is in pool.
+  })
+
+  it('should reset cauldron if its assigned customer leaves angry', () => {
+      const vocabList = [{ term: 'orphan me', definition: 'desc', id: '1' }]
+
+      act(() => {
+          usePotionRushStore.getState().startGame()
+          usePotionRushStore.getState().spawnCustomer(vocabList)
+      })
+
+      const customer = usePotionRushStore.getState().customers[0]
+
+      // Start brewing for this customer
+      usePotionRushStore.setState(prev => {
+          const nextCauldrons = [...prev.cauldrons]
+          nextCauldrons[0] = { 
+              ...nextCauldrons[0], 
+              state: 'BREWING',
+              targetSentence: customer.request,
+              currentWords: ['orphan'] 
+          }
+          return { cauldrons: nextCauldrons }
+      })
+
+      // Fast forward to make customer leave
+      act(() => {
+          usePotionRushStore.getState().tick(61)
+      })
+
+      const state = usePotionRushStore.getState()
+      // Customer should be gone (LEAVING_ANGRY)
+      expect(state.customers.find(c => c.id === customer.id)?.state).toBe('LEAVING_ANGRY')
+      
+      // Cauldron should be reset
+      expect(state.cauldrons[0].state).toBe('IDLE')
+      expect(state.cauldrons[0].currentWords).toEqual([])
   })
 })
