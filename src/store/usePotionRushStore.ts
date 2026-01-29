@@ -407,7 +407,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
         .map(effect => ({ ...effect, age: effect.age + dt }))
         .filter(effect => effect.age < effect.duration)
       
-      if (nextReputation <= 0 || nextDayTime >= 1) {
+      if (nextReputation <= 0) {
           set({ gameState: 'GAME_OVER', reputation: nextReputation, effects: nextEffects })
       } else {
           set({
