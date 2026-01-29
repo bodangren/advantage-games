@@ -21,6 +21,7 @@ import {
   advanceCastleDefenseTime,
   CastleDefenseState,
   WORD_RADIUS,
+  inRange,
 } from '@/lib/castleDefense'
 import { BackgroundLayer } from './BackgroundLayer'
 import type { VocabularyItem } from '@/store/useGameStore'
@@ -201,6 +202,15 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     }
   }, [assets])
 
+  const activeBuildSlot = useMemo(() => {
+    if (!gameState || !gameState.sentenceCompleted) return null
+    return gameState.towerSlots.find(slot => {
+      const hasTower = gameState.towers.some(tower => tower.id === `tower-${slot.id}`)
+      if (hasTower) return false
+      return inRange(gameState.player.x, gameState.player.y, slot.x, slot.y, 50)
+    })
+  }, [gameState])
+
   // ============================================
   // RENDER HELPERS
   // ============================================
@@ -284,17 +294,28 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
 
             {/* Tower slots */}
             {gameState.towerSlots.map(slot => (
-              <KonvaImage
-                key={slot.id}
-                image={assets.towerBase}
-                x={slot.x}
-                y={slot.y}
-                width={TILE_SIZE}
-                height={TILE_SIZE}
-                offsetX={TILE_SIZE / 2}
-                offsetY={TILE_SIZE / 2}
-                opacity={0.6}
-              />
+              <Group key={slot.id}>
+                {gameState.sentenceCompleted && !gameState.towers.some(tower => tower.id === `tower-${slot.id}`) && (
+                  <Circle
+                    x={slot.x}
+                    y={slot.y}
+                    radius={TILE_SIZE * 0.6}
+                    stroke={activeBuildSlot?.id === slot.id ? '#22c55e' : 'rgba(250, 204, 21, 0.9)'}
+                    strokeWidth={activeBuildSlot?.id === slot.id ? 4 : 2}
+                    dash={activeBuildSlot?.id === slot.id ? [6, 4] : [4, 6]}
+                  />
+                )}
+                <KonvaImage
+                  image={assets.towerBase}
+                  x={slot.x}
+                  y={slot.y}
+                  width={TILE_SIZE}
+                  height={TILE_SIZE}
+                  offsetX={TILE_SIZE / 2}
+                  offsetY={TILE_SIZE / 2}
+                  opacity={gameState.towers.some(tower => tower.id === `tower-${slot.id}`) ? 0.3 : 0.8}
+                />
+              </Group>
             ))}
 
             {/* Active towers */}
@@ -469,6 +490,14 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
           </div>
         </div>
       </div>
+
+      {activeBuildSlot && (
+        <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+          <div className="bg-emerald-600/90 border border-emerald-300/60 px-5 py-2 rounded-full shadow-lg text-white font-black uppercase tracking-widest text-xs">
+            Build Tower
+          </div>
+        </div>
+      )}
 
       {/* INVENTORY - BOTTOM LEFT */}
       <div className="absolute bottom-8 left-8 z-10 pointer-events-none">
