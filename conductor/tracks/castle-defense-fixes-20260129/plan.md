@@ -505,8 +505,8 @@ Before starting ANY phase, the implementer MUST:
 
 ### Task 10.1: Enemy difficulty adjustments
 - [ ] Sub-task: Review enemy spawn rates
-- [ ] Sub-task: Adjust enemy HP values
-- [ ] Sub-task: Adjust enemy speed values
+- [x] Sub-task: Adjust enemy HP values cce42bf
+- [x] Sub-task: Adjust enemy speed values cce42bf
 - [ ] Sub-task: Test wave progression curve
 
 ### Task 10.2: Tower effectiveness adjustments
