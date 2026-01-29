@@ -313,7 +313,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Victory screen appears after wave 6 completion. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Six Unique Maps and Win Condition' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 6: Six Unique Maps and Win Condition' (Protocol in workflow.md)
 
 ---
 
