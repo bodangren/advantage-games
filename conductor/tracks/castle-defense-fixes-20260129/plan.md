@@ -85,13 +85,13 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 2.3: Implement sentence reset on wrong word
-- [ ] Sub-task: Create `resetSentenceProgress(state: CastleDefenseState): CastleDefenseState`
+- [x] Sub-task: Create `resetSentenceProgress(state: CastleDefenseState): CastleDefenseState` 1117d63
   - Clears `collectedWordIndices`
   - Respawns all sentence words on map
   - Returns updated state
-- [ ] Sub-task: Write tests for `resetSentenceProgress()`
-- [ ] Sub-task: Integrate reset into `collectWords()` when wrong word collected
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for `resetSentenceProgress()` 1117d63
+- [x] Sub-task: Integrate reset into `collectWords()` when wrong word collected 1117d63
+- [x] Sub-task: Run tests 1117d63
 
 **Verification**: All tests pass. ✅
 
