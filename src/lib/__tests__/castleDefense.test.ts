@@ -525,6 +525,28 @@ describe('castleDefense', () => {
       expect(nextState.enemies.length).toBeGreaterThan(0)
     })
 
+    it('does not respawn words until a tower is built', () => {
+      const state = createCastleDefenseState(vocabulary)
+      const collectedWords = spawnSentenceWords(state.currentSentenceEnglish, () => 0.5).map(word => ({
+        ...word,
+        isCollected: true,
+      }))
+      const nextState = advanceCastleDefenseTime(
+        {
+          ...state,
+          sentenceCompleted: false,
+          collectedWordIndices: [],
+          words: collectedWords,
+        },
+        0,
+        { dx: 0, dy: 0 },
+        vocabulary
+      )
+
+      expect(nextState.words.every(word => word.isCollected)).toBe(true)
+      expect(nextState.currentSentenceEnglish).toBe(state.currentSentenceEnglish)
+    })
+
     it('should set gameover when base HP reaches 0', () => {
       const state = { 
         ...createCastleDefenseState(vocabulary), 

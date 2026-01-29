@@ -1220,12 +1220,7 @@ export function advanceCastleDefenseTime(
     }
   }
 
-  // 11. Respawn words if all collected
-  if (!sentenceCompleted && (words.every(w => w.isCollected) || words.length === 0)) {
-    words = spawnSentenceWords(state.currentSentenceEnglish)
-  }
-
-  // 12. Check game over
+  // 11. Check game over
   let status: CastleDefenseState['status'] = state.status
   if (base.hp <= 0) {
     status = 'gameover'
