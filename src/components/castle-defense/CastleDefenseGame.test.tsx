@@ -105,7 +105,7 @@ describe('CastleDefenseGame', () => {
     jest.useRealTimers()
   })
 
-  it('centers word text with a length-based offset', async () => {
+  it('centers word text using the orb radius offset', async () => {
     jest.useFakeTimers()
 
     render(<CastleDefenseGame vocabulary={vocabulary} onComplete={jest.fn()} />)
@@ -124,32 +124,9 @@ describe('CastleDefenseGame', () => {
 
     const wordText = screen.getByText('hello')
     const offsetValue = Number(wordText.getAttribute('data-offset-x'))
-    expect(offsetValue).toBeCloseTo('hello'.length * 3.5, 1)
+    expect(offsetValue).toBe(25)
 
     jest.useRealTimers()
   })
 
-  it('highlights the next required word', async () => {
-    jest.useFakeTimers()
-
-    render(<CastleDefenseGame vocabulary={vocabulary} onComplete={jest.fn()} />)
-    await act(async () => {
-      jest.advanceTimersByTime(1)
-    })
-
-    const startButton = screen.getByRole('button', { name: /start mission/i })
-    await act(async () => {
-      fireEvent.click(startButton)
-    })
-
-    await act(async () => {
-      jest.advanceTimersByTime(60)
-    })
-
-    const circles = screen.getAllByTestId('circle')
-    const highlighted = circles.filter(circle => circle.getAttribute('data-fill') === '#22c55e')
-    expect(highlighted.length).toBeGreaterThan(0)
-
-    jest.useRealTimers()
-  })
 })

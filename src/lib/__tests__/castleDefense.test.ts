@@ -64,6 +64,21 @@ describe('castleDefense', () => {
         expect(word.y).toBeLessThanOrEqual(GAME_HEIGHT - WORD_RADIUS)
       }
     })
+
+    it('spawns orbs within the middle 50% of the board', () => {
+      const words = spawnSentenceWords('The cat sits', () => 0.5)
+      const minX = GAME_WIDTH * 0.25 + WORD_RADIUS
+      const maxX = GAME_WIDTH * 0.75 - WORD_RADIUS
+      const minY = GAME_HEIGHT * 0.25 + WORD_RADIUS
+      const maxY = GAME_HEIGHT * 0.75 - WORD_RADIUS
+
+      for (const word of words) {
+        expect(word.x).toBeGreaterThanOrEqual(minX)
+        expect(word.x).toBeLessThanOrEqual(maxX)
+        expect(word.y).toBeGreaterThanOrEqual(minY)
+        expect(word.y).toBeLessThanOrEqual(maxY)
+      }
+    })
   })
 
   describe('validateWordCollection', () => {

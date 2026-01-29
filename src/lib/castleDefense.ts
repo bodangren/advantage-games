@@ -472,11 +472,15 @@ export function spawnSentenceWords(
   random: () => number = Math.random
 ): Word[] {
   const sentenceWords = parseSentenceWords(sentence)
+  const minX = GAME_WIDTH * 0.25 + WORD_RADIUS
+  const maxX = GAME_WIDTH * 0.75 - WORD_RADIUS
+  const minY = GAME_HEIGHT * 0.25 + WORD_RADIUS
+  const maxY = GAME_HEIGHT * 0.75 - WORD_RADIUS
 
   return sentenceWords.map((word, index) => ({
     id: generateId(),
-    x: WORD_RADIUS + random() * (GAME_WIDTH - WORD_RADIUS * 2),
-    y: WORD_RADIUS + random() * (GAME_HEIGHT - WORD_RADIUS * 2),
+    x: minX + random() * (maxX - minX),
+    y: minY + random() * (maxY - minY),
     radius: WORD_RADIUS,
     term: word,
     translation: word,

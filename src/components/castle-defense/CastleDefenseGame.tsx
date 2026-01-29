@@ -462,23 +462,20 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
             })}
 
             {/* Words */}
-            {gameState.words.filter(w => !w.isCollected).map(word => {
-              const nextRequiredIndex = gameState.collectedWordIndices.length
-              const isNextRequiredWord = !gameState.sentenceCompleted && word.sentenceIndex === nextRequiredIndex
-              return (
+            {gameState.words.filter(w => !w.isCollected).map(word => (
               <Group key={word.term + word.x} x={word.x} y={word.y}>
                 <Circle
                   radius={WORD_RADIUS}
-                  fill={isNextRequiredWord ? '#22c55e' : 'white'}
-                  stroke={isNextRequiredWord ? '#16a34a' : '#111'}
-                  strokeWidth={isNextRequiredWord ? 3 : 2}
+                  fill="white"
+                  stroke="#111"
+                  strokeWidth={2}
                 />
                 <Text
                   text={word.translation}
                   fontSize={11}
                   fontStyle="bold"
                   fill="black"
-                  offsetX={word.translation.length * 3.5}
+                  offsetX={word.radius}
                   offsetY={word.radius}
                   width={word.radius * 2}
                   height={word.radius * 2}
@@ -486,7 +483,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
                   verticalAlign="middle"
                 />
               </Group>
-            )})}
+            ))}
 
             {/* Player */}
             {grids && (
