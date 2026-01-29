@@ -159,7 +159,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       totalXpEarned: 0,
       beltSpeed: 50,
       vocabList,
-      timeToNextCustomerSpawn: 1, // Short delay before first customer
+      timeToNextCustomerSpawn: 0, // Immediate spawn
       timeToNextIngredientSpawn: 0.5,
       cauldrons: [
         { id: 0, state: 'IDLE', targetSentence: null, currentWords: [], shake: false },
@@ -258,50 +258,58 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       const { 
           gameState, conveyorItems, beltSpeed, customers, dayTime, reputation, 
           effects, activeWordPool, baseBeltSpeed, completedSentences, cauldrons,
-          timeToNextCustomerSpawn, timeToNextIngredientSpawn, spawnRate
+          timeToNextCustomerSpawn, timeToNextIngredientSpawn, spawnRate, vocabList
       } = get()
       
       if (gameState !== 'PLAYING') return
 
-      // --- SPAWN LOGIC ---
+      // --- 1. SPAWN LOGIC & CUSTOMER MANAGEMENT ---
+      // We process customers first so we can modify the array in place if needed before movement logic?
+      // Actually, let's establish "next" states.
+
+      let nextCustomers = [...customers]
+      let nextActiveWordPool = [...activeWordPool]
       
-      // 1. Customers
-      // Calculate current patience for spawn rate
+      // A. Customer Spawning
       const currentPatience = BASE_PATIENCE * Math.pow(0.9, completedSentences)
       const customerSpawnInterval = currentPatience / 3
       
       let nextCustomerTimer = timeToNextCustomerSpawn - dt
-      if (nextCustomerTimer <= 0) {
+      if (nextCustomerTimer <= 0 && vocabList.length > 0) {
           // Attempt spawn
-          const emptySlotIndex = customers.findIndex(c => c === null)
+          const emptySlotIndex = nextCustomers.findIndex(c => c === null)
           if (emptySlotIndex !== -1) {
-             get().spawnCustomer()
-             // Only reset timer if successful? Or always?
-             // Usually always to prevent spamming if full.
+             const randomVocab = vocabList[Math.floor(Math.random() * vocabList.length)]
+             const types: CustomerType[] = ['orc', 'elf', 'wizard', 'dwarf', 'goblin', 'human', 'skeleton']
+             const randomType = types[Math.floor(Math.random() * types.length)]
+             const scaledPatience = currentPatience // Already calculated above
+
+             const newCustomer: Customer = {
+                  id: Math.random().toString(36).substr(2, 9),
+                  type: randomType,
+                  request: randomVocab,
+                  patience: scaledPatience,
+                  maxPatience: scaledPatience,
+                  state: 'WAITING',
+                  leaveTimer: undefined
+             }
+             
+             nextCustomers[emptySlotIndex] = newCustomer
+             nextActiveWordPool.push(...randomVocab.term.split(' '))
+             
              nextCustomerTimer = customerSpawnInterval
           } else {
-             // If full, retry sooner? or same interval?
-             // Let's retry sooner
+             // If full, retry sooner
              nextCustomerTimer = 1 
           }
       }
 
-      // 2. Ingredients
-      let nextIngredientTimer = timeToNextIngredientSpawn - dt
-      if (nextIngredientTimer <= 0) {
-          get().spawnIngredient(screenWidth)
-          nextIngredientTimer = spawnRate / 1000 // spawnRate is in ms
-      }
-
-      // --- UPDATE STATE ---
-      // (Optimized: we could batch this set at the end)
-      // But we need to use 'set' to update timers for next frame?
-      // Yes, we will set them at the end.
+      // --- 2. MOVEMENT & TIMERS ---
 
       // Calculate speed
       const targetSpeed = baseBeltSpeed * Math.pow(1.1, completedSentences)
 
-      // 3. Move Conveyor Items & Recycle Words
+      // Move Conveyor Items & Recycle Words
       let recycledWords: string[] = []
       const nextItems: Ingredient[] = []
       
@@ -319,17 +327,17 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           }
       })
 
-      // 4. Update Customer Patience
+      // Update Customer Patience (on the potentially newly spawned customers too? Or wait one frame?)
+      // Let's update all.
       let nextReputation = reputation
       let wordsToRemove: string[] = []
 
-      // Iterate fixed slots
-      const nextCustomers = customers.map(c => {
+      nextCustomers = nextCustomers.map(c => {
           if (!c) return null
           
           if (c.state !== 'WAITING') {
              const remaining = (c.leaveTimer ?? LEAVE_DURATION) - dt
-             if (remaining <= 0) return null // Despawn (free the slot)
+             if (remaining <= 0) return null // Despawn
              return { ...c, leaveTimer: remaining }
           }
           
@@ -353,20 +361,46 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           return cauldron
       })
 
-      // Update activeWordPool
-      let nextActiveWordPool = activeWordPool
+      // --- 3. INGREDIENT SPAWNING ---
+      // (After pool updates from customer spawn)
+      
+      let nextIngredientTimer = timeToNextIngredientSpawn - dt
+      if (nextIngredientTimer <= 0) {
+          if (nextActiveWordPool.length > 0) {
+              const poolIndex = Math.floor(Math.random() * nextActiveWordPool.length)
+              const randomWord = nextActiveWordPool[poolIndex]
+              
+              const types: Ingredient['type'][] = ['potion', 'mushroom', 'mineral', 'herb']
+              const randomType = types[Math.floor(Math.random() * types.length)]
+
+              const newItem: Ingredient = {
+                  id: Math.random().toString(36).substr(2, 9),
+                  word: randomWord,
+                  x: screenWidth + 100,
+                  y: BELT_Y,
+                  type: randomType,
+                  width: INGREDIENT_WIDTH,
+                  isDragging: false
+              }
+              
+              nextItems.push(newItem)
+              nextActiveWordPool.splice(poolIndex, 1)
+          }
+          nextIngredientTimer = spawnRate / 1000
+      }
+
+      // Update activeWordPool with recycled/removed
       if (recycledWords.length > 0) {
           nextActiveWordPool = [...nextActiveWordPool, ...recycledWords]
       }
       if (wordsToRemove.length > 0) {
-          if (nextActiveWordPool === activeWordPool) nextActiveWordPool = [...activeWordPool]
           wordsToRemove.forEach(word => {
                const idx = nextActiveWordPool.indexOf(word)
                if (idx > -1) nextActiveWordPool.splice(idx, 1)
           })
       }
 
-      // 5. Update Day Time (can be linked to sentences too, or just time)
+      // 5. Update Day Time
       const nextDayTime = dayTime + (dt * 0.01) 
 
       const nextEffects = effects

@@ -101,6 +101,8 @@ describe('usePotionRushStore Refinements', () => {
 
       // Fast forward time to make patience 0
       act(() => {
+          // Disable auto-spawn for this test to isolate the single customer
+          usePotionRushStore.setState({ vocabList: [] })
           usePotionRushStore.getState().tick(61, 1000) // Patience is 60
       })
 
