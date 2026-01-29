@@ -9,7 +9,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 1: Sentence Parsing and Word System
+## Phase 1: Sentence Parsing and Word System [checkpoint: 82fd032]
 
 ### Task 1.1: Create sentence parsing utilities
 - [x] Sub-task: Write tests for `parseSentenceWords(sentence: string): string[]` in `src/lib/castleDefense.test.ts` 6c3892d
@@ -57,7 +57,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: TypeScript check passes. ✅
 
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Sentence Parsing and Word System' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Sentence Parsing and Word System' (Protocol in workflow.md) 82fd032
 
 ---
 
