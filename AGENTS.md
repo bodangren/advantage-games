@@ -33,3 +33,14 @@ git worktree prune
 
 - Each worktree should run its own installs/builds/tests.
 - Never edit another game's files from a different game’s worktree.
+
+## Sync & Integration
+
+- Sync cadence: pull main at least daily, before starting new tasks, and before opening a PR or merge.
+- Shared changes (engine/components/config): use a dedicated `shared/<topic>` worktree/branch, then merge to main so all game branches can pull cleanly.
+- Standard sync commands (run inside your game worktree):
+  ```bash
+  git fetch
+  git merge origin/main
+  # or, if your team prefers: git rebase origin/main
+  ```
