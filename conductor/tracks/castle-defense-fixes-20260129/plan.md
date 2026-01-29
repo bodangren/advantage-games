@@ -336,7 +336,7 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Thai sentence visible and readable on desktop and mobile. ✅
 
 ### Task 7.2: Display sentence progress and wave info
-- [ ] Sub-task: Create progress display component showing collected words:
+- [x] Sub-task: Create progress display component showing collected words: 6417f56
   ```typescript
   <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10">
     <div className="bg-black/60 px-4 py-2 rounded text-white text-sm">
@@ -348,13 +348,13 @@ Before starting ANY phase, the implementer MUST:
     </div>
   </div>
   ```
-- [ ] Sub-task: Add wave progress indicator:
+- [x] Sub-task: Add wave progress indicator: 6417f56
   ```typescript
   <div className="bg-black/60 px-3 py-1 rounded text-white text-sm">
     Wave {gameState?.wave}/6 - Enemies: {gameState?.enemiesKilledThisWave}/{gameState?.totalEnemiesThisWave}
   </div>
   ```
-- [ ] Sub-task: Position to not overlap with Thai sentence or other HUD elements
+- [x] Sub-task: Position to not overlap with Thai sentence or other HUD elements 6417f56
 
 **Verification**: Progress display shows collected words and wave info. ✅
 
