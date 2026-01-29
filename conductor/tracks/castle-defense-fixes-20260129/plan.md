@@ -284,20 +284,20 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass, maps load correctly. ✅
 
 ### Task 6.3: Implement victory condition
-- [ ] Sub-task: Add `status: 'playing' | 'gameover' | 'victory'` to state (if not already present)
-- [ ] Sub-task: Write tests for victory detection:
+- [x] Sub-task: Add `status: 'playing' | 'gameover' | 'victory'` to state (if not already present)
+- [x] Sub-task: Write tests for victory detection: e6c7bad
   - Test: Sets status to 'victory' when wave 6 is complete
   - Test: Does not trigger victory before wave 6
-- [ ] Sub-task: Update `advanceCastleDefenseTime()`:
+- [x] Sub-task: Update `advanceCastleDefenseTime()`: 4bc814e
   - Check if wave 6 is complete
   - Set `status = 'victory'`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Run tests e6c7bad
 
 **Verification**: All tests pass. ✅
 
 ### Task 6.4: Add victory screen to component
-- [ ] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx`
-- [ ] Sub-task: Add victory screen rendering (similar to game over screen):
+- [x] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx` 4bc814e
+- [x] Sub-task: Add victory screen rendering (similar to game over screen): 4bc814e
   ```typescript
   if (gameState?.status === 'victory') {
     return (
@@ -309,7 +309,7 @@ Before starting ANY phase, the implementer MUST:
     )
   }
   ```
-- [ ] Sub-task: Test victory screen display
+- [x] Sub-task: Test victory screen display 4bc814e
 
 **Verification**: Victory screen appears after wave 6 completion. ✅
 
