@@ -257,7 +257,6 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       // 2. Update Customer Patience
       let nextReputation = reputation
       let wordsToRemove: string[] = []
-      let leavingCustomerIds: string[] = []
 
       const nextCustomers = customers
         .map(c => {
@@ -270,32 +269,28 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
           if (newPatience <= 0) {
              nextReputation -= 25
              wordsToRemove.push(...c.request.term.split(' '))
-             leavingCustomerIds.push(c.id)
              return { ...c, patience: 0, state: 'LEAVING_ANGRY' as const, leaveTimer: LEAVE_DURATION }
           }
           return { ...c, patience: newPatience }
         })
         .filter(c => c.state === 'WAITING' || (c.leaveTimer ?? 0) > 0)
         
-      // Reset orphaned cauldrons
-      let nextCauldrons = cauldrons
-      if (leavingCustomerIds.length > 0) {
-           // Get list of remaining active customers
-           // Note: nextCustomers contains ALL customers, including the ones just marked LEAVING_ANGRY
-           const activeCustomers = nextCustomers.filter(c => c.state === 'WAITING')
-
-           nextCauldrons = cauldrons.map(cauldron => {
-              if (cauldron.state !== 'IDLE' && cauldron.targetSentence) {
-                  // Check if ANY active customer needs this sentence
-                  const isNeeded = activeCustomers.some(c => c.request.id === cauldron.targetSentence?.id)
-                  
-                  if (!isNeeded) {
-                      return { ...cauldron, state: 'IDLE' as const, targetSentence: null, currentWords: [], shake: false }
-                  }
+      // Reset orphaned cauldrons (Continuous Check)
+      // If a cauldron is active but NO WAITING customer needs its sentence, reset it.
+      const activeCustomers = nextCustomers.filter(c => c.state === 'WAITING')
+      
+      const nextCauldrons = cauldrons.map(cauldron => {
+          if (cauldron.state !== 'IDLE' && cauldron.targetSentence) {
+              const isNeeded = activeCustomers.some(c => c.request.id === cauldron.targetSentence?.id)
+              
+              if (!isNeeded) {
+                  return { ...cauldron, state: 'IDLE' as const, targetSentence: null, currentWords: [], shake: false }
               }
-              return cauldron
-           })
-      }
+          }
+          return cauldron
+      })
+
+      // Update activeWordPool
 
       // Update activeWordPool
       let nextActiveWordPool = activeWordPool
