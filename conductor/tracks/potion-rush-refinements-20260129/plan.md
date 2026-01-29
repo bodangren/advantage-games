@@ -31,12 +31,12 @@ This plan outlines the refactoring and enhancement of Potion Rush gameplay mecha
 - [x] **Task 2.1: Intelligent `spawnIngredient`** [1668788]
     - [x] Modify `spawnIngredient` to pick words only from `activeWordPool`.
     - [x] Ensure it handles cases where `activeWordPool` is empty (e.g., no customers).
-- [~] **Task 2.2: Cauldron Reset Logic**
-    - [ ] Update `handleDumpCauldron` (or create a new action) specifically for resetting from the trash.
-    - [ ] Update `CauldronStation.tsx` to allow dragging a "WARNING" or "BREWING" cauldron to the trash.
-- [ ] **Task 2.3: Write Tests for Spawning and Reset**
-    - [ ] Verify `spawnIngredient` only pulls from the pool.
-    - [ ] Verify `handleDumpCauldron` resets state to `IDLE` immediately.
+- [x] **Task 2.2: Cauldron Reset Logic** [77ec302]
+    - [x] Update `handleDumpCauldron` (or create a new action) specifically for resetting from the trash.
+    - [x] Update `CauldronStation.tsx` to allow dragging a "WARNING" or "BREWING" cauldron to the trash.
+- [x] **Task 2.3: Write Tests for Spawning and Reset** [77ec302]
+    - [x] Verify `spawnIngredient` only pulls from the pool.
+    - [x] Verify `handleDumpCauldron` resets state to `IDLE` immediately.
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Refined Spawning & Cauldron Reset' (Protocol in workflow.md)
 
