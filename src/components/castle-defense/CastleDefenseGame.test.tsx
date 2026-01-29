@@ -190,4 +190,30 @@ describe('CastleDefenseGame', () => {
     }
   })
 
+  it('shows a sentence complete message when ready to build', async () => {
+    const readyVocabulary: VocabularyItem[] = [
+      { term: 'The cat sits', translation: 'แมวนั่ง' },
+    ]
+    const createMock = castleDefense.createCastleDefenseState as jest.Mock
+    createMock.mockImplementation(vocab => {
+      const baseState = actualCastleDefense.createCastleDefenseState(vocab)
+      return {
+        ...baseState,
+        sentenceCompleted: true,
+      }
+    })
+
+    try {
+      render(<CastleDefenseGame vocabulary={readyVocabulary} onComplete={jest.fn()} />)
+      const startButton = await screen.findByRole('button', { name: /start mission/i })
+      await act(async () => {
+        fireEvent.click(startButton)
+      })
+
+      expect(await screen.findByText(/sentence complete - build tower!/i)).toBeInTheDocument()
+    } finally {
+      createMock.mockImplementation(actualCastleDefense.createCastleDefenseState)
+    }
+  })
+
 })

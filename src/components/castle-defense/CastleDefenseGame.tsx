@@ -563,6 +563,11 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
               ))}
             </div>
           </div>
+          {gameState.sentenceCompleted && (
+            <div className="bg-emerald-600/90 border border-emerald-300/60 px-4 py-1 rounded-full shadow-lg text-white text-[11px] font-black uppercase tracking-widest md:text-xs">
+              Sentence Complete - Build Tower!
+            </div>
+          )}
           <div className="bg-slate-950/70 border border-white/10 px-3 py-1 rounded-full shadow-lg text-white text-[11px] font-bold uppercase tracking-widest md:text-xs">
             Wave {gameState.wave}/6 - Enemies: {gameState.enemiesKilledThisWave}/{gameState.totalEnemiesThisWave}
           </div>
@@ -570,18 +575,14 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
       )}
 
       {/* HUD - TOP */}
-      <div className="absolute top-4 inset-x-4 z-10 flex justify-between items-start pointer-events-none">
-        <div className="space-y-2">
-          <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Score</span>
-            <span className="text-xl font-black text-white leading-none">{gameState?.score || 0}</span>
-          </div>
-          <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Wave</span>
-            <span className="text-xl font-black text-white leading-none">{gameState?.wave || 1}</span>
-          </div>
+      <div className="absolute top-24 left-4 z-10 pointer-events-none md:top-4">
+        <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md">
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Score</span>
+          <span className="text-xl font-black text-white leading-none">{gameState?.score || 0}</span>
         </div>
+      </div>
 
+      <div className="absolute top-24 right-4 z-10 pointer-events-none md:top-4">
         <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md text-right">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Castle HP</span>
           <div className="flex items-center gap-2">
