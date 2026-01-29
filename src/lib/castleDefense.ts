@@ -414,7 +414,7 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     towers: [],
     towerSlots,
     projectiles: [],
-    words: [],
+    words: spawnSentenceWords(firstSentence.term),
     base: {
       x: mapConfig.basePosition.x,
       y: mapConfig.basePosition.y,
