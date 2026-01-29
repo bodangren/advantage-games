@@ -28,10 +28,10 @@ This plan outlines the refactoring and enhancement of Potion Rush gameplay mecha
 ## Phase 2: Refined Spawning & Cauldron Reset
 **Goal:** Implement the intelligent word spawner and the cauldron-to-trash drag logic.
 
-- [ ] **Task 2.1: Intelligent `spawnIngredient`**
-    - [ ] Modify `spawnIngredient` to pick words only from `activeWordPool`.
-    - [ ] Ensure it handles cases where `activeWordPool` is empty (e.g., no customers).
-- [ ] **Task 2.2: Cauldron Reset Logic**
+- [x] **Task 2.1: Intelligent `spawnIngredient`** [1668788]
+    - [x] Modify `spawnIngredient` to pick words only from `activeWordPool`.
+    - [x] Ensure it handles cases where `activeWordPool` is empty (e.g., no customers).
+- [~] **Task 2.2: Cauldron Reset Logic**
     - [ ] Update `handleDumpCauldron` (or create a new action) specifically for resetting from the trash.
     - [ ] Update `CauldronStation.tsx` to allow dragging a "WARNING" or "BREWING" cauldron to the trash.
 - [ ] **Task 2.3: Write Tests for Spawning and Reset**
