@@ -86,7 +86,7 @@ export function VirtualDPad({ onInput }: VirtualDPadProps) {
 
   return (
     <div 
-        className="relative w-32 h-32 rounded-full bg-white/5 border-2 border-white/10 touch-none select-none shadow-inner"
+        className="relative w-32 h-32 rounded-full bg-slate-900/70 border-2 border-white/30 ring-1 ring-white/20 touch-none select-none shadow-2xl backdrop-blur"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleEnd}
@@ -97,16 +97,16 @@ export function VirtualDPad({ onInput }: VirtualDPadProps) {
         onContextMenu={(e) => e.preventDefault()}
     >
         {/* Outer Ring Indicators */}
-        <div className="absolute inset-0 rounded-full border border-white/5 pointer-events-none" />
+        <div className="absolute inset-0 rounded-full border border-white/10 pointer-events-none" />
         
         {/* Thumb Stick */}
         <div 
-            className={`absolute top-1/2 left-1/2 w-12 h-12 -mt-6 -ml-6 rounded-full bg-white/20 border-2 border-white/30 shadow-xl pointer-events-none transition-transform duration-75 ${active ? 'scale-110 opacity-100' : 'scale-100 opacity-50'}`}
+            className={`absolute top-1/2 left-1/2 w-12 h-12 -mt-6 -ml-6 rounded-full bg-white/30 border-2 border-white/50 shadow-xl pointer-events-none transition-transform duration-75 ${active ? 'scale-110 opacity-100' : 'scale-100 opacity-60'}`}
             style={{ 
                 transform: `translate(${thumbPos.x}px, ${thumbPos.y}px)` 
             }}
         >
-            <div className="absolute inset-0 m-2 rounded-full bg-white/10" />
+            <div className="absolute inset-0 m-2 rounded-full bg-white/20" />
         </div>
         
         {/* Directional Marks */}

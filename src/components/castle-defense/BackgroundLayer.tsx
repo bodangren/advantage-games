@@ -21,9 +21,10 @@ const ASSETS = {
 
 interface BackgroundLayerProps {
   grassMap: number[][]
+  path: { x: number; y: number }[]
 }
 
-export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
+export function BackgroundLayer({ grassMap, path }: BackgroundLayerProps) {
   const [images, setImages] = useState<Record<string, HTMLImageElement>>({})
   const [loaded, setLoaded] = useState(false)
 
@@ -86,7 +87,7 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
                 )
             }
 
-            const roadInfo = getRoadTileInfo(c, r)
+            const roadInfo = getRoadTileInfo(c, r, path)
             if (roadInfo) {
                 const roadSrc = ASSETS.road[roadInfo.type]
                 if (images[roadSrc] && images[roadSrc].width > 0 && images[roadSrc].height > 0) {
@@ -111,7 +112,7 @@ export function BackgroundLayer({ grassMap }: BackgroundLayerProps) {
         }
     }
     return grid
-  }, [loaded, images, grassMap])
+  }, [loaded, images, grassMap, path])
 
   if (!loaded) return <Group />
 

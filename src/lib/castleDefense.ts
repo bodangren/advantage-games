@@ -9,16 +9,16 @@ export const PLAYER_SPEED = 3
 
 // Enemy constants
 export const ENEMY_SOLDIER_RADIUS = 12
-export const ENEMY_SOLDIER_HP = 30
-export const ENEMY_SOLDIER_SPEED = 1.5
+export const ENEMY_SOLDIER_HP = 40
+export const ENEMY_SOLDIER_SPEED = 0.8
 
 export const ENEMY_TANK_RADIUS = 18
-export const ENEMY_TANK_HP = 80
-export const ENEMY_TANK_SPEED = 0.8
+export const ENEMY_TANK_HP = 120
+export const ENEMY_TANK_SPEED = 0.7
 
 export const ENEMY_BOSS_RADIUS = 25
-export const ENEMY_BOSS_HP = 200
-export const ENEMY_BOSS_SPEED = 0.5
+export const ENEMY_BOSS_HP = 360
+export const ENEMY_BOSS_SPEED = 0.6
 
 // Tower constants
 export const TOWER_RANGE = 150
@@ -40,6 +40,22 @@ export const BASE_RADIUS = 40
 export const GAME_TICK_MS = 50
 export const SPAWN_RATE_MS = 2000
 export const MAX_ENEMIES = 15
+
+export const WAVE_CONFIGS = [
+  { wave: 1, soldiers: 10, tanks: 0, bosses: 0 },
+  { wave: 2, soldiers: 8, tanks: 4, bosses: 0 },
+  { wave: 3, soldiers: 10, tanks: 5, bosses: 1 },
+  { wave: 4, soldiers: 12, tanks: 8, bosses: 1 },
+  { wave: 5, soldiers: 15, tanks: 10, bosses: 2 },
+  { wave: 6, soldiers: 20, tanks: 12, bosses: 3 },
+]
+
+export type MapConfig = {
+  wave: number
+  path: Waypoint[]
+  towerSlots: TowerSlot[]
+  basePosition: { x: number; y: number }
+}
 
 // Animation timing
 export const ANIMATION_FRAME_MS = 150
@@ -97,6 +113,7 @@ export type Word = Entity & {
   translation: string
   isCorrect: boolean
   isCollected: boolean
+  sentenceIndex?: number
 }
 
 // Base type
@@ -134,6 +151,12 @@ export type CastleDefenseState = {
   currentSentenceEnglish: string
   sentenceWords: string[]
   collectedWordIndices: number[]
+  sentenceCompleted: boolean
+  enemiesSpawnedThisWave: number
+  enemiesKilledThisWave: number
+  totalEnemiesThisWave: number
+  waveCompleteTimer: number
+  waveMessage: string | null
   grassMap: number[][] // 16x12 array of grass variant indices
 }
 
@@ -155,6 +178,25 @@ export type RoadInfo = {
 // Helper to generate unique IDs
 const generateId = (): string => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
 
+const pickRandomSentence = (
+  vocabulary: { term: string; translation: string }[],
+  currentTerm?: string,
+  random: () => number = Math.random
+): { term: string; translation: string } => {
+  if (vocabulary.length === 0) {
+    return { term: '', translation: '' }
+  }
+  let pool = vocabulary
+  if (currentTerm && vocabulary.length > 1) {
+    const filtered = vocabulary.filter(item => item.term !== currentTerm)
+    if (filtered.length > 0) {
+      pool = filtered
+    }
+  }
+  const index = Math.floor(random() * pool.length)
+  return pool[index] ?? pool[0]
+}
+
 // Default path from top-left to bottom-right (U-shape)
 export const DEFAULT_PATH: Waypoint[] = [
   { x: 75, y: 75 },
@@ -173,18 +215,131 @@ const DEFAULT_TOWER_SLOTS: TowerSlot[] = [
   { id: 'slot-6', x: 625, y: 175, radius: 30, targetWord: '' },
 ]
 
+export const MAP_CONFIGS: MapConfig[] = [
+  {
+    wave: 1,
+    path: [
+      { x: 75, y: 75 },
+      { x: 75, y: 525 },
+      { x: 725, y: 525 },
+      { x: 725, y: 75 },
+    ],
+    towerSlots: [
+      { id: 'w1-slot-1', x: 175, y: 425, radius: 30, targetWord: '' },
+      { id: 'w1-slot-2', x: 325, y: 425, radius: 30, targetWord: '' },
+      { id: 'w1-slot-3', x: 475, y: 425, radius: 30, targetWord: '' },
+      { id: 'w1-slot-4', x: 625, y: 425, radius: 30, targetWord: '' },
+      { id: 'w1-slot-5', x: 175, y: 175, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 75 },
+  },
+  {
+    wave: 2,
+    path: [
+      { x: 75, y: 275 },
+      { x: 525, y: 275 },
+      { x: 525, y: 75 },
+      { x: 725, y: 75 },
+      { x: 725, y: 525 },
+    ],
+    towerSlots: [
+      { id: 'w2-slot-1', x: 175, y: 175, radius: 30, targetWord: '' },
+      { id: 'w2-slot-2', x: 375, y: 175, radius: 30, targetWord: '' },
+      { id: 'w2-slot-3', x: 625, y: 175, radius: 30, targetWord: '' },
+      { id: 'w2-slot-4', x: 375, y: 425, radius: 30, targetWord: '' },
+      { id: 'w2-slot-5', x: 625, y: 425, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 525 },
+  },
+  {
+    wave: 3,
+    path: [
+      { x: 75, y: 75 },
+      { x: 725, y: 75 },
+      { x: 725, y: 275 },
+      { x: 175, y: 275 },
+      { x: 175, y: 525 },
+      { x: 725, y: 525 },
+    ],
+    towerSlots: [
+      { id: 'w3-slot-1', x: 325, y: 175, radius: 30, targetWord: '' },
+      { id: 'w3-slot-2', x: 575, y: 175, radius: 30, targetWord: '' },
+      { id: 'w3-slot-3', x: 325, y: 375, radius: 30, targetWord: '' },
+      { id: 'w3-slot-4', x: 575, y: 375, radius: 30, targetWord: '' },
+      { id: 'w3-slot-5', x: 325, y: 475, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 525 },
+  },
+  {
+    wave: 4,
+    path: [
+      { x: 725, y: 75 },
+      { x: 725, y: 525 },
+      { x: 275, y: 525 },
+      { x: 275, y: 275 },
+      { x: 525, y: 275 },
+      { x: 525, y: 375 },
+    ],
+    towerSlots: [
+      { id: 'w4-slot-1', x: 625, y: 175, radius: 30, targetWord: '' },
+      { id: 'w4-slot-2', x: 425, y: 175, radius: 30, targetWord: '' },
+      { id: 'w4-slot-3', x: 175, y: 375, radius: 30, targetWord: '' },
+      { id: 'w4-slot-4', x: 375, y: 475, radius: 30, targetWord: '' },
+      { id: 'w4-slot-5', x: 575, y: 475, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 525, y: 375 },
+  },
+  {
+    wave: 5,
+    path: [
+      { x: 75, y: 525 },
+      { x: 75, y: 175 },
+      { x: 375, y: 175 },
+      { x: 375, y: 525 },
+      { x: 725, y: 525 },
+    ],
+    towerSlots: [
+      { id: 'w5-slot-1', x: 175, y: 375, radius: 30, targetWord: '' },
+      { id: 'w5-slot-2', x: 325, y: 275, radius: 30, targetWord: '' },
+      { id: 'w5-slot-3', x: 475, y: 375, radius: 30, targetWord: '' },
+      { id: 'w5-slot-4', x: 625, y: 275, radius: 30, targetWord: '' },
+      { id: 'w5-slot-5', x: 525, y: 475, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 525 },
+  },
+  {
+    wave: 6,
+    path: [
+      { x: 75, y: 375 },
+      { x: 725, y: 375 },
+    ],
+    towerSlots: [
+      { id: 'w6-slot-1', x: 325, y: 275, radius: 30, targetWord: '' },
+      { id: 'w6-slot-2', x: 325, y: 475, radius: 30, targetWord: '' },
+      { id: 'w6-slot-3', x: 525, y: 275, radius: 30, targetWord: '' },
+      { id: 'w6-slot-4', x: 525, y: 475, radius: 30, targetWord: '' },
+      { id: 'w6-slot-5', x: 425, y: 325, radius: 30, targetWord: '' },
+    ],
+    basePosition: { x: 725, y: 375 },
+  },
+]
+
 /**
  * Returns road tile information for a given grid coordinate.
  */
-export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
+export function getRoadTileInfo(
+  gridX: number,
+  gridY: number,
+  path: Waypoint[] = DEFAULT_PATH
+): RoadInfo | null {
   const worldX = gridX * TILE_SIZE + TILE_SIZE / 2
   const worldY = gridY * TILE_SIZE + TILE_SIZE / 2
 
   // 1. Identify if this point is on any path segment
   let segmentIndex = -1
-  for (let i = 0; i < DEFAULT_PATH.length - 1; i++) {
-    const p1 = DEFAULT_PATH[i]
-    const p2 = DEFAULT_PATH[i + 1]
+  for (let i = 0; i < path.length - 1; i++) {
+    const p1 = path[i]
+    const p2 = path[i + 1]
     
     const minX = Math.min(p1.x, p2.x)
     const maxX = Math.max(p1.x, p2.x)
@@ -199,12 +354,12 @@ export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
   if (segmentIndex === -1) return null
 
   // 2. Check if it's a corner
-  const cornerIndex = DEFAULT_PATH.findIndex(p => p.x === worldX && p.y === worldY)
+  const cornerIndex = path.findIndex(p => p.x === worldX && p.y === worldY)
   
-  if (cornerIndex !== -1 && cornerIndex > 0 && cornerIndex < DEFAULT_PATH.length - 1) {
-    const prev = DEFAULT_PATH[cornerIndex - 1]
-    const curr = DEFAULT_PATH[cornerIndex]
-    const next = DEFAULT_PATH[cornerIndex + 1]
+  if (cornerIndex !== -1 && cornerIndex > 0 && cornerIndex < path.length - 1) {
+    const prev = path[cornerIndex - 1]
+    const curr = path[cornerIndex]
+    const next = path[cornerIndex + 1]
 
     const dx1 = Math.sign(prev.x - curr.x)
     const dy1 = Math.sign(prev.y - curr.y)
@@ -222,8 +377,8 @@ export function getRoadTileInfo(gridX: number, gridY: number): RoadInfo | null {
   }
 
   // 3. If not corner, it's straight
-  const p1 = DEFAULT_PATH[segmentIndex]
-  const p2 = DEFAULT_PATH[segmentIndex + 1]
+  const p1 = path[segmentIndex]
+  const p2 = path[segmentIndex + 1]
   
   if (p1.x === p2.x) return { type: 'NS', rotation: 0 }
   return { type: 'EW', rotation: 0 }
@@ -236,13 +391,13 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     ? vocabulary[Math.floor(Math.random() * vocabulary.length)]
     : { term: 'default', translation: 'default' }
 
-  const firstSentence = vocabulary[0] || { term: '', translation: '' }
+  const firstSentence = pickRandomSentence(vocabulary)
   const sentenceWords = parseSentenceWords(firstSentence.term)
 
-  // Assign target words to tower slots
-  const towerSlots = DEFAULT_TOWER_SLOTS.map((slot, i) => ({
+  const mapConfig = MAP_CONFIGS[0] || { path: DEFAULT_PATH, towerSlots: DEFAULT_TOWER_SLOTS, basePosition: { x: 725, y: 75 } }
+  const towerSlots = mapConfig.towerSlots.map((slot, i) => ({
     ...slot,
-    targetWord: vocabulary[i % vocabulary.length]?.translation || 'word'
+    targetWord: vocabulary[i % vocabulary.length]?.translation || 'word',
   }))
 
   return {
@@ -259,15 +414,15 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     towers: [],
     towerSlots,
     projectiles: [],
-    words: [],
+    words: spawnSentenceWords(firstSentence.term),
     base: {
-      x: 725,
-      y: 75,
+      x: mapConfig.basePosition.x,
+      y: mapConfig.basePosition.y,
       hp: BASE_HP,
       maxHp: BASE_HP,
       radius: BASE_RADIUS,
     },
-    path: DEFAULT_PATH,
+    path: mapConfig.path,
     score: 0,
     wave: 1,
     spawnTimer: 0,
@@ -277,6 +432,12 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     currentSentenceEnglish: firstSentence.term,
     sentenceWords,
     collectedWordIndices: [],
+    sentenceCompleted: false,
+    enemiesSpawnedThisWave: 0,
+    enemiesKilledThisWave: 0,
+    totalEnemiesThisWave: WAVE_CONFIGS[0].soldiers + WAVE_CONFIGS[0].tanks + WAVE_CONFIGS[0].bosses,
+    waveCompleteTimer: 0,
+    waveMessage: null,
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
     ),
@@ -322,33 +483,55 @@ export function movePlayer(
 export function spawnEnemy(
   path: Waypoint[],
   wave: number,
-  random: () => number = Math.random
+  random: () => number = Math.random,
+  waveConfig?: { soldiers: number; tanks: number; bosses: number },
+  enemiesSpawnedThisWave: number = 0
 ): Enemy {
-  // Determine enemy type based on wave and randomness
-  const roll = random()
   let type: EnemyType
   let hp: number
   let speed: number
   let radius: number
 
-  if (wave >= 5 && roll < 0.1) {
-    // Boss: 10% chance after wave 5
-    type = 'boss'
-    hp = ENEMY_BOSS_HP
-    speed = ENEMY_BOSS_SPEED
-    radius = ENEMY_BOSS_RADIUS
-  } else if (wave >= 2 && roll < 0.3) {
-    // Tank: 30% chance after wave 2
-    type = 'tank'
-    hp = ENEMY_TANK_HP
-    speed = ENEMY_TANK_SPEED
-    radius = ENEMY_TANK_RADIUS
+  if (waveConfig) {
+    const bossStart = waveConfig.soldiers + waveConfig.tanks
+    if (enemiesSpawnedThisWave >= bossStart) {
+      type = 'boss'
+      hp = ENEMY_BOSS_HP
+      speed = ENEMY_BOSS_SPEED
+      radius = ENEMY_BOSS_RADIUS
+    } else if (enemiesSpawnedThisWave >= waveConfig.soldiers) {
+      type = 'tank'
+      hp = ENEMY_TANK_HP
+      speed = ENEMY_TANK_SPEED
+      radius = ENEMY_TANK_RADIUS
+    } else {
+      type = 'soldier'
+      hp = ENEMY_SOLDIER_HP
+      speed = ENEMY_SOLDIER_SPEED
+      radius = ENEMY_SOLDIER_RADIUS
+    }
   } else {
-    // Soldier: default
-    type = 'soldier'
-    hp = ENEMY_SOLDIER_HP
-    speed = ENEMY_SOLDIER_SPEED
-    radius = ENEMY_SOLDIER_RADIUS
+    // Determine enemy type based on wave and randomness (legacy behavior)
+    const roll = random()
+    if (wave >= 5 && roll < 0.1) {
+      // Boss: 10% chance after wave 5
+      type = 'boss'
+      hp = ENEMY_BOSS_HP
+      speed = ENEMY_BOSS_SPEED
+      radius = ENEMY_BOSS_RADIUS
+    } else if (wave >= 2 && roll < 0.3) {
+      // Tank: 30% chance after wave 2
+      type = 'tank'
+      hp = ENEMY_TANK_HP
+      speed = ENEMY_TANK_SPEED
+      radius = ENEMY_TANK_RADIUS
+    } else {
+      // Soldier: default
+      type = 'soldier'
+      hp = ENEMY_SOLDIER_HP
+      speed = ENEMY_SOLDIER_SPEED
+      radius = ENEMY_SOLDIER_RADIUS
+    }
   }
 
   // Spawn at first waypoint (off-screen)
@@ -437,41 +620,82 @@ export function parseSentenceWords(sentence: string): string[] {
     .filter(word => word.length > 0)
 }
 
+// Validate sequential word collection based on sentence order
+export function validateWordCollection(
+  collectedIndices: number[],
+  nextWordIndex: number,
+  allWords: string[]
+): boolean {
+  if (nextWordIndex < 0 || nextWordIndex >= allWords.length) {
+    return false
+  }
+
+  if (collectedIndices.includes(nextWordIndex)) {
+    return false
+  }
+
+  const expectedIndex = collectedIndices.length
+  return nextWordIndex === expectedIndex
+}
+
+// Check if sentence is complete based on collected indices
+export function isSentenceComplete(collectedIndices: number[], totalWords: number): boolean {
+  if (totalWords <= 0) {
+    return false
+  }
+  return collectedIndices.length >= totalWords
+}
+
 // Spawn word orbs for a full sentence
 export function spawnSentenceWords(
   sentence: string,
   random: () => number = Math.random
 ): Word[] {
   const sentenceWords = parseSentenceWords(sentence)
+  const minX = GAME_WIDTH * 0.25 + WORD_RADIUS
+  const maxX = GAME_WIDTH * 0.75 - WORD_RADIUS
+  const minY = GAME_HEIGHT * 0.25 + WORD_RADIUS
+  const maxY = GAME_HEIGHT * 0.75 - WORD_RADIUS
 
-  return sentenceWords.map(word => ({
+  return sentenceWords.map((word, index) => ({
     id: generateId(),
-    x: WORD_RADIUS + random() * (GAME_WIDTH - WORD_RADIUS * 2),
-    y: WORD_RADIUS + random() * (GAME_HEIGHT - WORD_RADIUS * 2),
+    x: minX + random() * (maxX - minX),
+    y: minY + random() * (maxY - minY),
     radius: WORD_RADIUS,
     term: word,
     translation: word,
     isCorrect: true,
     isCollected: false,
+    sentenceIndex: index,
   }))
 }
 
 // Check if player collects any words
 export function collectWords(
   player: Player,
-  words: Word[]
-): { player: Player; words: Word[]; collectedWord: Word | null } {
+  words: Word[],
+  sentenceWords: string[],
+  collectedWordIndices: number[]
+): { player: Player; words: Word[]; collectedWord: Word | null; collectedWordIndices: number[]; invalidCollection: boolean } {
   let collectedWord: Word | null = null
+  let invalidCollection = false
   const newInventory = [...player.inventory]
+  let updatedCollectedIndices = [...collectedWordIndices]
 
   const newWords = words.map(word => {
     if (word.isCollected) return word
 
     if (circlesCollide(player.x, player.y, player.radius, word.x, word.y, word.radius)) {
       collectedWord = word
-      // Add translation to inventory
-      newInventory.push(word.translation)
-      return { ...word, isCollected: true }
+      const wordIndex = word.sentenceIndex ?? -1
+      if (validateWordCollection(updatedCollectedIndices, wordIndex, sentenceWords)) {
+        updatedCollectedIndices = [...updatedCollectedIndices, wordIndex]
+        // Add translation to inventory (legacy tower activation)
+        newInventory.push(word.translation)
+        return { ...word, isCollected: true }
+      }
+      invalidCollection = true
+      return word
     }
 
     return word
@@ -481,7 +705,95 @@ export function collectWords(
     player: { ...player, inventory: newInventory },
     words: newWords,
     collectedWord,
+    collectedWordIndices: updatedCollectedIndices,
+    invalidCollection,
   }
+}
+
+// Reset sentence progress after incorrect word collection
+export function resetSentenceProgress(state: CastleDefenseState): CastleDefenseState {
+  return {
+    ...state,
+    player: {
+      ...state.player,
+      inventory: [],
+    },
+    collectedWordIndices: [],
+    sentenceCompleted: false,
+    words: spawnSentenceWords(state.currentSentenceEnglish),
+  }
+}
+
+// Determine if player can build a tower (sentence complete + near an empty slot)
+export function canBuildTower(state: CastleDefenseState): boolean {
+  if (!state.sentenceCompleted) {
+    return false
+  }
+
+  return state.towerSlots.some(slot => {
+    const hasTower = state.towers.some(tower => tower.id === `tower-${slot.id}`)
+    if (hasTower) return false
+    return inRange(state.player.x, state.player.y, slot.x, slot.y, 50)
+  })
+}
+
+// Build a tower at a specific slot and consume the completed sentence
+export function buildTowerAtSlot(
+  state: CastleDefenseState,
+  slotId: string,
+  vocabulary: { term: string; translation: string }[]
+): CastleDefenseState {
+  const slot = state.towerSlots.find(candidate => candidate.id === slotId)
+  if (!slot) {
+    return state
+  }
+
+  if (state.towers.some(tower => tower.id === `tower-${slot.id}`)) {
+    return state
+  }
+
+  const nextSentence = pickRandomSentence(vocabulary, state.currentSentenceEnglish)
+  const nextSentenceWords = parseSentenceWords(nextSentence.term)
+  const nextWords = spawnSentenceWords(nextSentence.term)
+
+  const newTower: Tower = {
+    id: `tower-${slot.id}`,
+    x: slot.x,
+    y: slot.y,
+    radius: 30,
+    isActive: true,
+    targetWord: slot.targetWord,
+    range: TOWER_RANGE,
+    lastFired: 0,
+    damage: TOWER_DAMAGE,
+  }
+
+  return {
+    ...state,
+    player: {
+      ...state.player,
+      inventory: [],
+    },
+    currentSentenceThai: nextSentence.translation,
+    currentSentenceEnglish: nextSentence.term,
+    sentenceWords: nextSentenceWords,
+    collectedWordIndices: [],
+    sentenceCompleted: false,
+    words: nextWords,
+    towers: [...state.towers, newTower],
+  }
+}
+
+export function loadMapForWave(wave: number): MapConfig {
+  return MAP_CONFIGS.find(config => config.wave === wave) || MAP_CONFIGS[0]
+}
+
+// Check if the current wave is complete
+export function isWaveComplete(state: CastleDefenseState): boolean {
+  return (
+    state.enemiesSpawnedThisWave >= state.totalEnemiesThisWave &&
+    state.enemies.length === 0
+  )
 }
 
 // Check if player can activate a tower slot
@@ -730,17 +1042,73 @@ export function advanceCastleDefenseTime(
   // 2. Move player
   let player = movePlayer(state.player, input, dt)
 
+  let currentSentenceEnglish = state.currentSentenceEnglish
+  let currentSentenceThai = state.currentSentenceThai
+  let sentenceWords = state.sentenceWords
+
   // 3. Collect words
   let words = state.words
-  const collection = collectWords(player, words)
+  const collection = collectWords(player, words, sentenceWords, state.collectedWordIndices)
   player = collection.player
   words = collection.words
+  let collectedWordIndices = collection.collectedWordIndices
+  let sentenceCompleted = state.sentenceCompleted
 
-  // 4. Check tower activation
+  if (collection.invalidCollection) {
+    const resetState = resetSentenceProgress({
+      ...state,
+      player,
+      words,
+      collectedWordIndices,
+    })
+    player = resetState.player
+    words = resetState.words
+    collectedWordIndices = resetState.collectedWordIndices
+    sentenceCompleted = resetState.sentenceCompleted
+  }
+
+  // 4. Check tower activation (sentence-complete flow)
   let towers = state.towers
-  const activation = checkTowerActivation(player, state.towerSlots, towers)
-  player = activation.player
-  towers = activation.towers
+  if (
+    canBuildTower({
+      ...state,
+      player,
+      towers,
+      words,
+      collectedWordIndices,
+      sentenceCompleted,
+    })
+  ) {
+    const buildSlot = state.towerSlots.find(slot => {
+      const hasTower = towers.some(tower => tower.id === `tower-${slot.id}`)
+      if (hasTower) return false
+      return inRange(player.x, player.y, slot.x, slot.y, 50)
+    })
+
+    if (buildSlot) {
+      const buildState = buildTowerAtSlot(
+        {
+          ...state,
+          player,
+          towers,
+          words,
+          collectedWordIndices,
+          sentenceCompleted,
+        },
+        buildSlot.id,
+        vocabulary
+      )
+
+      player = buildState.player
+      towers = buildState.towers
+      words = buildState.words
+      collectedWordIndices = buildState.collectedWordIndices
+      sentenceCompleted = buildState.sentenceCompleted
+      currentSentenceEnglish = buildState.currentSentenceEnglish
+      currentSentenceThai = buildState.currentSentenceThai
+      sentenceWords = buildState.sentenceWords
+    }
+  }
 
   // 5. Move enemies
   let enemies = state.enemies.map(e => moveEnemy(e, state.path, dt))
@@ -763,21 +1131,103 @@ export function advanceCastleDefenseTime(
 
   // 9. Calculate score (10 points per enemy killed)
   const enemiesKilled = state.enemies.length - enemies.length - (baseDamage.damage > 0 ? (baseDamage.damage / 10) : 0)
-  const score = state.score + (enemiesKilled > 0 ? Math.floor(enemiesKilled) * 10 : 0)
+  let score = state.score + (enemiesKilled > 0 ? Math.floor(enemiesKilled) * 10 : 0)
+
+  if (isSentenceComplete(collectedWordIndices, sentenceWords.length)) {
+    if (!sentenceCompleted) {
+      sentenceCompleted = true
+      score += 50
+    }
+  }
 
   // 10. Spawn enemies
   let spawnTimer = state.spawnTimer + dt
-  if (spawnTimer >= SPAWN_RATE_MS && enemies.length < MAX_ENEMIES) {
-    enemies = [...enemies, spawnEnemy(state.path, state.wave)]
-    spawnTimer = 0
+  let enemiesSpawnedThisWave = state.enemiesSpawnedThisWave
+  let enemiesKilledThisWave = state.enemiesKilledThisWave + Math.max(0, Math.floor(enemiesKilled))
+  const waveConfig = WAVE_CONFIGS[state.wave - 1]
+  let waveCompleteTimer = state.waveCompleteTimer
+  let waveMessage = state.waveMessage
+
+  if (isWaveComplete({ ...state, enemies, enemiesSpawnedThisWave })) {
+    if (waveCompleteTimer <= 0) {
+      waveCompleteTimer = 2000
+      waveMessage = `Wave ${state.wave} Complete`
+    }
   }
 
-  // 11. Respawn words if all collected
-  if (words.every(w => w.isCollected) || words.length === 0) {
-    words = spawnSentenceWords(state.currentSentenceEnglish)
+  if (waveCompleteTimer > 0) {
+    waveCompleteTimer = Math.max(0, waveCompleteTimer - dt)
   }
 
-  // 12. Check game over
+  if (waveCompleteTimer <= 0 && spawnTimer >= SPAWN_RATE_MS && enemies.length < MAX_ENEMIES) {
+    if (enemiesSpawnedThisWave < state.totalEnemiesThisWave) {
+      enemies = [
+        ...enemies,
+        spawnEnemy(state.path, state.wave, Math.random, waveConfig, enemiesSpawnedThisWave),
+      ]
+      enemiesSpawnedThisWave += 1
+      spawnTimer = 0
+    }
+  }
+
+  if (waveCompleteTimer === 0 && waveMessage && isWaveComplete({ ...state, enemies, enemiesSpawnedThisWave })) {
+    if (state.wave < WAVE_CONFIGS.length) {
+      const nextWave = state.wave + 1
+      const nextConfig = WAVE_CONFIGS[nextWave - 1]
+      const mapConfig = loadMapForWave(nextWave)
+      const nextSentence = pickRandomSentence(vocabulary, state.currentSentenceEnglish)
+      const nextSentenceWords = parseSentenceWords(nextSentence.term)
+      const nextTowerSlots = mapConfig.towerSlots.map((slot, i) => ({
+        ...slot,
+        targetWord: vocabulary[i % vocabulary.length]?.translation || 'word',
+      }))
+      return {
+        ...state,
+        wave: nextWave,
+        enemies,
+        towers: [],
+        projectiles: [],
+        words: spawnSentenceWords(nextSentence.term),
+        base: { ...base, x: mapConfig.basePosition.x, y: mapConfig.basePosition.y },
+        path: mapConfig.path,
+        towerSlots: nextTowerSlots,
+        score,
+        spawnTimer: 0,
+        gameTime,
+        currentSentenceThai: nextSentence.translation,
+        currentSentenceEnglish: nextSentence.term,
+        sentenceWords: nextSentenceWords,
+        collectedWordIndices: [],
+        sentenceCompleted: false,
+        enemiesSpawnedThisWave: 0,
+        enemiesKilledThisWave: 0,
+        totalEnemiesThisWave: nextConfig.soldiers + nextConfig.tanks + nextConfig.bosses,
+        waveCompleteTimer: 0,
+        waveMessage: null,
+        player,
+      }
+    }
+    return {
+      ...state,
+      status: 'victory',
+      waveCompleteTimer: 0,
+      waveMessage: null,
+      enemies,
+      towers,
+      projectiles,
+      words,
+      base,
+      score,
+      spawnTimer,
+      gameTime,
+      collectedWordIndices,
+      sentenceCompleted,
+      enemiesSpawnedThisWave,
+      enemiesKilledThisWave,
+    }
+  }
+
+  // 11. Check game over
   let status: CastleDefenseState['status'] = state.status
   if (base.hp <= 0) {
     status = 'gameover'
@@ -791,9 +1241,18 @@ export function advanceCastleDefenseTime(
     towers,
     projectiles,
     words,
+    currentSentenceThai,
+    currentSentenceEnglish,
+    sentenceWords,
+    collectedWordIndices,
+    sentenceCompleted,
     base,
     score,
     spawnTimer,
+    enemiesSpawnedThisWave,
+    enemiesKilledThisWave,
     gameTime,
+    waveCompleteTimer,
+    waveMessage,
   }
 }

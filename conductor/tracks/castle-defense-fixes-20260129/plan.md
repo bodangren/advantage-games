@@ -9,7 +9,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 1: Sentence Parsing and Word System
+## Phase 1: Sentence Parsing and Word System [checkpoint: 82fd032]
 
 ### Task 1.1: Create sentence parsing utilities
 - [x] Sub-task: Write tests for `parseSentenceWords(sentence: string): string[]` in `src/lib/castleDefense.test.ts` 6c3892d
@@ -49,154 +49,150 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Tests pass, TypeScript compiles without errors. ✅
 
 ### Task 1.4: Update page to use SAMPLE_SENTENCES
-- [ ] Sub-task: Open `src/app/games/castle-defense/page.tsx`
-- [ ] Sub-task: Change import from `SAMPLE_VOCABULARY` to `SAMPLE_SENTENCES`
-- [ ] Sub-task: Update import statement: `import { SAMPLE_SENTENCES } from '@/lib/sampleSentences'`
-- [ ] Sub-task: Pass `SAMPLE_SENTENCES` to `CastleDefenseGame` component
-- [ ] Sub-task: Run `npx tsc --noEmit` to verify no TypeScript errors
+- [x] Sub-task: Open `src/app/games/castle-defense/page.tsx` a687089
+- [x] Sub-task: Change import from `SAMPLE_VOCABULARY` to `SAMPLE_SENTENCES` a687089
+- [x] Sub-task: Update import statement: `import { SAMPLE_SENTENCES } from '@/lib/sampleSentences'` a687089
+- [x] Sub-task: Pass `SAMPLE_SENTENCES` to `CastleDefenseGame` component a687089
+- [x] Sub-task: Run `npx tsc --noEmit` to verify no TypeScript errors
 
 **Verification**: TypeScript check passes. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Sentence Parsing and Word System' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Sentence Parsing and Word System' (Protocol in workflow.md) 82fd032
 
 ---
 
-## Phase 2: Sequential Word Collection Mechanics
+## Phase 2: Sequential Word Collection Mechanics [checkpoint: 8e0e50f]
 
 ### Task 2.1: Implement word collection validation
-- [ ] Sub-task: Write tests for `validateWordCollection(collectedIndices, nextWord, allWords): boolean`
+- [x] Sub-task: Write tests for `validateWordCollection(collectedIndices, nextWord, allWords): boolean` b6ae14e
   - Test: Collecting first word (index 0) → valid
   - Test: Collecting second word after first → valid
   - Test: Collecting third word before second → invalid
   - Test: Collecting already collected word → invalid
-- [ ] Sub-task: Implement `validateWordCollection()` in `src/lib/castleDefense.ts`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `validateWordCollection()` in `src/lib/castleDefense.ts` b6ae14e
+- [x] Sub-task: Run tests b6ae14e
 
 **Verification**: All tests pass. ✅
 
 ### Task 2.2: Update word collection logic
-- [ ] Sub-task: Modify `collectWords()` to validate sequential order:
+- [x] Sub-task: Modify `collectWords()` to validate sequential order: 811476e
   - Check if collected word is the next required word in sentence
   - If valid: add to `collectedWordIndices`
   - If invalid: trigger reset (handled in next task)
-- [ ] Sub-task: Write tests for updated `collectWords()` with sentence validation
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for updated `collectWords()` with sentence validation 811476e
+- [x] Sub-task: Run tests 811476e
 
 **Verification**: All tests pass. ✅
 
 ### Task 2.3: Implement sentence reset on wrong word
-- [ ] Sub-task: Create `resetSentenceProgress(state: CastleDefenseState): CastleDefenseState`
+- [x] Sub-task: Create `resetSentenceProgress(state: CastleDefenseState): CastleDefenseState` 1117d63
   - Clears `collectedWordIndices`
   - Respawns all sentence words on map
   - Returns updated state
-- [ ] Sub-task: Write tests for `resetSentenceProgress()`
-- [ ] Sub-task: Integrate reset into `collectWords()` when wrong word collected
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for `resetSentenceProgress()` 1117d63
+- [x] Sub-task: Integrate reset into `collectWords()` when wrong word collected 1117d63
+- [x] Sub-task: Clear player inventory when sentence resets 13f2772
+- [x] Sub-task: Run tests 1117d63
 
 **Verification**: All tests pass. ✅
 
 ### Task 2.4: Implement sentence completion logic
-- [ ] Sub-task: Create `isSentenceComplete(collectedIndices, totalWords): boolean`
-- [ ] Sub-task: Write tests for sentence completion check
-- [ ] Sub-task: Add `sentenceCompleted` boolean field to `CastleDefenseState`
-- [ ] Sub-task: Update `advanceCastleDefenseTime()` to:
+- [x] Sub-task: Create `isSentenceComplete(collectedIndices, totalWords): boolean` 3ef296b
+- [x] Sub-task: Write tests for sentence completion check 3ef296b
+- [x] Sub-task: Add `sentenceCompleted` boolean field to `CastleDefenseState` 3ef296b
+- [x] Sub-task: Update `advanceCastleDefenseTime()` to: 3ef296b
   - Check if sentence complete
   - Set `sentenceCompleted = true` (enables tower building)
   - Award points (e.g., 50 points per completed sentence)
-- [ ] Sub-task: Write tests for sentence completion flow
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for sentence completion flow 3ef296b
+- [x] Sub-task: Run tests 3ef296b
 
 **Verification**: All tests pass. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Sequential Word Collection Mechanics' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Sequential Word Collection Mechanics' (Protocol in workflow.md) 8e0e50f
 
 ---
 
-## Phase 3: Tower Building Logic
+## Phase 3: Tower Building Logic [checkpoint: 19019cb]
 
 ### Task 3.1: Implement tower building mechanics
-- [ ] Sub-task: Update game state to track tower building:
+- [x] Sub-task: Update game state to track tower building: 3ef296b
   ```typescript
   sentenceCompleted: boolean  // true when player completes a sentence
   ```
-- [ ] Sub-task: Write tests for `canBuildTower(state): boolean`
+- [x] Sub-task: Write tests for `canBuildTower(state): boolean` 4d69d41
   - Test: Returns true if sentence completed and near tower base
   - Test: Returns false if sentence not completed
   - Test: Returns false if not near tower base
-- [ ] Sub-task: Implement `canBuildTower()` in `src/lib/castleDefense.ts`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `canBuildTower()` in `src/lib/castleDefense.ts` 4d69d41
+- [x] Sub-task: Run tests 4d69d41
 
 **Verification**: All tests pass. ✅
 
 ### Task 3.2: Implement tower building activation
-- [ ] Sub-task: Write tests for `buildTowerAtSlot(state, slotId): CastleDefenseState`
+- [x] Sub-task: Write tests for `buildTowerAtSlot(state, slotId): CastleDefenseState` 2ccbad5
   - Test: Creates tower at specified slot
   - Test: Consumes completed sentence (sets sentenceCompleted = false)
   - Test: Resets collectedWordIndices
   - Test: Spawns new sentence words
-- [ ] Sub-task: Implement `buildTowerAtSlot()` function
-- [ ] Sub-task: Integrate into `advanceCastleDefenseTime()`:
+- [x] Sub-task: Implement `buildTowerAtSlot()` function 2ccbad5
+- [x] Sub-task: Integrate into `advanceCastleDefenseTime()`: c8cf442
   - Check if player near tower base AND sentenceCompleted
   - Auto-build tower (or require input, TBD)
   - Call `buildTowerAtSlot()`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Run tests 2ccbad5
 
 **Verification**: All tests pass. ✅
 
 ### Task 3.3: Add visual indicator for tower building
-- [ ] Sub-task: When player has completed sentence, highlight available tower bases
-- [ ] Sub-task: Show "Build Tower" message when player is near a tower base
-- [ ] Sub-task: Add visual feedback when tower is built (particle effect, flash, etc.)
+- [x] Sub-task: When player has completed sentence, highlight available tower bases 3842746
+- [x] Sub-task: Show "Build Tower" message when player is near a tower base 3842746
+- [x] Sub-task: Add visual feedback when tower is built (particle effect, flash, etc.) 5abdf0d
 
 **Verification**: Visual inspection - tower building flow is clear and intuitive. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Tower Building Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Tower Building Logic' (Protocol in workflow.md) 19019cb
 
 ---
 
-## Phase 4: Word Orb Visual Updates
+## Phase 4: Word Orb Visual Updates [checkpoint: 21f0c9c]
 
 ### Task 4.1: Update word orb rendering to white circles
-- [ ] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx`
-- [ ] Sub-task: Find word orb rendering code (Group with Circle + Text for words)
-- [ ] Sub-task: Change circle fill to white: `fill="white"`
-- [ ] Sub-task: Add black text for contrast: `fill="black"`
-- [ ] Sub-task: Remove color-based logic (isCorrect → green, incorrect → red)
-- [ ] Sub-task: Ensure all words render identically (white circles, black text)
+- [x] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx` 80b0b86
+- [x] Sub-task: Find word orb rendering code (Group with Circle + Text for words) 80b0b86
+- [x] Sub-task: Change circle fill to white: `fill="white"` 80b0b86
+- [x] Sub-task: Add black text for contrast: `fill="black"` 80b0b86
+- [x] Sub-task: Remove color-based logic (isCorrect → green, incorrect → red) 80b0b86
+- [x] Sub-task: Ensure all words render identically (white circles, black text) 80b0b86
 
 **Verification**: Visual inspection - all word orbs are white with black text. ✅
 
 ### Task 4.2: Ensure single words per orb
-- [ ] Sub-task: Verify word orbs receive individual words (not phrases)
-- [ ] Sub-task: Adjust text offsetX calculation for centering:
+- [x] Sub-task: Verify word orbs receive individual words (not phrases) d36a1c2
+- [x] Sub-task: Adjust text offsetX calculation for centering: d36a1c2
   ```typescript
-  offsetX={word.translation.length * 3.5}  // Approximate centering
+  offsetX={word.radius}  // Center using orb radius
   ```
-- [ ] Sub-task: Test with short words ("I", "am") and long words ("beautiful", "extraordinary")
-- [ ] Sub-task: Adjust font size if needed for readability
+- [x] Sub-task: Constrain word orb spawns to middle 50% of the board d36a1c2
+- [x] Sub-task: Test with short words ("I", "am") and long words ("beautiful", "extraordinary") d36a1c2
+- [x] Sub-task: Adjust font size if needed for readability d36a1c2
 
 **Verification**: Visual inspection - each orb contains one word, properly centered. ✅
 
 ### Task 4.3: (Optional) Highlight next required word
 - [ ] Sub-task: Determine next required word from `collectedWordIndices` and `sentenceWords`
-- [ ] Sub-task: Add conditional rendering for next word orb:
-  ```typescript
-  fill={isNextRequiredWord ? '#22c55e' : 'white'}  // Green if next word
-  stroke={isNextRequiredWord ? '#16a34a' : '#666'}
-  strokeWidth={isNextRequiredWord ? 3 : 2}
-  ```
+- [ ] Sub-task: Add conditional rendering for next word orb
 - [ ] Sub-task: Test highlighting with different sentence progress states
+*Note: Highlighting removed per user feedback (commit d36a1c2). Players choose the next word without hints.*
 
-**Verification**: Next required word visually distinct (green circle). ✅
-
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Word Orb Visual Updates' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Word Orb Visual Updates' (Protocol in workflow.md) 21f0c9c
 
 ---
 
-## Phase 5: Wave System with Finite Enemies
+## Phase 5: Wave System with Finite Enemies [checkpoint: fc72821]
 
 ### Task 5.1: Define wave configurations
-- [ ] Sub-task: Create `WAVE_CONFIGS` constant in `src/lib/castleDefense.ts`:
+- [x] Sub-task: Create `WAVE_CONFIGS` constant in `src/lib/castleDefense.ts`: a698166
   ```typescript
   export const WAVE_CONFIGS = [
     { wave: 1, soldiers: 10, tanks: 0, bosses: 0 },
@@ -207,60 +203,60 @@ Before starting ANY phase, the implementer MUST:
     { wave: 6, soldiers: 20, tanks: 12, bosses: 3 },
   ]
   ```
-- [ ] Sub-task: Write tests for wave config retrieval
-- [ ] Sub-task: Run `npx tsc --noEmit`
+- [x] Sub-task: Write tests for wave config retrieval a698166
+- [x] Sub-task: Run `npx tsc --noEmit` a698166
 
 **Verification**: TypeScript check passes. ✅
 
 ### Task 5.2: Update game state for wave tracking
-- [ ] Sub-task: Add fields to `CastleDefenseState`:
+- [x] Sub-task: Add fields to `CastleDefenseState`: ca487b5
   ```typescript
   enemiesSpawnedThisWave: number  // count of enemies spawned so far
   enemiesKilledThisWave: number   // count of enemies killed
   totalEnemiesThisWave: number    // total enemies for this wave
   ```
-- [ ] Sub-task: Update `createCastleDefenseState()` to initialize wave tracking
-- [ ] Sub-task: Write tests for state initialization
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Update `createCastleDefenseState()` to initialize wave tracking ca487b5
+- [x] Sub-task: Write tests for state initialization ca487b5
+- [x] Sub-task: Run tests ca487b5
 
 **Verification**: All tests pass. ✅
 
 ### Task 5.3: Implement finite enemy spawning
-- [ ] Sub-task: Write tests for wave spawn logic:
+- [x] Sub-task: Write tests for wave spawn logic: 7cd587b
   - Test: Stops spawning when `enemiesSpawnedThisWave >= totalEnemiesThisWave`
   - Test: Respects spawn timer between enemies
   - Test: Spawns correct enemy types based on wave config
-- [ ] Sub-task: Update `advanceCastleDefenseTime()` spawn logic:
+- [x] Sub-task: Update `advanceCastleDefenseTime()` spawn logic: 7cd587b
   - Check if `enemiesSpawnedThisWave < totalEnemiesThisWave` before spawning
   - Increment `enemiesSpawnedThisWave` when enemy spawns
   - Use wave config to determine enemy type distribution
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Run tests 7cd587b
 
 **Verification**: All tests pass. ✅
 
 ### Task 5.4: Implement wave completion detection
-- [ ] Sub-task: Write tests for `isWaveComplete(state): boolean`
+- [x] Sub-task: Write tests for `isWaveComplete(state): boolean` 7a35f4f
   - Test: Returns true when all enemies spawned AND all defeated
   - Test: Returns false if enemies still alive
   - Test: Returns false if more enemies to spawn
-- [ ] Sub-task: Implement `isWaveComplete()` function
-- [ ] Sub-task: Update `advanceCastleDefenseTime()` to:
+- [x] Sub-task: Implement `isWaveComplete()` function 7a35f4f
+- [x] Sub-task: Update `advanceCastleDefenseTime()` to: cb1098f
   - Check wave completion
   - Show "Wave X Complete" message
   - Advance to next wave after brief delay
   - Reset wave tracking variables
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Run tests 7a35f4f
 
 **Verification**: All tests pass. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Wave System with Finite Enemies' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Wave System with Finite Enemies' (Protocol in workflow.md) fc72821
 
 ---
 
-## Phase 6: Six Unique Maps and Win Condition
+## Phase 6: Six Unique Maps and Win Condition [checkpoint: 8f27455]
 
 ### Task 6.1: Define map configurations
-- [ ] Sub-task: Create `MAP_CONFIGS` constant in `src/lib/castleDefense.ts`:
+- [x] Sub-task: Create `MAP_CONFIGS` constant in `src/lib/castleDefense.ts`: a2829a9
   ```typescript
   export const MAP_CONFIGS = [
     {
@@ -272,36 +268,36 @@ Before starting ANY phase, the implementer MUST:
     // ... 5 more map configs
   ]
   ```
-- [ ] Sub-task: Design 6 unique paths (varying difficulty, length, curves)
-- [ ] Sub-task: Position 3-5 tower slots per map
-- [ ] Sub-task: Write tests for map config retrieval
+- [x] Sub-task: Design 6 unique paths (varying difficulty, length, curves) a2829a9
+- [x] Sub-task: Position 3-5 tower slots per map a2829a9
+- [x] Sub-task: Write tests for map config retrieval a2829a9
 
 **Verification**: All 6 maps defined, tests pass. ✅
 
 ### Task 6.2: Load map based on current wave
-- [ ] Sub-task: Write tests for `loadMapForWave(wave): MapConfig`
-- [ ] Sub-task: Implement `loadMapForWave()` function
-- [ ] Sub-task: Update `createCastleDefenseState()` to load map for wave 1
-- [ ] Sub-task: Update wave transition to load next map
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Write tests for `loadMapForWave(wave): MapConfig` a2829a9
+- [x] Sub-task: Implement `loadMapForWave()` function a2829a9
+- [x] Sub-task: Update `createCastleDefenseState()` to load map for wave 1 a2829a9
+- [x] Sub-task: Update wave transition to load next map a2829a9
+- [x] Sub-task: Run tests a2829a9
 
 **Verification**: All tests pass, maps load correctly. ✅
 
 ### Task 6.3: Implement victory condition
-- [ ] Sub-task: Add `status: 'playing' | 'gameover' | 'victory'` to state (if not already present)
-- [ ] Sub-task: Write tests for victory detection:
+- [x] Sub-task: Add `status: 'playing' | 'gameover' | 'victory'` to state (if not already present)
+- [x] Sub-task: Write tests for victory detection: e6c7bad
   - Test: Sets status to 'victory' when wave 6 is complete
   - Test: Does not trigger victory before wave 6
-- [ ] Sub-task: Update `advanceCastleDefenseTime()`:
+- [x] Sub-task: Update `advanceCastleDefenseTime()`: 4bc814e
   - Check if wave 6 is complete
   - Set `status = 'victory'`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Run tests e6c7bad
 
 **Verification**: All tests pass. ✅
 
 ### Task 6.4: Add victory screen to component
-- [ ] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx`
-- [ ] Sub-task: Add victory screen rendering (similar to game over screen):
+- [x] Sub-task: Open `src/components/castle-defense/CastleDefenseGame.tsx` 4bc814e
+- [x] Sub-task: Add victory screen rendering (similar to game over screen): 4bc814e
   ```typescript
   if (gameState?.status === 'victory') {
     return (
@@ -313,19 +309,19 @@ Before starting ANY phase, the implementer MUST:
     )
   }
   ```
-- [ ] Sub-task: Test victory screen display
+- [x] Sub-task: Test victory screen display 4bc814e
 
 **Verification**: Victory screen appears after wave 6 completion. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Six Unique Maps and Win Condition' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Six Unique Maps and Win Condition' (Protocol in workflow.md) 8f27455
 
 ---
 
 ## Phase 7: HUD Updates for Sentence Progress
 
 ### Task 7.1: Display Thai sentence prominently
-- [ ] Sub-task: Find HUD section in `CastleDefenseGame.tsx`
-- [ ] Sub-task: Add Thai sentence display at top-center:
+- [x] Sub-task: Find HUD section in `CastleDefenseGame.tsx` 49d76e2
+- [x] Sub-task: Add Thai sentence display at top-center: 49d76e2
   ```typescript
   <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
     <div className="bg-blue-900/90 px-6 py-3 rounded-lg">
@@ -335,12 +331,12 @@ Before starting ANY phase, the implementer MUST:
     </div>
   </div>
   ```
-- [ ] Sub-task: Ensure responsive sizing for mobile
+- [x] Sub-task: Ensure responsive sizing for mobile 49d76e2
 
 **Verification**: Thai sentence visible and readable on desktop and mobile. ✅
 
 ### Task 7.2: Display sentence progress and wave info
-- [ ] Sub-task: Create progress display component showing collected words:
+- [x] Sub-task: Create progress display component showing collected words: 6417f56
   ```typescript
   <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10">
     <div className="bg-black/60 px-4 py-2 rounded text-white text-sm">
@@ -352,19 +348,19 @@ Before starting ANY phase, the implementer MUST:
     </div>
   </div>
   ```
-- [ ] Sub-task: Add wave progress indicator:
+- [x] Sub-task: Add wave progress indicator: 6417f56
   ```typescript
   <div className="bg-black/60 px-3 py-1 rounded text-white text-sm">
     Wave {gameState?.wave}/6 - Enemies: {gameState?.enemiesKilledThisWave}/{gameState?.totalEnemiesThisWave}
   </div>
   ```
-- [ ] Sub-task: Position to not overlap with Thai sentence or other HUD elements
+- [x] Sub-task: Position to not overlap with Thai sentence or other HUD elements 6417f56
 
 **Verification**: Progress display shows collected words and wave info. ✅
 
 ### Task 7.3: Update HUD layout
-- [ ] Sub-task: Show "Sentence Complete - Build Tower!" message when sentenceCompleted is true
-- [ ] Sub-task: Clean up HUD layout for clarity and mobile responsiveness
+- [x] Sub-task: Show "Sentence Complete - Build Tower!" message when sentenceCompleted is true 50813b6
+- [x] Sub-task: Clean up HUD layout for clarity and mobile responsiveness ff07fb7
 
 **Verification**: HUD is clean, uncluttered, and informative. ✅
 
@@ -486,6 +482,7 @@ Before starting ANY phase, the implementer MUST:
 - [ ] Sub-task: Review all UI elements for alignment and spacing
 - [ ] Sub-task: Ensure Thai text is readable (font size, contrast)
 - [ ] Sub-task: Verify word orbs don't spawn on top of roads/towers
+- [x] Sub-task: Ensure tower slots do not overlap road paths efe7471
 - [ ] Sub-task: Check HUD elements don't overlap on mobile
 - [ ] Sub-task: Test landscape and portrait modes
 
@@ -495,6 +492,7 @@ Before starting ANY phase, the implementer MUST:
 - [ ] Sub-task: Test with empty SAMPLE_SENTENCES array
 - [ ] Sub-task: Test with single-word sentences
 - [ ] Sub-task: Test with very long sentences (10+ words)
+- [x] Sub-task: Randomize sentence selection to avoid repeats efe7471
 - [ ] Sub-task: Add error boundaries or graceful degradation
 
 **Verification**: Game handles edge cases gracefully without crashes. ✅
@@ -509,8 +507,8 @@ Before starting ANY phase, the implementer MUST:
 
 ### Task 10.1: Enemy difficulty adjustments
 - [ ] Sub-task: Review enemy spawn rates
-- [ ] Sub-task: Adjust enemy HP values
-- [ ] Sub-task: Adjust enemy speed values
+- [x] Sub-task: Adjust enemy HP values cce42bf
+- [x] Sub-task: Adjust enemy speed values cce42bf
 - [ ] Sub-task: Test wave progression curve
 
 ### Task 10.2: Tower effectiveness adjustments

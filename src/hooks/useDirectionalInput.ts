@@ -12,17 +12,37 @@ export function useDirectionalInput() {
   const [castTriggered, setCastTriggered] = useState(false)
 
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const movementKeys = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'])
+    const castKeys = new Set(['Space', 'Enter'])
+    const shouldTrap = movementKeys.has(e.code) || castKeys.has(e.code)
+
+    if (shouldTrap) {
+      e.preventDefault()
+    }
+
+    if (e.repeat) {
+      return
+    }
+
     setKeys((prev) => {
+      if (prev.has(e.code)) {
+        return prev
+      }
       const next = new Set(prev)
       next.add(e.code)
       return next
     })
-    if (e.code === 'Space' || e.code === 'Enter') {
-        setCastTriggered(true)
+    if (castKeys.has(e.code)) {
+      setCastTriggered(true)
     }
   }, [])
 
   const handleKeyUp = useCallback((e: KeyboardEvent) => {
+    const movementKeys = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'KeyW', 'KeyA', 'KeyS', 'KeyD'])
+    const castKeys = new Set(['Space', 'Enter'])
+    if (movementKeys.has(e.code) || castKeys.has(e.code)) {
+      e.preventDefault()
+    }
     setKeys((prev) => {
       const next = new Set(prev)
       next.delete(e.code)

@@ -21,6 +21,7 @@ import {
   advanceCastleDefenseTime,
   CastleDefenseState,
   WORD_RADIUS,
+  inRange,
 } from '@/lib/castleDefense'
 import { BackgroundLayer } from './BackgroundLayer'
 import type { VocabularyItem } from '@/store/useGameStore'
@@ -64,6 +65,9 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 })
   const [hasStarted, setHasStarted] = useState(false)
+  const [buildEffects, setBuildEffects] = useState<
+    { id: string; x: number; y: number; createdAt: number }[]
+  >([])
 
   // Animation frames
   const [playerFrame, setPlayerFrame] = useState(0)
@@ -71,6 +75,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
 
   // Refs
   const containerRef = useRef<HTMLDivElement>(null)
+  const previousTowerIds = useRef<string[]>([])
 
   // Input
   const { input, setVirtualInput, consumeCast } = useDirectionalInput()
@@ -112,21 +117,55 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     return () => { mounted = false }
   }, [])
 
+  useEffect(() => {
+    if (!gameState) return
+    const currentIds = gameState.towers.map(tower => tower.id)
+    const newTowers = gameState.towers.filter(tower => !previousTowerIds.current.includes(tower.id))
+
+    if (newTowers.length > 0) {
+      const now = Date.now()
+      setBuildEffects(prev => [
+        ...prev,
+        ...newTowers.map(tower => ({
+          id: `${tower.id}-${now}`,
+          x: tower.x,
+          y: tower.y,
+          createdAt: now,
+        })),
+      ])
+    }
+
+    previousTowerIds.current = currentIds
+  }, [gameState?.towers])
+
   // ============================================
   // RESPONSIVE CONTAINER
   // ============================================
   useEffect(() => {
     if (!containerRef.current) return
 
-    const observer = new ResizeObserver(entries => {
-      const { width, height } = entries[0].contentRect
+    const updateDimensions = (rect?: DOMRectReadOnly) => {
+      if (!containerRef.current && !rect) return
+      const { width, height } = rect ?? containerRef.current!.getBoundingClientRect()
       if (width > 0 && height > 0) {
         setDimensions({ width, height })
       }
+    }
+
+    updateDimensions()
+
+    const observer = new ResizeObserver(entries => {
+      updateDimensions(entries[0]?.contentRect)
     })
 
     observer.observe(containerRef.current)
-    return () => observer.disconnect()
+    window.addEventListener('resize', updateDimensions)
+    window.addEventListener('orientationchange', updateDimensions)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', updateDimensions)
+      window.removeEventListener('orientationchange', updateDimensions)
+    }
   }, [hasStarted]) // Re-run when game starts and container becomes available
 
   // ============================================
@@ -190,6 +229,12 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     }
   }, ANIMATION_FRAME_MS)
 
+  useInterval(() => {
+    setBuildEffects(prev =>
+      prev.filter(effect => Date.now() - effect.createdAt < 600)
+    )
+  }, buildEffects.length > 0 ? 100 : null)
+
   // Memoize sprite grids
   const grids = useMemo(() => {
     if (!assets) return null
@@ -200,6 +245,15 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
       boss: buildSpriteGrid(assets.boss.width, assets.boss.height),
     }
   }, [assets])
+
+  const activeBuildSlot = useMemo(() => {
+    if (!gameState || !gameState.sentenceCompleted) return null
+    return gameState.towerSlots.find(slot => {
+      const hasTower = gameState.towers.some(tower => tower.id === `tower-${slot.id}`)
+      if (hasTower) return false
+      return inRange(gameState.player.x, gameState.player.y, slot.x, slot.y, 50)
+    })
+  }, [gameState])
 
   // ============================================
   // RENDER HELPERS
@@ -272,6 +326,36 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     )
   }
 
+  if (gameState?.status === 'victory') {
+    return (
+      <div className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 flex items-center justify-center border border-white/10 md:aspect-video md:h-auto">
+        <div className="absolute inset-0 bg-emerald-900/20 backdrop-blur-sm" />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="relative text-center space-y-6 p-8 bg-slate-900/80 border border-emerald-500/30 rounded-[2.5rem] shadow-2xl backdrop-blur-md"
+        >
+          <div className="space-y-1">
+            <h2 className="text-5xl font-black text-emerald-400 uppercase tracking-tighter">Victory!</h2>
+            <p className="text-emerald-200 text-sm uppercase tracking-widest font-bold">The castle stands strong</p>
+          </div>
+          <div className="py-4">
+            <span className="text-slate-500 text-xs uppercase tracking-widest font-black block mb-1">Final Score</span>
+            <span className="text-5xl font-black text-white">{gameState.score}</span>
+          </div>
+          <motion.button
+            onClick={startGame}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full py-4 bg-white text-slate-950 font-black rounded-xl shadow-lg uppercase tracking-widest"
+          >
+            Play Again
+          </motion.button>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div
       ref={containerRef}
@@ -280,21 +364,32 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
       {gameState && dimensions.width > 0 && dimensions.height > 0 && (
         <Stage width={dimensions.width} height={dimensions.height}>
           <Layer scaleX={camera.scale} scaleY={camera.scale} x={camera.x} y={camera.y}>
-            <BackgroundLayer grassMap={gameState.grassMap} />
+            <BackgroundLayer grassMap={gameState.grassMap} path={gameState.path} />
 
             {/* Tower slots */}
             {gameState.towerSlots.map(slot => (
-              <KonvaImage
-                key={slot.id}
-                image={assets.towerBase}
-                x={slot.x}
-                y={slot.y}
-                width={TILE_SIZE}
-                height={TILE_SIZE}
-                offsetX={TILE_SIZE / 2}
-                offsetY={TILE_SIZE / 2}
-                opacity={0.6}
-              />
+              <Group key={slot.id}>
+                {gameState.sentenceCompleted && !gameState.towers.some(tower => tower.id === `tower-${slot.id}`) && (
+                  <Circle
+                    x={slot.x}
+                    y={slot.y}
+                    radius={TILE_SIZE * 0.6}
+                    stroke={activeBuildSlot?.id === slot.id ? '#22c55e' : 'rgba(250, 204, 21, 0.9)'}
+                    strokeWidth={activeBuildSlot?.id === slot.id ? 4 : 2}
+                    dash={activeBuildSlot?.id === slot.id ? [6, 4] : [4, 6]}
+                  />
+                )}
+                <KonvaImage
+                  image={assets.towerBase}
+                  x={slot.x}
+                  y={slot.y}
+                  width={TILE_SIZE}
+                  height={TILE_SIZE}
+                  offsetX={TILE_SIZE / 2}
+                  offsetY={TILE_SIZE / 2}
+                  opacity={gameState.towers.some(tower => tower.id === `tower-${slot.id}`) ? 0.3 : 0.8}
+                />
+              </Group>
             ))}
 
             {/* Active towers */}
@@ -319,6 +414,24 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
                 />
               </Group>
             ))}
+
+            {/* Tower build effects */}
+            {buildEffects.map(effect => {
+              const age = Date.now() - effect.createdAt
+              const progress = Math.min(age / 600, 1)
+              const radius = TILE_SIZE * (0.6 + progress * 0.8)
+              const opacity = 1 - progress
+              return (
+                <Circle
+                  key={effect.id}
+                  x={effect.x}
+                  y={effect.y}
+                  radius={radius}
+                  stroke={`rgba(34, 197, 94, ${opacity})`}
+                  strokeWidth={3}
+                />
+              )
+            })}
 
             {/* Base (Castle) */}
             <KonvaImage
@@ -396,15 +509,15 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
               <Group key={word.term + word.x} x={word.x} y={word.y}>
                 <Circle
                   radius={WORD_RADIUS}
-                  fill={word.isCorrect ? '#22c55e' : '#ef4444'}
-                  stroke="white"
+                  fill="white"
+                  stroke="#111"
                   strokeWidth={2}
                 />
                 <Text
                   text={word.translation}
                   fontSize={11}
                   fontStyle="bold"
-                  fill="white"
+                  fill="black"
                   offsetX={word.radius}
                   offsetY={word.radius}
                   width={word.radius * 2}
@@ -438,24 +551,48 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
         </Stage>
       )}
 
+      {gameState && (
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2 max-w-[92vw]">
+          {gameState.currentSentenceThai && (
+            <div className="bg-blue-900/90 border border-blue-400/40 px-5 py-2 rounded-2xl shadow-xl backdrop-blur-md">
+              <div className="text-white text-sm font-black text-center leading-snug md:text-xl">
+                {gameState.currentSentenceThai}
+              </div>
+            </div>
+          )}
+          <div className="bg-slate-950/70 border border-white/10 px-4 py-2 rounded-xl shadow-lg backdrop-blur-md text-center">
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block leading-none mb-1">Progress</span>
+            <div className="text-sm font-semibold text-white md:text-base">
+              {gameState.sentenceWords.map((word, idx) => (
+                <span
+                  key={`${word}-${idx}`}
+                  className={gameState.collectedWordIndices.includes(idx) ? 'text-emerald-300' : 'text-slate-400'}
+                >
+                  {gameState.collectedWordIndices.includes(idx) ? word : '___'}{' '}
+                </span>
+              ))}
+            </div>
+          </div>
+          {gameState.sentenceCompleted && (
+            <div className="bg-emerald-600/90 border border-emerald-300/60 px-4 py-1 rounded-full shadow-lg text-white text-[11px] font-black uppercase tracking-widest md:text-xs">
+              Sentence Complete - Build Tower!
+            </div>
+          )}
+          <div className="bg-slate-950/70 border border-white/10 px-3 py-1 rounded-full shadow-lg text-white text-[11px] font-bold uppercase tracking-widest md:text-xs">
+            Wave {gameState.wave}/6 - Enemies: {gameState.enemiesKilledThisWave}/{gameState.totalEnemiesThisWave}
+          </div>
+        </div>
+      )}
+
       {/* HUD - TOP */}
-      <div className="absolute top-4 inset-x-4 z-10 flex justify-between items-start pointer-events-none">
-        <div className="space-y-2">
-          <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Score</span>
-            <span className="text-xl font-black text-white leading-none">{gameState?.score || 0}</span>
-          </div>
-          <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Wave</span>
-            <span className="text-xl font-black text-white leading-none">{gameState?.wave || 1}</span>
-          </div>
+      <div className="absolute top-44 left-4 z-30 pointer-events-none md:top-4">
+        <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md">
+          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Score</span>
+          <span className="text-xl font-black text-white leading-none">{gameState?.score || 0}</span>
         </div>
+      </div>
 
-        <div className="bg-amber-600 border-2 border-amber-400 px-6 py-2 rounded-2xl shadow-2xl shadow-amber-900/40 backdrop-blur-md text-center min-w-[160px]">
-          <span className="text-[10px] font-black text-amber-200 uppercase tracking-widest block leading-none mb-1">Find Target</span>
-          <span className="text-2xl font-black text-white uppercase tracking-tight leading-none">{gameState?.targetWord || ''}</span>
-        </div>
-
+      <div className="absolute top-44 right-4 z-30 pointer-events-none md:top-4">
         <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md text-right">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Castle HP</span>
           <div className="flex items-center gap-2">
@@ -470,41 +607,24 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
         </div>
       </div>
 
-      {/* INVENTORY - BOTTOM LEFT */}
-      <div className="absolute bottom-8 left-8 z-10 pointer-events-none">
-        <AnimatePresence>
-          {gameState?.player.inventory.length ? (
-            <motion.div 
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: -20, opacity: 0 }}
-              className="bg-slate-900/90 border border-blue-500/30 p-4 rounded-[2rem] shadow-2xl backdrop-blur-md min-w-[140px]"
-            >
-              <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest block mb-2 px-2">Inventory</span>
-              <div className="space-y-2">
-                {gameState.player.inventory.map((word, i) => (
-                  <motion.div 
-                    key={i} 
-                    initial={{ scale: 0.8 }}
-                    animate={{ scale: 1 }}
-                    className="text-white font-bold bg-blue-500/20 px-3 py-2 rounded-xl border border-blue-500/30 text-sm flex items-center justify-between gap-3"
-                  >
-                    {word}
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" />
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          ) : (
-            <div className="bg-slate-900/40 border border-white/5 p-4 rounded-[2rem] backdrop-blur-sm">
-               <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block px-2 italic">Empty Handed</span>
-            </div>
-          )}
-        </AnimatePresence>
-      </div>
+      {activeBuildSlot && (
+        <div className="absolute bottom-28 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+          <div className="bg-emerald-600/90 border border-emerald-300/60 px-5 py-2 rounded-full shadow-lg text-white font-black uppercase tracking-widest text-xs">
+            Build Tower
+          </div>
+        </div>
+      )}
+
+      {gameState?.waveMessage && (
+        <div className="absolute top-24 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+          <div className="bg-amber-500/90 border border-amber-200/60 px-6 py-2 rounded-full shadow-xl text-white font-black uppercase tracking-widest text-xs">
+            {gameState.waveMessage}
+          </div>
+        </div>
+      )}
 
       {/* D-Pad */}
-      <div className="absolute bottom-8 right-8 z-20">
+      <div className="absolute bottom-6 right-6 z-30 pointer-events-auto" data-testid="virtual-dpad">
         <VirtualDPad onInput={setVirtualInput} />
       </div>
     </div>
