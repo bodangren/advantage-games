@@ -70,9 +70,10 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
   const score = usePotionRushStore(state => state.score)
   const lives = usePotionRushStore(state => state.lives)
 
-  // Layout Constants (Based on 1280x720 internal coordinates)
-  const VIRTUAL_WIDTH = 1280
-  const VIRTUAL_HEIGHT = 720
+  // Layout Constants
+  const isPortrait = dimensions.height > dimensions.width
+  const VIRTUAL_WIDTH = isPortrait ? 720 : 1280
+  const VIRTUAL_HEIGHT = isPortrait ? 1280 : 720
   
   // Calculate Scale to fit (Contain)
   const scaleX = dimensions.width / VIRTUAL_WIDTH
@@ -83,15 +84,26 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
   const stageX = (dimensions.width - VIRTUAL_WIDTH * scale) / 2
   const stageY = (dimensions.height - VIRTUAL_HEIGHT * scale) / 2
 
-  const LAYOUT = {
+  const LAYOUT = isPortrait ? {
+      wallH: 640,
+      floorH: 640,
+      counterY: 250,
+      customerY: 252,
+      cauldronY: 450, 
+      beltY: 1150,
+      trashX: 360, // Center
+      trashY: 800, // Between Cauldrons and Belt
+      isPortrait: true
+  } : {
       wallH: 480,
       floorH: 240,
       counterY: 480 - 80, // 400
       customerY: 402, // 2px below counter top
-      cauldronY: 550,
-      beltY: 600,
+      cauldronY: 540,
+      beltY: 620,
       trashX: 1230,
-      trashY: 550
+      trashY: 540,
+      isPortrait: false
   }
 
   // Initialization & Resize

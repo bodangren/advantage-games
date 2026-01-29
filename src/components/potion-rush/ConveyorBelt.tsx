@@ -100,7 +100,7 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
         {/* Belt Visual */}
         <Rect 
             width={width} 
-            height={100} 
+            height={80} 
             fill="#333" 
             stroke="#111"
             strokeWidth={4}
@@ -111,8 +111,8 @@ export default function ConveyorBelt({ y, width, layout }: ConveyorBeltProps) {
             <Circle 
                 key={i} 
                 x={i * 100 + 50 - beltOffset} 
-                y={50} 
-                radius={10} 
+                y={40} 
+                radius={8} 
                 fill="#555" 
             />
         ))}
@@ -143,7 +143,7 @@ function IngredientItem({ item, onDrop, images, onDragStateChange }: {
     const img = images[item.type]
 
     const renderX = isDragging && dragPosition ? dragPosition.x : item.x
-    const renderY = isDragging && dragPosition ? dragPosition.y : 20
+    const renderY = isDragging && dragPosition ? dragPosition.y : 0
 
     return (
         <Group
