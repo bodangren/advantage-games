@@ -57,14 +57,14 @@ This plan outlines the refactoring and enhancement of Potion Rush gameplay mecha
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: HUD & Visual Feedback' (Protocol in workflow.md)
 
-## Phase 4: Final Balancing & Polish
+## Phase 4: Final Balancing & Polish [checkpoint: 1c70ceb]
 **Goal:** Apply the 50% speed reduction and perform final integration tests.
 
-- [ ] **Task 4.1: Adjust Base Constants**
-    - [ ] Set default `beltSpeed` to 50% of the original value.
-    - [ ] Ensure fixed interval spawning matches the slower belt speed for good pacing.
-- [ ] **Task 4.2: Integration Testing**
-    - [ ] Playtest full loops to ensure the 10% speed increase per sentence feels balanced.
-    - [ ] Verify right-to-left flow is consistent.
+- [x] **Task 4.1: Adjust Base Constants** [1c70ceb]
+    - [x] Set default `beltSpeed` to 50% of the original value.
+    - [x] Ensure fixed interval spawning matches the slower belt speed for good pacing.
+- [x] **Task 4.2: Integration Testing** [1c70ceb]
+    - [x] Playtest full loops to ensure the 10% speed increase per sentence feels balanced.
+    - [x] Verify right-to-left flow is consistent.
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Final Balancing & Polish' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Final Balancing & Polish' (Protocol in workflow.md) [1c70ceb]
