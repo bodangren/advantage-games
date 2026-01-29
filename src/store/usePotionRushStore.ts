@@ -132,7 +132,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
   
   baseBeltSpeed: 50,
   beltSpeed: 50, // Pixels per second
-  spawnRate: 2000, // ms
+  spawnRate: 2100, // ms
   
   activeWordPool: [],
   completedSentences: 0,
