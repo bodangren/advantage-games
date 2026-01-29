@@ -129,4 +129,19 @@ describe('CastleDefenseGame', () => {
     jest.useRealTimers()
   })
 
+  it('shows the Thai sentence in the HUD', async () => {
+    const thaiVocabulary: VocabularyItem[] = [
+      { term: 'The cat sits', translation: 'แมวนั่ง' },
+    ]
+
+    render(<CastleDefenseGame vocabulary={thaiVocabulary} onComplete={jest.fn()} />)
+    const startButton = await screen.findByRole('button', { name: /start mission/i })
+    await act(async () => {
+      fireEvent.click(startButton)
+    })
+
+    expect(await screen.findByText('แมวนั่ง')).toBeInTheDocument()
+    expect(screen.queryByText(/find target/i)).not.toBeInTheDocument()
+  })
+
 })

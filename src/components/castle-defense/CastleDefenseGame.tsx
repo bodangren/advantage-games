@@ -538,6 +538,16 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
         </Stage>
       )}
 
+      {gameState?.currentSentenceThai && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none max-w-[90vw]">
+          <div className="bg-blue-900/90 border border-blue-400/40 px-6 py-3 rounded-2xl shadow-xl backdrop-blur-md">
+            <div className="text-white text-base font-black text-center md:text-xl">
+              {gameState.currentSentenceThai}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* HUD - TOP */}
       <div className="absolute top-4 inset-x-4 z-10 flex justify-between items-start pointer-events-none">
         <div className="space-y-2">
@@ -549,11 +559,6 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block leading-none mb-1">Wave</span>
             <span className="text-xl font-black text-white leading-none">{gameState?.wave || 1}</span>
           </div>
-        </div>
-
-        <div className="bg-amber-600 border-2 border-amber-400 px-6 py-2 rounded-2xl shadow-2xl shadow-amber-900/40 backdrop-blur-md text-center min-w-[160px]">
-          <span className="text-[10px] font-black text-amber-200 uppercase tracking-widest block leading-none mb-1">Find Target</span>
-          <span className="text-2xl font-black text-white uppercase tracking-tight leading-none">{gameState?.targetWord || ''}</span>
         </div>
 
         <div className="bg-slate-900/90 border border-slate-700/50 px-4 py-2 rounded-2xl shadow-xl backdrop-blur-md text-right">
