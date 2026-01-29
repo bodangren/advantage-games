@@ -320,8 +320,8 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 7: HUD Updates for Sentence Progress
 
 ### Task 7.1: Display Thai sentence prominently
-- [ ] Sub-task: Find HUD section in `CastleDefenseGame.tsx`
-- [ ] Sub-task: Add Thai sentence display at top-center:
+- [x] Sub-task: Find HUD section in `CastleDefenseGame.tsx` 49d76e2
+- [x] Sub-task: Add Thai sentence display at top-center: 49d76e2
   ```typescript
   <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
     <div className="bg-blue-900/90 px-6 py-3 rounded-lg">
@@ -331,7 +331,7 @@ Before starting ANY phase, the implementer MUST:
     </div>
   </div>
   ```
-- [ ] Sub-task: Ensure responsive sizing for mobile
+- [x] Sub-task: Ensure responsive sizing for mobile 49d76e2
 
 **Verification**: Thai sentence visible and readable on desktop and mobile. ✅
 
