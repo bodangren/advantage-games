@@ -59,6 +59,8 @@ export const MAX_SHIELD_CHARGES = 3
 export const SHIELD_DURATION = 2000 // ms
 export const SPIRIT_SPAWN_RATE_MS = 3000
 export const INITIAL_SPIRIT_SPEED = 2
+export const SPIRIT_SPEED_INCREASE_RATE = 0.1 // per 10 seconds
+export const PREDICT_AHEAD_DISTANCE = 100 // pixels
 
 export const createEnchantedLibraryState = (
   vocabulary: VocabularyItem[],
@@ -168,4 +170,117 @@ export const spawnBooks = (
   })
 
   return books
+}
+
+/**
+ * Spawn a new spirit that moves toward predicted player position
+ * Only spawns if timer is ready and no spirit exists
+ */
+export const spawnSpirit = (
+  state: EnchantedLibraryState,
+  { rng = Math.random, playerVelocityX = 0, playerVelocityY = 0 }: {
+    rng?: () => number,
+    playerVelocityX?: number,
+    playerVelocityY?: number
+  } = {}
+): EnchantedLibraryState => {
+  // Don't spawn if timer not ready
+  if (state.spiritSpawnTimer > 0) {
+    return state
+  }
+
+  // Don't spawn if spirit already exists (one at a time)
+  if (state.spirits.length > 0) {
+    return state
+  }
+
+  // Calculate predicted player position
+  const predictedPlayerX = state.player.x + playerVelocityX * PREDICT_AHEAD_DISTANCE
+  const predictedPlayerY = state.player.y + playerVelocityY * PREDICT_AHEAD_DISTANCE
+
+  // Choose random wall to spawn from
+  const wall = Math.floor(rng() * 4) // 0=top, 1=right, 2=bottom, 3=left
+  let spawnX = 0
+  let spawnY = 0
+
+  switch (wall) {
+    case 0: // Top wall
+      spawnX = rng() * GAME_WIDTH
+      spawnY = 0
+      break
+    case 1: // Right wall
+      spawnX = GAME_WIDTH
+      spawnY = rng() * GAME_HEIGHT
+      break
+    case 2: // Bottom wall
+      spawnX = rng() * GAME_WIDTH
+      spawnY = GAME_HEIGHT
+      break
+    case 3: // Left wall
+      spawnX = 0
+      spawnY = rng() * GAME_HEIGHT
+      break
+  }
+
+  // Calculate velocity toward predicted position
+  const dx = predictedPlayerX - spawnX
+  const dy = predictedPlayerY - spawnY
+  const distance = Math.sqrt(dx * dx + dy * dy)
+
+  // Normalize to spirit speed
+  const velocityX = (dx / distance) * state.spiritSpeed
+  const velocityY = (dy / distance) * state.spiritSpeed
+
+  const newSpirit: Spirit = {
+    id: `spirit-${Date.now()}`,
+    x: spawnX,
+    y: spawnY,
+    radius: SPIRIT_RADIUS,
+    velocityX,
+    velocityY,
+    speed: state.spiritSpeed,
+    bounced: false,
+  }
+
+  return {
+    ...state,
+    spirits: [newSpirit],
+    spiritSpawnTimer: SPIRIT_SPAWN_RATE_MS,
+  }
+}
+
+/**
+ * Update spirit positions and remove spirits that exit the screen
+ * Also handles progressive difficulty (speed increase over time)
+ */
+export const updateSpirits = (
+  state: EnchantedLibraryState,
+  dt: number
+): EnchantedLibraryState => {
+  // Update spirit positions
+  const updatedSpirits = state.spirits.map(spirit => ({
+    ...spirit,
+    x: spirit.x + spirit.velocityX,
+    y: spirit.y + spirit.velocityY,
+  }))
+
+  // Remove spirits that are off-screen
+  const onScreenSpirits = updatedSpirits.filter(spirit => {
+    return (
+      spirit.x >= -SPIRIT_RADIUS &&
+      spirit.x <= GAME_WIDTH + SPIRIT_RADIUS &&
+      spirit.y >= -SPIRIT_RADIUS &&
+      spirit.y <= GAME_HEIGHT + SPIRIT_RADIUS
+    )
+  })
+
+  // Increase spirit speed over time (every 10 seconds)
+  const speedIncrement = (state.gameTime / 10000) * SPIRIT_SPEED_INCREASE_RATE
+  const newSpiritSpeed = INITIAL_SPIRIT_SPEED + speedIncrement
+
+  return {
+    ...state,
+    spirits: onScreenSpirits,
+    spiritSpeed: newSpiritSpeed,
+  }
 }
