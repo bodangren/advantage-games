@@ -40,7 +40,7 @@ const buildSpriteGrid = (width: number, height: number) => {
 
 const buildBookSpriteGrid = (width: number, height: number) => {
   const fw = width / 3
-  const fh = height / 2
+  const fh = height
   return { fw, fh }
 }
 
@@ -75,7 +75,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
   // Animation Frames
   const [playerFrame, setPlayerFrame] = useState(0)
   const [spiritFrame, setSpiritFrame] = useState(0)
-  const [bookFrame, setBookFrame] = useState(0)
+  const BOOK_FRAME_INDEX = 1
 
   // Asset Loading
   useEffect(() => {
@@ -122,7 +122,6 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
       if (hasStarted) {
           setPlayerFrame(f => (f + 1) % 3)
           setSpiritFrame(f => (f + 1) % 3)
-          setBookFrame(f => (f + 1) % 3)
       }
   }, 150)
 
@@ -522,7 +521,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                         height={50}
                                         offsetX={25}
                                         offsetY={25}
-                                        crop={getSpriteCrop(grids.book.fw, grids.book.fh, (bookFrame + i) % 3, 0)}
+                                        crop={getSpriteCrop(grids.book.fw, grids.book.fh, BOOK_FRAME_INDEX, 0)}
                                         shadowColor="#fbbf24"
                                         shadowBlur={12}
                                         shadowOpacity={0.9}
