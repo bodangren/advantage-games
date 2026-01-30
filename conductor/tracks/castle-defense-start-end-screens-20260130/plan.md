@@ -84,7 +84,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 4: Visual & Responsive Polish
+## Phase 4: Visual & Responsive Polish [checkpoint: 28a6cae]
 
 ### Task 4.1: Align styling with Wizard vs Zombie
 - [x] Sub-task: Verify typography, spacing, and card styles match the existing Wizard vs Zombie tone. 9f6518a
