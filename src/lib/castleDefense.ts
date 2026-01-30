@@ -157,6 +157,10 @@ export type CastleDefenseState = {
   totalEnemiesThisWave: number
   waveCompleteTimer: number
   waveMessage: string | null
+  wavesCompleted: number
+  totalEnemiesDefeated: number
+  correctWordCollections: number
+  incorrectWordCollections: number
   grassMap: number[][] // 16x12 array of grass variant indices
 }
 
@@ -438,6 +442,10 @@ export function createCastleDefenseState(vocabulary: { term: string; translation
     totalEnemiesThisWave: WAVE_CONFIGS[0].soldiers + WAVE_CONFIGS[0].tanks + WAVE_CONFIGS[0].bosses,
     waveCompleteTimer: 0,
     waveMessage: null,
+    wavesCompleted: 0,
+    totalEnemiesDefeated: 0,
+    correctWordCollections: 0,
+    incorrectWordCollections: 0,
     grassMap: Array.from({ length: 12 }, () => 
         Array.from({ length: 16 }, () => Math.floor(Math.random() * 4))
     ),
@@ -1053,6 +1061,16 @@ export function advanceCastleDefenseTime(
   words = collection.words
   let collectedWordIndices = collection.collectedWordIndices
   let sentenceCompleted = state.sentenceCompleted
+  let correctWordCollections = state.correctWordCollections
+  let incorrectWordCollections = state.incorrectWordCollections
+
+  if (collection.collectedWord) {
+    if (collection.invalidCollection) {
+      incorrectWordCollections += 1
+    } else {
+      correctWordCollections += 1
+    }
+  }
 
   if (collection.invalidCollection) {
     const resetState = resetSentenceProgress({
@@ -1132,6 +1150,7 @@ export function advanceCastleDefenseTime(
   // 9. Calculate score (10 points per enemy killed)
   const enemiesKilled = state.enemies.length - enemies.length - (baseDamage.damage > 0 ? (baseDamage.damage / 10) : 0)
   let score = state.score + (enemiesKilled > 0 ? Math.floor(enemiesKilled) * 10 : 0)
+  const totalEnemiesDefeated = state.totalEnemiesDefeated + Math.max(0, Math.floor(enemiesKilled))
 
   if (isSentenceComplete(collectedWordIndices, sentenceWords.length)) {
     if (!sentenceCompleted) {
@@ -1147,6 +1166,7 @@ export function advanceCastleDefenseTime(
   const waveConfig = WAVE_CONFIGS[state.wave - 1]
   let waveCompleteTimer = state.waveCompleteTimer
   let waveMessage = state.waveMessage
+  let wavesCompleted = state.wavesCompleted
 
   if (isWaveComplete({ ...state, enemies, enemiesSpawnedThisWave })) {
     if (waveCompleteTimer <= 0) {
@@ -1205,6 +1225,10 @@ export function advanceCastleDefenseTime(
         waveCompleteTimer: 0,
         waveMessage: null,
         player,
+        wavesCompleted: wavesCompleted + 1,
+        totalEnemiesDefeated,
+        correctWordCollections,
+        incorrectWordCollections,
       }
     }
     return {
@@ -1224,6 +1248,10 @@ export function advanceCastleDefenseTime(
       sentenceCompleted,
       enemiesSpawnedThisWave,
       enemiesKilledThisWave,
+      wavesCompleted: wavesCompleted + 1,
+      totalEnemiesDefeated,
+      correctWordCollections,
+      incorrectWordCollections,
     }
   }
 
@@ -1254,5 +1282,9 @@ export function advanceCastleDefenseTime(
     gameTime,
     waveCompleteTimer,
     waveMessage,
+    wavesCompleted,
+    totalEnemiesDefeated,
+    correctWordCollections,
+    incorrectWordCollections,
   }
 }

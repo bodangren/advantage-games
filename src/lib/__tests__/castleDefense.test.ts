@@ -368,6 +368,88 @@ describe('castleDefense', () => {
     })
   })
 
+  describe('performance metrics', () => {
+    const vocabulary = [
+      { term: 'The cat sits', translation: 'แมวนั่งอยู่' },
+      { term: 'I like apples', translation: 'ฉันชอบแอปเปิ้ล' },
+    ]
+
+    const makeWord = (index: number, x: number, y: number) => ({
+      id: `word-${index}`,
+      x,
+      y,
+      radius: WORD_RADIUS,
+      term: vocabulary[0].term.split(' ')[index] ?? 'word',
+      translation: vocabulary[0].term.split(' ')[index] ?? 'word',
+      isCorrect: true,
+      isCollected: false,
+      sentenceIndex: index,
+    })
+
+    it('increments correct word collections on valid pickup', () => {
+      const baseState = createCastleDefenseState(vocabulary)
+      const word = makeWord(0, 100, 100)
+      const state = {
+        ...baseState,
+        player: { ...baseState.player, x: 100, y: 100 },
+        words: [word],
+        sentenceWords: ['The', 'cat', 'sits'],
+        collectedWordIndices: [],
+      }
+
+      const nextState = advanceCastleDefenseTime(state, 0, { dx: 0, dy: 0 }, vocabulary)
+
+      expect(nextState.correctWordCollections).toBe(state.correctWordCollections + 1)
+      expect(nextState.incorrectWordCollections).toBe(state.incorrectWordCollections)
+    })
+
+    it('increments incorrect word collections on invalid pickup', () => {
+      const baseState = createCastleDefenseState(vocabulary)
+      const word = makeWord(2, 100, 100)
+      const state = {
+        ...baseState,
+        player: { ...baseState.player, x: 100, y: 100 },
+        words: [word],
+        sentenceWords: ['The', 'cat', 'sits'],
+        collectedWordIndices: [],
+      }
+
+      const nextState = advanceCastleDefenseTime(state, 0, { dx: 0, dy: 0 }, vocabulary)
+
+      expect(nextState.incorrectWordCollections).toBe(state.incorrectWordCollections + 1)
+      expect(nextState.correctWordCollections).toBe(state.correctWordCollections)
+    })
+
+    it('increments total enemies defeated when enemies are removed', () => {
+      const baseState = createCastleDefenseState(vocabulary)
+      const deadEnemy = { ...spawnEnemy(baseState.path, 1), hp: 0 }
+      const state = {
+        ...baseState,
+        enemies: [deadEnemy],
+      }
+
+      const nextState = advanceCastleDefenseTime(state, 0, { dx: 0, dy: 0 }, vocabulary)
+
+      expect(nextState.totalEnemiesDefeated).toBe(state.totalEnemiesDefeated + 1)
+    })
+
+    it('increments waves completed when advancing to the next wave', () => {
+      const baseState = createCastleDefenseState(vocabulary)
+      const state = {
+        ...baseState,
+        enemies: [],
+        enemiesSpawnedThisWave: baseState.totalEnemiesThisWave,
+        waveCompleteTimer: 1,
+        waveMessage: `Wave ${baseState.wave} Complete`,
+      }
+
+      const nextState = advanceCastleDefenseTime(state, 1, { dx: 0, dy: 0 }, vocabulary)
+
+      expect(nextState.wave).toBe(baseState.wave + 1)
+      expect(nextState.wavesCompleted).toBe(state.wavesCompleted + 1)
+    })
+  })
+
   describe('createCastleDefenseState', () => {
     it('should create valid initial state with empty vocabulary', () => {
       const state = createCastleDefenseState([])
@@ -390,6 +472,10 @@ describe('castleDefense', () => {
       expect(state.totalEnemiesThisWave).toBeGreaterThan(0)
       expect(state.waveCompleteTimer).toBe(0)
       expect(state.waveMessage).toBe(null)
+      expect(state.wavesCompleted).toBe(0)
+      expect(state.totalEnemiesDefeated).toBe(0)
+      expect(state.correctWordCollections).toBe(0)
+      expect(state.incorrectWordCollections).toBe(0)
     })
 
     it('should assign target words to tower slots from vocabulary', () => {
@@ -429,6 +515,10 @@ describe('castleDefense', () => {
       expect(state.totalEnemiesThisWave).toBeGreaterThan(0)
       expect(state.waveCompleteTimer).toBe(0)
       expect(state.waveMessage).toBe(null)
+      expect(state.wavesCompleted).toBe(0)
+      expect(state.totalEnemiesDefeated).toBe(0)
+      expect(state.correctWordCollections).toBe(0)
+      expect(state.incorrectWordCollections).toBe(0)
     })
   })
 
