@@ -403,6 +403,12 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Player moves with keyboard and virtual controls. ✅
 
+### Task 8.6: Fix collision and sprite rendering issues
+- [x] Sub-task: Fix book collision detection (state update issue)
+- [x] Sub-task: Implement sprite flipping for left movement (player and spirit)
+- [x] Sub-task: Correct player sprite row mapping (Row 0=Walking, Row 1=Idle, Row 2=Hit)
+- [x] Sub-task: Verify changes with tests 5511f9e
+
 - [ ] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
 
 ---
