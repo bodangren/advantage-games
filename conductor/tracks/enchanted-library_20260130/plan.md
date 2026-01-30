@@ -84,7 +84,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 2: Book Collection and Mana System
+## Phase 2: Book Collection and Mana System [checkpoint: 7226234]
 
 ### Task 2.1: Implement book spawning
 - [x] Sub-task: Write tests for `spawnBooks(vocabulary, targetWord)`
@@ -126,7 +126,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: All tests pass. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Book Collection and Mana System' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Book Collection and Mana System' (Protocol in workflow.md) 7226234
 
 ---
 
