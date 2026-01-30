@@ -351,10 +351,10 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All sprites are age-appropriate and appealing. ✅
 
 ### Task 7.3: Add visual polish
-- [ ] Sub-task: Add particle effects for book collection (sparkles)
-- [ ] Sub-task: Add glow effects on books and shield
-- [ ] Sub-task: Add smooth transitions between screens
-- [ ] Sub-task: Ensure all text is large and readable
+- [x] Sub-task: Add particle effects for book collection (sparkles) db8b4d5
+- [x] Sub-task: Add glow effects on books and shield db8b4d5
+- [x] Sub-task: Add smooth transitions between screens db8b4d5
+- [x] Sub-task: Ensure all text is large and readable db8b4d5
 
 **Verification**: Game looks polished and professional. ✅
 
