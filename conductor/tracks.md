@@ -29,6 +29,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [ ] **Track: Castle Defense - Start and End Screens**
+*Link: [./conductor/tracks/castle-defense-start-end-screens-20260130/](./conductor/tracks/castle-defense-start-end-screens-20260130/)*
+*Description: Add Wizard vs Zombie-style start/end screens with sentence list, XP, and performance breakdown.*
+
+---
+
 ## [x] Track: Potion Rush (Time Management)
 *Link: [./conductor/archive/potion-rush-20260107/](./conductor/archive/potion-rush-20260107/)*
 
