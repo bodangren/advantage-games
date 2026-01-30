@@ -13,13 +13,13 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 1: Core Game Logic and State Management
 
 ### Task 1.1: Create enchanted library game state module
-- [ ] Sub-task: Write tests for `createEnchantedLibraryState(vocabulary)` in `src/lib/enchantedLibrary.test.ts`
+- [x] Sub-task: Write tests for `createEnchantedLibraryState(vocabulary)` in `src/lib/enchantedLibrary.test.ts`
   - Test: Initializes with correct starting mana (50)
   - Test: Creates 4 books (1 correct, 3 decoys)
   - Test: Sets up vocabulary tracking (collect each word 2x)
   - Test: Initializes with 3 shield charges
   - Test: Player spawns at center (400, 300)
-- [ ] Sub-task: Create `src/lib/enchantedLibrary.ts` with state interface:
+- [x] Sub-task: Create `src/lib/enchantedLibrary.ts` with state interface:
   ```typescript
   interface EnchantedLibraryState {
     status: 'playing' | 'gameover' | 'victory'
@@ -37,8 +37,8 @@ Before starting ANY phase, the implementer MUST:
     spiritSpeed: number  // increases over time
   }
   ```
-- [ ] Sub-task: Implement `createEnchantedLibraryState()`
-- [ ] Sub-task: Run tests: `CI=true npm test src/lib/enchantedLibrary.test.ts`
+- [x] Sub-task: Implement `createEnchantedLibraryState()`
+- [x] Sub-task: Run tests: `CI=true npm test src/lib/enchantedLibrary.test.ts` 24fb50b
 
 **Verification**: All tests pass. ✅
 
