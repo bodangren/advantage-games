@@ -415,6 +415,14 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Tune spirit parameters (reduce prediction, adjust speed) to make them more engaging
 - [x] Sub-task: Verify fixes
 
+### Task 8.8: Polish Gameplay and Fix Issues
+- [x] Sub-task: Verify and fix input handling (prevent repeat cascade)
+- [x] Sub-task: Improve book text readability (white text on dark background)
+- [x] Sub-task: Implement progressive difficulty (increase spirit speed per spawn)
+- [x] Sub-task: Fix mana drain bug (prevent multiple hits per spirit)
+- [x] Sub-task: Verify win condition triggering
+- [x] Sub-task: Verify changes with tests
+
 - [ ] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
 
 ---

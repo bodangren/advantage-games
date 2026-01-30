@@ -552,20 +552,25 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                         shadowBlur={12}
                                         shadowOpacity={0.9}
                                     />
-                                    <Text
-                                        text={book.translation}
-                                        fontSize={16}
-                                        fill="white"
-                                        stroke="black"
-                                        strokeWidth={2}
-                                        align="center"
-                                        offsetY={-40}
-                                        width={100}
-                                        offsetX={50}
-                                        fontStyle="bold"
-                                        shadowColor="black"
-                                        shadowBlur={6}
-                                    />
+                                    <Group offsetX={50} offsetY={-40}>
+                                        <Rect
+                                            width={100}
+                                            height={20}
+                                            fill="rgba(0,0,0,0.7)"
+                                            cornerRadius={4}
+                                            offsetX={0}
+                                            offsetY={0}
+                                        />
+                                        <Text
+                                            text={book.translation}
+                                            fontSize={14}
+                                            fill="white"
+                                            align="center"
+                                            width={100}
+                                            offsetY={-3}
+                                            fontStyle="bold"
+                                        />
+                                    </Group>
                                 </Group>
                             ))}
 

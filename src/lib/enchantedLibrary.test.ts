@@ -300,19 +300,20 @@ describe('enchantedLibrary', () => {
       expect(result.spirits).toHaveLength(0)
     })
 
-    it('spirit speed increases over time', () => {
+    it('spirit speed increases after spawning', () => {
       const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
-
-      // Simulate game progression
-      const lateGame = {
+      
+      // Need to clear existing spirits and timer to allow spawn
+      const readyToSpawn = {
         ...state,
-        gameTime: 60000, // 60 seconds
+        spirits: [],
+        spiritSpawnTimer: 0
       }
 
-      const result = updateSpirits(lateGame, 16)
+      const result = spawnSpirit(readyToSpawn)
 
-      // Spirit speed should have increased from initial value
-      expect(result.spiritSpeed).toBeGreaterThan(INITIAL_SPIRIT_SPEED)
+      // Spirit speed for NEXT spawn should have increased
+      expect(result.spiritSpeed).toBeGreaterThan(state.spiritSpeed)
     })
   })
 

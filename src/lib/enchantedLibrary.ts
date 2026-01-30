@@ -21,6 +21,7 @@ export type Spirit = Entity & {
   velocityY: number
   speed: number
   bounced: boolean
+  hasHitPlayer: boolean
 }
 
 export type Book = Entity & {
@@ -288,12 +289,17 @@ export const spawnSpirit = (
     velocityY,
     speed: state.spiritSpeed,
     bounced: false,
+    hasHitPlayer: false,
   }
+
+  // Increase spirit speed by 10% for next spawn
+  const nextSpiritSpeed = state.spiritSpeed * 1.1
 
   return {
     ...state,
     spirits: [newSpirit],
     spiritSpawnTimer: SPIRIT_SPAWN_RATE_MS,
+    spiritSpeed: nextSpiritSpeed,
   }
 }
 
@@ -322,14 +328,10 @@ export const updateSpirits = (
     )
   })
 
-  // Increase spirit speed over time (every 10 seconds)
-  const speedIncrement = (state.gameTime / 10000) * SPIRIT_SPEED_INCREASE_RATE
-  const newSpiritSpeed = INITIAL_SPIRIT_SPEED + speedIncrement
-
+  // Speed increase is now handled in spawnSpirit
   return {
     ...state,
     spirits: onScreenSpirits,
-    spiritSpeed: newSpiritSpeed,
   }
 }
 
@@ -493,10 +495,11 @@ export const checkSpiritCollisions = (
   state: EnchantedLibraryState
 ): EnchantedLibraryState => {
   let hasCollision = false
-  let updatedSpirits = state.spirits
+  let updatedSpirits = [...state.spirits]
+  let newMana = state.mana
 
-  for (let i = 0; i < state.spirits.length; i++) {
-    const spirit = state.spirits[i]
+  for (let i = 0; i < updatedSpirits.length; i++) {
+    const spirit = updatedSpirits[i]
     const dx = state.player.x - spirit.x
     const dy = state.player.y - spirit.y
     const distance = Math.sqrt(dx * dx + dy * dy)
@@ -517,33 +520,30 @@ export const checkSpiritCollisions = (
         const reflectedVelocityY = spirit.velocityY - 2 * dotProduct * normalY
 
         // Update this spirit with new velocity
-        updatedSpirits = state.spirits.map((s, idx) =>
-          idx === i
-            ? {
-                ...s,
-                velocityX: reflectedVelocityX,
-                velocityY: reflectedVelocityY,
-                bounced: true,
-              }
-            : s
-        )
-
-        // Return state with bounced spirit, no mana loss
-        return {
-          ...state,
-          spirits: updatedSpirits,
+        updatedSpirits[i] = {
+          ...spirit,
+          velocityX: reflectedVelocityX,
+          velocityY: reflectedVelocityY,
+          bounced: true,
         }
       } else {
-        // Shield inactive: spirit hits player, lose mana (min 0)
-        return {
-          ...state,
-          mana: Math.max(0, state.mana - MANA_LOSS_SPIRIT_HIT),
+        // Shield inactive: spirit hits player
+        if (!spirit.hasHitPlayer) {
+          newMana = Math.max(0, newMana - MANA_LOSS_SPIRIT_HIT)
+          updatedSpirits[i] = {
+            ...spirit,
+            hasHitPlayer: true,
+          }
         }
       }
     }
   }
 
-  return state
+  return {
+    ...state,
+    spirits: updatedSpirits,
+    mana: newMana,
+  }
 }
 
 /**
