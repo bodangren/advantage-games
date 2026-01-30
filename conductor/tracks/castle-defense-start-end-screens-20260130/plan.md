@@ -23,9 +23,9 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Tests pass and metrics update correctly. ✅
 
 ### Task 1.2: Add XP calculation helper
-- [ ] Sub-task: Write tests for `calculateCastleDefenseXP(score)` (ceil(score * 0.01)).
-- [ ] Sub-task: Implement helper (location: `src/lib/castleDefense.ts` or a dedicated util if preferred).
-- [ ] Sub-task: Run tests: `CI=true npm test src/lib/__tests__/castleDefense.test.ts`.
+- [x] Sub-task: Write tests for `calculateCastleDefenseXP(score)` (ceil(score * 0.01)). 65963b3
+- [x] Sub-task: Implement helper (location: `src/lib/castleDefense.ts` or a dedicated util if preferred). 65963b3
+- [x] Sub-task: Run tests: `CI=true npm test src/lib/__tests__/castleDefense.test.ts`. 65963b3
 
 **Verification**: XP helper returns expected rounded-up values. ✅
 
