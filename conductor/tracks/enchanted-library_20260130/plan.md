@@ -331,7 +331,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 7: Visual Theme and Assets
+## Phase 7: Visual Theme and Assets [checkpoint: c1928d8]
 
 ### Task 7.1: Create/integrate library background
 - [x] Sub-task: Design or source library floor tile texture
