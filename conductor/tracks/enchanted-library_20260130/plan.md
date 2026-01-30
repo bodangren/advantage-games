@@ -43,13 +43,13 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 1.2: Implement spirit spawning and movement
-- [ ] Sub-task: Write tests for `spawnSpirit(state)` function
+- [x] Sub-task: Write tests for `spawnSpirit(state)` function
   - Test: Spawns from random wall position
   - Test: Calculates point ahead of player trajectory
   - Test: Creates straight-line velocity vector through that point
   - Test: Only spawns one spirit at a time
   - Test: Respects spawn timer
-- [ ] Sub-task: Implement `spawnSpirit()` with predictive targeting:
+- [x] Sub-task: Implement `spawnSpirit()` with predictive targeting:
   ```typescript
   // Calculate predicted player position
   const predictAhead = 100  // pixels
@@ -59,12 +59,12 @@ Before starting ANY phase, the implementer MUST:
   }
   // Calculate straight line from spawn to predicted position
   ```
-- [ ] Sub-task: Write tests for `updateSpirits(state)`
+- [x] Sub-task: Write tests for `updateSpirits(state)`
   - Test: Spirits move along velocity vector
   - Test: Spirits despawn when exiting game bounds
   - Test: Spirit speed increases over time
-- [ ] Sub-task: Implement `updateSpirits()`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `updateSpirits()`
+- [x] Sub-task: Run tests 76eac08
 
 **Verification**: All tests pass. ✅
 
