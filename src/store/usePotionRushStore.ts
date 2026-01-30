@@ -109,7 +109,6 @@ interface PotionRushState {
 }
 
 // --- Constants ---
-const MAX_CUSTOMERS = 3 // Max allowed at the counter
 const BELT_Y = 500 // Placeholder
 const INGREDIENT_WIDTH = 80 // Placeholder
 const LEAVE_DURATION = 1.5 // seconds to keep leaving customers on screen
@@ -256,7 +255,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
   tick: (dt, screenWidth) => {
       const { 
-          gameState, conveyorItems, beltSpeed, customers, dayTime, reputation, 
+          gameState, conveyorItems, customers, dayTime, reputation, 
           effects, activeWordPool, baseBeltSpeed, completedSentences, cauldrons,
           timeToNextCustomerSpawn, timeToNextIngredientSpawn, spawnRate, vocabList
       } = get()
@@ -310,7 +309,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       const targetSpeed = baseBeltSpeed * Math.pow(1.1, completedSentences)
 
       // Move Conveyor Items & Recycle Words
-      let recycledWords: string[] = []
+      const recycledWords: string[] = []
       const nextItems: Ingredient[] = []
       
       conveyorItems.forEach(item => {
@@ -330,7 +329,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
       // Update Customer Patience (on the potentially newly spawned customers too? Or wait one frame?)
       // Let's update all.
       let nextReputation = reputation
-      let wordsToRemove: string[] = []
+      const wordsToRemove: string[] = []
 
       nextCustomers = nextCustomers.map(c => {
           if (!c) return null
@@ -530,7 +529,7 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
      // Remove words from pool
      const wordsToRemove = customer.request.term.split(' ')
-     let nextActiveWordPool = [...activeWordPool]
+     const nextActiveWordPool = [...activeWordPool]
      wordsToRemove.forEach(word => {
          const idx = nextActiveWordPool.indexOf(word)
          if (idx > -1) nextActiveWordPool.splice(idx, 1)

@@ -102,12 +102,7 @@ describe('Potion Rush Scaling & Scoring', () => {
   })
 
   it('should track total XP earned', () => {
-    // We need to check if 'totalXpEarned' exists on state (it doesn't yet)
-    // and if it updates correctly.
-    
-    // NOTE: This test will fail compilation until we update the interface
-    // So for now, we cast to any to verify the logic "fails" at runtime or simply checks property existence
-    const state = usePotionRushStore.getState() as any
+    const state = usePotionRushStore.getState()
     expect(state.totalXpEarned).toBeDefined()
     expect(state.totalXpEarned).toBe(0)
   })

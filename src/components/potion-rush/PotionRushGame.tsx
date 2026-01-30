@@ -66,13 +66,10 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
   // Store Actions
   const startGame = usePotionRushStore(state => state.startGame)
   const tick = usePotionRushStore(state => state.tick)
-  const spawnCustomer = usePotionRushStore(state => state.spawnCustomer)
-  const spawnIngredient = usePotionRushStore(state => state.spawnIngredient)
   const gameState = usePotionRushStore(state => state.gameState)
   const reset = usePotionRushStore(state => state.reset)
   const score = usePotionRushStore(state => state.score)
   const reputation = usePotionRushStore(state => state.reputation)
-  const spawnRate = usePotionRushStore(state => state.spawnRate)
   
   // Visual Effects
   const controls = useAnimation()

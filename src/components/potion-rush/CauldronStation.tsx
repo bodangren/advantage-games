@@ -8,7 +8,6 @@ interface LayoutConfig {
   trashX: number
   trashY: number
   customerY: number
-  [key: string]: any
 }
 
 interface CauldronStationProps {

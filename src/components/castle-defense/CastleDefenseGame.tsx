@@ -155,6 +155,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
         setDimensions({ width, height })
       }
     }
+    const handleResize = () => updateDimensions()
 
     updateDimensions()
 
@@ -163,12 +164,12 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     })
 
     observer.observe(containerRef.current)
-    window.addEventListener('resize', updateDimensions)
-    window.addEventListener('orientationchange', updateDimensions)
+    window.addEventListener('resize', handleResize)
+    window.addEventListener('orientationchange', handleResize)
     return () => {
       observer.disconnect()
-      window.removeEventListener('resize', updateDimensions)
-      window.removeEventListener('orientationchange', updateDimensions)
+      window.removeEventListener('resize', handleResize)
+      window.removeEventListener('orientationchange', handleResize)
     }
   }, [hasStarted]) // Re-run when game starts and container becomes available
 

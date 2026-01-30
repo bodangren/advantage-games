@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion'
 import { usePotionRushStore } from '@/store/usePotionRushStore'
-import { VocabularyItem } from '@/store/useGameStore'
 
 interface PotionRushSummaryProps {
   onRestart: () => void
