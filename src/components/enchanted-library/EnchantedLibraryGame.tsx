@@ -20,6 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, BookOpen, Trophy, Target, Sparkles, Home, RotateCcw } from 'lucide-react'
 import { calculateXP } from '@/lib/xp'
 import { SparkleBurst } from './SparkleBurst'
+import { BookPickupBurst } from './BookPickupBurst'
 
 export type EnchantedLibraryGameResult = {
   xp: number
@@ -60,6 +61,8 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number }>>([])
   const sparkleIdRef = useRef(0)
+  const [pickupBursts, setPickupBursts] = useState<Array<{ id: number; x: number; y: number; frameIndex: number; variant: 'glow' | 'close' }>>([])
+  const pickupIdRef = useRef(0)
 
   const [assets, setAssets] = useState<{
       player: HTMLImageElement
@@ -75,7 +78,9 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
   // Animation Frames
   const [playerFrame, setPlayerFrame] = useState(0)
   const [spiritFrame, setSpiritFrame] = useState(0)
-  const BOOK_FRAME_INDEX = 1
+  const BOOK_FRAME_OPEN = 1
+  const BOOK_FRAME_CLOSED = 0
+  const BOOK_FRAME_GLOW = 2
 
   // Asset Loading
   useEffect(() => {
@@ -172,8 +177,15 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
             const screenY = collectedBook.y * nextCamera.scale + nextCamera.y
             const percentX = Math.max(0, Math.min(100, (screenX / dimensions.width) * 100))
             const percentY = Math.max(0, Math.min(100, (screenY / dimensions.height) * 100))
-            const sparkleId = sparkleIdRef.current++
-            setSparkles(prev => [...prev, { id: sparkleId, x: percentX, y: percentY }])
+            const pickupId = pickupIdRef.current++
+            const variant = collectedBook.isCorrect ? 'glow' : 'close'
+            const frameIndex = collectedBook.isCorrect ? BOOK_FRAME_GLOW : BOOK_FRAME_CLOSED
+            setPickupBursts(prev => [...prev, { id: pickupId, x: percentX, y: percentY, frameIndex, variant }])
+
+            if (collectedBook.isCorrect) {
+                const sparkleId = sparkleIdRef.current++
+                setSparkles(prev => [...prev, { id: sparkleId, x: percentX, y: percentY }])
+            }
         }
     }
   }, gameState?.status === 'playing' && hasStarted ? 50 : null)
@@ -481,6 +493,19 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                             onComplete={() => setSparkles(prev => prev.filter(item => item.id !== sparkle.id))}
                         />
                     ))}
+                    {pickupBursts.map((burst) => (
+                        <BookPickupBurst
+                            key={burst.id}
+                            x={burst.x}
+                            y={burst.y}
+                            spriteUrl={assets.book.src}
+                            frameWidth={grids.book.fw}
+                            frameHeight={grids.book.fh}
+                            frameIndex={burst.frameIndex}
+                            variant={burst.variant}
+                            onComplete={() => setPickupBursts(prev => prev.filter(item => item.id !== burst.id))}
+                        />
+                    ))}
                 </div>
 
                 {/* Virtual Controls */}
@@ -521,7 +546,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                         height={50}
                                         offsetX={25}
                                         offsetY={25}
-                                        crop={getSpriteCrop(grids.book.fw, grids.book.fh, BOOK_FRAME_INDEX, 0)}
+                                        crop={getSpriteCrop(grids.book.fw, grids.book.fh, BOOK_FRAME_OPEN, 0)}
                                         shadowColor="#fbbf24"
                                         shadowBlur={12}
                                         shadowOpacity={0.9}
