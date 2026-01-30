@@ -2,6 +2,7 @@ import { describe, it, expect } from '@jest/globals'
 import type { VocabularyItem } from '@/store/useGameStore'
 import {
   createEnchantedLibraryState,
+  spawnBooks,
   spawnSpirit,
   updateSpirits,
   advanceEnchantedLibraryTime,
@@ -92,6 +93,59 @@ describe('enchantedLibrary', () => {
 
     it('throws error for empty vocabulary', () => {
       expect(() => createEnchantedLibraryState([])).toThrow('Vocabulary cannot be empty')
+    })
+  })
+
+  describe('spawnBooks', () => {
+    it('creates 4 books (1 correct, 3 decoys)', () => {
+      const target = SAMPLE_VOCABULARY[0]
+      const books = spawnBooks(target, SAMPLE_VOCABULARY)
+
+      expect(books).toHaveLength(4)
+
+      const correctBooks = books.filter(b => b.isCorrect)
+      const decoyBooks = books.filter(b => !b.isCorrect)
+
+      expect(correctBooks).toHaveLength(1)
+      expect(decoyBooks).toHaveLength(3)
+    })
+
+    it('books positioned in quadrants around arena', () => {
+      const target = SAMPLE_VOCABULARY[0]
+      const books = spawnBooks(target, SAMPLE_VOCABULARY, () => 0.5)
+
+      // All books should be positioned within game bounds
+      books.forEach(book => {
+        expect(book.x).toBeGreaterThan(0)
+        expect(book.x).toBeLessThan(GAME_WIDTH)
+        expect(book.y).toBeGreaterThan(0)
+        expect(book.y).toBeLessThan(GAME_HEIGHT)
+      })
+
+      // Books should be spread out (not all in same position)
+      const positions = books.map(b => `${b.x},${b.y}`)
+      const uniquePositions = new Set(positions)
+      expect(uniquePositions.size).toBe(4)
+    })
+
+    it('each book has translation label', () => {
+      const target = SAMPLE_VOCABULARY[0]
+      const books = spawnBooks(target, SAMPLE_VOCABULARY)
+
+      books.forEach(book => {
+        expect(book.translation).toBeDefined()
+        expect(book.translation).not.toBe('')
+      })
+    })
+
+    it('correct book matches target word', () => {
+      const target = SAMPLE_VOCABULARY[1] // 'dog'
+      const books = spawnBooks(target, SAMPLE_VOCABULARY)
+
+      const correctBook = books.find(b => b.isCorrect)
+      expect(correctBook).toBeDefined()
+      expect(correctBook?.word).toBe(target.term)
+      expect(correctBook?.translation).toBe(target.translation)
     })
   })
 
