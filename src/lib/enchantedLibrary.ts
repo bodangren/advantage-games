@@ -70,6 +70,9 @@ export const INITIAL_SPIRIT_SPEED = 2
 export const SPIRIT_SPEED_INCREASE_RATE = 0.1 // per 10 seconds
 export const PREDICT_AHEAD_DISTANCE = 100 // pixels
 export const PLAYER_SPEED = 3
+export const MANA_GAIN_CORRECT = 10
+export const MANA_LOSS_INCORRECT = 5
+export const MANA_LOSS_SPIRIT_HIT = 10
 
 export const createEnchantedLibraryState = (
   vocabulary: VocabularyItem[],
@@ -292,6 +295,112 @@ export const updateSpirits = (
     spirits: onScreenSpirits,
     spiritSpeed: newSpiritSpeed,
   }
+}
+
+/**
+ * Check for collisions between player and books
+ * Handle mana changes, shield charge updates, and vocabulary progress
+ */
+export const checkBookCollisions = (
+  state: EnchantedLibraryState,
+  vocabulary: VocabularyItem[] = [],
+  config: EnchantedLibraryConfig = {}
+): EnchantedLibraryState => {
+  let newState = state
+  let bookCollected = false
+
+  for (const book of state.books) {
+    const dx = state.player.x - book.x
+    const dy = state.player.y - book.y
+    const distance = Math.sqrt(dx * dx + dy * dy)
+    const collisionDistance = state.player.radius + book.radius
+
+    if (distance < collisionDistance) {
+      bookCollected = true
+
+      if (book.isCorrect) {
+        // Correct book: +10 mana, +1 shield charge, increment progress
+        const newMana = newState.mana + MANA_GAIN_CORRECT
+        const newShieldCharges = Math.min(
+          newState.player.maxShieldCharges,
+          newState.player.shieldCharges + 1
+        )
+
+        // Update vocabulary progress
+        const currentProgress = newState.vocabularyProgress.get(state.targetWord) || 0
+        const newProgress = new Map(newState.vocabularyProgress)
+        newProgress.set(state.targetWord, currentProgress + 1)
+
+        newState = {
+          ...newState,
+          mana: newMana,
+          vocabularyProgress: newProgress,
+          player: {
+            ...newState.player,
+            shieldCharges: newShieldCharges,
+          },
+        }
+
+        // Select next target word if vocabulary provided
+        if (vocabulary.length > 0) {
+          const nextWord = selectNextTargetWord(newState, vocabulary, config)
+          newState = {
+            ...newState,
+            targetWord: nextWord,
+          }
+        }
+      } else {
+        // Incorrect book: -5 mana, no shield charge
+        newState = {
+          ...newState,
+          mana: newState.mana - MANA_LOSS_INCORRECT,
+        }
+        // Target word stays the same (reshuffle)
+      }
+
+      break // Only one book can be collected at a time
+    }
+  }
+
+  // Spawn new books after collection
+  if (bookCollected && vocabulary.length > 0) {
+    const targetVocab = vocabulary.find(v => v.term === newState.targetWord)
+    if (targetVocab) {
+      const newBooks = spawnBooks(targetVocab, vocabulary, config.rng)
+      newState = {
+        ...newState,
+        books: newBooks,
+      }
+    }
+  }
+
+  return newState
+}
+
+/**
+ * Select next target word from vocabulary
+ * Prefers words that haven't been collected 2x yet
+ */
+export const selectNextTargetWord = (
+  state: EnchantedLibraryState,
+  vocabulary: VocabularyItem[],
+  { rng = Math.random }: EnchantedLibraryConfig = {}
+): string => {
+  // Filter words that haven't been collected 2x yet
+  const incompleteWords = vocabulary.filter(vocab => {
+    const progress = state.vocabularyProgress.get(vocab.term) || 0
+    return progress < 2
+  })
+
+  if (incompleteWords.length === 0) {
+    // All words collected 2x, pick random word
+    const randomIndex = Math.floor(rng() * vocabulary.length)
+    return vocabulary[randomIndex].term
+  }
+
+  // Pick random incomplete word
+  const randomIndex = Math.floor(rng() * incompleteWords.length)
+  return incompleteWords[randomIndex].term
 }
 
 /**

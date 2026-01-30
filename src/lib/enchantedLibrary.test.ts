@@ -3,6 +3,8 @@ import type { VocabularyItem } from '@/store/useGameStore'
 import {
   createEnchantedLibraryState,
   spawnBooks,
+  checkBookCollisions,
+  selectNextTargetWord,
   spawnSpirit,
   updateSpirits,
   advanceEnchantedLibraryTime,
@@ -297,6 +299,162 @@ describe('enchantedLibrary', () => {
 
       // Spirit speed should have increased from initial value
       expect(result.spiritSpeed).toBeGreaterThan(INITIAL_SPIRIT_SPEED)
+    })
+  })
+
+  describe('checkBookCollisions', () => {
+    it('detects collision when player near book (radius check)', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const playerNearBook = {
+        ...state,
+        player: {
+          ...state.player,
+          x: state.books[0].x,
+          y: state.books[0].y,
+        },
+      }
+
+      const result = checkBookCollisions(playerNearBook, SAMPLE_VOCABULARY)
+
+      // Books should change (one collected)
+      expect(result.books).not.toEqual(state.books)
+    })
+
+    it('correct book: +10 mana, +1 shield charge, progress incremented', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const correctBook = state.books.find(b => b.isCorrect)!
+
+      const playerAtCorrectBook = {
+        ...state,
+        mana: 50,
+        player: {
+          ...state.player,
+          x: correctBook.x,
+          y: correctBook.y,
+          shieldCharges: 2,
+        },
+      }
+
+      const result = checkBookCollisions(playerAtCorrectBook, SAMPLE_VOCABULARY)
+
+      expect(result.mana).toBe(60) // +10
+      expect(result.player.shieldCharges).toBe(3) // +1
+
+      // Progress should increment
+      const progress = result.vocabularyProgress.get(state.targetWord)
+      expect(progress).toBe(1) // Was 0, now 1
+    })
+
+    it('incorrect book: -5 mana, no shield charge', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const incorrectBook = state.books.find(b => !b.isCorrect)!
+
+      const playerAtIncorrectBook = {
+        ...state,
+        mana: 50,
+        player: {
+          ...state.player,
+          x: incorrectBook.x,
+          y: incorrectBook.y,
+          shieldCharges: 2,
+        },
+      }
+
+      const result = checkBookCollisions(playerAtIncorrectBook, SAMPLE_VOCABULARY)
+
+      expect(result.mana).toBe(45) // -5
+      expect(result.player.shieldCharges).toBe(2) // No change
+    })
+
+    it('respects max 3 shield charges', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const correctBook = state.books.find(b => b.isCorrect)!
+
+      const playerWithMaxCharges = {
+        ...state,
+        player: {
+          ...state.player,
+          x: correctBook.x,
+          y: correctBook.y,
+          shieldCharges: 3, // Already at max
+        },
+      }
+
+      const result = checkBookCollisions(playerWithMaxCharges, SAMPLE_VOCABULARY)
+
+      expect(result.player.shieldCharges).toBe(3) // Should not exceed max
+    })
+
+    it('books despawn after collection', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const bookToCollect = state.books[0]
+
+      const playerAtBook = {
+        ...state,
+        player: {
+          ...state.player,
+          x: bookToCollect.x,
+          y: bookToCollect.y,
+        },
+      }
+
+      const result = checkBookCollisions(playerAtBook, SAMPLE_VOCABULARY)
+
+      // Should still have 4 books (new ones spawned)
+      expect(result.books).toHaveLength(4)
+
+      // But they should be different books
+      expect(result.books).not.toEqual(state.books)
+    })
+
+    it('new books spawn after collection', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const bookToCollect = state.books[0]
+
+      const playerAtBook = {
+        ...state,
+        player: {
+          ...state.player,
+          x: bookToCollect.x,
+          y: bookToCollect.y,
+        },
+      }
+
+      const result = checkBookCollisions(playerAtBook, SAMPLE_VOCABULARY)
+
+      // Should have 4 new books
+      expect(result.books).toHaveLength(4)
+      expect(result.books.some(b => b.isCorrect)).toBe(true)
+    })
+  })
+
+  describe('selectNextTargetWord', () => {
+    it('selects word that hasn\'t been collected 2x yet', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      // Mark first word as collected once
+      state.vocabularyProgress.set(SAMPLE_VOCABULARY[0].term, 1)
+      // Mark second word as collected twice (complete)
+      state.vocabularyProgress.set(SAMPLE_VOCABULARY[1].term, 2)
+
+      const nextWord = selectNextTargetWord(state, SAMPLE_VOCABULARY)
+
+      // Should not select the word that's already collected 2x
+      expect(nextWord).not.toBe(SAMPLE_VOCABULARY[1].term)
+    })
+
+    it('cycles through vocabulary appropriately', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      const word1 = selectNextTargetWord(state, SAMPLE_VOCABULARY)
+
+      // Mark first selected word as collected once
+      state.vocabularyProgress.set(word1, 1)
+
+      const word2 = selectNextTargetWord(state, SAMPLE_VOCABULARY)
+
+      // Should be a valid word from vocabulary
+      expect(SAMPLE_VOCABULARY.some(v => v.term === word2)).toBe(true)
     })
   })
 
