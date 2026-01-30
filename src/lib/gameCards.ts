@@ -51,6 +51,14 @@ export const gameCards: GameCard[] = [
     status: 'playable',
   },
   {
+    id: 'enchanted-library',
+    title: 'Enchanted Library',
+    description: 'Collect magic books and dodge spirits to master new words.',
+    cover: withBasePath('/games/cover/magic-spell-scroll-cover.png'),
+    href: '/games/enchanted-library',
+    status: 'playable',
+  },
+  {
     id: 'rune-match',
     title: 'Rune Match',
     description: 'Match vocabulary runes to defeat monsters in this RPG puzzle battle.',
