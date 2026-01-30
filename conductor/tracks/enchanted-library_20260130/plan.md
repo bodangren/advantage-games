@@ -273,7 +273,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 6: HUD and Primary School UX
+## Phase 6: HUD and Primary School UX [checkpoint: 40fb918]
 
 ### Task 6.1: Create bright, friendly HUD
 - [x] Sub-task: Display target word prominently at top (large, yellow text)
@@ -329,7 +329,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Virtual controls work well on mobile. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: HUD and Primary School UX' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 6: HUD and Primary School UX' (Protocol in workflow.md) 40fb918
 
 ---
 
