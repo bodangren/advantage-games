@@ -320,7 +320,7 @@ export const checkBookCollisions = (
 
       if (book.isCorrect) {
         // Correct book: +10 mana, +1 shield charge, increment progress
-        const newMana = newState.mana + MANA_GAIN_CORRECT
+        const newMana = Math.max(0, newState.mana + MANA_GAIN_CORRECT)
         const newShieldCharges = Math.min(
           newState.player.maxShieldCharges,
           newState.player.shieldCharges + 1
@@ -350,10 +350,10 @@ export const checkBookCollisions = (
           }
         }
       } else {
-        // Incorrect book: -5 mana, no shield charge
+        // Incorrect book: -5 mana, no shield charge (min 0)
         newState = {
           ...newState,
-          mana: newState.mana - MANA_LOSS_INCORRECT,
+          mana: Math.max(0, newState.mana - MANA_LOSS_INCORRECT),
         }
         // Target word stays the same (reshuffle)
       }
@@ -498,10 +498,10 @@ export const checkSpiritCollisions = (
           spirits: updatedSpirits,
         }
       } else {
-        // Shield inactive: spirit hits player, lose mana
+        // Shield inactive: spirit hits player, lose mana (min 0)
         return {
           ...state,
-          mana: state.mana - MANA_LOSS_SPIRIT_HIT,
+          mana: Math.max(0, state.mana - MANA_LOSS_SPIRIT_HIT),
         }
       }
     }

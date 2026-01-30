@@ -463,7 +463,7 @@ describe('enchantedLibrary', () => {
   })
 
   describe('mana system', () => {
-    it('mana can go negative (no minimum)', () => {
+    it('mana never goes below 0', () => {
       const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
       const incorrectBook = state.books.find(b => !b.isCorrect)!
 
@@ -479,8 +479,32 @@ describe('enchantedLibrary', () => {
 
       const result = checkBookCollisions(lowManaState, SAMPLE_VOCABULARY)
 
-      // Mana should go negative (-3)
-      expect(result.mana).toBe(-3)
+      // Mana should be clamped to 0 (not -3)
+      expect(result.mana).toBe(0)
+    })
+
+    it('spirit collision clamps mana to 0', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const lowMana = {
+        ...state,
+        mana: 5, // Low mana
+        shieldActive: false,
+        spirits: [{
+          id: 'spirit-1',
+          x: state.player.x,
+          y: state.player.y,
+          velocityX: 2,
+          velocityY: 0,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = checkSpiritCollisions(lowMana)
+
+      // Would be -5, but clamped to 0
+      expect(result.mana).toBe(0)
     })
 
     it('mana displayed as score', () => {
@@ -967,22 +991,23 @@ describe('enchantedLibrary', () => {
       expect(gameState.mana).toBe(120) // This is the final score
     })
 
-    it('mana can be negative as final score', () => {
+    it('final score is never negative', () => {
       const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
-      const withNegativeMana = {
+      const withLowMana = {
         ...state,
-        mana: -15, // Player took many hits
+        mana: 0, // Minimum mana
         status: 'victory' as const,
       }
 
       // Mark all words as collected
       SAMPLE_VOCABULARY.forEach(vocab => {
-        withNegativeMana.vocabularyProgress.set(vocab.term, 2)
+        withLowMana.vocabularyProgress.set(vocab.term, 2)
       })
 
-      // Even with negative mana, victory is possible
-      expect(withNegativeMana.status).toBe('victory')
-      expect(withNegativeMana.mana).toBe(-15)
+      // Victory possible even with 0 mana
+      expect(withLowMana.status).toBe('victory')
+      expect(withLowMana.mana).toBe(0)
+      expect(withLowMana.mana).toBeGreaterThanOrEqual(0)
     })
   })
 
