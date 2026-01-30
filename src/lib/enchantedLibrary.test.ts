@@ -9,11 +9,13 @@ import {
   spawnSpirit,
   updateSpirits,
   advanceEnchantedLibraryTime,
+  activateShield,
   GAME_WIDTH,
   GAME_HEIGHT,
   INITIAL_MANA,
   MAX_SHIELD_CHARGES,
   INITIAL_SPIRIT_SPEED,
+  SHIELD_DURATION,
 } from './enchantedLibrary'
 
 export type DirectionalInput = {
@@ -546,6 +548,390 @@ describe('enchantedLibrary', () => {
       const result = checkSpiritCollisions(withSpirit)
 
       expect(result.mana).toBe(40) // -10 mana
+    })
+  })
+
+  describe('activateShield', () => {
+    it('activates only if charges > 0', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withCharges = {
+        ...state,
+        player: {
+          ...state.player,
+          shieldCharges: 1,
+        },
+      }
+
+      const result = activateShield(withCharges)
+
+      expect(result.shieldActive).toBe(true)
+      expect(result.player.shieldCharges).toBe(0)
+    })
+
+    it('does not activate if charges = 0', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const noCharges = {
+        ...state,
+        player: {
+          ...state.player,
+          shieldCharges: 0,
+        },
+        shieldActive: false,
+      }
+
+      const result = activateShield(noCharges)
+
+      expect(result.shieldActive).toBe(false)
+      expect(result.player.shieldCharges).toBe(0)
+    })
+
+    it('consumes 1 charge', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withTwoCharges = {
+        ...state,
+        player: {
+          ...state.player,
+          shieldCharges: 2,
+        },
+      }
+
+      const result = activateShield(withTwoCharges)
+
+      expect(result.player.shieldCharges).toBe(1)
+    })
+
+    it('sets shieldActive = true', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      const result = activateShield(state)
+
+      expect(result.shieldActive).toBe(true)
+    })
+
+    it('sets shieldTimer = 2000ms', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      const result = activateShield(state)
+
+      expect(result.shieldTimer).toBe(2000)
+      expect(result.shieldTimer).toBe(SHIELD_DURATION)
+    })
+
+    it('does not activate if shield already active', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const alreadyActive = {
+        ...state,
+        shieldActive: true,
+        shieldTimer: 1000,
+        player: {
+          ...state.player,
+          shieldCharges: 2,
+        },
+      }
+
+      const result = activateShield(alreadyActive)
+
+      // Should not consume another charge
+      expect(result.player.shieldCharges).toBe(2)
+      // Shield remains active with same timer
+      expect(result.shieldActive).toBe(true)
+      expect(result.shieldTimer).toBe(1000)
+    })
+  })
+
+  describe('spirit bounce mechanics', () => {
+    it('no collision detection updates when shield inactive', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withSpirit = {
+        ...state,
+        mana: 50,
+        shieldActive: false,
+        spirits: [{
+          id: 'spirit-1',
+          x: state.player.x + 10, // Very close to player
+          y: state.player.y,
+          velocityX: 2,
+          velocityY: 0,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = checkSpiritCollisions(withSpirit)
+
+      // Mana should decrease (spirit hit)
+      expect(result.mana).toBe(40)
+      // Spirit velocity should not change
+      expect(result.spirits[0].velocityX).toBe(2)
+      expect(result.spirits[0].velocityY).toBe(0)
+    })
+
+    it('detects spirit collision with player when shield active', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withShieldAndSpirit = {
+        ...state,
+        mana: 50,
+        shieldActive: true,
+        spirits: [{
+          id: 'spirit-1',
+          x: state.player.x + 10, // Very close to player
+          y: state.player.y,
+          velocityX: 2,
+          velocityY: 0,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = checkSpiritCollisions(withShieldAndSpirit)
+
+      // No mana loss when shield active
+      expect(result.mana).toBe(50)
+      // Spirit should be marked as bounced or have changed velocity
+      const spirit = result.spirits[0]
+      expect(spirit.velocityX).not.toBe(2) // Velocity should have changed
+    })
+
+    it('bounces spirit at angle of incidence (reflection physics)', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const spiritMovingRight = {
+        ...state,
+        shieldActive: true,
+        player: {
+          ...state.player,
+          x: 400,
+          y: 300,
+        },
+        spirits: [{
+          id: 'spirit-1',
+          x: 370, // Left of player, moving right toward player
+          y: 300,
+          velocityX: 2,
+          velocityY: 0,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = checkSpiritCollisions(spiritMovingRight)
+
+      const spirit = result.spirits[0]
+      // Spirit should bounce back left (negative X velocity)
+      expect(spirit.velocityX).toBeLessThan(0)
+    })
+
+    it('spirit continues in new direction after bounce', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withBouncedSpirit = {
+        ...state,
+        shieldActive: true,
+        spirits: [{
+          id: 'spirit-1',
+          x: state.player.x - 30,
+          y: state.player.y,
+          velocityX: 2,
+          velocityY: 0,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = checkSpiritCollisions(withBouncedSpirit)
+
+      const spirit = result.spirits[0]
+      // Velocity should have changed direction
+      expect(spirit.velocityX).not.toBe(2)
+      // Magnitude should remain similar
+      const newSpeed = Math.sqrt(spirit.velocityX ** 2 + spirit.velocityY ** 2)
+      expect(newSpeed).toBeCloseTo(2, 1)
+    })
+
+    it('no mana loss when shield active', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withShieldAndSpirit = {
+        ...state,
+        mana: 50,
+        shieldActive: true,
+        spirits: [{
+          id: 'spirit-1',
+          x: state.player.x,
+          y: state.player.y,
+          velocityX: 2,
+          velocityY: 0,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = checkSpiritCollisions(withShieldAndSpirit)
+
+      // Shield should protect from mana loss
+      expect(result.mana).toBe(50)
+    })
+
+    it('normal mana loss (-10) when shield inactive', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const noShield = {
+        ...state,
+        mana: 50,
+        shieldActive: false,
+        spirits: [{
+          id: 'spirit-1',
+          x: state.player.x,
+          y: state.player.y,
+          velocityX: 2,
+          velocityY: 0,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = checkSpiritCollisions(noShield)
+
+      expect(result.mana).toBe(40)
+    })
+  })
+
+  describe('shield timer countdown', () => {
+    it('timer decrements by dt each tick', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withActiveShield = {
+        ...state,
+        shieldActive: true,
+        shieldTimer: 2000,
+      }
+
+      const result = advanceEnchantedLibraryTime(withActiveShield, {
+        up: false,
+        down: false,
+        left: false,
+        right: false,
+        cast: false,
+      }, 16)
+
+      expect(result.shieldTimer).toBe(2000 - 16)
+    })
+
+    it('shield deactivates when timer reaches 0', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const almostExpired = {
+        ...state,
+        shieldActive: true,
+        shieldTimer: 10,
+      }
+
+      const result = advanceEnchantedLibraryTime(almostExpired, {
+        up: false,
+        down: false,
+        left: false,
+        right: false,
+        cast: false,
+      }, 16)
+
+      expect(result.shieldActive).toBe(false)
+      expect(result.shieldTimer).toBe(0)
+    })
+
+    it('player can move when shield is active', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withActiveShield = {
+        ...state,
+        shieldActive: true,
+        shieldTimer: 1000,
+      }
+
+      const moveRight: DirectionalInput = {
+        up: false,
+        down: false,
+        left: false,
+        right: true,
+        cast: false,
+      }
+
+      const result = advanceEnchantedLibraryTime(withActiveShield, moveRight, 16)
+
+      // Player should still be able to move (per spec, only original Wizard vs Zombie had freeze)
+      expect(result.player.x).toBeGreaterThan(state.player.x)
+    })
+  })
+
+  describe('shield integration in game loop', () => {
+    const noInput: DirectionalInput = {
+      up: false,
+      down: false,
+      left: false,
+      right: false,
+      cast: false,
+    }
+
+    it('activates shield when cast button pressed', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const castInput: DirectionalInput = {
+        ...noInput,
+        cast: true,
+      }
+
+      const result = advanceEnchantedLibraryTime(state, castInput, 16)
+
+      expect(result.shieldActive).toBe(true)
+      expect(result.player.shieldCharges).toBe(2) // Started with 3, used 1
+    })
+
+    it('does not activate shield if no charges available', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const noCharges = {
+        ...state,
+        player: {
+          ...state.player,
+          shieldCharges: 0,
+        },
+      }
+
+      const castInput: DirectionalInput = {
+        ...noInput,
+        cast: true,
+      }
+
+      const result = advanceEnchantedLibraryTime(noCharges, castInput, 16)
+
+      expect(result.shieldActive).toBe(false)
+    })
+
+    it('updates shield timer during game loop', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withActiveShield = {
+        ...state,
+        shieldActive: true,
+        shieldTimer: 1000,
+      }
+
+      const result = advanceEnchantedLibraryTime(withActiveShield, noInput, 16)
+
+      expect(result.shieldTimer).toBe(1000 - 16)
+    })
+
+    it('allows player movement when shield active', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withActiveShield = {
+        ...state,
+        shieldActive: true,
+        shieldTimer: 1000,
+      }
+
+      const moveRight: DirectionalInput = {
+        ...noInput,
+        right: true,
+      }
+
+      const result = advanceEnchantedLibraryTime(withActiveShield, moveRight, 16)
+
+      expect(result.player.x).toBeGreaterThan(state.player.x)
     })
   })
 

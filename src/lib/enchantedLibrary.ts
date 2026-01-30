@@ -404,28 +404,89 @@ export const selectNextTargetWord = (
 }
 
 /**
+ * Activate shield if player has charges available
+ * Consumes 1 charge and sets shield active for SHIELD_DURATION
+ */
+export const activateShield = (
+  state: EnchantedLibraryState
+): EnchantedLibraryState => {
+  // Don't activate if already active
+  if (state.shieldActive) {
+    return state
+  }
+
+  // Don't activate if no charges
+  if (state.player.shieldCharges <= 0) {
+    return state
+  }
+
+  // Activate shield
+  return {
+    ...state,
+    shieldActive: true,
+    shieldTimer: SHIELD_DURATION,
+    player: {
+      ...state.player,
+      shieldCharges: state.player.shieldCharges - 1,
+    },
+  }
+}
+
+/**
  * Check for collisions between player and spirits
  * Handle mana loss (unless shield is active)
+ * When shield active, bounces spirits using reflection physics
  */
 export const checkSpiritCollisions = (
   state: EnchantedLibraryState
 ): EnchantedLibraryState => {
-  if (state.shieldActive) {
-    // Shield is active, no mana loss (bounce handled elsewhere)
-    return state
-  }
+  let hasCollision = false
+  let updatedSpirits = state.spirits
 
-  for (const spirit of state.spirits) {
+  for (let i = 0; i < state.spirits.length; i++) {
+    const spirit = state.spirits[i]
     const dx = state.player.x - spirit.x
     const dy = state.player.y - spirit.y
     const distance = Math.sqrt(dx * dx + dy * dy)
     const collisionDistance = state.player.radius + spirit.radius
 
     if (distance < collisionDistance) {
-      // Spirit hit player: -10 mana
-      return {
-        ...state,
-        mana: state.mana - MANA_LOSS_SPIRIT_HIT,
+      hasCollision = true
+
+      if (state.shieldActive) {
+        // Shield is active: bounce the spirit using reflection physics
+        // Calculate normal vector (from spirit to player center)
+        const normalX = dx / distance
+        const normalY = dy / distance
+
+        // Calculate reflection: v' = v - 2 * (v · n) * n
+        const dotProduct = spirit.velocityX * normalX + spirit.velocityY * normalY
+        const reflectedVelocityX = spirit.velocityX - 2 * dotProduct * normalX
+        const reflectedVelocityY = spirit.velocityY - 2 * dotProduct * normalY
+
+        // Update this spirit with new velocity
+        updatedSpirits = state.spirits.map((s, idx) =>
+          idx === i
+            ? {
+                ...s,
+                velocityX: reflectedVelocityX,
+                velocityY: reflectedVelocityY,
+                bounced: true,
+              }
+            : s
+        )
+
+        // Return state with bounced spirit, no mana loss
+        return {
+          ...state,
+          spirits: updatedSpirits,
+        }
+      } else {
+        // Shield inactive: spirit hits player, lose mana
+        return {
+          ...state,
+          mana: state.mana - MANA_LOSS_SPIRIT_HIT,
+        }
       }
     }
   }
@@ -444,6 +505,23 @@ export const advanceEnchantedLibraryTime = (
 ): EnchantedLibraryState => {
   if (state.status !== 'playing') {
     return state
+  }
+
+  let newState = state
+
+  // Check shield activation input (cast button)
+  if (input.cast) {
+    newState = activateShield(newState)
+  }
+
+  // Update shield timer
+  if (newState.shieldActive) {
+    const newShieldTimer = Math.max(0, newState.shieldTimer - dt)
+    newState = {
+      ...newState,
+      shieldTimer: newShieldTimer,
+      shieldActive: newShieldTimer > 0,
+    }
   }
 
   // Calculate player velocity from input
@@ -466,26 +544,29 @@ export const advanceEnchantedLibraryTime = (
   velocityY *= PLAYER_SPEED
 
   // Update player position
-  let newPlayerX = state.player.x + velocityX
-  let newPlayerY = state.player.y + velocityY
+  let newPlayerX = newState.player.x + velocityX
+  let newPlayerY = newState.player.y + velocityY
 
   // Clamp to boundaries
-  newPlayerX = Math.max(state.player.radius, Math.min(GAME_WIDTH - state.player.radius, newPlayerX))
-  newPlayerY = Math.max(state.player.radius, Math.min(GAME_HEIGHT - state.player.radius, newPlayerY))
+  newPlayerX = Math.max(newState.player.radius, Math.min(GAME_WIDTH - newState.player.radius, newPlayerX))
+  newPlayerY = Math.max(newState.player.radius, Math.min(GAME_HEIGHT - newState.player.radius, newPlayerY))
 
-  let newState: EnchantedLibraryState = {
-    ...state,
+  newState = {
+    ...newState,
     player: {
-      ...state.player,
+      ...newState.player,
       x: newPlayerX,
       y: newPlayerY,
     },
-    gameTime: state.gameTime + dt,
-    spiritSpawnTimer: Math.max(0, state.spiritSpawnTimer - dt),
+    gameTime: newState.gameTime + dt,
+    spiritSpawnTimer: Math.max(0, newState.spiritSpawnTimer - dt),
   }
 
   // Update spirits
   newState = updateSpirits(newState, dt)
+
+  // Check spirit collisions (bounces when shield active, mana loss when not)
+  newState = checkSpiritCollisions(newState)
 
   // Spawn new spirit if timer ready
   if (newState.spiritSpawnTimer === 0 && newState.spirits.length === 0) {
