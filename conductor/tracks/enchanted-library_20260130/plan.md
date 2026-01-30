@@ -396,6 +396,13 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Book pickup visuals indicate correct/incorrect status. ✅
 
+### Task 8.5: Fix player movement input mapping
+- [x] Sub-task: Create input mapping helper for directional movement 2b44d25
+- [x] Sub-task: Add unit tests for input mapping 2b44d25
+- [x] Sub-task: Use mapped input in EnchantedLibraryGame 2b44d25
+
+**Verification**: Player moves with keyboard and virtual controls. ✅
+
 - [ ] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
 
 ---
