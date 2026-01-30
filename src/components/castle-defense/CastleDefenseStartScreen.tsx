@@ -74,8 +74,8 @@ export default function CastleDefenseStartScreen({
                 <div className="divide-y divide-white/5">
                   {vocabulary.map((item, i) => (
                     <div key={`${item.term}-${i}`} className="flex flex-col gap-1 p-3 px-4 hover:bg-white/5 transition-colors">
-                      <span className="font-medium text-white">{item.term}</span>
-                      <span className="text-slate-400 text-sm">{item.translation}</span>
+                      <span className="font-medium text-white leading-snug">{item.term}</span>
+                      <span className="text-slate-400 text-sm leading-snug">{item.translation}</span>
                     </div>
                   ))}
                 </div>
@@ -86,14 +86,14 @@ export default function CastleDefenseStartScreen({
       </div>
 
       <footer className="p-6 sm:p-8 border-t border-white/10 bg-slate-900/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-6">
-        <div className="flex items-center gap-6 text-xs uppercase tracking-[0.2em] text-white/50">
+        <div className="flex items-center gap-6 text-[10px] uppercase tracking-[0.2em] text-white/50 sm:text-xs">
           <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-amber-500" /> Move: Arrows / WASD</div>
           <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Build: Walk to base</div>
           <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500" /> Collect: Touch words</div>
         </div>
         <button
           onClick={onStart}
-          className="group relative px-12 py-4 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.35)] flex items-center gap-2"
+          className="group relative px-12 py-4 bg-amber-500 hover:bg-amber-400 text-slate-900 font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(245,158,11,0.35)] flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
         >
           <Play className="w-5 h-5 fill-current" />
           <span className="relative z-10">Start Defense</span>

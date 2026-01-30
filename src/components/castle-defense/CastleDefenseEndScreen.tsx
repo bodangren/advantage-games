@@ -84,7 +84,7 @@ export default function CastleDefenseEndScreen({
 
         <button
           onClick={onRestart}
-          className="mt-8 w-full rounded-2xl bg-white py-4 text-slate-950 font-black uppercase tracking-widest shadow-lg transition-all hover:scale-[1.02]"
+          className="mt-8 w-full rounded-2xl bg-white py-4 text-slate-950 font-black uppercase tracking-widest shadow-lg transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
         >
           <span className="flex items-center justify-center gap-2">
             <RotateCcw className="h-5 w-5" /> Play Again
