@@ -87,13 +87,13 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 2: Book Collection and Mana System
 
 ### Task 2.1: Implement book spawning
-- [ ] Sub-task: Write tests for `spawnBooks(vocabulary, targetWord)`
+- [x] Sub-task: Write tests for `spawnBooks(vocabulary, targetWord)`
   - Test: Creates 4 books (1 correct, 3 decoys)
   - Test: Books positioned in quadrants around arena
   - Test: Each book has translation label
   - Test: Correct book matches target word
-- [ ] Sub-task: Implement `spawnBooks()` function
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `spawnBooks()` function (already implemented in Task 1.1)
+- [x] Sub-task: Run tests 1570586
 
 **Verification**: All tests pass. ✅
 
