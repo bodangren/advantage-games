@@ -37,6 +37,12 @@ const buildSpriteGrid = (width: number, height: number) => {
   return { fw, fh }
 }
 
+const buildBookSpriteGrid = (width: number, height: number) => {
+  const fw = width / 3
+  const fh = height / 2
+  return { fw, fh }
+}
+
 const getSpriteCrop = (fw: number, fh: number, col: number, row: number) => ({
   x: col * fw,
   y: row * fh,
@@ -84,7 +90,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
               const [player, spirit, book, floor] = await Promise.all([
                   loadImage('/games/enchanted-library/player_3x3_pose_sheet.png'),
                   loadImage('/games/enchanted-library/spirit_3x3_pose_sheet.png'),
-                  loadImage('/games/enchanted-library/book_3x3_pose_sheet.png'),
+                  loadImage('/games/enchanted-library/book_3x1_sheet.png'),
                   loadImage('/games/enchanted-library/tile-library.png'),
               ])
               if (mounted) setAssets({ player, spirit, book, floor })
@@ -208,7 +214,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
       return {
           player: buildSpriteGrid(assets.player.width, assets.player.height),
           spirit: buildSpriteGrid(assets.spirit.width, assets.spirit.height),
-          book: buildSpriteGrid(assets.book.width, assets.book.height)
+          book: buildBookSpriteGrid(assets.book.width, assets.book.height)
       }
   }, [assets])
 
