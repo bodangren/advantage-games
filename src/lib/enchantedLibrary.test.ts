@@ -4,6 +4,7 @@ import {
   createEnchantedLibraryState,
   spawnBooks,
   checkBookCollisions,
+  checkSpiritCollisions,
   selectNextTargetWord,
   spawnSpirit,
   updateSpirits,
@@ -455,6 +456,96 @@ describe('enchantedLibrary', () => {
 
       // Should be a valid word from vocabulary
       expect(SAMPLE_VOCABULARY.some(v => v.term === word2)).toBe(true)
+    })
+  })
+
+  describe('mana system', () => {
+    it('mana can go negative (no minimum)', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const incorrectBook = state.books.find(b => !b.isCorrect)!
+
+      const lowManaState = {
+        ...state,
+        mana: 2, // Very low mana
+        player: {
+          ...state.player,
+          x: incorrectBook.x,
+          y: incorrectBook.y,
+        },
+      }
+
+      const result = checkBookCollisions(lowManaState, SAMPLE_VOCABULARY)
+
+      // Mana should go negative (-3)
+      expect(result.mana).toBe(-3)
+    })
+
+    it('mana displayed as score', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      // Mana is the score
+      expect(state.mana).toBe(INITIAL_MANA)
+      expect(state.mana).toBe(50)
+    })
+
+    it('correct book adds 10 mana', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const correctBook = state.books.find(b => b.isCorrect)!
+
+      const playerAtCorrect = {
+        ...state,
+        mana: 50,
+        player: {
+          ...state.player,
+          x: correctBook.x,
+          y: correctBook.y,
+        },
+      }
+
+      const result = checkBookCollisions(playerAtCorrect, SAMPLE_VOCABULARY)
+
+      expect(result.mana).toBe(60)
+    })
+
+    it('wrong book subtracts 5 mana', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const incorrectBook = state.books.find(b => !b.isCorrect)!
+
+      const playerAtIncorrect = {
+        ...state,
+        mana: 50,
+        player: {
+          ...state.player,
+          x: incorrectBook.x,
+          y: incorrectBook.y,
+        },
+      }
+
+      const result = checkBookCollisions(playerAtIncorrect, SAMPLE_VOCABULARY)
+
+      expect(result.mana).toBe(45)
+    })
+
+    it('spirit collision subtracts 10 mana', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withSpirit = {
+        ...state,
+        mana: 50,
+        spirits: [{
+          id: 'spirit-1',
+          x: state.player.x,
+          y: state.player.y,
+          velocityX: 2,
+          velocityY: 0,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = checkSpiritCollisions(withSpirit)
+
+      expect(result.mana).toBe(40) // -10 mana
     })
   })
 

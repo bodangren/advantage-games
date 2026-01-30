@@ -404,6 +404,36 @@ export const selectNextTargetWord = (
 }
 
 /**
+ * Check for collisions between player and spirits
+ * Handle mana loss (unless shield is active)
+ */
+export const checkSpiritCollisions = (
+  state: EnchantedLibraryState
+): EnchantedLibraryState => {
+  if (state.shieldActive) {
+    // Shield is active, no mana loss (bounce handled elsewhere)
+    return state
+  }
+
+  for (const spirit of state.spirits) {
+    const dx = state.player.x - spirit.x
+    const dy = state.player.y - spirit.y
+    const distance = Math.sqrt(dx * dx + dy * dy)
+    const collisionDistance = state.player.radius + spirit.radius
+
+    if (distance < collisionDistance) {
+      // Spirit hit player: -10 mana
+      return {
+        ...state,
+        mana: state.mana - MANA_LOSS_SPIRIT_HIT,
+      }
+    }
+  }
+
+  return state
+}
+
+/**
  * Main game loop - advances game state by one time step
  */
 export const advanceEnchantedLibraryTime = (
