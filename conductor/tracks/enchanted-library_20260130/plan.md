@@ -388,6 +388,14 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Sprite sheets align with current asset naming and layout. ✅
 
+### Task 8.4: Book pickup visual states
+- [x] Sub-task: Default book frame is open in the arena 27f7b0d
+- [x] Sub-task: Correct pickup shows glowing book burst 27f7b0d
+- [x] Sub-task: Incorrect pickup shows closing book burst 27f7b0d
+- [x] Sub-task: Add unit tests for pickup burst rendering 27f7b0d
+
+**Verification**: Book pickup visuals indicate correct/incorrect status. ✅
+
 - [ ] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
 
 ---
