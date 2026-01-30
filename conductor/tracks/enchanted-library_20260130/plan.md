@@ -224,16 +224,16 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 5: React Component and UI
 
 ### Task 5.1: Create Enchanted Library game component
-- [ ] Sub-task: Create `src/components/enchanted-library/EnchantedLibraryGame.tsx`
-- [ ] Sub-task: Set up Konva Stage and Layer (800×600)
-- [ ] Sub-task: Implement asset loading for sprites:
+- [x] Sub-task: Create `src/components/enchanted-library/EnchantedLibraryGame.tsx`
+- [x] Sub-task: Set up Konva Stage and Layer (800×600)
+- [x] Sub-task: Implement asset loading for sprites:
   - Player sprite (student wizard)
   - Spirit sprite
   - Book sprite
   - Library floor tiles
-- [ ] Sub-task: Create basic component structure with game loop
-- [ ] Sub-task: Write component tests in `EnchantedLibraryGame.test.tsx`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Create basic component structure with game loop
+- [x] Sub-task: Write component tests in `EnchantedLibraryGame.test.tsx`
+- [x] Sub-task: Run tests b870464
 
 **Verification**: Component renders without errors. ✅
 
