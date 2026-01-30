@@ -130,7 +130,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 3: Shield Mechanic
+## Phase 3: Shield Mechanic [checkpoint: 4880b9d]
 
 ### Task 3.1: Implement shield activation
 - [x] Sub-task: Write tests for `activateShield(state)`
@@ -179,7 +179,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: All tests pass. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Shield Mechanic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Shield Mechanic' (Protocol in workflow.md) 4880b9d
 
 ---
 
