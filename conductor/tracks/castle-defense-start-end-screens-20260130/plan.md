@@ -36,21 +36,21 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 2: Start Screen
 
 ### Task 2.1: Build Castle Defense start screen component
-- [ ] Sub-task: Create `src/components/castle-defense/CastleDefenseStartScreen.tsx` patterned after Wizard vs Zombie.
-- [ ] Sub-task: Include title, short rules/controls, and a sentence list (use `VocabularyItem[]`, show term + translation).
-- [ ] Sub-task: Add CTA button that calls `onStart`.
-- [ ] Sub-task: Write tests in `src/components/castle-defense/CastleDefenseStartScreen.test.tsx`:
+- [x] Sub-task: Create `src/components/castle-defense/CastleDefenseStartScreen.tsx` patterned after Wizard vs Zombie. 3a77304
+- [x] Sub-task: Include title, short rules/controls, and a sentence list (use `VocabularyItem[]`, show term + translation). 3a77304
+- [x] Sub-task: Add CTA button that calls `onStart`. 3a77304
+- [x] Sub-task: Write tests in `src/components/castle-defense/CastleDefenseStartScreen.test.tsx`: 3a77304
   - Renders title and rules section.
   - Renders sentence list entries.
   - Calls `onStart` when CTA clicked.
-- [ ] Sub-task: Run tests: `CI=true npm test src/components/castle-defense/CastleDefenseStartScreen.test.tsx`.
+- [x] Sub-task: Run tests: `CI=true npm test src/components/castle-defense/CastleDefenseStartScreen.test.tsx`. 3a77304
 
 **Verification**: Start screen renders and CTA works. ✅
 
 ### Task 2.2: Integrate start screen into game
-- [ ] Sub-task: Replace the inline start view in `CastleDefenseGame.tsx` with the new component.
-- [ ] Sub-task: Ensure gameplay does not start until `onStart` is triggered.
-- [ ] Sub-task: Verify list of sentences uses the same vocabulary passed to the game.
+- [x] Sub-task: Replace the inline start view in `CastleDefenseGame.tsx` with the new component. 3a77304
+- [x] Sub-task: Ensure gameplay does not start until `onStart` is triggered. 3a77304
+- [x] Sub-task: Verify list of sentences uses the same vocabulary passed to the game. 3a77304
 
 **Verification**: Game start is gated by the new start screen. ✅
 
