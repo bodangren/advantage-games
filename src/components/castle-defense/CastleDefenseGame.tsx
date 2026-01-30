@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Stage, Layer, Rect, Circle, Text, Image as KonvaImage, Group } from 'react-konva'
 import { motion, AnimatePresence } from 'framer-motion'
+import CastleDefenseStartScreen from './CastleDefenseStartScreen'
 
 // Import shared components (REUSE from Wizard)
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
@@ -270,28 +271,8 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
 
   if (!hasStarted) {
     return (
-      <div className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 flex items-center justify-center border border-white/10 md:aspect-video md:h-auto">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-900/20 to-slate-950" />
-        <div className="relative text-center space-y-8 p-8">
-          <div className="space-y-2">
-            <motion.h2 
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              className="text-5xl font-black text-white uppercase tracking-tighter md:text-7xl"
-            >
-              Castle <span className="text-amber-500">Defense</span>
-            </motion.h2>
-            <p className="text-blue-300 font-medium tracking-widest uppercase text-xs">Protect the heart of the kingdom</p>
-          </div>
-          <motion.button
-            onClick={startGame}
-            whileHover={{ scale: 1.05, backgroundColor: '#f59e0b' }}
-            whileTap={{ scale: 0.95 }}
-            className="px-12 py-5 bg-amber-600 text-white font-black rounded-2xl shadow-2xl shadow-amber-900/40 uppercase tracking-widest text-xl transition-colors"
-          >
-            Start Mission
-          </motion.button>
-        </div>
+      <div className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 border border-white/10 md:aspect-video md:h-auto">
+        <CastleDefenseStartScreen onStart={startGame} vocabulary={vocabulary} />
       </div>
     )
   }
