@@ -221,7 +221,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 5: React Component and UI
+## Phase 5: React Component and UI [checkpoint: d18c55a]
 
 ### Task 5.1: Create Enchanted Library game component
 - [x] Sub-task: Create `src/components/enchanted-library/EnchantedLibraryGame.tsx`
