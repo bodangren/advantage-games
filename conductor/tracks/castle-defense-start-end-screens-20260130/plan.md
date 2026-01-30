@@ -33,7 +33,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 2: Start Screen
+## Phase 2: Start Screen [checkpoint: 6312920]
 
 ### Task 2.1: Build Castle Defense start screen component
 - [x] Sub-task: Create `src/components/castle-defense/CastleDefenseStartScreen.tsx` patterned after Wizard vs Zombie. 3a77304
