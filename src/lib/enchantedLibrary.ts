@@ -404,6 +404,22 @@ export const selectNextTargetWord = (
 }
 
 /**
+ * Check if all vocabulary words have been collected 2x each
+ * Returns true if victory condition is met
+ */
+export const checkVictoryCondition = (
+  state: EnchantedLibraryState
+): boolean => {
+  // Check if all words have been collected 2x
+  for (const [word, count] of state.vocabularyProgress.entries()) {
+    if (count < 2) {
+      return false
+    }
+  }
+  return true
+}
+
+/**
  * Activate shield if player has charges available
  * Consumes 1 charge and sets shield active for SHIELD_DURATION
  */
@@ -575,6 +591,14 @@ export const advanceEnchantedLibraryTime = (
       playerVelocityX: velocityX,
       playerVelocityY: velocityY,
     })
+  }
+
+  // Check victory condition
+  if (checkVictoryCondition(newState)) {
+    newState = {
+      ...newState,
+      status: 'victory',
+    }
   }
 
   return newState

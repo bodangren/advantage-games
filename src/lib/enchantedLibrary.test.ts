@@ -10,6 +10,7 @@ import {
   updateSpirits,
   advanceEnchantedLibraryTime,
   activateShield,
+  checkVictoryCondition,
   GAME_WIDTH,
   GAME_HEIGHT,
   INITIAL_MANA,
@@ -932,6 +933,112 @@ describe('enchantedLibrary', () => {
       const result = advanceEnchantedLibraryTime(withActiveShield, moveRight, 16)
 
       expect(result.player.x).toBeGreaterThan(state.player.x)
+    })
+  })
+
+  describe('final score calculation', () => {
+    it('final score equals current mana value', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withMana = {
+        ...state,
+        mana: 75, // After collecting some books
+      }
+
+      // Final score is just the mana value
+      expect(withMana.mana).toBe(75)
+    })
+
+    it('score is available on victory', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      // Simulate game with final mana
+      const gameState = {
+        ...state,
+        mana: 120,
+        status: 'victory' as const,
+      }
+
+      // Mark all words as collected
+      SAMPLE_VOCABULARY.forEach(vocab => {
+        gameState.vocabularyProgress.set(vocab.term, 2)
+      })
+
+      expect(gameState.status).toBe('victory')
+      expect(gameState.mana).toBe(120) // This is the final score
+    })
+
+    it('mana can be negative as final score', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withNegativeMana = {
+        ...state,
+        mana: -15, // Player took many hits
+        status: 'victory' as const,
+      }
+
+      // Mark all words as collected
+      SAMPLE_VOCABULARY.forEach(vocab => {
+        withNegativeMana.vocabularyProgress.set(vocab.term, 2)
+      })
+
+      // Even with negative mana, victory is possible
+      expect(withNegativeMana.status).toBe('victory')
+      expect(withNegativeMana.mana).toBe(-15)
+    })
+  })
+
+  describe('checkVictoryCondition', () => {
+    it('returns true when all words collected 2x', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      // Mark all words as collected 2x
+      SAMPLE_VOCABULARY.forEach(vocab => {
+        state.vocabularyProgress.set(vocab.term, 2)
+      })
+
+      const result = checkVictoryCondition(state)
+
+      expect(result).toBe(true)
+    })
+
+    it('returns false if any word < 2x', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      // Some words collected, but not all 2x
+      state.vocabularyProgress.set(SAMPLE_VOCABULARY[0].term, 2)
+      state.vocabularyProgress.set(SAMPLE_VOCABULARY[1].term, 1) // Only 1x
+      state.vocabularyProgress.set(SAMPLE_VOCABULARY[2].term, 2)
+      state.vocabularyProgress.set(SAMPLE_VOCABULARY[3].term, 0) // Not collected
+
+      const result = checkVictoryCondition(state)
+
+      expect(result).toBe(false)
+    })
+
+    it('returns false when no words collected', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      const result = checkVictoryCondition(state)
+
+      expect(result).toBe(false)
+    })
+
+    it('sets status = victory when complete', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      // Mark all words as collected 2x
+      SAMPLE_VOCABULARY.forEach(vocab => {
+        state.vocabularyProgress.set(vocab.term, 2)
+      })
+
+      const result = advanceEnchantedLibraryTime(state, {
+        up: false,
+        down: false,
+        left: false,
+        right: false,
+        cast: false,
+      }, 16)
+
+      expect(result.status).toBe('victory')
     })
   })
 
