@@ -375,9 +375,9 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Page loads and game runs correctly. ✅
 
 ### Task 8.2: Update app navigation
-- [ ] Sub-task: Add Enchanted Library to games list/menu
-- [ ] Sub-task: Create game card/thumbnail
-- [ ] Sub-task: Test navigation flow
+- [x] Sub-task: Add Enchanted Library to games list/menu 42e451b
+- [x] Sub-task: Create game card/thumbnail 42e451b
+- [x] Sub-task: Test navigation flow 42e451b
 
 **Verification**: Can navigate to game from main menu. ✅
 
