@@ -365,12 +365,12 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 8: Page Integration and Routing
 
 ### Task 8.1: Create Next.js page route
-- [ ] Sub-task: Create `src/app/games/enchanted-library/page.tsx`
-- [ ] Sub-task: Import EnchantedLibraryGame component
-- [ ] Sub-task: Load sample vocabulary if none provided
-- [ ] Sub-task: Handle game completion callback
-- [ ] Sub-task: Add navigation back to home
-- [ ] Sub-task: Create page tests `page.test.tsx`
+- [x] Sub-task: Create `src/app/games/enchanted-library/page.tsx` c264f38
+- [x] Sub-task: Import EnchantedLibraryGame component c264f38
+- [x] Sub-task: Load sample vocabulary if none provided c264f38
+- [x] Sub-task: Handle game completion callback c264f38
+- [x] Sub-task: Add navigation back to home c264f38
+- [x] Sub-task: Create page tests `page.test.tsx` c264f38
 
 **Verification**: Page loads and game runs correctly. ✅
 
