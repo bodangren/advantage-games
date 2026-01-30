@@ -16,11 +16,12 @@ import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
 import { withBasePath } from '@/lib/basePath'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, BookOpen, Trophy, Target, Sparkles, Home, RotateCcw } from 'lucide-react'
+import { Shield, BookOpen, Trophy, Target, Sparkles, Home, RotateCcw, Book } from 'lucide-react'
 import { calculateXP } from '@/lib/xp'
 import { SparkleBurst } from './SparkleBurst'
 import { BookPickupBurst } from './BookPickupBurst'
 import { mapInputVectorToDirectional } from './enchantedLibraryInput'
+import { VocabularyProgress } from './VocabularyProgress'
 
 export type EnchantedLibraryGameResult = {
   xp: number
@@ -57,6 +58,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
   const { input, setVirtualInput, triggerCast, consumeCast } = useDirectionalInput()
   const [gameState, setGameState] = useState<EnchantedLibraryState | null>(null)
   const [hasStarted, setHasStarted] = useState(false)
+  const [showGrimoire, setShowGrimoire] = useState(false)
   const [totalAttempts, setTotalAttempts] = useState(0)
   const [correctAnswers, setCorrectAnswers] = useState(0)
   const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number }>>([])
@@ -115,6 +117,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
         setGameState(createEnchantedLibraryState(vocabulary))
         setTotalAttempts(0)
         setCorrectAnswers(0)
+        setShowGrimoire(false)
     }
   }, [vocabulary])
 
@@ -489,6 +492,25 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                     <span className="text-white/90 mr-2 text-sm">Find:</span>
                     <span className="text-2xl font-bold text-white drop-shadow-md">{gameState.targetWord}</span>
                 </div>
+
+                <div className="absolute top-4 right-4 z-20">
+                    <button
+                        onClick={() => setShowGrimoire(true)}
+                        className="bg-white/90 p-3 rounded-full text-amber-900 shadow-lg border-2 border-amber-300 hover:scale-110 transition-transform active:scale-95"
+                        title="My Grimoire"
+                    >
+                        <Book className="w-6 h-6" />
+                    </button>
+                </div>
+
+                {gameState && (
+                    <VocabularyProgress
+                        vocabulary={vocabulary}
+                        progress={gameState.vocabularyProgress}
+                        isOpen={showGrimoire}
+                        onClose={() => setShowGrimoire(false)}
+                    />
+                )}
 
                 <div className="absolute inset-0 z-20 pointer-events-none">
                     {sparkles.map(sparkle => (

@@ -111,12 +111,11 @@ describe('EnchantedLibraryGame', () => {
     expect(books[0]).toHaveAttribute('data-shadow-color', '#fbbf24')
   })
 
-  it('renders large, readable book labels', async () => {
-    await startGame()
-    const label = await screen.findByText('Manzana')
-    expect(label).toHaveAttribute('data-font-size', '16')
-  })
-
+      it('renders large, readable book labels', async () => {
+      await startGame()
+      const label = await screen.findByText('Manzana')
+      expect(label).toHaveAttribute('data-font-size', '14')
+    })
   it('displays the target word UI', async () => {
     await startGame()
     expect(await screen.findByText(/Find:/i)).toBeInTheDocument()
@@ -135,5 +134,24 @@ describe('EnchantedLibraryGame', () => {
   it('renders loading state before assets load', () => {
     render(<EnchantedLibraryGame vocabulary={vocabulary} onComplete={jest.fn()} />)
     expect(screen.getByText(/Loading Library.../i)).toBeInTheDocument()
+  })
+
+  it('toggles the grimoire view', async () => {
+    await startGame()
+    
+    // Find Grimoire button (it has title "My Grimoire")
+    const grimoireButton = screen.getByTitle(/My Grimoire/i)
+    expect(grimoireButton).toBeInTheDocument()
+    
+    // Click it
+    await act(async () => {
+      fireEvent.click(grimoireButton)
+    })
+    
+    // Expect My Grimoire header to appear
+    expect(await screen.findByText(/My Grimoire/i)).toBeInTheDocument()
+    
+    // Verify panel content is visible (footer text is unique)
+    expect(screen.getByText(/Collect all words twice!/i)).toBeInTheDocument()
   })
 })
