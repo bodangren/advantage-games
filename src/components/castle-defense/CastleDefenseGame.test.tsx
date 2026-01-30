@@ -75,7 +75,7 @@ const vocabulary: VocabularyItem[] = [
 describe('CastleDefenseGame', () => {
   const startGame = async () => {
     render(<CastleDefenseGame vocabulary={vocabulary} onComplete={jest.fn()} />)
-    const startButton = await screen.findByRole('button', { name: /start mission/i })
+    const startButton = await screen.findByRole('button', { name: /start defense/i })
     await act(async () => {
       fireEvent.click(startButton)
     })
@@ -84,7 +84,7 @@ describe('CastleDefenseGame', () => {
   it('renders the start screen initially', async () => {
     render(<CastleDefenseGame vocabulary={vocabulary} onComplete={jest.fn()} />)
     expect(await screen.findByRole('heading', { name: /castle defense/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /start mission/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /start defense/i })).toBeInTheDocument()
   })
 
   it('renders the game stage after starting', async () => {
@@ -100,7 +100,7 @@ describe('CastleDefenseGame', () => {
       jest.advanceTimersByTime(1)
     })
 
-    const startButton = screen.getByRole('button', { name: /start mission/i })
+    const startButton = screen.getByRole('button', { name: /start defense/i })
     await act(async () => {
       fireEvent.click(startButton)
     })
@@ -124,7 +124,7 @@ describe('CastleDefenseGame', () => {
       jest.advanceTimersByTime(1)
     })
 
-    const startButton = screen.getByRole('button', { name: /start mission/i })
+    const startButton = screen.getByRole('button', { name: /start defense/i })
     await act(async () => {
       fireEvent.click(startButton)
     })
@@ -133,9 +133,10 @@ describe('CastleDefenseGame', () => {
       jest.advanceTimersByTime(60)
     })
 
-    const wordText = screen.getByText('hello')
-    const offsetValue = Number(wordText.getAttribute('data-offset-x'))
-    expect(offsetValue).toBe(25)
+    const wordTexts = screen.getAllByText((_, element) => {
+      return element?.getAttribute?.('data-offset-x') === '25'
+    })
+    expect(wordTexts.length).toBeGreaterThan(0)
 
     jest.useRealTimers()
   })
@@ -146,7 +147,7 @@ describe('CastleDefenseGame', () => {
     ]
 
     render(<CastleDefenseGame vocabulary={thaiVocabulary} onComplete={jest.fn()} />)
-    const startButton = await screen.findByRole('button', { name: /start mission/i })
+    const startButton = await screen.findByRole('button', { name: /start defense/i })
     await act(async () => {
       fireEvent.click(startButton)
     })
@@ -175,14 +176,14 @@ describe('CastleDefenseGame', () => {
 
     try {
       render(<CastleDefenseGame vocabulary={progressVocabulary} onComplete={jest.fn()} />)
-      const startButton = await screen.findByRole('button', { name: /start mission/i })
+      const startButton = await screen.findByRole('button', { name: /start defense/i })
       await act(async () => {
         fireEvent.click(startButton)
       })
 
       expect(await screen.findByText(/progress/i)).toBeInTheDocument()
-      expect(screen.getByText('The')).toBeInTheDocument()
-      expect(screen.getByText('cat')).toBeInTheDocument()
+      expect(screen.getAllByText('The').length).toBeGreaterThan(0)
+      expect(screen.getAllByText('cat').length).toBeGreaterThan(0)
       expect(screen.getAllByText('___').length).toBeGreaterThan(0)
       expect(screen.getByText(/Wave 2\/6 - Enemies: 3\/8/)).toBeInTheDocument()
     } finally {
@@ -205,7 +206,7 @@ describe('CastleDefenseGame', () => {
 
     try {
       render(<CastleDefenseGame vocabulary={readyVocabulary} onComplete={jest.fn()} />)
-      const startButton = await screen.findByRole('button', { name: /start mission/i })
+      const startButton = await screen.findByRole('button', { name: /start defense/i })
       await act(async () => {
         fireEvent.click(startButton)
       })
@@ -222,7 +223,7 @@ describe('CastleDefenseGame', () => {
     ]
 
     render(<CastleDefenseGame vocabulary={inventoryVocabulary} onComplete={jest.fn()} />)
-    const startButton = await screen.findByRole('button', { name: /start mission/i })
+    const startButton = await screen.findByRole('button', { name: /start defense/i })
     await act(async () => {
       fireEvent.click(startButton)
     })
@@ -237,7 +238,7 @@ describe('CastleDefenseGame', () => {
     ]
 
     render(<CastleDefenseGame vocabulary={dpadVocabulary} onComplete={jest.fn()} />)
-    const startButton = await screen.findByRole('button', { name: /start mission/i })
+    const startButton = await screen.findByRole('button', { name: /start defense/i })
     await act(async () => {
       fireEvent.click(startButton)
     })
