@@ -49,6 +49,14 @@ export type EnchantedLibraryConfig = {
   rng?: () => number
 }
 
+export type DirectionalInput = {
+  up: boolean
+  down: boolean
+  left: boolean
+  right: boolean
+  cast: boolean
+}
+
 export const GAME_WIDTH = 800
 export const GAME_HEIGHT = 600
 export const PLAYER_RADIUS = 20
@@ -61,6 +69,7 @@ export const SPIRIT_SPAWN_RATE_MS = 3000
 export const INITIAL_SPIRIT_SPEED = 2
 export const SPIRIT_SPEED_INCREASE_RATE = 0.1 // per 10 seconds
 export const PREDICT_AHEAD_DISTANCE = 100 // pixels
+export const PLAYER_SPEED = 3
 
 export const createEnchantedLibraryState = (
   vocabulary: VocabularyItem[],
@@ -283,4 +292,70 @@ export const updateSpirits = (
     spirits: onScreenSpirits,
     spiritSpeed: newSpiritSpeed,
   }
+}
+
+/**
+ * Main game loop - advances game state by one time step
+ */
+export const advanceEnchantedLibraryTime = (
+  state: EnchantedLibraryState,
+  input: DirectionalInput,
+  dt: number,
+  config: EnchantedLibraryConfig = {}
+): EnchantedLibraryState => {
+  if (state.status !== 'playing') {
+    return state
+  }
+
+  // Calculate player velocity from input
+  let velocityX = 0
+  let velocityY = 0
+
+  if (input.left) velocityX -= 1
+  if (input.right) velocityX += 1
+  if (input.up) velocityY -= 1
+  if (input.down) velocityY += 1
+
+  // Normalize diagonal movement
+  if (velocityX !== 0 && velocityY !== 0) {
+    const magnitude = Math.sqrt(velocityX * velocityX + velocityY * velocityY)
+    velocityX /= magnitude
+    velocityY /= magnitude
+  }
+
+  velocityX *= PLAYER_SPEED
+  velocityY *= PLAYER_SPEED
+
+  // Update player position
+  let newPlayerX = state.player.x + velocityX
+  let newPlayerY = state.player.y + velocityY
+
+  // Clamp to boundaries
+  newPlayerX = Math.max(state.player.radius, Math.min(GAME_WIDTH - state.player.radius, newPlayerX))
+  newPlayerY = Math.max(state.player.radius, Math.min(GAME_HEIGHT - state.player.radius, newPlayerY))
+
+  let newState: EnchantedLibraryState = {
+    ...state,
+    player: {
+      ...state.player,
+      x: newPlayerX,
+      y: newPlayerY,
+    },
+    gameTime: state.gameTime + dt,
+    spiritSpawnTimer: Math.max(0, state.spiritSpawnTimer - dt),
+  }
+
+  // Update spirits
+  newState = updateSpirits(newState, dt)
+
+  // Spawn new spirit if timer ready
+  if (newState.spiritSpawnTimer === 0 && newState.spirits.length === 0) {
+    newState = spawnSpirit(newState, {
+      ...config,
+      playerVelocityX: velocityX,
+      playerVelocityY: velocityY,
+    })
+  }
+
+  return newState
 }

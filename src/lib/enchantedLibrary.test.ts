@@ -4,12 +4,21 @@ import {
   createEnchantedLibraryState,
   spawnSpirit,
   updateSpirits,
+  advanceEnchantedLibraryTime,
   GAME_WIDTH,
   GAME_HEIGHT,
   INITIAL_MANA,
   MAX_SHIELD_CHARGES,
   INITIAL_SPIRIT_SPEED,
 } from './enchantedLibrary'
+
+export type DirectionalInput = {
+  up: boolean
+  down: boolean
+  left: boolean
+  right: boolean
+  cast: boolean
+}
 
 const SAMPLE_VOCABULARY: VocabularyItem[] = [
   { term: 'cat', translation: 'แมว' },
@@ -234,6 +243,106 @@ describe('enchantedLibrary', () => {
 
       // Spirit speed should have increased from initial value
       expect(result.spiritSpeed).toBeGreaterThan(INITIAL_SPIRIT_SPEED)
+    })
+  })
+
+  describe('advanceEnchantedLibraryTime', () => {
+    const noInput: DirectionalInput = {
+      up: false,
+      down: false,
+      left: false,
+      right: false,
+      cast: false,
+    }
+
+    it('updates player position based on input', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const moveRight: DirectionalInput = {
+        ...noInput,
+        right: true,
+      }
+
+      const result = advanceEnchantedLibraryTime(state, moveRight, 16)
+
+      expect(result.player.x).toBeGreaterThan(state.player.x)
+    })
+
+    it('clamps player to boundaries', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const playerNearEdge = {
+        ...state,
+        player: {
+          ...state.player,
+          x: GAME_WIDTH - 5,
+          y: 300,
+        },
+      }
+
+      const moveRight: DirectionalInput = {
+        ...noInput,
+        right: true,
+      }
+
+      const result = advanceEnchantedLibraryTime(playerNearEdge, moveRight, 16)
+
+      // Player should be clamped to GAME_WIDTH
+      expect(result.player.x).toBeLessThanOrEqual(GAME_WIDTH)
+    })
+
+    it('updates spirits', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withSpirit = {
+        ...state,
+        spirits: [{
+          id: 'spirit-1',
+          x: 100,
+          y: 100,
+          velocityX: 2,
+          velocityY: 1,
+          speed: 2,
+          radius: 15,
+          bounced: false,
+        }],
+      }
+
+      const result = advanceEnchantedLibraryTime(withSpirit, noInput, 16)
+
+      // Spirit should have moved
+      expect(result.spirits[0].x).not.toBe(100)
+    })
+
+    it('spawns new spirit when timer expires and no spirit active', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const readyToSpawn = {
+        ...state,
+        spiritSpawnTimer: 0,
+        spirits: [],
+      }
+
+      const result = advanceEnchantedLibraryTime(readyToSpawn, noInput, 16)
+
+      // Should have spawned a spirit
+      expect(result.spirits.length).toBeGreaterThan(0)
+    })
+
+    it('increments game time', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+
+      const result = advanceEnchantedLibraryTime(state, noInput, 16)
+
+      expect(result.gameTime).toBe(state.gameTime + 16)
+    })
+
+    it('decrements spirit spawn timer', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      const withTimer = {
+        ...state,
+        spiritSpawnTimer: 1000,
+      }
+
+      const result = advanceEnchantedLibraryTime(withTimer, noInput, 16)
+
+      expect(result.spiritSpawnTimer).toBe(1000 - 16)
     })
   })
 })
