@@ -364,7 +364,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 8: Page Integration and Routing
+## Phase 8: Page Integration and Routing [checkpoint: 44dd653]
 
 ### Task 8.1: Create Next.js page route
 - [x] Sub-task: Create `src/app/games/enchanted-library/page.tsx` c264f38
@@ -425,8 +425,9 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Verify win condition triggering
 - [x] Sub-task: Fix performance leak in resize observer and tune spirit speed (base 5, 1.15x multiplier)
 - [x] Sub-task: Verify changes with tests a6648ae
+- [x] Sub-task: Fix critical performance slowdown using useRef game loop (prevent stale state death spiral) 00ffc84
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
 
 ---
 
