@@ -47,6 +47,7 @@ export type EnchantedLibraryState = {
 
 export type EnchantedLibraryConfig = {
   rng?: () => number
+  vocabulary?: VocabularyItem[]
 }
 
 export type DirectionalInput = {
@@ -577,6 +578,9 @@ export const advanceEnchantedLibraryTime = (
     gameTime: newState.gameTime + dt,
     spiritSpawnTimer: Math.max(0, newState.spiritSpawnTimer - dt),
   }
+
+  // Check book collisions
+  newState = checkBookCollisions(newState, config.vocabulary || [], config)
 
   // Update spirits
   newState = updateSpirits(newState, dt)

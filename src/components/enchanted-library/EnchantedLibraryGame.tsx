@@ -137,7 +137,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
         const prevVocabProgress = new Map(gameState.vocabularyProgress)
 
         const directionalInput = mapInputVectorToDirectional(input)
-        const nextState = advanceEnchantedLibraryTime(gameState, 50, directionalInput)
+        const nextState = advanceEnchantedLibraryTime(gameState, directionalInput, 50, { vocabulary })
         setGameState(nextState)
 
         // Track attempts and accuracy
@@ -580,7 +580,8 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                     height={64}
                                     offsetX={32}
                                     offsetY={32}
-                                    crop={getSpriteCrop(grids.player.fw, grids.player.fh, playerFrame, input.dx === 0 && input.dy === 0 ? 0 : 1)}
+                                    scaleX={input.dx < 0 ? -1 : 1}
+                                    crop={getSpriteCrop(grids.player.fw, grids.player.fh, playerFrame, input.dx === 0 && input.dy === 0 ? 1 : 0)}
                                 />
                                 {/* Shield Visual */}
                                 {gameState.shieldActive && (
@@ -611,6 +612,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                     height={48}
                                     offsetX={24}
                                     offsetY={24}
+                                    scaleX={spirit.velocityX < 0 ? -1 : 1}
                                     crop={getSpriteCrop(grids.spirit.fw, grids.spirit.fh, (spiritFrame + i) % 3, 0)}
                                     opacity={0.9}
                                 />
