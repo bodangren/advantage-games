@@ -334,10 +334,10 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 7: Visual Theme and Assets
 
 ### Task 7.1: Create/integrate library background
-- [ ] Sub-task: Design or source library floor tile texture
-- [ ] Sub-task: Add bookshelves or library decorations in background
-- [ ] Sub-task: Use warm, inviting colors (not dark/scary)
-- [ ] Sub-task: Implement tiled background rendering
+- [x] Sub-task: Design or source library floor tile texture
+- [x] Sub-task: Add bookshelves or library decorations in background
+- [x] Sub-task: Use warm, inviting colors (not dark/scary)
+- [x] Sub-task: Implement tiled background rendering 6b1092c
 
 **Verification**: Background looks like a friendly library. ✅
 
