@@ -103,9 +103,19 @@ describe('enchantedLibrary', () => {
   })
 
   describe('spawnBooks', () => {
+    const mockPlayer = {
+      id: 'player',
+      x: 400,
+      y: 300,
+      radius: 20,
+      speed: 3,
+      shieldCharges: 3,
+      maxShieldCharges: 3,
+    }
+
     it('creates 4 books (1 correct, 3 decoys)', () => {
       const target = SAMPLE_VOCABULARY[0]
-      const books = spawnBooks(target, SAMPLE_VOCABULARY)
+      const books = spawnBooks(target, SAMPLE_VOCABULARY, mockPlayer)
 
       expect(books).toHaveLength(4)
 
@@ -116,9 +126,9 @@ describe('enchantedLibrary', () => {
       expect(decoyBooks).toHaveLength(3)
     })
 
-    it('books positioned in quadrants around arena', () => {
+    it('books positioned randomly within arena', () => {
       const target = SAMPLE_VOCABULARY[0]
-      const books = spawnBooks(target, SAMPLE_VOCABULARY, () => 0.5)
+      const books = spawnBooks(target, SAMPLE_VOCABULARY, mockPlayer, Math.random)
 
       // All books should be positioned within game bounds
       books.forEach(book => {
@@ -136,7 +146,7 @@ describe('enchantedLibrary', () => {
 
     it('each book has translation label', () => {
       const target = SAMPLE_VOCABULARY[0]
-      const books = spawnBooks(target, SAMPLE_VOCABULARY)
+      const books = spawnBooks(target, SAMPLE_VOCABULARY, mockPlayer)
 
       books.forEach(book => {
         expect(book.translation).toBeDefined()
@@ -146,7 +156,7 @@ describe('enchantedLibrary', () => {
 
     it('correct book matches target word', () => {
       const target = SAMPLE_VOCABULARY[1] // 'dog'
-      const books = spawnBooks(target, SAMPLE_VOCABULARY)
+      const books = spawnBooks(target, SAMPLE_VOCABULARY, mockPlayer)
 
       const correctBook = books.find(b => b.isCorrect)
       expect(correctBook).toBeDefined()

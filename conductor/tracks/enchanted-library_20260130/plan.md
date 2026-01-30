@@ -409,6 +409,12 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Correct player sprite row mapping (Row 0=Walking, Row 1=Idle, Row 2=Hit)
 - [x] Sub-task: Verify changes with tests 5511f9e
 
+### Task 8.7: Fix Gameplay Loop Bugs
+- [x] Sub-task: Update `spawnBooks` to avoid spawning near player (random positions + min distance)
+- [x] Sub-task: Update `checkBookCollisions` and `createEnchantedLibraryState` to pass player position
+- [x] Sub-task: Tune spirit parameters (reduce prediction, adjust speed) to make them more engaging
+- [x] Sub-task: Verify fixes
+
 - [ ] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
 
 ---

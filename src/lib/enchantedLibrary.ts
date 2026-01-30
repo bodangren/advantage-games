@@ -67,13 +67,14 @@ export const INITIAL_MANA = 50
 export const MAX_SHIELD_CHARGES = 3
 export const SHIELD_DURATION = 2000 // ms
 export const SPIRIT_SPAWN_RATE_MS = 3000
-export const INITIAL_SPIRIT_SPEED = 2
+export const INITIAL_SPIRIT_SPEED = 2.5
 export const SPIRIT_SPEED_INCREASE_RATE = 0.1 // per 10 seconds
-export const PREDICT_AHEAD_DISTANCE = 100 // pixels
+export const PREDICT_AHEAD_DISTANCE = 50 // pixels - tighter targeting
 export const PLAYER_SPEED = 3
 export const MANA_GAIN_CORRECT = 10
 export const MANA_LOSS_INCORRECT = 5
 export const MANA_LOSS_SPIRIT_HIT = 10
+export const MIN_BOOK_SPAWN_DISTANCE = 150 // Minimum distance from player
 
 export const createEnchantedLibraryState = (
   vocabulary: VocabularyItem[],
@@ -105,7 +106,7 @@ export const createEnchantedLibraryState = (
   }
 
   // Spawn initial books (1 correct, 3 decoys)
-  const books = spawnBooks(target, vocabulary, rng)
+  const books = spawnBooks(target, vocabulary, player, rng)
 
   return {
     status: 'playing',
@@ -126,11 +127,12 @@ export const createEnchantedLibraryState = (
 
 /**
  * Spawn 4 books: 1 correct answer, 3 decoys
- * Books are positioned in quadrants around the arena
+ * Books are positioned randomly but away from player
  */
 export const spawnBooks = (
   target: VocabularyItem,
   vocabulary: VocabularyItem[],
+  player: Player,
   rng: () => number = Math.random
 ): Book[] => {
   const books: Book[] = []
@@ -142,7 +144,7 @@ export const spawnBooks = (
     translation: target.translation,
     isCorrect: true,
     radius: BOOK_RADIUS,
-    x: 0, // Will be positioned in quadrants
+    x: 0, // Will be positioned
     y: 0,
   }
   books.push(correctBook)
@@ -166,20 +168,53 @@ export const spawnBooks = (
     books.push(decoyBook)
   })
 
-  // Position books in quadrants
-  const quadrants = [
-    { x: GAME_WIDTH * 0.25, y: GAME_HEIGHT * 0.25 }, // Top-left
-    { x: GAME_WIDTH * 0.75, y: GAME_HEIGHT * 0.25 }, // Top-right
-    { x: GAME_WIDTH * 0.25, y: GAME_HEIGHT * 0.75 }, // Bottom-left
-    { x: GAME_WIDTH * 0.75, y: GAME_HEIGHT * 0.75 }, // Bottom-right
-  ]
+  // Position books randomly but away from player
+  books.forEach(book => {
+    let validPosition = false
+    let attempts = 0
+    while (!validPosition && attempts < 20) {
+      // Random position with padding from edges
+      const padding = 50
+      const x = padding + rng() * (GAME_WIDTH - 2 * padding)
+      const y = padding + rng() * (GAME_HEIGHT - 2 * padding)
 
-  // Shuffle quadrants
-  const shuffledQuadrants = quadrants.sort(() => rng() - 0.5)
+      // Check distance from player
+      const dx = x - player.x
+      const dy = y - player.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
 
-  books.forEach((book, index) => {
-    book.x = shuffledQuadrants[index].x
-    book.y = shuffledQuadrants[index].y
+      // Check distance from other books
+      let tooCloseToBook = false
+      for (const otherBook of books) {
+        if (otherBook === book) continue
+        // Books that haven't been placed yet have (0,0), ignore them
+        if (otherBook.x === 0 && otherBook.y === 0) continue
+
+        const bdx = x - otherBook.x
+        const bdy = y - otherBook.y
+        const bdist = Math.sqrt(bdx * bdx + bdy * bdy)
+        if (bdist < BOOK_RADIUS * 3) { // Ensure some spread
+           tooCloseToBook = true
+           break
+        }
+      }
+
+      if (dist > MIN_BOOK_SPAWN_DISTANCE && !tooCloseToBook) {
+        book.x = x
+        book.y = y
+        validPosition = true
+      }
+      attempts++
+    }
+    
+    // Fallback if placement fails (unlikely)
+    if (!validPosition) {
+       // Just place in a random corner not near player
+       if (player.x < GAME_WIDTH / 2) book.x = GAME_WIDTH - 100
+       else book.x = 100
+       if (player.y < GAME_HEIGHT / 2) book.y = GAME_HEIGHT - 100
+       else book.y = 100
+    }
   })
 
   return books
@@ -367,7 +402,7 @@ export const checkBookCollisions = (
   if (bookCollected && vocabulary.length > 0) {
     const targetVocab = vocabulary.find(v => v.term === newState.targetWord)
     if (targetVocab) {
-      const newBooks = spawnBooks(targetVocab, vocabulary, config.rng)
+      const newBooks = spawnBooks(targetVocab, vocabulary, newState.player, config.rng)
       newState = {
         ...newState,
         books: newBooks,
