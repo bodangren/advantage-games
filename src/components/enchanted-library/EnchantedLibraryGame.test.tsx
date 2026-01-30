@@ -4,24 +4,39 @@ import { VocabularyItem } from '@/store/useGameStore'
 import type React from 'react'
 
 type KonvaBaseProps = React.PropsWithChildren<Record<string, unknown>>
-type CircleProps = KonvaBaseProps & { radius?: number; fill?: string; stroke?: string; name?: string }
+type CircleProps = KonvaBaseProps & { radius?: number; fill?: string; stroke?: string; name?: string; shadowBlur?: number; shadowColor?: string; shadowOpacity?: number }
 type RectProps = KonvaBaseProps & { width?: number; height?: number; fill?: string }
-type ImageProps = KonvaBaseProps & { name?: string }
-type TextProps = KonvaBaseProps & { text?: string }
+type ImageProps = KonvaBaseProps & { name?: string; shadowBlur?: number; shadowColor?: string; shadowOpacity?: number }
+type TextProps = KonvaBaseProps & { text?: string; fontSize?: number }
 
 // Mock Konva
 jest.mock('react-konva', () => {
   return {
     Stage: ({ children }: KonvaBaseProps) => <div data-testid="stage">{children}</div>,
     Layer: ({ children }: KonvaBaseProps) => <div data-testid="layer">{children}</div>,
-    Circle: ({ radius, fill, stroke, name }: CircleProps) => (
-      <div data-testid={name || 'circle'} data-radius={radius} data-fill={fill} data-stroke={stroke} />
+    Circle: ({ radius, fill, stroke, name, shadowBlur, shadowColor, shadowOpacity }: CircleProps) => (
+      <div
+        data-testid={name || 'circle'}
+        data-radius={radius}
+        data-fill={fill}
+        data-stroke={stroke}
+        data-shadow-blur={shadowBlur}
+        data-shadow-color={shadowColor}
+        data-shadow-opacity={shadowOpacity}
+      />
     ),
     Rect: ({ width, height, fill }: RectProps) => (
         <div data-testid="rect" style={{ width, height, background: fill }} />
     ),
-    Image: ({ name }: ImageProps) => <div data-testid={name || 'image'} />,
-    Text: ({ text }: TextProps) => <span>{text}</span>,
+    Image: ({ name, shadowBlur, shadowColor, shadowOpacity }: ImageProps) => (
+      <div
+        data-testid={name || 'image'}
+        data-shadow-blur={shadowBlur}
+        data-shadow-color={shadowColor}
+        data-shadow-opacity={shadowOpacity}
+      />
+    ),
+    Text: ({ text, fontSize }: TextProps) => <span data-font-size={fontSize}>{text}</span>,
     Group: ({ children }: KonvaBaseProps) => <div>{children}</div>,
   }
 })
@@ -87,6 +102,19 @@ describe('EnchantedLibraryGame', () => {
     // Should have 4 books initially (1 correct, 3 decoys)
     const books = await screen.findAllByTestId('book')
     expect(books).toHaveLength(4)
+  })
+
+  it('adds glow effects to books', async () => {
+    await startGame()
+    const books = await screen.findAllByTestId('book')
+    expect(books[0]).toHaveAttribute('data-shadow-blur', '12')
+    expect(books[0]).toHaveAttribute('data-shadow-color', '#fbbf24')
+  })
+
+  it('renders large, readable book labels', async () => {
+    await startGame()
+    const label = await screen.findByText('Manzana')
+    expect(label).toHaveAttribute('data-font-size', '16')
   })
 
   it('displays the target word UI', async () => {

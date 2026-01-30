@@ -19,6 +19,7 @@ import { withBasePath } from '@/lib/basePath'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Shield, BookOpen, Trophy, Target, Sparkles, Home, RotateCcw } from 'lucide-react'
 import { calculateXP } from '@/lib/xp'
+import { SparkleBurst } from './SparkleBurst'
 
 export type EnchantedLibraryGameResult = {
   xp: number
@@ -57,6 +58,8 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
   const [hasStarted, setHasStarted] = useState(false)
   const [totalAttempts, setTotalAttempts] = useState(0)
   const [correctAnswers, setCorrectAnswers] = useState(0)
+  const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number }>>([])
+  const sparkleIdRef = useRef(0)
 
   const [assets, setAssets] = useState<{
       player: HTMLImageElement
@@ -158,23 +161,20 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
             playSound('success')
         }
 
+        let nextCamera = camera
         if (dimensions.width > 0 && dimensions.height > 0) {
-             const scaleY = dimensions.height / GAME_HEIGHT
-             const scale = Math.max(scaleY, 0.8)
+             nextCamera = computeCamera(nextState)
+             setCamera(nextCamera)
+        }
 
-             let camX = (dimensions.width / 2) - (nextState.player.x * scale)
-             let camY = (dimensions.height / 2) - (nextState.player.y * scale)
-
-             const minX = dimensions.width - (GAME_WIDTH * scale)
-             const minY = dimensions.height - (GAME_HEIGHT * scale)
-
-             if (minX > 0) camX = (dimensions.width - GAME_WIDTH * scale) / 2
-             else camX = Math.max(minX, Math.min(0, camX))
-
-             if (minY > 0) camY = (dimensions.height - GAME_HEIGHT * scale) / 2
-             else camY = Math.max(minY, Math.min(0, camY))
-
-             setCamera({ x: camX, y: camY, scale })
+        const collectedBook = findCollectedBook(gameState, nextState)
+        if (collectedBook && dimensions.width > 0 && dimensions.height > 0) {
+            const screenX = collectedBook.x * nextCamera.scale + nextCamera.x
+            const screenY = collectedBook.y * nextCamera.scale + nextCamera.y
+            const percentX = Math.max(0, Math.min(100, (screenX / dimensions.width) * 100))
+            const percentY = Math.max(0, Math.min(100, (screenY / dimensions.height) * 100))
+            const sparkleId = sparkleIdRef.current++
+            setSparkles(prev => [...prev, { id: sparkleId, x: percentX, y: percentY }])
         }
     }
   }, gameState?.status === 'playing' && hasStarted ? 50 : null)
@@ -217,6 +217,41 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
           book: buildBookSpriteGrid(assets.book.width, assets.book.height)
       }
   }, [assets])
+
+  const computeCamera = useCallback((state: EnchantedLibraryState) => {
+      const scaleY = dimensions.height / GAME_HEIGHT
+      const scale = Math.max(scaleY, 0.8)
+
+      let camX = (dimensions.width / 2) - (state.player.x * scale)
+      let camY = (dimensions.height / 2) - (state.player.y * scale)
+
+      const minX = dimensions.width - (GAME_WIDTH * scale)
+      const minY = dimensions.height - (GAME_HEIGHT * scale)
+
+      if (minX > 0) camX = (dimensions.width - GAME_WIDTH * scale) / 2
+      else camX = Math.max(minX, Math.min(0, camX))
+
+      if (minY > 0) camY = (dimensions.height - GAME_HEIGHT * scale) / 2
+      else camY = Math.max(minY, Math.min(0, camY))
+
+      return { x: camX, y: camY, scale }
+  }, [dimensions])
+
+  const findCollectedBook = useCallback((prevState: EnchantedLibraryState, nextState: EnchantedLibraryState) => {
+      if (prevState.mana === nextState.mana) return null
+      const booksChanged = prevState.books.some((book, index) => {
+          const nextBook = nextState.books[index]
+          return !nextBook || nextBook.word !== book.word || nextBook.x !== book.x || nextBook.y !== book.y
+      })
+      if (!booksChanged) return null
+
+      const player = nextState.player
+      return prevState.books.find(book => {
+          const dx = player.x - book.x
+          const dy = player.y - book.y
+          return Math.hypot(dx, dy) < player.radius + book.radius
+      }) || null
+  }, [])
 
   if (!assets) {
     return (
@@ -334,14 +369,22 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
             )}
         </AnimatePresence>
 
+        <AnimatePresence>
         {hasStarted && gameState && grids && (
-            <>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut' }}
+                className="absolute inset-0"
+            >
                 {/* Victory Overlay */}
                 <AnimatePresence>
                     {gameState.status === 'victory' && (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             className="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-purple-900/90 via-indigo-900/90 to-blue-900/90 backdrop-blur-sm p-6"
                         >
                             <motion.div
@@ -414,9 +457,9 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                 </AnimatePresence>
 
                 {/* HUD Overlay */}
-                <div className="absolute top-4 left-4 z-10 flex flex-col gap-1 text-amber-900 font-bold text-lg pointer-events-none drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)]">
+                <div className="absolute top-4 left-4 z-10 flex flex-col gap-1 text-amber-900 font-bold text-xl pointer-events-none drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)]">
                     <div className="bg-white/80 px-3 py-1 rounded-lg">Mana: {gameState.mana}</div>
-                    <div className="bg-white/80 px-3 py-1 rounded-lg text-blue-600 text-sm flex items-center gap-1">
+                    <div className="bg-white/80 px-3 py-1 rounded-lg text-blue-600 text-base flex items-center gap-1">
                         SHIELD: {Array(gameState.player.maxShieldCharges).fill(0).map((_, i) => (
                             <span key={i} className={i < gameState.player.shieldCharges ? "opacity-100" : "opacity-30"}>
                                 🛡️
@@ -428,6 +471,17 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-gradient-to-r from-yellow-400 to-amber-500 px-6 py-3 rounded-full border-2 border-yellow-300 backdrop-blur-sm pointer-events-none shadow-lg">
                     <span className="text-white/90 mr-2 text-sm">Find:</span>
                     <span className="text-2xl font-bold text-white drop-shadow-md">{gameState.targetWord}</span>
+                </div>
+
+                <div className="absolute inset-0 z-20 pointer-events-none">
+                    {sparkles.map(sparkle => (
+                        <SparkleBurst
+                            key={sparkle.id}
+                            x={sparkle.x}
+                            y={sparkle.y}
+                            onComplete={() => setSparkles(prev => prev.filter(item => item.id !== sparkle.id))}
+                        />
+                    ))}
                 </div>
 
                 {/* Virtual Controls */}
@@ -469,10 +523,13 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                         offsetX={25}
                                         offsetY={25}
                                         crop={getSpriteCrop(grids.book.fw, grids.book.fh, (bookFrame + i) % 3, 0)}
+                                        shadowColor="#fbbf24"
+                                        shadowBlur={12}
+                                        shadowOpacity={0.9}
                                     />
                                     <Text
                                         text={book.translation}
-                                        fontSize={14}
+                                        fontSize={16}
                                         fill="white"
                                         stroke="black"
                                         strokeWidth={2}
@@ -481,6 +538,8 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                         width={100}
                                         offsetX={50}
                                         fontStyle="bold"
+                                        shadowColor="black"
+                                        shadowBlur={6}
                                     />
                                 </Group>
                             ))}
@@ -508,6 +567,9 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                         strokeWidth={3}
                                         opacity={0.6}
                                         name="shield"
+                                        shadowColor="#67e8f9"
+                                        shadowBlur={18}
+                                        shadowOpacity={0.8}
                                     />
                                 )}
                             </Group>
@@ -531,8 +593,9 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                         </Group>
                     </Layer>
                 </Stage>
-            </>
+            </motion.div>
         )}
+        </AnimatePresence>
     </div>
   )
 }
