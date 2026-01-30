@@ -36,3 +36,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [x] **Track: Potion Rush Gameplay Refinements**
 *Link: [./conductor/archive/potion-rush-refinements-20260129/](./conductor/archive/potion-rush-refinements-20260129/)*
+
+---
+
+- [ ] **Track: Enchanted Library - Primary School Vocabulary Game**
+*Link: [./conductor/tracks/enchanted-library_20260130/](./conductor/tracks/enchanted-library_20260130/)*
+*Description: A primary-school-friendly vocabulary game where a student wizard collects magic books in a haunted library while avoiding spirits. Features shield mechanic, mana system, and bright cartoon aesthetics.*
+*Priority: Medium*
