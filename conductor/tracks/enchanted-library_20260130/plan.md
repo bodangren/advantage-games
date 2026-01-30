@@ -69,14 +69,14 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 1.3: Implement main game loop
-- [ ] Sub-task: Write tests for `advanceEnchantedLibraryTime(state, input, dt)`
+- [x] Sub-task: Write tests for `advanceEnchantedLibraryTime(state, input, dt)`
   - Test: Updates player position based on input
   - Test: Clamps player to boundaries
   - Test: Updates spirits
   - Test: Spawns new spirit when timer expires and no spirit active
   - Test: Increments spirit speed over time
-- [ ] Sub-task: Implement `advanceEnchantedLibraryTime()`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `advanceEnchantedLibraryTime()`
+- [x] Sub-task: Run tests a98023f
 
 **Verification**: All tests pass. ✅
 
