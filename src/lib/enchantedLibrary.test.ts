@@ -16,6 +16,7 @@ import {
   INITIAL_MANA,
   MAX_SHIELD_CHARGES,
   SHIELD_DURATION,
+  MAX_SPIRIT_SPEED,
 } from './enchantedLibrary'
 
 export type DirectionalInput = {
@@ -314,9 +315,25 @@ describe('enchantedLibrary', () => {
       // Spirit speed for NEXT spawn should have increased
       expect(result.spiritSpeed).toBeGreaterThan(state.spiritSpeed)
     })
+
+    it('spirit speed is capped at MAX_SPIRIT_SPEED', () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
+      
+      const fastState = {
+        ...state,
+        spiritSpeed: MAX_SPIRIT_SPEED, // Already at max
+        spirits: [],
+        spiritSpawnTimer: 0
+      }
+
+      const result = spawnSpirit(fastState)
+
+      // Should not exceed max
+      expect(result.spiritSpeed).toBe(MAX_SPIRIT_SPEED)
+    })
   })
 
-  describe('checkBookCollisions', () => {
+  describe('updateSpirits', () => {
     it('detects collision when player near book (radius check)', () => {
       const state = createEnchantedLibraryState(SAMPLE_VOCABULARY)
       const playerNearBook = {
