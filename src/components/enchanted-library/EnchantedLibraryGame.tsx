@@ -56,7 +56,13 @@ const getSpriteCrop = (fw: number, fh: number, col: number, row: number) => ({
 export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibraryGameProps) {
   const { playSound } = useSound()
   const { input, setVirtualInput, triggerCast, consumeCast } = useDirectionalInput()
+  
+  // Use a ref for authoritative game state to avoid stale closure issues in the game loop
+  const gameStateRef = useRef<EnchantedLibraryState | null>(null)
+  
+  // Sync state for rendering
   const [gameState, setGameState] = useState<EnchantedLibraryState | null>(null)
+  
   const [hasStarted, setHasStarted] = useState(false)
   const [showGrimoire, setShowGrimoire] = useState(false)
   const [totalAttempts, setTotalAttempts] = useState(0)
@@ -114,10 +120,14 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
 
   const resetGame = useCallback(() => {
     if (vocabulary.length > 0) {
-        setGameState(createEnchantedLibraryState(vocabulary))
+        const initialState = createEnchantedLibraryState(vocabulary)
+        gameStateRef.current = initialState
+        setGameState(initialState)
         setTotalAttempts(0)
         setCorrectAnswers(0)
         setShowGrimoire(false)
+        setSparkles([])
+        setPickupBursts([])
     }
   }, [vocabulary])
 
@@ -135,12 +145,16 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
 
   // Game Loop
   useInterval(() => {
-    if (gameState && gameState.status === 'playing' && assets && hasStarted) {
-        const prevMana = gameState.mana
-        const prevVocabProgress = new Map(gameState.vocabularyProgress)
+    if (gameStateRef.current && gameStateRef.current.status === 'playing' && assets && hasStarted) {
+        const prevState = gameStateRef.current
+        const prevMana = prevState.mana
+        const prevVocabProgress = prevState.vocabularyProgress // Map ref stays same, but values change
 
         const directionalInput = mapInputVectorToDirectional(input)
-        const nextState = advanceEnchantedLibraryTime(gameState, directionalInput, 50, { vocabulary })
+        
+        // Advance authoritative state
+        const nextState = advanceEnchantedLibraryTime(prevState, directionalInput, 50, { vocabulary })
+        gameStateRef.current = nextState
         setGameState(nextState)
 
         // Track attempts and accuracy
@@ -159,7 +173,9 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                 setTotalAttempts(a => a + 1)
             } else if (nextState.mana < prevMana) {
                 // Mana decreased but no progress, so it was a wrong answer or spirit hit
-                // Check if books collection just happened (books.length changed)
+                // Only count as attempt if it was a wrong answer (not spirit hit)
+                // We can infer this if books changed but progress didn't
+                // But simplified logic: any mana drop without progress is a "mistake" or "hit"
                 setTotalAttempts(a => a + 1)
             }
         }
@@ -175,15 +191,18 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
              setCamera(nextCamera)
         }
 
-        const collectedBook = findCollectedBook(gameState, nextState)
+        // Check for book collection events
+        const collectedBook = findCollectedBook(prevState, nextState)
         if (collectedBook && dimensions.width > 0 && dimensions.height > 0) {
             const screenX = collectedBook.x * nextCamera.scale + nextCamera.x
             const screenY = collectedBook.y * nextCamera.scale + nextCamera.y
             const percentX = Math.max(0, Math.min(100, (screenX / dimensions.width) * 100))
             const percentY = Math.max(0, Math.min(100, (screenY / dimensions.height) * 100))
+            
             const pickupId = pickupIdRef.current++
             const variant = collectedBook.isCorrect ? 'glow' : 'close'
             const frameIndex = collectedBook.isCorrect ? BOOK_FRAME_GLOW : BOOK_FRAME_CLOSED
+            
             setPickupBursts(prev => [...prev, { id: pickupId, x: percentX, y: percentY, frameIndex, variant }])
 
             if (collectedBook.isCorrect) {
@@ -257,19 +276,30 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
       return { x: camX, y: camY, scale }
   }, [dimensions])
 
+  // Helper to detect book collection between states
   const findCollectedBook = useCallback((prevState: EnchantedLibraryState, nextState: EnchantedLibraryState) => {
+      // If mana is same, no collection or hit happened
       if (prevState.mana === nextState.mana) return null
+      
+      // If mana changed, check if books changed
       const booksChanged = prevState.books.some((book, index) => {
           const nextBook = nextState.books[index]
+          // Book collected if:
+          // 1. nextBook is undefined (fewer books?) - unlikely with current spawn logic
+          // 2. word changed (respawned)
+          // 3. position changed (respawned)
           return !nextBook || nextBook.word !== book.word || nextBook.x !== book.x || nextBook.y !== book.y
       })
+      
       if (!booksChanged) return null
 
-      const player = nextState.player
+      // Find the book that the player was close to in the PREVIOUS state
+      const player = prevState.player // Use player position from PREV state when collision happened
       return prevState.books.find(book => {
           const dx = player.x - book.x
           const dy = player.y - book.y
-          return Math.hypot(dx, dy) < player.radius + book.radius
+          // Use slightly larger radius to ensure we catch it, as physics might have been tight
+          return Math.hypot(dx, dy) < player.radius + book.radius + 5
       }) || null
   }, [])
 
