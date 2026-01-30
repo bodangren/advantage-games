@@ -13,12 +13,12 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 1: Data & XP Foundations
 
 ### Task 1.1: Define performance metrics in state
-- [~] Sub-task: Decide which breakdown metrics to show (waves survived, total enemies defeated, word accuracy or sentence completion).
-- [ ] Sub-task: Write tests in `src/lib/__tests__/castleDefense.test.ts` for new metric fields:
+- [x] Sub-task: Decide which breakdown metrics to show (waves survived, total enemies defeated, word accuracy or sentence completion). a3ca3a0
+- [x] Sub-task: Write tests in `src/lib/__tests__/castleDefense.test.ts` for new metric fields: a3ca3a0
   - Initial values set on `createCastleDefenseState()`.
   - Metric updates during `advanceCastleDefenseTime()` and/or word collection.
-- [ ] Sub-task: Implement state fields and updates in `src/lib/castleDefense.ts`.
-- [ ] Sub-task: Run tests: `CI=true npm test src/lib/__tests__/castleDefense.test.ts`.
+- [x] Sub-task: Implement state fields and updates in `src/lib/castleDefense.ts`. a3ca3a0
+- [x] Sub-task: Run tests: `CI=true npm test src/lib/__tests__/castleDefense.test.ts`. a3ca3a0
 
 **Verification**: Tests pass and metrics update correctly. ✅
 
