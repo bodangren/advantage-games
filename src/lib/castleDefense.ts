@@ -628,6 +628,13 @@ export function parseSentenceWords(sentence: string): string[] {
     .filter(word => word.length > 0)
 }
 
+export function calculateCastleDefenseXP(score: number): number {
+  if (score <= 0) {
+    return 0
+  }
+  return Math.ceil(score * 0.01)
+}
+
 // Validate sequential word collection based on sentence order
 export function validateWordCollection(
   collectedIndices: number[],

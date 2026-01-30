@@ -22,6 +22,7 @@ import {
   canBuildTower,
   buildTowerAtSlot,
   isWaveComplete,
+  calculateCastleDefenseXP,
 } from '../castleDefense'
 
 describe('castleDefense', () => {
@@ -519,6 +520,19 @@ describe('castleDefense', () => {
       expect(state.totalEnemiesDefeated).toBe(0)
       expect(state.correctWordCollections).toBe(0)
       expect(state.incorrectWordCollections).toBe(0)
+    })
+  })
+
+  describe('calculateCastleDefenseXP', () => {
+    it('returns 0 when score is 0', () => {
+      expect(calculateCastleDefenseXP(0)).toBe(0)
+    })
+
+    it('rounds up to the nearest integer', () => {
+      expect(calculateCastleDefenseXP(1)).toBe(1)
+      expect(calculateCastleDefenseXP(50)).toBe(1)
+      expect(calculateCastleDefenseXP(100)).toBe(1)
+      expect(calculateCastleDefenseXP(101)).toBe(2)
     })
   })
 
