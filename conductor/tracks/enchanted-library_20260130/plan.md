@@ -133,49 +133,49 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 3: Shield Mechanic
 
 ### Task 3.1: Implement shield activation
-- [ ] Sub-task: Write tests for `activateShield(state)`
+- [x] Sub-task: Write tests for `activateShield(state)`
   - Test: Activates only if charges > 0
   - Test: Consumes 1 charge
   - Test: Sets shieldActive = true
   - Test: Sets shieldTimer = 2000ms
-  - Test: Freezes player movement (set velocity to 0)
-- [ ] Sub-task: Implement `activateShield()`
-- [ ] Sub-task: Write tests for shield timer countdown
+  - Test: Player can move when shield active (revised from freeze)
+- [x] Sub-task: Implement `activateShield()`
+- [x] Sub-task: Write tests for shield timer countdown
   - Test: Timer decrements by dt each tick
   - Test: Shield deactivates when timer reaches 0
-  - Test: Player can move again after deactivation
-- [ ] Sub-task: Implement shield timer logic in `advanceEnchantedLibraryTime()`
-- [ ] Sub-task: Run tests
+  - Test: Player can move when shield is active
+- [x] Sub-task: Implement shield timer logic in `advanceEnchantedLibraryTime()`
+- [x] Sub-task: Run tests ab2ff1c
 
 **Verification**: All tests pass. ✅
 
 ### Task 3.2: Implement spirit bounce mechanics
-- [ ] Sub-task: Write tests for `checkSpiritCollisions(state)`
-  - Test: No collision detection when shield inactive
+- [x] Sub-task: Write tests for `checkSpiritCollisions(state)`
+  - Test: No collision detection updates when shield inactive
   - Test: When shield active, detects spirit collision with player
   - Test: Bounces spirit at angle of incidence (reflection physics)
   - Test: Spirit continues in new direction after bounce
   - Test: No mana loss when shield active
   - Test: Normal mana loss (-10) when shield inactive
-- [ ] Sub-task: Implement reflection physics:
+- [x] Sub-task: Implement reflection physics:
   ```typescript
   // Calculate reflection vector
   const normal = normalize(playerPos - spiritPos)
   const reflection = velocity - 2 * dot(velocity, normal) * normal
   ```
-- [ ] Sub-task: Implement `checkSpiritCollisions()`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `checkSpiritCollisions()`
+- [x] Sub-task: Run tests ab2ff1c
 
 **Verification**: All tests pass. ✅
 
 ### Task 3.3: Integrate shield into game loop
-- [ ] Sub-task: Update `advanceEnchantedLibraryTime()` to:
-  - Check shield input (Space/Enter)
+- [x] Sub-task: Update `advanceEnchantedLibraryTime()` to:
+  - Check shield input (cast button)
   - Activate shield if requested and charges available
   - Update shield timer
-  - Prevent player movement when shield active
-- [ ] Sub-task: Write integration tests
-- [ ] Sub-task: Run tests
+  - Allow player movement when shield active
+- [x] Sub-task: Write integration tests
+- [x] Sub-task: Run tests ab2ff1c
 
 **Verification**: All tests pass. ✅
 
