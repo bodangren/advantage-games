@@ -87,9 +87,9 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 4: Visual & Responsive Polish
 
 ### Task 4.1: Align styling with Wizard vs Zombie
-- [ ] Sub-task: Verify typography, spacing, and card styles match the existing Wizard vs Zombie tone.
-- [ ] Sub-task: Ensure sentence list is scrollable and readable on small screens.
-- [ ] Sub-task: Confirm buttons have proper focus/hover states.
+- [x] Sub-task: Verify typography, spacing, and card styles match the existing Wizard vs Zombie tone. 9f6518a
+- [x] Sub-task: Ensure sentence list is scrollable and readable on small screens. 9f6518a
+- [x] Sub-task: Confirm buttons have proper focus/hover states. 9f6518a
 
 **Verification**: Start and end screens are polished on desktop and mobile. ✅
 
