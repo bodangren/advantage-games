@@ -449,14 +449,12 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                 {/* Canvas */}
                 <Stage width={dimensions.width} height={dimensions.height} data-testid="stage">
                     <Layer scaleX={camera.scale} scaleY={camera.scale} x={camera.x} y={camera.y}>
-                        {/* Floor Tiling */}
-                        <Rect
+                        {/* Library Background */}
+                        <KonvaImage
                             x={0} y={0}
-                            width={GAME_WIDTH} height={GAME_HEIGHT}
-                            fillPatternImage={assets.floor}
-                            fillPatternRepeat="repeat"
-                            fillPatternScaleX={0.5}
-                            fillPatternScaleY={0.5}
+                            image={assets.floor}
+                            width={GAME_WIDTH}
+                            height={GAME_HEIGHT}
                         />
 
                         <Group>
