@@ -61,22 +61,22 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 3: End Screen
 
 ### Task 3.1: Build Castle Defense end screen component
-- [ ] Sub-task: Create `src/components/castle-defense/CastleDefenseEndScreen.tsx` styled like Wizard vs Zombie.
-- [ ] Sub-task: Show final score, XP earned, and performance breakdown metrics.
-- [ ] Sub-task: Include Restart/Play Again button.
-- [ ] Sub-task: Write tests in `src/components/castle-defense/CastleDefenseEndScreen.test.tsx`:
+- [x] Sub-task: Create `src/components/castle-defense/CastleDefenseEndScreen.tsx` styled like Wizard vs Zombie. 4b1f0b6
+- [x] Sub-task: Show final score, XP earned, and performance breakdown metrics. 4b1f0b6
+- [x] Sub-task: Include Restart/Play Again button. 4b1f0b6
+- [x] Sub-task: Write tests in `src/components/castle-defense/CastleDefenseEndScreen.test.tsx`: 4b1f0b6
   - Renders final score and XP line.
   - Renders performance metrics.
   - Calls restart handler when CTA clicked.
-- [ ] Sub-task: Run tests: `CI=true npm test src/components/castle-defense/CastleDefenseEndScreen.test.tsx`.
+- [x] Sub-task: Run tests: `CI=true npm test src/components/castle-defense/CastleDefenseEndScreen.test.tsx`. 4b1f0b6
 
 **Verification**: End screen renders required stats and CTA works. ✅
 
 ### Task 3.2: Integrate end screen into game flow
-- [ ] Sub-task: Replace the inline gameover/victory views in `CastleDefenseGame.tsx` with the new end screen component.
-- [ ] Sub-task: Use status to drive defeat vs victory messaging.
-- [ ] Sub-task: Wire XP value from `calculateCastleDefenseXP(score)` and metrics from state.
-- [ ] Sub-task: Update `onComplete` payload to use new XP and accuracy metric (if tracked).
+- [x] Sub-task: Replace the inline gameover/victory views in `CastleDefenseGame.tsx` with the new end screen component. 4b1f0b6
+- [x] Sub-task: Use status to drive defeat vs victory messaging. 4b1f0b6
+- [x] Sub-task: Wire XP value from `calculateCastleDefenseXP(score)` and metrics from state. 4b1f0b6
+- [x] Sub-task: Update `onComplete` payload to use new XP and accuracy metric (if tracked). 4b1f0b6
 
 **Verification**: End screen shows correct values on game over or victory. ✅
 
