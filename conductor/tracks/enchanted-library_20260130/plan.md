@@ -98,19 +98,19 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 2.2: Implement book collection logic
-- [ ] Sub-task: Write tests for `checkBookCollisions(state)`
+- [x] Sub-task: Write tests for `checkBookCollisions(state)`
   - Test: Detects collision when player near book (radius check)
   - Test: Correct book: +10 mana, +1 shield charge, progress incremented
   - Test: Incorrect book: -5 mana, no shield charge
   - Test: Respects max 3 shield charges
   - Test: Books despawn after collection
   - Test: New books spawn after collection
-- [ ] Sub-task: Implement `checkBookCollisions()`
-- [ ] Sub-task: Write tests for `selectNextTargetWord(state)`
+- [x] Sub-task: Implement `checkBookCollisions()`
+- [x] Sub-task: Write tests for `selectNextTargetWord(state)`
   - Test: Selects word that hasn't been collected 2x yet
   - Test: Cycles through vocabulary appropriately
-- [ ] Sub-task: Implement `selectNextTargetWord()`
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Implement `selectNextTargetWord()`
+- [x] Sub-task: Run tests 638868d
 
 **Verification**: All tests pass. ✅
 
