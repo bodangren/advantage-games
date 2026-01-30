@@ -115,14 +115,14 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: All tests pass. ✅
 
 ### Task 2.3: Implement mana system
-- [ ] Sub-task: Write tests for mana calculations
+- [x] Sub-task: Write tests for mana calculations
   - Test: Mana can go negative (no minimum)
   - Test: Mana displayed as score
   - Test: Correct book adds 10 mana
   - Test: Wrong book subtracts 5 mana
   - Test: Spirit collision subtracts 10 mana
-- [ ] Sub-task: Integrate mana changes into collision handlers
-- [ ] Sub-task: Run tests
+- [x] Sub-task: Integrate mana changes into collision handlers (done in Task 2.2 for books)
+- [x] Sub-task: Run tests c3988a4
 
 **Verification**: All tests pass. ✅
 
