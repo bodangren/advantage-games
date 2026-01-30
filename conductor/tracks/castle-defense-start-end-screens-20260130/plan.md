@@ -58,7 +58,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 3: End Screen
+## Phase 3: End Screen [checkpoint: 005e1e1]
 
 ### Task 3.1: Build Castle Defense end screen component
 - [x] Sub-task: Create `src/components/castle-defense/CastleDefenseEndScreen.tsx` styled like Wizard vs Zombie. 4b1f0b6
