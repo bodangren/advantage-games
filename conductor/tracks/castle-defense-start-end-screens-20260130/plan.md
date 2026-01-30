@@ -10,7 +10,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 1: Data & XP Foundations
+## Phase 1: Data & XP Foundations [checkpoint: 937dc04]
 
 ### Task 1.1: Define performance metrics in state
 - [x] Sub-task: Decide which breakdown metrics to show (waves survived, total enemies defeated, word accuracy or sentence completion). a3ca3a0
