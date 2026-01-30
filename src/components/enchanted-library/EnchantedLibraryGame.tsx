@@ -7,8 +7,7 @@ import {
   advanceEnchantedLibraryTime,
   GAME_WIDTH,
   GAME_HEIGHT,
-  type EnchantedLibraryState,
-  type DirectionalInput
+  type EnchantedLibraryState
 } from '@/lib/enchantedLibrary'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { useSound } from '@/hooks/useSound'
@@ -21,6 +20,7 @@ import { Shield, BookOpen, Trophy, Target, Sparkles, Home, RotateCcw } from 'luc
 import { calculateXP } from '@/lib/xp'
 import { SparkleBurst } from './SparkleBurst'
 import { BookPickupBurst } from './BookPickupBurst'
+import { mapInputVectorToDirectional } from './enchantedLibraryInput'
 
 export type EnchantedLibraryGameResult = {
   xp: number
@@ -136,7 +136,8 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
         const prevMana = gameState.mana
         const prevVocabProgress = new Map(gameState.vocabularyProgress)
 
-        const nextState = advanceEnchantedLibraryTime(gameState, 50, input)
+        const directionalInput = mapInputVectorToDirectional(input)
+        const nextState = advanceEnchantedLibraryTime(gameState, 50, directionalInput)
         setGameState(nextState)
 
         // Track attempts and accuracy
