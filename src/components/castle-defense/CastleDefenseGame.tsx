@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Stage, Layer, Rect, Circle, Text, Image as KonvaImage, Group } from 'react-konva'
-import { motion, AnimatePresence } from 'framer-motion'
 import CastleDefenseStartScreen from './CastleDefenseStartScreen'
 import CastleDefenseEndScreen from './CastleDefenseEndScreen'
 
@@ -120,10 +119,12 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     return () => { mounted = false }
   }, [])
 
+  const towers = gameState?.towers
+
   useEffect(() => {
-    if (!gameState) return
-    const currentIds = gameState.towers.map(tower => tower.id)
-    const newTowers = gameState.towers.filter(tower => !previousTowerIds.current.includes(tower.id))
+    if (!towers) return
+    const currentIds = towers.map(tower => tower.id)
+    const newTowers = towers.filter(tower => !previousTowerIds.current.includes(tower.id))
 
     if (newTowers.length > 0) {
       const now = Date.now()
@@ -139,7 +140,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     }
 
     previousTowerIds.current = currentIds
-  }, [gameState?.towers])
+  }, [towers])
 
   // ============================================
   // RESPONSIVE CONTAINER

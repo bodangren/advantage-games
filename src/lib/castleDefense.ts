@@ -1169,11 +1169,11 @@ export function advanceCastleDefenseTime(
   // 10. Spawn enemies
   let spawnTimer = state.spawnTimer + dt
   let enemiesSpawnedThisWave = state.enemiesSpawnedThisWave
-  let enemiesKilledThisWave = state.enemiesKilledThisWave + Math.max(0, Math.floor(enemiesKilled))
+  const enemiesKilledThisWave = state.enemiesKilledThisWave + Math.max(0, Math.floor(enemiesKilled))
   const waveConfig = WAVE_CONFIGS[state.wave - 1]
   let waveCompleteTimer = state.waveCompleteTimer
   let waveMessage = state.waveMessage
-  let wavesCompleted = state.wavesCompleted
+  const wavesCompleted = state.wavesCompleted
 
   if (isWaveComplete({ ...state, enemies, enemiesSpawnedThisWave })) {
     if (waveCompleteTimer <= 0) {

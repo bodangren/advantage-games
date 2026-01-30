@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { motion } from 'framer-motion'
-import { Shield, Swords, Target, Sparkles, BookOpen, Play } from 'lucide-react'
+import { Shield, Sparkles, BookOpen, Play } from 'lucide-react'
 import { VocabularyItem } from '@/store/useGameStore'
 
 interface CastleDefenseStartScreenProps {
