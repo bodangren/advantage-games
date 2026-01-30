@@ -29,7 +29,7 @@ describe('VocabularyProgress', () => {
   })
 
   it('renders correct progress stars', () => {
-    const { container } = render(
+    render(
       <VocabularyProgress 
         vocabulary={mockVocabulary} 
         progress={mockProgress} 

@@ -276,54 +276,56 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 6: HUD and Primary School UX
 
 ### Task 6.1: Create bright, friendly HUD
-- [ ] Sub-task: Display target word prominently at top (large, yellow text)
-- [ ] Sub-task: Display current mana/score in top-left:
+- [x] Sub-task: Display target word prominently at top (large, yellow text)
+- [x] Sub-task: Display current mana/score in top-left:
   ```typescript
   <div className="text-3xl font-bold text-yellow-400">
     ✨ Mana: {gameState?.mana}
   </div>
   ```
-- [ ] Sub-task: Display shield charges in top-right with shield icons (🛡️ × charges)
-- [ ] Sub-task: Use bright, friendly colors (yellows, blues, greens)
-- [ ] Sub-task: Test HUD readability
+- [x] Sub-task: Display shield charges in top-right with shield icons (🛡️ × charges)
+- [x] Sub-task: Use bright, friendly colors (yellows, blues, greens)
+- [x] Sub-task: Test HUD readability
 
 **Verification**: HUD is colorful, clear, and child-friendly. ✅
 
 ### Task 6.2: Create vocabulary progress display
-- [ ] Sub-task: Show progress for each word (e.g., "cat ⭐⭐", "dog ⭐☆")
-- [ ] Sub-task: Display in sidebar or bottom area
-- [ ] Sub-task: Use stars or checkmarks for visual progress
-- [ ] Sub-task: Test progress display
+- [x] Sub-task: Show progress for each word (e.g., "cat ⭐⭐", "dog ⭐☆")
+- [x] Sub-task: Display in sidebar or bottom area
+- [x] Sub-task: Use stars or checkmarks for visual progress
+- [x] Sub-task: Test progress display 7303cc3
+
+**Verification**: Progress is easy to understand for children. ✅
 
 **Verification**: Progress is easy to understand for children. ✅
 
 ### Task 6.3: Implement start/intro screen
-- [ ] Sub-task: Create friendly introduction with:
+- [x] Sub-task: Create friendly introduction with:
   - Game title with magical theme
   - Instructions in simple language
   - Colorful graphics
   - "Start Adventure" button
-- [ ] Sub-task: Show vocabulary preview (words they'll learn)
-- [ ] Sub-task: Test intro screen
+- [x] Sub-task: Show vocabulary preview (words they'll learn)
+- [x] Sub-task: Test intro screen
 
 **Verification**: Intro is engaging and clear. ✅
 
 ### Task 6.4: Implement victory screen
-- [ ] Sub-task: Create celebration screen with:
+- [x] Sub-task: Create celebration screen with:
   - "You're a Master Wizard!" message
   - Final score/mana display
   - Stars or achievement badges
   - Confetti or sparkle animations
   - "Play Again" and "Exit" buttons
-- [ ] Sub-task: Test victory screen
+- [x] Sub-task: Test victory screen
 
 **Verification**: Victory screen is celebratory and motivating. ✅
 
 ### Task 6.5: Add virtual controls for mobile
-- [ ] Sub-task: Create D-pad for movement (bottom-left)
-- [ ] Sub-task: Create Shield button (bottom-right)
-- [ ] Sub-task: Style with bright, child-friendly colors
-- [ ] Sub-task: Test touch responsiveness
+- [x] Sub-task: Create D-pad for movement (bottom-left)
+- [x] Sub-task: Create Shield button (bottom-right)
+- [x] Sub-task: Style with bright, child-friendly colors
+- [x] Sub-task: Test touch responsiveness
 
 **Verification**: Virtual controls work well on mobile. ✅
 

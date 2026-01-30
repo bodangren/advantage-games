@@ -308,8 +308,7 @@ export const spawnSpirit = (
  * Also handles progressive difficulty (speed increase over time)
  */
 export const updateSpirits = (
-  state: EnchantedLibraryState,
-  dt: number
+  state: EnchantedLibraryState
 ): EnchantedLibraryState => {
   // Update spirit positions
   const updatedSpirits = state.spirits.map(spirit => ({
@@ -449,7 +448,7 @@ export const checkVictoryCondition = (
   state: EnchantedLibraryState
 ): boolean => {
   // Check if all words have been collected 2x
-  for (const [word, count] of state.vocabularyProgress.entries()) {
+  for (const [, count] of state.vocabularyProgress.entries()) {
     if (count < 2) {
       return false
     }
@@ -494,8 +493,7 @@ export const activateShield = (
 export const checkSpiritCollisions = (
   state: EnchantedLibraryState
 ): EnchantedLibraryState => {
-  let hasCollision = false
-  let updatedSpirits = [...state.spirits]
+  const updatedSpirits = [...state.spirits]
   let newMana = state.mana
 
   for (let i = 0; i < updatedSpirits.length; i++) {
@@ -506,8 +504,6 @@ export const checkSpiritCollisions = (
     const collisionDistance = state.player.radius + spirit.radius
 
     if (distance < collisionDistance) {
-      hasCollision = true
-
       if (state.shieldActive) {
         // Shield is active: bounce the spirit using reflection physics
         // Calculate normal vector (from spirit to player center)
@@ -618,7 +614,7 @@ export const advanceEnchantedLibraryTime = (
   newState = checkBookCollisions(newState, config.vocabulary || [], config)
 
   // Update spirits
-  newState = updateSpirits(newState, dt)
+  newState = updateSpirits(newState)
 
   // Check spirit collisions (bounces when shield active, mana loss when not)
   newState = checkSpiritCollisions(newState)

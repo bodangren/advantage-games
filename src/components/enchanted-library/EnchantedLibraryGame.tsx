@@ -417,7 +417,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                                         <Sparkles className="w-10 h-10" />
                                     </div>
                                     <h2 className="text-3xl font-bold text-amber-900">Master Wizard!</h2>
-                                    <p className="text-amber-800">You've learned all the vocabulary!</p>
+                                    <p className="text-amber-800">You&apos;ve learned all the vocabulary!</p>
                                 </header>
 
                                 <div className="grid grid-cols-2 gap-4">
@@ -565,7 +565,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
 
                         <Group>
                             {/* Books */}
-                            {gameState.books.map((book, i) => (
+                            {gameState.books.map((book) => (
                                 <Group key={book.id} x={book.x} y={book.y}>
                                     <KonvaImage
                                         image={assets.book}

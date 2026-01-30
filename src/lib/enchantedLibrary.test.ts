@@ -15,7 +15,6 @@ import {
   GAME_HEIGHT,
   INITIAL_MANA,
   MAX_SHIELD_CHARGES,
-  INITIAL_SPIRIT_SPEED,
   SHIELD_DURATION,
 } from './enchantedLibrary'
 
@@ -272,7 +271,7 @@ describe('enchantedLibrary', () => {
         }]
       }
 
-      const result = updateSpirits(withSpirit, 16) // 16ms delta
+      const result = updateSpirits(withSpirit) // 16ms delta
 
       expect(result.spirits[0].x).toBe(100 + 2)
       expect(result.spirits[0].y).toBe(100 + 1)
@@ -294,7 +293,7 @@ describe('enchantedLibrary', () => {
         }]
       }
 
-      const result = updateSpirits(spiritOffScreen, 16)
+      const result = updateSpirits(spiritOffScreen)
 
       // Spirit should be removed
       expect(result.spirits).toHaveLength(0)
