@@ -342,11 +342,11 @@ Before starting ANY phase, the implementer MUST:
 **Verification**: Background looks like a friendly library. ✅
 
 ### Task 7.2: Create/integrate sprite assets
-- [ ] Sub-task: Create student wizard sprite (bright robes, friendly face)
-- [ ] Sub-task: Create friendly spirit sprite (cartoon ghost, not scary)
-- [ ] Sub-task: Create magic book sprite (colorful, glowing)
-- [ ] Sub-task: Save sprites to `public/games/enchanted-library/`
-- [ ] Sub-task: Implement 3×3 pose sheets for animations
+- [x] Sub-task: Create student wizard sprite (bright robes, friendly face)
+- [x] Sub-task: Create friendly spirit sprite (cartoon ghost, not scary)
+- [x] Sub-task: Create magic book sprite (colorful, glowing)
+- [x] Sub-task: Save sprites to `public/games/enchanted-library/`
+- [x] Sub-task: Implement 3×3 pose sheets for animations 3f82fe3
 
 **Verification**: All sprites are age-appropriate and appealing. ✅
 
