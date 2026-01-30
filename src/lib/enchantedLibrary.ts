@@ -68,7 +68,7 @@ export const INITIAL_MANA = 50
 export const MAX_SHIELD_CHARGES = 3
 export const SHIELD_DURATION = 2000 // ms
 export const SPIRIT_SPAWN_RATE_MS = 3000
-export const INITIAL_SPIRIT_SPEED = 2.5
+export const INITIAL_SPIRIT_SPEED = 5
 export const SPIRIT_SPEED_INCREASE_RATE = 0.1 // per 10 seconds
 export const PREDICT_AHEAD_DISTANCE = 50 // pixels - tighter targeting
 export const PLAYER_SPEED = 3
@@ -292,8 +292,8 @@ export const spawnSpirit = (
     hasHitPlayer: false,
   }
 
-  // Increase spirit speed by 10% for next spawn
-  const nextSpiritSpeed = state.spiritSpeed * 1.1
+  // Increase spirit speed by 15% for next spawn
+  const nextSpiritSpeed = state.spiritSpeed * 1.15
 
   return {
     ...state,

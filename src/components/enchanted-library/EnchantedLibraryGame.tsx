@@ -197,7 +197,12 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
     const updateDimensions = () => {
       if (!containerRef.current) return
       const { width, height } = containerRef.current.getBoundingClientRect()
-      if (width > 0 && height > 0) setDimensions({ width, height })
+      if (width > 0 && height > 0) {
+          setDimensions(prev => {
+              if (prev.width === width && prev.height === height) return prev
+              return { width, height }
+          })
+      }
     }
 
     const observer = new ResizeObserver((entries) => {

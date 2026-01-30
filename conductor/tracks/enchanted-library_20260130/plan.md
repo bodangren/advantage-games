@@ -421,7 +421,8 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Implement progressive difficulty (increase spirit speed per spawn)
 - [x] Sub-task: Fix mana drain bug (prevent multiple hits per spirit)
 - [x] Sub-task: Verify win condition triggering
-- [x] Sub-task: Verify changes with tests
+- [x] Sub-task: Fix performance leak in resize observer and tune spirit speed (base 5, 1.15x multiplier)
+- [x] Sub-task: Verify changes with tests a6648ae
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
 
