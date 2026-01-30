@@ -381,6 +381,13 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Can navigate to game from main menu. ✅
 
+### Task 8.3: Align sprite sheet usage
+- [x] Sub-task: Use player_3x3_pose_sheet.png for the player sprite d557127
+- [x] Sub-task: Use book_3x1_sheet.png with 1x3 grid (no animation) d557127
+- [x] Sub-task: Remove obsolete wizard/tile assets d557127
+
+**Verification**: Sprite sheets align with current asset naming and layout. ✅
+
 - [ ] Task: Conductor - User Manual Verification 'Phase 8: Page Integration and Routing' (Protocol in workflow.md)
 
 ---
