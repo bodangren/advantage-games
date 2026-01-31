@@ -15,13 +15,15 @@ import { useInterval } from '@/hooks/useInterval'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
 import { withBasePath } from '@/lib/basePath'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, BookOpen, Trophy, Target, Sparkles, Home, RotateCcw, Book } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Book, BookOpen, Shield, Sparkles } from 'lucide-react'
 import { calculateXP } from '@/lib/xp'
 import { SparkleBurst } from './SparkleBurst'
 import { BookPickupBurst } from './BookPickupBurst'
 import { mapInputVectorToDirectional } from './enchantedLibraryInput'
 import { VocabularyProgress } from './VocabularyProgress'
+import { GameEndScreen } from '@/components/game/GameEndScreen'
+import { GameStartScreen } from '@/components/game/GameStartScreen'
 
 export type EnchantedLibraryGameResult = {
   xp: number
@@ -63,7 +65,9 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
   // Sync state for rendering
   const [gameState, setGameState] = useState<EnchantedLibraryState | null>(null)
   
-  const [hasStarted, setHasStarted] = useState(false)
+  const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
+  const [results, setResults] = useState<EnchantedLibraryGameResult | null>(null)
+  const hasReportedRef = useRef(false)
   const [showGrimoire, setShowGrimoire] = useState(false)
   const [totalAttempts, setTotalAttempts] = useState(0)
   const [correctAnswers, setCorrectAnswers] = useState(0)
@@ -128,16 +132,19 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
         setShowGrimoire(false)
         setSparkles([])
         setPickupBursts([])
+        setResults(null)
+        hasReportedRef.current = false
     }
   }, [vocabulary])
 
   useEffect(() => {
     resetGame()
+    setGamePhase('start')
   }, [resetGame])
 
   // Animation Loop
   useInterval(() => {
-      if (hasStarted) {
+      if (gamePhase === 'playing') {
           setPlayerFrame(f => (f + 1) % 3)
           setSpiritFrame(f => (f + 1) % 3)
       }
@@ -145,7 +152,7 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
 
   // Game Loop
   useInterval(() => {
-    if (gameStateRef.current && gameStateRef.current.status === 'playing' && assets && hasStarted) {
+    if (gameStateRef.current && gameStateRef.current.status === 'playing' && assets && gamePhase === 'playing') {
         const prevState = gameStateRef.current
         const prevMana = prevState.mana
         const prevVocabProgress = prevState.vocabularyProgress // Map ref stays same, but values change
@@ -211,7 +218,20 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
             }
         }
     }
-  }, gameState?.status === 'playing' && hasStarted ? 50 : null)
+  }, gameState?.status === 'playing' && gamePhase === 'playing' ? 50 : null)
+
+  useEffect(() => {
+    if (!gameState || gameState.status !== 'victory') return
+    const accuracy = totalAttempts > 0 ? correctAnswers / totalAttempts : 0
+    const xp = calculateXP(Math.max(0, gameState.mana), correctAnswers, totalAttempts)
+    const nextResults = { xp, accuracy }
+    setResults(nextResults)
+    if (!hasReportedRef.current) {
+      onComplete(nextResults)
+      hasReportedRef.current = true
+    }
+    setGamePhase('ended')
+  }, [gameState, correctAnswers, totalAttempts, onComplete])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -320,192 +340,38 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
         style={{ minHeight: '400px' }}
         className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-gradient-to-b from-amber-100 to-amber-200 shadow-2xl ring-1 ring-amber-300/50 touch-none md:aspect-video md:h-auto"
     >
-        <AnimatePresence>
-            {!hasStarted && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-50 flex flex-col bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900 text-white overflow-hidden"
-                >
-                    <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8">
-                        <header className="flex flex-wrap items-center justify-between gap-4">
-                            <div>
-                                <div className="text-xs uppercase tracking-[0.4em] text-yellow-400 font-bold">Magical Adventure</div>
-                                <h2 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Enchanted Library</h2>
-                            </div>
-                            <div className="px-4 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                                Ready to Learn
-                            </div>
-                        </header>
+        {gamePhase === 'start' && (
+            <GameStartScreen
+                gameTitle="Enchanted Library"
+                gameSubtitle="Mystic Studies"
+                vocabulary={vocabulary}
+                instructions={[
+                    { step: 1, text: 'Collect magic books that match the target word.', icon: BookOpen },
+                    { step: 2, text: 'Correct books grant +10 mana and a shield charge.', icon: Sparkles },
+                    { step: 3, text: 'Wrong books or spirits drain mana. Choose carefully.', icon: Shield },
+                    { step: 4, text: 'Master each word twice to complete your studies.', icon: Book },
+                ]}
+                proTip="Use shield charges to bounce spirits when the stacks get crowded."
+                controls={[
+                    { label: 'Move', keys: 'Arrows / WASD', color: 'bg-amber-500' },
+                    { label: 'Shield', keys: 'Space / Enter', color: 'bg-emerald-500' },
+                ]}
+                startButtonText="Start Adventure"
+                icon={BookOpen}
+                onStart={() => {
+                    resetGame()
+                    setGamePhase('playing')
+                }}
+            />
+        )}
 
-                        <div className="grid gap-8 lg:grid-cols-2">
-                            <div className="space-y-6">
-                                <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm space-y-4">
-                                    <h3 className="flex items-center gap-2 font-bold text-lg text-white">
-                                        <Shield className="w-5 h-5 text-blue-400" /> How to Play
-                                    </h3>
-                                    <ul className="space-y-3 text-sm text-slate-300">
-                                        <li className="flex gap-3">
-                                            <span className="text-yellow-400 font-bold">01.</span>
-                                            <span>Collect <b>magic books</b> that match the target word shown at the top.</span>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-yellow-400 font-bold">02.</span>
-                                            <span>Correct books give you <b>+10 mana</b> and one <b>shield charge</b>.</span>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-yellow-400 font-bold">03.</span>
-                                            <span>Wrong books cost <b>-5 mana</b>. Choose carefully!</span>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-yellow-400 font-bold">04.</span>
-                                            <span>Avoid the <b>library spirits</b>! They drain <b>-10 mana</b> on contact.</span>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-yellow-400 font-bold">05.</span>
-                                            <span>Use your <b>shield</b> to bounce spirits away! Press Space or tap the Shield button.</span>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-yellow-400 font-bold">06.</span>
-                                            <span>Collect each word <b>twice</b> to complete your studies!</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="flex items-center gap-2 font-bold text-lg text-white">
-                                        <BookOpen className="w-5 h-5 text-emerald-400" /> Vocabulary List
-                                    </h3>
-                                    <span className="text-xs text-white/40">{vocabulary.length} Words</span>
-                                </div>
-                                <div className="max-h-[240px] overflow-y-auto rounded-2xl border border-white/10 bg-black/20 scrollbar-thin scrollbar-thumb-white/10">
-                                    {vocabulary.length === 0 ? (
-                                        <div className="p-8 text-center text-white/40 italic">No vocabulary loaded...</div>
-                                    ) : (
-                                        <div className="divide-y divide-white/5">
-                                            {vocabulary.map((item, i) => (
-                                                <div key={i} className="flex items-center justify-between p-3 px-4 hover:bg-white/5 transition-colors">
-                                                    <span className="font-medium text-white">{item.term}</span>
-                                                    <span className="text-slate-300 text-sm">{item.translation}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <footer className="p-6 sm:p-8 border-t border-white/10 bg-black/30 backdrop-blur-md flex flex-wrap items-center justify-between gap-6">
-                        <div className="flex items-center gap-6 text-xs uppercase tracking-[0.2em] text-white/50">
-                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500" /> Move: Arrows / WASD</div>
-                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-yellow-500" /> Shield: Space / Enter</div>
-                        </div>
-                        <button
-                            onClick={() => {
-                                resetGame()
-                                setHasStarted(true)
-                            }}
-                            className="group relative px-10 py-4 bg-yellow-400 hover:bg-yellow-300 text-yellow-900 font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(250,204,21,0.4)]"
-                        >
-                            <span className="relative z-10">Start Adventure</span>
-                            <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
-                        </button>
-                    </footer>
-                </motion.div>
-            )}
-        </AnimatePresence>
-
-        <AnimatePresence>
-        {hasStarted && gameState && grids && (
+        {gamePhase === 'playing' && gameState && grids && (
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
                 transition={{ duration: 0.4, ease: 'easeOut' }}
                 className="absolute inset-0"
             >
-                {/* Victory Overlay */}
-                <AnimatePresence>
-                    {gameState.status === 'victory' && (
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="absolute inset-0 z-50 flex items-center justify-center bg-gradient-to-b from-purple-900/90 via-indigo-900/90 to-blue-900/90 backdrop-blur-sm p-6"
-                        >
-                            <motion.div
-                                initial={{ scale: 0.9, y: 20 }}
-                                animate={{ scale: 1, y: 0 }}
-                                className="w-full max-w-md bg-gradient-to-b from-yellow-400 to-amber-500 border-4 border-yellow-300 rounded-3xl shadow-2xl p-8 text-center space-y-8"
-                            >
-                                <header className="space-y-2">
-                                    <div className="w-20 h-20 bg-white/30 text-white rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <Sparkles className="w-10 h-10" />
-                                    </div>
-                                    <h2 className="text-3xl font-bold text-amber-900">Master Wizard!</h2>
-                                    <p className="text-amber-800">You&apos;ve learned all the vocabulary!</p>
-                                </header>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-white/40 rounded-2xl p-4 space-y-1">
-                                        <div className="text-xs uppercase tracking-wider text-amber-900 font-bold flex items-center justify-center gap-1">
-                                            <Sparkles className="w-3 h-3" /> Mana
-                                        </div>
-                                        <div className="text-2xl font-bold text-amber-900">{gameState.mana}</div>
-                                    </div>
-                                    <div className="bg-white/40 rounded-2xl p-4 space-y-1">
-                                        <div className="text-xs uppercase tracking-wider text-amber-900 font-bold flex items-center justify-center gap-1">
-                                            <Target className="w-3 h-3" /> Accuracy
-                                        </div>
-                                        <div className="text-2xl font-bold text-amber-900">
-                                            {totalAttempts > 0
-                                                ? Math.round((correctAnswers / totalAttempts) * 100)
-                                                : 0}%
-                                        </div>
-                                    </div>
-                                    <div className="col-span-2 bg-white/50 border-2 border-white rounded-2xl p-4 space-y-1">
-                                        <div className="text-xs uppercase tracking-wider text-amber-900 font-bold flex items-center justify-center gap-1">
-                                            <Trophy className="w-3 h-3" /> XP Gained
-                                        </div>
-                                        <div className="text-3xl font-black text-amber-900">
-                                            +{calculateXP(Math.max(0, gameState.mana), correctAnswers, totalAttempts)}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col gap-3">
-                                    <button
-                                        onClick={() => {
-                                            resetGame()
-                                            setHasStarted(true)
-                                        }}
-                                        className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg"
-                                    >
-                                        <RotateCcw className="w-5 h-5" /> Play Again
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            const results: EnchantedLibraryGameResult = {
-                                                xp: calculateXP(Math.max(0, gameState.mana), correctAnswers, totalAttempts),
-                                                accuracy: totalAttempts > 0 ? correctAnswers / totalAttempts : 0
-                                            }
-                                            onComplete(results)
-                                            window.location.href = '/'
-                                        }}
-                                        className="w-full py-4 bg-amber-700 hover:bg-amber-600 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2 shadow-lg"
-                                    >
-                                        <Home className="w-5 h-5" /> Exit to Menu
-                                    </button>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
                 {/* HUD Overlay */}
                 <div className="absolute top-4 left-4 z-10 flex flex-col gap-1 text-amber-900 font-bold text-xl pointer-events-none drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)]">
                     <div className="bg-white/80 px-3 py-1 rounded-lg">Mana: {gameState.mana}</div>
@@ -684,7 +550,27 @@ export function EnchantedLibraryGame({ vocabulary, onComplete }: EnchantedLibrar
                 </Stage>
             </motion.div>
         )}
-        </AnimatePresence>
+        {gamePhase === 'ended' && gameState && results && (
+            <GameEndScreen
+                status="complete"
+                title="Master Wizard!"
+                subtitle="You've learned all the vocabulary!"
+                score={Math.max(0, gameState.mana)}
+                xp={results.xp}
+                accuracy={results.accuracy}
+                customStats={[
+                    { label: 'Words Mastered', value: `${Array.from(gameState.vocabularyProgress.values()).filter((count) => count >= 2).length}/${vocabulary.length}` },
+                    { label: 'Correct Books', value: correctAnswers },
+                ]}
+                onRestart={() => {
+                    resetGame()
+                    setGamePhase('start')
+                }}
+                onExit={() => {
+                    window.location.href = '/'
+                }}
+            />
+        )}
     </div>
   )
 }

@@ -83,7 +83,8 @@ describe('EnchantedLibraryGame', () => {
 
   it('renders the intro screen initially', async () => {
     render(<EnchantedLibraryGame vocabulary={vocabulary} onComplete={jest.fn()} />)
-    expect(await screen.findByText(/Magical Adventure/i)).toBeInTheDocument()
+    expect(await screen.findByText(/Mystic Studies/i)).toBeInTheDocument()
+    expect(screen.getByText(/Pro Tip/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /start adventure/i })).toBeInTheDocument()
   })
 
