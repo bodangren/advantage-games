@@ -160,7 +160,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 6: Migrate Castle Defense & Potion Rush
+## Phase 6: Migrate Castle Defense & Potion Rush [checkpoint: bd6b283]
 
 ### Task 6.1: Migrate Castle Defense
 - [x] Sub-task: Replace CastleDefenseStartScreen import with GameStartScreen dc6abe1
