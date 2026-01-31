@@ -88,13 +88,13 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Run tests: `CI=true npm test src/app/dev/game-screens/page.test.tsx` e5a23e6
 
 ### Task 3.1: Migrate Dragon Flight
-- [ ] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state
-- [ ] Sub-task: Import and render GameStartScreen when phase is 'start'
-- [ ] Sub-task: Create Dragon Flight instructions array
-- [ ] Sub-task: Wire onStart to transition to 'playing' phase
-- [ ] Sub-task: Replace inline end screen with GameEndScreen
-- [ ] Sub-task: Pass appropriate stats (dragons collected, boss power, etc.)
-- [ ] Sub-task: Test manually on desktop and mobile
+- [x] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state 0fe61c2
+- [x] Sub-task: Import and render GameStartScreen when phase is 'start' 0fe61c2
+- [x] Sub-task: Create Dragon Flight instructions array 0fe61c2
+- [x] Sub-task: Wire onStart to transition to 'playing' phase 0fe61c2
+- [x] Sub-task: Replace inline end screen with GameEndScreen 0fe61c2
+- [x] Sub-task: Pass appropriate stats (dragons collected, boss power, etc.) 0fe61c2
+- [x] Sub-task: Test manually on desktop and mobile 0fe61c2
 
 ### Task 3.2: Migrate Wizard vs Zombie
 - [ ] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state
