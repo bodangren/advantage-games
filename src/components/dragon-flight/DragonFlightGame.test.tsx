@@ -3,6 +3,10 @@ import type { ReactNode } from 'react'
 import { DragonFlightGame } from './DragonFlightGame'
 import type { VocabularyItem } from '@/store/useGameStore'
 
+jest.mock('@/hooks/useSound', () => ({
+  useSound: () => ({ playSound: jest.fn() }),
+}))
+
 jest.mock('react-konva', () => {
   const React = jest.requireActual('react')
   const Image = React.forwardRef((props: Record<string, unknown>, ref: React.Ref<HTMLDivElement>) => (
@@ -75,7 +79,8 @@ describe('DragonFlightGame', () => {
     const randomSpy = mockRandomSequence([0.1, 0.9, 0.2])
     render(<DragonFlightGame vocabulary={vocabulary} preloadedAssets={assets} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /start game/i }))
+    expect(screen.getByText(/skyward trials/i)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /start flight/i }))
 
     expect(screen.getByText('Apple')).toBeInTheDocument()
     expect(screen.getByTestId('dragon-flight')).toHaveAttribute('data-status', 'running')
@@ -90,7 +95,7 @@ describe('DragonFlightGame', () => {
     const randomSpy = mockRandomSequence([0.1, 0.9, 0.2, 0.4, 0.8, 0.1])
     render(<DragonFlightGame vocabulary={vocabulary} preloadedAssets={assets} />)
 
-    fireEvent.click(screen.getByRole('button', { name: /start game/i }))
+    fireEvent.click(screen.getByRole('button', { name: /start flight/i }))
 
     act(() => {
       fireEvent.keyDown(window, { key: 'ArrowLeft' })
@@ -117,7 +122,7 @@ describe('DragonFlightGame', () => {
       />
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /start game/i }))
+    fireEvent.click(screen.getByRole('button', { name: /start flight/i }))
 
     act(() => {
       jest.advanceTimersByTime(120)
@@ -134,7 +139,7 @@ describe('DragonFlightGame', () => {
     })
 
     expect(screen.getByTestId('dragon-flight')).toHaveAttribute('data-status', 'results')
-    expect(screen.getByTestId('dragon-flight-results')).toBeInTheDocument()
+    expect(screen.getByText(/defeated/i)).toBeInTheDocument()
 
     randomSpy.mockRestore()
     jest.useRealTimers()

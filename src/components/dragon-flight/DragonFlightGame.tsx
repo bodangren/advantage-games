@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Konva from 'konva'
 import { Group, Image as KonvaImage, Layer, Rect, Stage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Flame } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Flame, Shield, Sparkles, Wand2 } from 'lucide-react'
 import { withBasePath } from '@/lib/basePath'
 import {
   advanceDragonFlightTime,
@@ -21,6 +21,8 @@ import type {
 import type { VocabularyItem } from '@/store/useGameStore'
 import { useInterval } from '@/hooks/useInterval'
 import { useSound } from '@/hooks/useSound'
+import { GameEndScreen } from '@/components/game/GameEndScreen'
+import { GameStartScreen } from '@/components/game/GameStartScreen'
 
 type DragonFlightAssets = {
   gates: HTMLImageElement
@@ -323,7 +325,7 @@ export function DragonFlightGame({
   const [playerFrame, setPlayerFrame] = useState(0)
   const [bossFrame, setBossFrame] = useState(0)
   const [playerX, setPlayerX] = useState(DEFAULT_STAGE.width / 2)
-  const [hasStarted, setHasStarted] = useState(false)
+  const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [lockedPairId, setLockedPairId] = useState<string | null>(null)
   const [displayDragonCount, setDisplayDragonCount] = useState(1)
   const [bossHealth, setBossHealth] = useState(0)
@@ -393,7 +395,7 @@ export function DragonFlightGame({
 
   useEffect(() => {
     resetGame()
-    setHasStarted(false)
+    setGamePhase('start')
   }, [resetGame])
 
   useEffect(() => {
@@ -543,7 +545,7 @@ export function DragonFlightGame({
 
       return isNearTarget ? target : next
     })
-  }, state.status === 'running' && layout && hasStarted ? TICK_MS : null)
+  }, state.status === 'running' && layout && gamePhase === 'playing' ? TICK_MS : null)
 
   const createGatePair = useCallback(
     (round?: DragonFlightRound) => {
@@ -569,15 +571,15 @@ export function DragonFlightGame({
 
   useInterval(() => {
     setGateFrame((prev) => (prev + 1) % 3)
-  }, hasStarted ? GATE_ANIM_MS : null)
+  }, gamePhase === 'playing' ? GATE_ANIM_MS : null)
 
   useInterval(() => {
     setPlayerFrame((prev) => (prev + 1) % 9)
-  }, hasStarted ? PLAYER_ANIM_MS : null)
+  }, gamePhase === 'playing' ? PLAYER_ANIM_MS : null)
 
   useInterval(() => {
     setBossFrame((prev) => (prev + 1) % 3)
-  }, state.status === 'boss' && hasStarted ? BOSS_ANIM_MS : null)
+  }, state.status === 'boss' && gamePhase === 'playing' ? BOSS_ANIM_MS : null)
 
   useInterval(() => {
     if (!layout) return
@@ -591,12 +593,12 @@ export function DragonFlightGame({
       const next = prev + gateSpeed * deltaSeconds
       return next >= targetY ? targetY : next
     })
-  }, state.status === 'boss' && layout && hasStarted ? TICK_MS : null)
+  }, state.status === 'boss' && layout && gamePhase === 'playing' ? TICK_MS : null)
 
   useInterval(() => {
     setBossHealth((prev) => Math.max(0, prev - 1))
     setDisplayDragonCount((prev) => Math.max(0, prev - 1))
-  }, state.status === 'boss' && bossHealth > 0 && displayDragonCount > 0 && hasStarted
+  }, state.status === 'boss' && bossHealth > 0 && displayDragonCount > 0 && gamePhase === 'playing'
     ? BOSS_HEALTH_TICK_MS
     : null)
 
@@ -661,6 +663,12 @@ export function DragonFlightGame({
     }
   }, [bossSequenceDone])
 
+  useEffect(() => {
+    if (showResults) {
+      setGamePhase('ended')
+    }
+  }, [showResults])
+
   const activePair = useMemo(() => {
     if (lockedPairId) {
       return gatePairs.find((pair) => pair.id === lockedPairId) ?? null
@@ -669,7 +677,7 @@ export function DragonFlightGame({
   }, [gatePairs, lockedPairId])
 
   const handleGateSelection = useCallback((side: GateSide) => {
-    if (!hasStarted) return
+    if (gamePhase !== 'playing') return
     if (state.status !== 'running') return
     if (pendingSelectionRef.current) return
     if (lockedPairId) return
@@ -692,11 +700,11 @@ export function DragonFlightGame({
 
     setLockedPairId(pair.id)
     setFeedback(null)
-  }, [activePair, hasStarted, layout, lockedPairId, state.status])
+  }, [activePair, gamePhase, layout, lockedPairId, state.status])
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
-      if (!hasStarted) return
+      if (gamePhase !== 'playing') return
       if (state.status !== 'running') return
       if (event.key === 'ArrowLeft' || event.key.toLowerCase() === 'a') {
         handleGateSelection('left')
@@ -708,7 +716,7 @@ export function DragonFlightGame({
 
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [handleGateSelection, hasStarted, state.status])
+  }, [handleGateSelection, gamePhase, state.status])
 
   const promptRound = activePair?.round ?? state.round
   const remainingRatio = state.durationMs > 0
@@ -717,7 +725,7 @@ export function DragonFlightGame({
 
   const dragonCountDisplay = state.status === 'boss' ? displayDragonCount : state.dragonCount
   const activePairId = activePair?.id ?? null
-  const statusLabel = showResults ? 'results' : hasStarted ? state.status : 'ready'
+  const statusLabel = gamePhase === 'ended' ? 'results' : gamePhase === 'playing' ? state.status : 'ready'
 
   if (!assets && !isLoading) {
     return (
@@ -727,7 +735,7 @@ export function DragonFlightGame({
     )
   }
 
-  const canRenderGame = Boolean(hasStarted && layout && assets)
+  const canRenderGame = Boolean(gamePhase !== 'start' && layout && assets)
   const gateLabels = canRenderGame && activePair ? getGateLabels(activePair.round) : null
   const gateLabelTop = canRenderGame
     ? (activePair
@@ -761,7 +769,7 @@ export function DragonFlightGame({
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-[70vh] min-h-[480px] max-h-[760px] overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.45)] ${hasStarted ? 'touch-none select-none' : ''}`}
+      className={`relative w-full h-[70vh] min-h-[480px] max-h-[760px] overflow-hidden rounded-3xl border border-slate-800 bg-slate-900 shadow-[0_20px_60px_rgba(15,23,42,0.45)] ${gamePhase !== 'start' ? 'touch-none select-none' : ''}`}
       data-testid='dragon-flight'
       data-status={statusLabel}
     >
@@ -923,126 +931,48 @@ export function DragonFlightGame({
               </motion.div>
             )}
           </AnimatePresence>
-
-          <AnimatePresence>
-            {showResults && results && (
-              <motion.div
-                className='absolute inset-0 flex items-center justify-center bg-slate-950/70 px-6'
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                data-testid='dragon-flight-results'
-              >
-                <div className='w-full max-w-md rounded-3xl border border-white/10 bg-slate-900/90 p-6 text-white shadow-xl'>
-                  <div className='text-sm uppercase tracking-[0.2em] text-white/60'>Run Complete</div>
-                  <div className='mt-2 text-3xl font-semibold'>
-                    {results.victory ? 'Victory' : 'Defeat'}
-                  </div>
-                  <div className='mt-4 grid grid-cols-2 gap-4 text-sm'>
-                    <div>
-                      <div className='text-white/60'>Dragons</div>
-                      <div className='text-lg font-semibold'>{results.dragonCount}</div>
-                    </div>
-                    <div>
-                      <div className='text-white/60'>Boss Power</div>
-                      <div className='text-lg font-semibold'>{results.bossPower}</div>
-                    </div>
-                    <div>
-                      <div className='text-white/60'>Accuracy</div>
-                      <div className='text-lg font-semibold'>
-                        {Math.round(results.accuracy * 100)}%
-                      </div>
-                    </div>
-                    <div>
-                      <div className='text-white/60'>XP</div>
-                      <div className='text-lg font-semibold'>{results.xp}</div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       )}
 
-      {!hasStarted && (
-        <div className='relative z-20 flex h-full flex-col text-white'>
-          <div className='flex-1 space-y-6 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8'>
-            <div className='flex flex-wrap items-center justify-between gap-3'>
-              <div>
-                <div className='text-xs uppercase tracking-[0.35em] text-white/70'>Dragon Flight</div>
-                <div className='mt-2 text-2xl font-semibold sm:text-3xl'>Flight Briefing</div>
-                <p className='mt-2 max-w-xl text-sm text-white/80'>
-                  Review the vocabulary, then tap Start Game to launch your dragon flight.
-                </p>
-              </div>
-              <div className='rounded-full border border-white/15 bg-white/10 px-4 py-1 text-xs uppercase tracking-[0.25em] text-white/80'>
-                {isLoading ? 'Loading Assets' : 'Ready'}
-              </div>
-            </div>
+      {gamePhase === 'start' && (
+        <GameStartScreen
+          gameTitle='Dragon Flight'
+          gameSubtitle='Skyward Trials'
+          vocabulary={vocabulary}
+          instructions={[
+            { step: 1, text: 'Choose the correct gate translation to grow your dragon flight.', icon: Shield },
+            { step: 2, text: 'Use Arrow keys or tap a gate to steer left or right.', icon: Wand2 },
+            { step: 3, text: 'Reach the boss with enough dragons to claim victory.', icon: Sparkles },
+          ]}
+          proTip='Correct streaks build a stronger flight for the boss battle.'
+          controls={[
+            { label: 'Choose', keys: '←/→ or A/D', color: 'bg-amber-500' },
+            { label: 'Select', keys: 'Tap Gate', color: 'bg-emerald-500' },
+          ]}
+          startButtonText={isLoading ? 'Loading...' : 'Start Flight'}
+          onStart={() => {
+            if (isLoading) return
+            resetGame()
+            setGamePhase('playing')
+          }}
+        />
+      )}
 
-            <div className='grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]'>
-              <div className='flex flex-col items-center justify-center gap-4 rounded-3xl border border-white/10 bg-white/10 px-5 py-6 text-center backdrop-blur sm:px-6 sm:py-8'>
-                <div
-                  className='dragon-flight-intro-sprite h-32 w-32 overflow-hidden rounded-3xl border border-white/20 bg-white/5 shadow-lg sm:h-44 sm:w-44'
-                  style={{
-                    backgroundImage: `url(${ASSETS.playerCamera})`,
-                  }}
-                />
-                <div className='text-base font-semibold'>The Gate Run Begins Soon</div>
-                <div className='text-sm text-white/70'>
-                  Choose the correct translation to grow your dragon flight.
-                </div>
-              </div>
-
-              <div className='rounded-3xl border border-white/10 bg-slate-900/70 p-5 backdrop-blur sm:p-6'>
-                <div className='text-xs uppercase tracking-[0.3em] text-white/60'>
-                  Vocabulary Preview
-                </div>
-                <div className='mt-3 max-h-40 overflow-y-auto rounded-2xl border border-white/10 bg-white/5 sm:max-h-56'>
-                  {vocabulary.length === 0 ? (
-                    <div className='px-4 py-6 text-sm text-white/60'>
-                      No vocabulary loaded yet.
-                    </div>
-                  ) : (
-                    vocabulary.map((item, index) => (
-                      <div
-                        key={`${item.term}-${index}`}
-                        className='flex items-center justify-between gap-4 border-b border-white/10 px-4 py-2 text-sm last:border-b-0'
-                      >
-                        <span className='font-semibold text-white'>{item.term}</span>
-                        <span className='text-white/70'>{item.translation}</span>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className='flex flex-wrap items-center justify-between gap-3 border-t border-white/10 bg-slate-950/60 px-4 py-4 backdrop-blur sm:px-6'>
-            <div className='text-xs uppercase tracking-[0.25em] text-white/70'>
-              {isLoading ? 'Summoning Dragon Gates' : 'Ready To Fly'}
-            </div>
-            <button
-              type='button'
-              className={`rounded-full px-6 py-2 text-sm font-semibold transition ${
-                isLoading
-                  ? 'cursor-not-allowed bg-white/20 text-white/50'
-                  : 'bg-emerald-400 text-emerald-950 hover:bg-emerald-300'
-              }`}
-              onClick={() => {
-                if (isLoading) return
-                resetGame()
-                setHasStarted(true)
-              }}
-              disabled={isLoading}
-            >
-              {isLoading ? 'Loading...' : 'Start Game'}
-            </button>
-          </div>
-        </div>
+      {gamePhase === 'ended' && results && (
+        <GameEndScreen
+          status={results.victory ? 'victory' : 'defeat'}
+          score={results.correctAnswers}
+          xp={results.xp}
+          accuracy={results.accuracy}
+          customStats={[
+            { label: 'Dragons Saved', value: results.dragonCount },
+            { label: 'Boss Power', value: results.bossPower },
+          ]}
+          onRestart={() => {
+            resetGame()
+            setGamePhase('start')
+          }}
+        />
       )}
 
     </div>
