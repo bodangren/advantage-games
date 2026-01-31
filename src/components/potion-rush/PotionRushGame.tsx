@@ -8,6 +8,9 @@ import { withBasePath } from '@/lib/basePath'
 import { useGameLoop } from '@/hooks/useGameLoop'
 import { AnimatePresence, motion, useAnimation } from 'framer-motion'
 import { useRouter } from 'next/navigation'
+import { Beaker } from 'lucide-react'
+import { GameEndScreen } from '@/components/game/GameEndScreen'
+import { GameStartScreen, type ControlHint, type Instruction } from '@/components/game/GameStartScreen'
 
 // Components
 import ConveyorBelt from './ConveyorBelt'
@@ -16,8 +19,6 @@ import CustomerQueue from './CustomerQueue'
 import TrashPortal from './TrashPortal'
 import PotionRushEffectsLayer from './PotionRushEffectsLayer'
 import PotionRushSoundController from './PotionRushSoundController'
-import PotionRushStartScreen from './PotionRushStartScreen'
-import PotionRushSummary from './PotionRushSummary'
 
 interface PotionRushGameProps {
   vocabList: VocabularyItem[]
@@ -70,6 +71,8 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
   const reset = usePotionRushStore(state => state.reset)
   const score = usePotionRushStore(state => state.score)
   const reputation = usePotionRushStore(state => state.reputation)
+  const completedSentences = usePotionRushStore(state => state.completedSentences)
+  const totalXpEarned = usePotionRushStore(state => state.totalXpEarned)
   
   // Visual Effects
   const controls = useAnimation()
@@ -152,12 +155,19 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
       
       <AnimatePresence>
         {!hasStarted && (
-          <PotionRushStartScreen 
-            vocabulary={vocabList} 
+          <GameStartScreen
+            gameTitle="Potion Rush"
+            gameSubtitle="Alchemical Management"
+            icon={Beaker}
+            vocabulary={vocabList}
+            instructions={POTION_RUSH_INSTRUCTIONS}
+            proTip="Use the Trash Portal to clear ruined potions if you make a mistake."
+            controls={POTION_RUSH_CONTROLS}
+            startButtonText="Start Brewing"
             onStart={() => {
               setHasStarted(true)
               startGame(vocabList)
-            }} 
+            }}
           />
         )}
       </AnimatePresence>
@@ -165,7 +175,7 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
       {/* HUD Overlay (HTML is easier for text overlays than Canvas sometimes) */}
       {hasStarted && (
         <div className="absolute top-0 left-0 p-4 text-white z-10 pointer-events-none">
-           <div className="text-xl font-bold text-purple-400 drop-shadow-lg">Score: {score}</div>
+           <div className="text-xl font-bold text-amber-400 drop-shadow-lg">Score: {score}</div>
            <div className="text-sm text-slate-300 drop-shadow-md">Reputation: {reputation}%</div>
         </div>
       )}
@@ -238,7 +248,17 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
       />
 
       {gameState === 'GAME_OVER' && (
-          <PotionRushSummary 
+          <GameEndScreen
+            status="defeat"
+            title="Shop Closed!"
+            subtitle="The reputation of your potion shop hit rock bottom."
+            score={score}
+            xp={totalXpEarned}
+            accuracy={Math.max(0, Math.min(reputation, 100)) / 100}
+            customStats={[
+              { label: 'Customers Served', value: completedSentences },
+            ]}
+            restartButtonText="Open Again"
             onRestart={() => startGame(vocabList)}
             onExit={() => router.push('/')}
           />
@@ -246,3 +266,14 @@ export default function PotionRushGame({ vocabList }: PotionRushGameProps) {
     </div>
   )
 }
+
+const POTION_RUSH_INSTRUCTIONS: Instruction[] = [
+  { step: 1, text: 'Take orders from customers in their native language.' },
+  { step: 2, text: 'Collect target language words from the conveyor belt.' },
+  { step: 3, text: 'Drag correct words to a cauldron, then serve the potion.' },
+]
+
+const POTION_RUSH_CONTROLS: ControlHint[] = [
+  { label: 'Match', keys: 'Meanings', color: 'bg-amber-500' },
+  { label: 'Drag', keys: 'Ingredients', color: 'bg-emerald-500' },
+]
