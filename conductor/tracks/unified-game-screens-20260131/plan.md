@@ -44,7 +44,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 2: Shared End Screen Component
+## Phase 2: Shared End Screen Component [checkpoint: 1a91c03]
 
 ### Task 2.1: Create GameEndScreen component
 - [x] Sub-task: Create `src/components/game/GameEndScreen.tsx` with TypeScript interfaces: d3d4b06
