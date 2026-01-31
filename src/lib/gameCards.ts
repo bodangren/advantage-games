@@ -19,6 +19,14 @@ export const gameCards: GameCard[] = [
     status: 'playable',
   },
   {
+    id: 'dragon-rider',
+    title: 'Dragon Rider',
+    description: 'Ride your dragon to protect your village',
+    cover: withBasePath('/games/dragon-rider/loading-screen-background.png'),
+    href: '/games/dragon-rider',
+    status: 'playable',
+  },
+  {
     id: 'magic-defense',
     title: 'Magic Defense',
     description: 'Defend your castles from falling words by typing their translations.',
