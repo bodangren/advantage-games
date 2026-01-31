@@ -39,7 +39,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Enchanted Library - Primary School Vocabulary Game**
+- [x] **Track: Enchanted Library - Primary School Vocabulary Game**
 *Link: [./conductor/tracks/enchanted-library_20260130/](./conductor/tracks/enchanted-library_20260130/)*
 *Description: A primary-school-friendly vocabulary game where a student wizard collects magic books in a haunted library while avoiding spirits. Features shield mechanic, mana system, and bright cartoon aesthetics.*
 *Priority: Medium*
