@@ -80,7 +80,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 3: Migrate Canvas Games (No Existing Screens)
+## Phase 3: Migrate Canvas Games (No Existing Screens) [checkpoint: 8339887]
 
 ### Task 3.0: Create dev preview page for shared screens
 - [x] Sub-task: Create `src/app/dev/game-screens/page.test.tsx` e5a23e6
