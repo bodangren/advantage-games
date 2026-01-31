@@ -1195,7 +1195,7 @@ const DragonRiderCanvas = ({
               width={crop.width}
               height={crop.height}
               scaleX={layout.armyScale}
-              scaleY={-layout.armyScale}
+              scaleY={layout.armyScale}
               offsetY={crop.height}
               opacity={0.85}
             />
@@ -1212,7 +1212,7 @@ const DragonRiderCanvas = ({
           offsetX={layout.playerFrameWidth / 2}
           offsetY={layout.playerFrameHeight / 2}
           scaleX={layout.playerScale}
-          scaleY={-layout.playerScale}
+          scaleY={layout.playerScale}
         />
 
         {showBoss && (
