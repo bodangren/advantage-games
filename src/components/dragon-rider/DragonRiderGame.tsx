@@ -934,6 +934,7 @@ export function DragonRiderGame({
           <AnimatePresence>
             {state.status === 'boss' && !showResults && (
               <motion.div
+                key='boss-approaches'
                 className='absolute inset-x-0 top-24 mx-auto flex w-fit items-center gap-3 rounded-full border border-white/10 bg-slate-900/70 px-5 py-2 text-sm uppercase tracking-[0.2em] text-white'
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -945,7 +946,7 @@ export function DragonRiderGame({
               </motion.div>
             )}
             {state.status === 'boss' && bossBattleStarted && !showResults && (
-              <>
+              <React.Fragment key='boss-battle'>
                 <motion.div
                   className='absolute inset-x-0 top-16 mx-auto flex w-fit items-center gap-3 rounded-full border border-red-500/40 bg-red-950/70 px-6 py-3 text-xl font-bold uppercase tracking-[0.2em] text-red-200'
                   initial={{ opacity: 0, scale: 0.8, y: -20 }}
@@ -977,7 +978,7 @@ export function DragonRiderGame({
                     </div>
                   </div>
                 </motion.div>
-              </>
+              </React.Fragment>
             )}
           </AnimatePresence>
         </div>
