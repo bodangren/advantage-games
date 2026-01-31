@@ -97,13 +97,13 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Test manually on desktop and mobile 0fe61c2
 
 ### Task 3.2: Migrate Wizard vs Zombie
-- [ ] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state
-- [ ] Sub-task: Import and render GameStartScreen when phase is 'start'
-- [ ] Sub-task: Create Wizard vs Zombie instructions array
-- [ ] Sub-task: Wire onStart to transition to 'playing' phase
-- [ ] Sub-task: Replace inline end screen with GameEndScreen
-- [ ] Sub-task: Pass appropriate stats (zombies defeated, survival time, etc.)
-- [ ] Sub-task: Test manually on desktop and mobile
+- [x] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state 23ce668
+- [x] Sub-task: Import and render GameStartScreen when phase is 'start' 23ce668
+- [x] Sub-task: Create Wizard vs Zombie instructions array 23ce668
+- [x] Sub-task: Wire onStart to transition to 'playing' phase 23ce668
+- [x] Sub-task: Replace inline end screen with GameEndScreen 23ce668
+- [x] Sub-task: Pass appropriate stats (zombies defeated, survival time, etc.) 23ce668
+- [x] Sub-task: Test manually on desktop and mobile 23ce668
 
 ### Task 3.3: Migrate Enchanted Library
 - [ ] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state
