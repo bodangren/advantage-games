@@ -151,9 +151,9 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Test flow: Start Screen → Selection Modal → Battle → End Screen 59a0dc0
 
 ### Task 5.2: Replace BattleResults with GameEndScreen
-- [ ] Sub-task: Replace BattleResults component usage with GameEndScreen
-- [ ] Sub-task: Pass battle-specific custom stats (enemy defeated, etc.)
-- [ ] Sub-task: Wire onRestart to go back to 'selecting' phase (not 'start')
+- [x] Sub-task: Replace BattleResults component usage with GameEndScreen 45332e0
+- [x] Sub-task: Pass battle-specific custom stats (enemy defeated, etc.) 45332e0
+- [x] Sub-task: Wire onRestart to go back to 'selecting' phase (not 'start') 45332e0
 - [ ] Sub-task: Test manually on desktop and mobile
 
 **Verification**: RPG Battle shows vocabulary first, then selection modal, uses shared end screen.
