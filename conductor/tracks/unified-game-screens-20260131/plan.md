@@ -64,17 +64,17 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Handle edge cases (0% accuracy, missing custom stats) d3d4b06
 
 ### Task 2.2: Write tests for GameEndScreen
-- [ ] Sub-task: Create `src/components/game/__tests__/GameEndScreen.test.tsx`
-- [ ] Sub-task: Test: renders score correctly
-- [ ] Sub-task: Test: renders accuracy as percentage
-- [ ] Sub-task: Test: renders XP value
-- [ ] Sub-task: Test: applies victory styling when status is 'victory'
-- [ ] Sub-task: Test: applies defeat styling when status is 'defeat'
-- [ ] Sub-task: Test: renders custom stats when provided
-- [ ] Sub-task: Test: calls onRestart when button clicked
-- [ ] Sub-task: Test: renders exit button when onExit provided
-- [ ] Sub-task: Test: handles 0% accuracy edge case
-- [ ] Sub-task: Run tests: `CI=true npm test src/components/game/__tests__/GameEndScreen.test.tsx`
+- [x] Sub-task: Create `src/components/game/__tests__/GameEndScreen.test.tsx` afeb74a
+- [x] Sub-task: Test: renders score correctly afeb74a
+- [x] Sub-task: Test: renders accuracy as percentage afeb74a
+- [x] Sub-task: Test: renders XP value afeb74a
+- [x] Sub-task: Test: applies victory styling when status is 'victory' afeb74a
+- [x] Sub-task: Test: applies defeat styling when status is 'defeat' afeb74a
+- [x] Sub-task: Test: renders custom stats when provided afeb74a
+- [x] Sub-task: Test: calls onRestart when button clicked afeb74a
+- [x] Sub-task: Test: renders exit button when onExit provided afeb74a
+- [x] Sub-task: Test: handles 0% accuracy edge case afeb74a
+- [x] Sub-task: Run tests: `CI=true npm test src/components/game/__tests__/GameEndScreen.test.tsx` afeb74a
 
 **Verification**: End screen renders correctly for all statuses, all tests pass with >80% coverage.
 
