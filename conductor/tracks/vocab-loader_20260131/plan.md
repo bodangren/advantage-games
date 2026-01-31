@@ -18,7 +18,7 @@
 ### Task 1.2: Create JSON Schema and Type Validation
 - [x] Write tests for runtime type validation
 - [x] Implement `validateVocabularyData()` function
-- [x] Ensure VocabularyItem[] type is enforced at runtime
+- [x] Ensure VocabularyItem[] type is enforced at runtime [fa71906]
 
 - [ ] Task: Conductor - Phase 1 Verification (Protocol in workflow.md)
 
