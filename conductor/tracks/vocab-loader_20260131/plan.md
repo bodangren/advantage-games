@@ -25,19 +25,19 @@
 ## Phase 2: Vocabulary Data Files
 
 ### Task 2.1: Create Default Fallback Vocabulary
-- [ ] Create `public/vocab/default.json` with generic vocabulary (current SAMPLE_VOCABULARY content)
+- [x] Create `public/vocab/default.json` with generic vocabulary (current SAMPLE_VOCABULARY content) [64061dd]
 
 ### Task 2.2: Create Word-Based Game Vocabulary Files
-- [ ] Create `public/vocab/enchanted-library.json`
-- [ ] Create `public/vocab/rune-match.json`
-- [ ] Create `public/vocab/wizard-vs-zombie.json`
-- [ ] Create `public/vocab/dragon-flight.json`
-- [ ] Create `public/vocab/rpg-battle.json`
-- [ ] Create `public/vocab/magic-defense.json`
+- [x] Create `public/vocab/enchanted-library.json`
+- [x] Create `public/vocab/rune-match.json`
+- [x] Create `public/vocab/wizard-vs-zombie.json`
+- [x] Create `public/vocab/dragon-flight.json`
+- [x] Create `public/vocab/rpg-battle.json`
+- [x] Create `public/vocab/magic-defense.json` [64061dd]
 
 ### Task 2.3: Create Sentence-Based Game Vocabulary Files
-- [ ] Create `public/vocab/potion-rush.json`
-- [ ] Create `public/vocab/castle-defense.json`
+- [x] Create `public/vocab/potion-rush.json`
+- [x] Create `public/vocab/castle-defense.json` [64061dd]
 
 - [ ] Task: Conductor - Phase 2 Verification (Protocol in workflow.md)
 
