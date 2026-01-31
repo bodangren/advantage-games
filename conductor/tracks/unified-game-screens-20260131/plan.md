@@ -182,7 +182,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 7: Cleanup
+## Phase 7: Cleanup [checkpoint: a98b098]
 
 ### Task 7.1: Remove deprecated components
 - [x] Sub-task: Delete `src/components/castle-defense/CastleDefenseStartScreen.tsx` 556bde6
