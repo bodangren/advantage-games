@@ -139,7 +139,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 5: Migrate RPG Battle
+## Phase 5: Migrate RPG Battle [checkpoint: 006aabe]
 
 ### Task 5.1: Add start screen before battle selection
 - [x] Sub-task: Analyze BattleSelectionModal flow (hero → location → enemy → ready) 59a0dc0
