@@ -925,19 +925,6 @@ export function DragonRiderGame({
       {canRenderGame && (
         <div className='absolute inset-0 z-20 pointer-events-none'>
           <AnimatePresence>
-            {state.status === 'boss' && !showResults && (
-              <motion.div
-                key='boss-approaches'
-                className='absolute inset-x-0 top-24 mx-auto flex w-fit items-center gap-3 rounded-full border border-white/10 bg-slate-900/70 px-5 py-2 text-sm uppercase tracking-[0.2em] text-white'
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                data-testid='dragon-rider-boss'
-              >
-                Skeleton King Approaches
-              </motion.div>
-            )}
             {state.status === 'boss' && bossBattleStarted && !showResults && (
               <React.Fragment key='boss-battle'>
                 <motion.div

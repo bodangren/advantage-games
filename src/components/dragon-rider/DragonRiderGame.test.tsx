@@ -129,7 +129,6 @@ describe('DragonRiderGame', () => {
     })
 
     expect(screen.getByTestId('dragon-rider')).toHaveAttribute('data-status', 'boss')
-    expect(screen.getByTestId('dragon-rider-boss')).toBeInTheDocument()
 
     act(() => {
       jest.advanceTimersByTime(8000)
