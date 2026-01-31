@@ -163,12 +163,12 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 6: Migrate Castle Defense & Potion Rush
 
 ### Task 6.1: Migrate Castle Defense
-- [ ] Sub-task: Replace CastleDefenseStartScreen import with GameStartScreen
-- [ ] Sub-task: Migrate instructions and controls to new prop format
-- [ ] Sub-task: Replace CastleDefenseEndScreen import with GameEndScreen
-- [ ] Sub-task: Pass custom stats (waves, enemies) via customStats prop
-- [ ] Sub-task: Verify visual parity with original (same amber styling)
-- [ ] Sub-task: Test manually on desktop and mobile
+- [x] Sub-task: Replace CastleDefenseStartScreen import with GameStartScreen dc6abe1
+- [x] Sub-task: Migrate instructions and controls to new prop format dc6abe1
+- [x] Sub-task: Replace CastleDefenseEndScreen import with GameEndScreen dc6abe1
+- [x] Sub-task: Pass custom stats (waves, enemies) via customStats prop dc6abe1
+- [x] Sub-task: Verify visual parity with original (same amber styling) dc6abe1
+- [x] Sub-task: Test manually on desktop and mobile dc6abe1
 
 ### Task 6.2: Migrate Potion Rush
 - [ ] Sub-task: Replace PotionRushStartScreen import with GameStartScreen
