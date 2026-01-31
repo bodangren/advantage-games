@@ -3,13 +3,15 @@
 import { useEffect } from 'react'
 import { GameContainer } from '@/components/game/GameContainer'
 import { useGameStore } from '@/store/useGameStore'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
+import { loadVocabulary } from '@/lib/vocabLoader'
 
 export default function MagicDefensePage() {
   const setVocabulary = useGameStore((state) => state.setVocabulary)
 
   useEffect(() => {
-    setVocabulary(SAMPLE_VOCABULARY)
+    loadVocabulary('magic-defense')
+      .then((vocab) => setVocabulary(vocab))
+      .catch((error) => console.error('Failed to load vocabulary:', error))
   }, [setVocabulary])
 
   return (

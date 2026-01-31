@@ -6,7 +6,7 @@ import { useGameStore } from '@/store/useGameStore'
 import { useRPGBattleStore } from '@/store/useRPGBattleStore'
 import { selectBattleActions, WordPerformance } from '@/lib/rpgBattleWordSelection'
 import { calculateRpgBattleXp } from '@/lib/rpgBattleXp'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
+import { loadVocabulary } from '@/lib/vocabLoader'
 import { battleEnemies, battleHeroes, battleLocations } from '@/lib/rpgBattleSelection'
 import { rollEnemyDamage, scaleBattleXp, scaleEnemyHealth } from '@/lib/rpgBattleScaling'
 import { ActionMenu } from '@/components/rpg-battle/ActionMenu'
@@ -84,7 +84,9 @@ export default function RpgBattlePage() {
   )
 
   useEffect(() => {
-    setVocabulary(SAMPLE_VOCABULARY)
+    loadVocabulary('rpg-battle')
+      .then((vocab) => setVocabulary(vocab))
+      .catch((error) => console.error('Failed to load vocabulary:', error))
     resetSelection()
     setStatus('idle')
   }, [resetSelection, setStatus, setVocabulary])

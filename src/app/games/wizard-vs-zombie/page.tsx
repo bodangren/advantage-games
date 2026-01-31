@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect } from 'react'
 import type { WizardZombieGameResult } from '@/components/wizard-vs-zombie/WizardZombieGame'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
+import { loadVocabulary } from '@/lib/vocabLoader'
 import { useGameStore } from '@/store/useGameStore'
 
 const WizardZombieGame = dynamic(
@@ -19,7 +19,9 @@ export default function WizardZombiePage() {
 
   useEffect(() => {
     if (vocabulary.length === 0) {
-      setVocabulary(SAMPLE_VOCABULARY)
+      loadVocabulary('wizard-vs-zombie')
+        .then((vocab) => setVocabulary(vocab))
+        .catch((error) => console.error('Failed to load vocabulary:', error))
     }
   }, [vocabulary.length, setVocabulary])
 

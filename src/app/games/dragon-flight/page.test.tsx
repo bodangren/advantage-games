@@ -1,7 +1,18 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import DragonFlightPage from './page'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
 import { useGameStore, DEFAULT_CASTLES } from '@/store/useGameStore'
+
+jest.mock('@/lib/vocabLoader', () => ({
+  loadVocabulary: jest.fn().mockResolvedValue([
+    { term: 'test', translation: 'ทดสอบ' },
+    { term: 'hello', translation: 'สวัสดี' },
+  ]),
+}))
+
+const mockVocab = [
+  { term: 'test', translation: 'ทดสอบ' },
+  { term: 'hello', translation: 'สวัสดี' },
+]
 
 jest.mock('@/components/dragon-flight/DragonFlightGame', () => ({
   DragonFlightGame: ({ vocabulary, onComplete }: {
@@ -59,11 +70,11 @@ describe('DragonFlightPage', () => {
     expect(screen.getByText(/choose the correct gate/i)).toBeInTheDocument()
 
     await waitFor(() => {
-      expect(useGameStore.getState().vocabulary).toEqual(SAMPLE_VOCABULARY)
+      expect(useGameStore.getState().vocabulary).toEqual(mockVocab)
     })
 
     expect(screen.getByTestId('dragon-flight-vocab')).toHaveTextContent(
-      SAMPLE_VOCABULARY.length.toString()
+      mockVocab.length.toString()
     )
   })
 

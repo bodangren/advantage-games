@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect } from 'react'
-import { SAMPLE_SENTENCES } from '@/lib/sampleSentences'
+import { loadVocabulary } from '@/lib/vocabLoader'
 import { useGameStore } from '@/store/useGameStore'
 
 const CastleDefenseGame = dynamic(
@@ -18,7 +18,9 @@ export default function CastleDefensePage() {
 
   useEffect(() => {
     if (vocabulary.length === 0) {
-      setVocabulary(SAMPLE_SENTENCES)
+      loadVocabulary('castle-defense')
+        .then((vocab) => setVocabulary(vocab))
+        .catch((error) => console.error('Failed to load vocabulary:', error))
     }
   }, [vocabulary.length, setVocabulary])
 

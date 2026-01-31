@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import type { RuneMatchGameResult } from '@/components/rune-match/RuneMatchGame'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
+import { loadVocabulary } from '@/lib/vocabLoader'
 import { useGameStore } from '@/store/useGameStore'
 
 const RuneMatchGame = dynamic(
@@ -21,7 +21,9 @@ export default function RuneMatchPage() {
 
   useEffect(() => {
     if (vocabulary.length === 0) {
-      setVocabulary(SAMPLE_VOCABULARY)
+      loadVocabulary('rune-match')
+        .then((vocab) => setVocabulary(vocab))
+        .catch((error) => console.error('Failed to load vocabulary:', error))
     }
   }, [vocabulary.length, setVocabulary])
 

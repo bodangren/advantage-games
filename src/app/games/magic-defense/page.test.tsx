@@ -1,7 +1,18 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import MagicDefensePage from './page';
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary';
 import { useGameStore, DEFAULT_CASTLES } from '@/store/useGameStore';
+
+jest.mock('@/lib/vocabLoader', () => ({
+  loadVocabulary: jest.fn().mockResolvedValue([
+    { term: 'test', translation: 'ทดสอบ' },
+    { term: 'hello', translation: 'สวัสดี' },
+  ]),
+}))
+
+const mockVocab = [
+  { term: 'test', translation: 'ทดสอบ' },
+  { term: 'hello', translation: 'สวัสดี' },
+]
 
 jest.mock('@/components/game/GameContainer', () => ({
   GameContainer: () => <div data-testid='game-container' />,
@@ -27,11 +38,11 @@ describe('MagicDefensePage', () => {
     expect(screen.getByTestId('game-container')).toBeInTheDocument();
   });
 
-  it('loads sample vocabulary into the game store', async () => {
+  it('loads vocabulary into the game store', async () => {
     render(<MagicDefensePage />);
 
     await waitFor(() => {
-      expect(useGameStore.getState().vocabulary).toEqual(SAMPLE_VOCABULARY);
+      expect(useGameStore.getState().vocabulary).toEqual(mockVocab);
     });
   });
 });

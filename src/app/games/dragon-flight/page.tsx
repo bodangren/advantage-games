@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect } from 'react'
 import { DragonFlightGame } from '@/components/dragon-flight/DragonFlightGame'
 import type { DragonFlightResults } from '@/lib/dragonFlight'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
+import { loadVocabulary } from '@/lib/vocabLoader'
 import { useGameStore } from '@/store/useGameStore'
 
 export default function DragonFlightPage() {
@@ -13,7 +13,9 @@ export default function DragonFlightPage() {
   const setLastResult = useGameStore((state) => state.setLastResult)
 
   useEffect(() => {
-    setVocabulary(SAMPLE_VOCABULARY)
+    loadVocabulary('dragon-flight')
+      .then((vocab) => setVocabulary(vocab))
+      .catch((error) => console.error('Failed to load vocabulary:', error))
   }, [setVocabulary])
 
   const handleComplete = useCallback(

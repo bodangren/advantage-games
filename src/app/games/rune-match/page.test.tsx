@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import RuneMatchPage from './page'
 
 const mockPush = jest.fn()
@@ -25,6 +25,7 @@ jest.mock('next/navigation', () => ({
 // Mock useGameStore
 const mockSetVocabulary = jest.fn()
 const mockSetLastResult = jest.fn()
+const mockLoadVocabulary = jest.fn().mockResolvedValue([])
 
 jest.mock('@/store/useGameStore', () => ({
   useGameStore: (selector: (state: { vocabulary: string[]; setVocabulary: () => void; setLastResult: () => void }) => unknown) =>
@@ -33,6 +34,10 @@ jest.mock('@/store/useGameStore', () => ({
       setVocabulary: mockSetVocabulary,
       setLastResult: mockSetLastResult,
     }),
+}))
+
+jest.mock('@/lib/vocabLoader', () => ({
+  loadVocabulary: (...args: unknown[]) => mockLoadVocabulary(...args),
 }))
 
 describe('RuneMatchPage', () => {
@@ -66,8 +71,10 @@ describe('RuneMatchPage', () => {
     expect(screen.getByTestId('rune-match-game')).toBeInTheDocument()
   })
 
-  it('sets sample vocabulary if vocabulary is empty', () => {
+  it('sets vocabulary if vocabulary is empty', async () => {
     render(<RuneMatchPage />)
-    expect(mockSetVocabulary).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(mockSetVocabulary).toHaveBeenCalled()
+    })
   })
 })
