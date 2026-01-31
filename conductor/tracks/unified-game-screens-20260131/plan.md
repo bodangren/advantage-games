@@ -106,13 +106,13 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Test manually on desktop and mobile 23ce668
 
 ### Task 3.3: Migrate Enchanted Library
-- [ ] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state
-- [ ] Sub-task: Import and render GameStartScreen when phase is 'start'
-- [ ] Sub-task: Create Enchanted Library instructions array
-- [ ] Sub-task: Wire onStart to transition to 'playing' phase
-- [ ] Sub-task: Replace inline victory screen with GameEndScreen
-- [ ] Sub-task: Pass appropriate stats (books collected, mana, etc.)
-- [ ] Sub-task: Test manually on desktop and mobile
+- [x] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state e59a8f5
+- [x] Sub-task: Import and render GameStartScreen when phase is 'start' e59a8f5
+- [x] Sub-task: Create Enchanted Library instructions array e59a8f5
+- [x] Sub-task: Wire onStart to transition to 'playing' phase e59a8f5
+- [x] Sub-task: Replace inline victory screen with GameEndScreen e59a8f5
+- [x] Sub-task: Pass appropriate stats (books collected, mana, etc.) e59a8f5
+- [x] Sub-task: Test manually on desktop and mobile e59a8f5
 
 **Verification**: All 3 canvas games show start screen before gameplay and end screen after.
 
