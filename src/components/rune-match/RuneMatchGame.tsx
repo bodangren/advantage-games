@@ -9,8 +9,8 @@ import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
 import { MonsterSelection } from './MonsterSelection'
-import { Button } from '@/components/ui/button'
 import { GameStartScreen } from '@/components/game/GameStartScreen'
+import { GameEndScreen } from '@/components/game/GameEndScreen'
 
 export type RuneMatchGameResult = { xp: number; accuracy: number }
 export type RuneMatchGameProps = { vocabulary: VocabularyItem[]; onComplete: (result: RuneMatchGameResult) => void }
@@ -19,6 +19,13 @@ type RuneMatchAssets = {
   monsters: { goblin: HTMLImageElement; skeleton: HTMLImageElement; orc: HTMLImageElement; dragon: HTMLImageElement }
   runes: { base: HTMLImageElement; heal: HTMLImageElement; shield: HTMLImageElement }
   background: HTMLImageElement
+}
+
+const MONSTER_LABELS: Record<MonsterType, string> = {
+  goblin: 'Goblin',
+  skeleton: 'Skeleton',
+  orc: 'Orc',
+  dragon: 'Dragon',
 }
 
 export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
@@ -114,6 +121,13 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
 
   useEffect(() => { resetGame() }, [resetGame])
 
+  useEffect(() => {
+    if (!gameState) return
+    if (gameState.status === 'victory' || gameState.status === 'defeat') {
+      setGamePhase('ended')
+    }
+  }, [gameState])
+
   const handleSelectMonster = useCallback((monsterType: MonsterType) => {
     const config = RUNE_MATCH_CONFIG.monsters[monsterType]
     setGameState((prev) => {
@@ -202,6 +216,13 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   // Dynamic bar width
   const barWidth = Math.min(300, dimensions.width - 40)
   const barX = (dimensions.width - barWidth) / 2
+  const accuracy = gameState
+    ? gameState.totalAttempts > 0
+      ? gameState.correctAnswers / gameState.totalAttempts
+      : 1
+    : 0
+  const earnedXp = gameState?.status === 'victory' ? gameState.monster?.xp ?? 0 : 0
+  const monsterLabel = gameState?.monster?.type ? MONSTER_LABELS[gameState.monster.type] : 'Unknown'
 
   return (
     <div ref={containerRef} data-testid="rune-match-container" className="relative h-[80vh] w-full overflow-hidden rounded-2xl bg-slate-950 border border-white/10 md:aspect-video md:h-auto">
@@ -287,42 +308,22 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
             <MonsterSelection onSelect={handleSelectMonster}/>
           </motion.div>
         )}
-        {gameState?.status === 'victory' && assets && (
-          <motion.div key="victory" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md text-center space-y-6">
-            <div className="w-[140px] h-[140px] bg-yellow-500/20 rounded-3xl flex items-center justify-center overflow-hidden border-2 border-yellow-500/30 shadow-lg shadow-yellow-500/10">
-              <div 
-                style={{
-                  width: '120px',
-                  height: '120px',
-                  backgroundImage: `url(${assets.monsters[gameState.monster?.type || 'goblin'].src})`,
-                  backgroundSize: '300% 400%',
-                  backgroundPosition: `${monsterAnimFrame * 50}% 100%`, // Row 3 is Death pose
-                  imageRendering: 'pixelated'
-                }}
-              />
-            </div>
-            <div className="space-y-2"><h2 className="text-4xl font-bold text-white">Victory!</h2><p className="text-xl text-slate-400">You defeated the {gameState.monster?.type}!</p></div>
-            <div className="p-6 bg-white/5 rounded-2xl border border-white/10 min-w-[200px]"><p className="text-sm text-slate-500 uppercase tracking-widest">XP Earned</p><p className="text-5xl font-black text-yellow-500">+{gameState.monster?.xp}</p></div>
-            <Button onClick={() => onComplete({ xp: gameState.monster?.xp || 0, accuracy: gameState.totalAttempts > 0 ? (gameState.correctAnswers / gameState.totalAttempts) * 100 : 100 })} size="lg" className="px-12 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">Continue</Button>
-          </motion.div>
-        )}
-        {gameState?.status === 'defeat' && assets && (
-          <motion.div key="defeat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md text-center space-y-6">
-            <div className="w-[140px] h-[140px] bg-red-500/20 rounded-3xl flex items-center justify-center overflow-hidden border-2 border-red-500/30 shadow-lg shadow-red-500/10">
-              <div 
-                style={{
-                  width: '120px',
-                  height: '120px',
-                  backgroundImage: `url(${assets.monsters[gameState.monster?.type || 'goblin'].src})`,
-                  backgroundSize: '300% 400%',
-                  backgroundPosition: `${monsterAnimFrame * 50}% 33.33%`, // Row 1 is Attack
-                  imageRendering: 'pixelated'
-                }}
-              />
-            </div>
-            <div className="space-y-2"><h2 className="text-4xl font-bold text-white">Defeat...</h2><p className="text-xl text-slate-400">The monster was too strong.</p></div>
-            <Button onClick={resetGame} variant="outline" size="lg" className="px-12 border-red-500 text-red-500 hover:bg-red-500 hover:text-white">Try Again</Button>
-          </motion.div>
+        {gamePhase === 'ended' && gameState && (
+          <GameEndScreen
+            status={gameState.status === 'victory' ? 'victory' : 'defeat'}
+            score={gameState.correctAnswers}
+            xp={earnedXp}
+            accuracy={accuracy}
+            customStats={[
+              { label: 'Monster', value: monsterLabel },
+              { label: 'XP Reward', value: `${gameState.monster?.xp ?? 0} XP` },
+            ]}
+            onRestart={() => {
+              resetGame()
+              setGamePhase('selecting')
+            }}
+            onExit={() => onComplete({ xp: earnedXp, accuracy })}
+          />
         )}
       </AnimatePresence>
     </div>

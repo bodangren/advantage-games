@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent, act } from '@testing-library/react'
 import { RuneMatchGame } from './RuneMatchGame'
 import type { VocabularyItem } from '@/store/useGameStore'
 import type React from 'react'
@@ -212,5 +212,40 @@ describe('RuneMatchGame', () => {
     }
 
     spy.mockRestore()
+  })
+
+  it('shows the end screen on defeat and restarts to selection', async () => {
+    jest.useFakeTimers()
+    const spy = jest.spyOn(Element.prototype, 'getBoundingClientRect').mockReturnValue({
+      width: 800, height: 600, top: 0, left: 0, bottom: 600, right: 800, x: 0, y: 0, toJSON: () => {},
+    })
+
+    render(<RuneMatchGame vocabulary={SAMPLE_VOCAB} onComplete={mockOnComplete} />)
+
+    await act(async () => {
+      jest.advanceTimersByTime(1)
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /start match/i }))
+    await act(async () => {
+      jest.advanceTimersByTime(500)
+    })
+    expect(screen.getByText(/Choose Your Opponent/i)).toBeInTheDocument()
+
+    const battleButtons = screen.getAllByRole('button', { name: /Battle/i })
+    fireEvent.click(battleButtons[3])
+    expect(screen.getByText(/DRAGON:/i)).toBeInTheDocument()
+
+    await act(async () => {
+      jest.advanceTimersByTime(600000)
+    })
+
+    expect(screen.getByText(/Defeated/i)).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /play again/i }))
+    expect(screen.getByText(/Choose Your Opponent/i)).toBeInTheDocument()
+
+    spy.mockRestore()
+    jest.useRealTimers()
   })
 })
