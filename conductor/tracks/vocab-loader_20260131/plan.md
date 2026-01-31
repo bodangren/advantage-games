@@ -49,39 +49,39 @@
 - [x] Verify game functions with loaded vocabulary [e6ee05a]
 
 ### Task 3.2: Migrate Rune Match
-- [ ] Write integration test for vocabulary loading
-- [ ] Update page.tsx to use vocabLoader
-- [ ] Verify game functions with loaded vocabulary
+- [x] Write integration test for vocabulary loading
+- [x] Update page.tsx to use vocabLoader
+- [x] Verify game functions with loaded vocabulary [d6a54c4]
 
 ### Task 3.3: Migrate Wizard vs Zombie
-- [ ] Write integration test for vocabulary loading
-- [ ] Update page.tsx to use vocabLoader
-- [ ] Verify game functions with loaded vocabulary
+- [x] Write integration test for vocabulary loading
+- [x] Update page.tsx to use vocabLoader
+- [x] Verify game functions with loaded vocabulary [d6a54c4]
 
 ### Task 3.4: Migrate Dragon Flight
-- [ ] Write integration test for vocabulary loading
-- [ ] Update page.tsx to use vocabLoader
-- [ ] Verify game functions with loaded vocabulary
+- [x] Write integration test for vocabulary loading
+- [x] Update page.tsx to use vocabLoader
+- [x] Verify game functions with loaded vocabulary [d6a54c4]
 
 ### Task 3.5: Migrate RPG Battle
-- [ ] Write integration test for vocabulary loading
-- [ ] Update page.tsx to use vocabLoader
-- [ ] Verify game functions with loaded vocabulary
+- [x] Write integration test for vocabulary loading
+- [x] Update page.tsx to use vocabLoader
+- [x] Verify game functions with loaded vocabulary [d6a54c4]
 
 ### Task 3.6: Migrate Magic Defense
-- [ ] Write integration test for vocabulary loading
-- [ ] Update page.tsx to use vocabLoader
-- [ ] Verify game functions with loaded vocabulary
+- [x] Write integration test for vocabulary loading
+- [x] Update page.tsx to use vocabLoader
+- [x] Verify game functions with loaded vocabulary [d6a54c4]
 
 ### Task 3.7: Migrate Potion Rush
-- [ ] Write integration test for vocabulary loading
-- [ ] Update page.tsx to use vocabLoader
-- [ ] Verify game functions with loaded vocabulary
+- [x] Write integration test for vocabulary loading
+- [x] Update page.tsx to use vocabLoader
+- [x] Verify game functions with loaded vocabulary [d6a54c4]
 
 ### Task 3.8: Migrate Castle Defense
-- [ ] Write integration test for vocabulary loading
-- [ ] Update page.tsx to use vocabLoader
-- [ ] Verify game functions with loaded vocabulary
+- [x] Write integration test for vocabulary loading
+- [x] Update page.tsx to use vocabLoader
+- [x] Verify game functions with loaded vocabulary [d6a54c4]
 
 - [ ] Task: Conductor - Phase 3 Verification (Protocol in workflow.md)
 
