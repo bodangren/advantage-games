@@ -44,9 +44,9 @@
 ## Phase 3: Game Migration
 
 ### Task 3.1: Migrate Enchanted Library
-- [ ] Write integration test for vocabulary loading
-- [ ] Update page.tsx to use vocabLoader
-- [ ] Verify game functions with loaded vocabulary
+- [x] Write integration test for vocabulary loading
+- [x] Update page.tsx to use vocabLoader
+- [x] Verify game functions with loaded vocabulary [e6ee05a]
 
 ### Task 3.2: Migrate Rune Match
 - [ ] Write integration test for vocabulary loading
