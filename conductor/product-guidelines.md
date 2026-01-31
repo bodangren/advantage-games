@@ -1,7 +1,10 @@
 # Product Guidelines
 
-## Visual Aesthetic: Modern Clean
-*   **Target Audience:** Secondary school students (Ages 11-18). The design should be engaging and modern without being overly "childish."
+## Visual Aesthetic: Modern Clean & Bright Cartoon
+*   **Target Audience:** Primary school (Ages 7-11) and Secondary school students (Ages 11-18).
+*   **Style Profiles:**
+    *   **Modern Clean (Secondary):** Engaging and professional, utilizing Material Design principles with soft shadows and clear hierarchy.
+    *   **Bright Cartoon (Primary):** Friendly, vibrant character-driven designs using warm, inviting color palettes and large, approachable UI elements (e.g., Enchanted Library).
 *   **Design Principles:** Utilize Material Design principles with rounded corners, soft shadows, and a clear hierarchy.
 *   **Color Palette:** Use vibrant, high-contrast colors for game elements to ensure visibility against professional, clean backgrounds.
 *   **Typography:** Prioritize legibility with modern, sans-serif fonts suitable for quick reading during gameplay.

@@ -19,6 +19,7 @@ To develop a high-engagement "sandbox" of arcade-style vocabulary games designed
 *   **Tetris/Stacker Variant:** A hybrid mechanic where players must successfully answer multiple-choice questions to gain temporary control over falling blocks.
 *   **Endless Runner:** A lane-switching or jumping game where the correct path is determined by identifying the right translation among several options.
 *   **Rune Match (Match-3 RPG):** A tactical combat game where matching identical-looking vocabulary "runes" deals damage to monsters. Players must read the translations on the runes to find matches.
+*   **Enchanted Library (Exploration):** A primary-school-friendly game where players control a student wizard collecting magic books in a haunted library. Features a mana-based scoring system, a shield mechanic with reflection physics, and progressive difficulty as ghostly spirits become faster.
 *   **Potion Rush (Time Management):** A fast-paced game where players fulfill potion orders by collecting word "ingredients" from a conveyor belt. It features intelligent spawning (only needed words appear), a reputation-based health system, and dynamic difficulty scaling that reduces customer patience and increases belt speed over time.
 
 ## Progression and XP
