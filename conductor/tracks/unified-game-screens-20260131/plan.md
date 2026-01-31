@@ -194,10 +194,10 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Verify build succeeds: `CI=true npm run build` 556bde6
 
 ### Task 7.2: Update old shared components
-- [ ] Sub-task: Remove or deprecate `src/components/game/StartScreen.tsx` (old generic)
-- [ ] Sub-task: Remove or deprecate `src/components/game/ResultsScreen.tsx` (old generic)
-- [ ] Sub-task: Add JSDoc comments to GameStartScreen and GameEndScreen
-- [ ] Sub-task: Run final test suite: `CI=true npm test`
+- [x] Sub-task: Remove or deprecate `src/components/game/StartScreen.tsx` (old generic) 056afe4
+- [x] Sub-task: Remove or deprecate `src/components/game/ResultsScreen.tsx` (old generic) 056afe4
+- [x] Sub-task: Add JSDoc comments to GameStartScreen and GameEndScreen 056afe4
+- [x] Sub-task: Run final test suite: `CI=true npm test` 056afe4
 
 **Verification**: No unused code, build succeeds, all tests pass.
 
