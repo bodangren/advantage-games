@@ -9,8 +9,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Mobile Optimization (Portrait Mode)**
-*Link: [./conductor/tracks/mobile-optimization-20260127/](./conductor/tracks/mobile-optimization-20260127/)*
+- [x] **Track: Mobile Optimization (Portrait Mode)**
+*Link: [./conductor/archive/mobile-optimization-20260127/](./conductor/archive/mobile-optimization-20260127/)*
 
 ---
 
@@ -22,8 +22,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Castle Defense - Core Fixes and Polish**
-*Link: [./conductor/tracks/castle-defense-fixes-20260129/](./conductor/tracks/castle-defense-fixes-20260129/)*
+- [x] **Track: Castle Defense - Core Fixes and Polish**
+*Link: [./conductor/archive/castle-defense-fixes-20260129/](./conductor/archive/castle-defense-fixes-20260129/)*
 *Description: Fix sentence loading, word collection mechanics, visual display, and add fullscreen support*
 *Priority: High*
 
