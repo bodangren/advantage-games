@@ -53,6 +53,7 @@ type GatePair = {
   id: string
   round: DragonRiderRound
   y: number
+  gateRow: number
 }
 
 type PendingSelection = {
@@ -557,6 +558,7 @@ export function DragonRiderGame({
         id: `gate-${gateIdRef.current}`,
         round: round ?? buildGateRound(vocabulary),
         y: -layout.leftGate.height,
+        gateRow: Math.floor(Math.random() * 3), // Random gate visual (0, 1, or 2)
       }
     },
     [layout, vocabulary]
@@ -571,8 +573,8 @@ export function DragonRiderGame({
   }, [layout, createGatePair, gatePairs.length])
 
   useInterval(() => {
-    setPlayerFrame((prev) => (prev + 1) % 9)
-  }, gamePhase === 'playing' ? PLAYER_ANIM_MS : null)
+    setPlayerFrame((prev) => (prev + 1) % 6)
+  }, gamePhase === 'playing' && state.status === 'running' ? PLAYER_ANIM_MS : null)
 
   useInterval(() => {
     setBossFrame((prev) => (prev + 1) % 3)
@@ -1133,8 +1135,12 @@ const DragonRiderCanvas = ({
     }
   }, [assets, stageSize.width])
 
-  const playerRow = Math.floor(playerFrame / 3)
-  const playerCol = playerFrame % 3
+  // During flight: use rows 0-1 from animation
+  // During boss battle: use row 2 with state-based columns
+  const playerRow = showBoss ? 2 : Math.floor(playerFrame / 3)
+  const playerCol = showBoss
+    ? (dragonCount < bossHealth ? 2 : (bossHealth > 0 ? 1 : 0)) // losing : attacking : idle
+    : playerFrame % 3
 
   const bossRow = showBoss && bossHealth <= 0 ? 2 : 0
   const bossCol = bossFrame % 3
@@ -1280,7 +1286,6 @@ const DragonRiderCanvas = ({
           const leftColumn = isFeedbackPair ? (pair.round.correctSide === 'left' ? 1 : 2) : 0
           const rightColumn = isFeedbackPair ? (pair.round.correctSide === 'right' ? 1 : 2) : 0
           const gateOpacity = isActive ? 1 : 0.7
-          const gateRow = 0 // Use first row of sprite sheet
 
           return (
             <React.Fragment key={pair.id}>
@@ -1295,7 +1300,7 @@ const DragonRiderCanvas = ({
               >
                 <KonvaImage
                   image={assets.gates}
-                  crop={getSpriteCrop(gateGrid, leftColumn, gateRow)}
+                  crop={getSpriteCrop(gateGrid, leftColumn, pair.gateRow)}
                   width={layout.gateFrameWidth}
                   height={layout.gateFrameHeight}
                   offsetX={layout.gateFrameWidth / 2}
@@ -1323,7 +1328,7 @@ const DragonRiderCanvas = ({
               >
                 <KonvaImage
                   image={assets.gates}
-                  crop={getSpriteCrop(gateGrid, rightColumn, gateRow)}
+                  crop={getSpriteCrop(gateGrid, rightColumn, pair.gateRow)}
                   width={layout.gateFrameWidth}
                   height={layout.gateFrameHeight}
                   offsetX={layout.gateFrameWidth / 2}
