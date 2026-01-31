@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import RpgBattlePage from './page'
 import { useRPGBattleStore } from '@/store/useRPGBattleStore'
 import { withBasePath } from '@/lib/basePath'
@@ -89,5 +89,36 @@ describe('RpgBattlePage', () => {
     })
 
     expect(screen.getByRole('heading', { name: /choose your hero/i })).toBeInTheDocument()
+  })
+
+  it('shows the end screen and restarts to selection', () => {
+    jest.useFakeTimers()
+    render(<RpgBattlePage />)
+
+    act(() => {
+      screen.getByRole('button', { name: /start battle/i }).click()
+    })
+
+    act(() => {
+      const { selectHero, selectLocation, selectEnemy } = useRPGBattleStore.getState()
+      selectHero('male')
+      selectLocation('forest-clearing')
+      selectEnemy('slime')
+    })
+
+    act(() => {
+      useRPGBattleStore.getState().setStatus('victory')
+    })
+
+    act(() => {
+      jest.advanceTimersByTime(1300)
+    })
+
+    expect(screen.getByText(/Victory!/i)).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /play again/i }))
+    expect(screen.getByRole('heading', { name: /choose your hero/i })).toBeInTheDocument()
+
+    jest.useRealTimers()
   })
 })

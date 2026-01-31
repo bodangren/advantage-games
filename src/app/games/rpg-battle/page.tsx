@@ -14,12 +14,12 @@ import { BattleScene } from '@/components/rpg-battle/BattleScene'
 import { BattleLog } from '@/components/rpg-battle/BattleLog'
 import { HealthBar } from '@/components/rpg-battle/HealthBar'
 import { Sprite } from '@/components/rpg-battle/Sprite'
-import { BattleResults } from '@/components/rpg-battle/BattleResults'
 import { BattleEffects } from '@/components/rpg-battle/BattleEffects'
 import { BattleSelectionModal } from '@/components/rpg-battle/BattleSelectionModal'
 import { useSound } from '@/hooks/useSound'
 import { AnimatePresence, motion } from 'framer-motion'
 import { GameStartScreen } from '@/components/game/GameStartScreen'
+import { GameEndScreen } from '@/components/game/GameEndScreen'
 import { Shield, Sparkles, Swords, Wand2 } from 'lucide-react'
 
 const ACTION_COUNT = 3
@@ -170,6 +170,12 @@ export default function RpgBattlePage() {
     enemyMultiplier,
   ])
 
+  useEffect(() => {
+    if (showResults && (status === 'victory' || status === 'defeat')) {
+      setGamePhase('ended')
+    }
+  }, [showResults, status])
+
   const menuActions = useMemo(
     () => actions.map((action) => ({ id: action.id, label: action.term, power: action.power })),
     [actions]
@@ -270,10 +276,15 @@ export default function RpgBattlePage() {
         </header>
 
         {showResults && (status === 'victory' || status === 'defeat') ? (
-          <BattleResults
-            outcome={status}
+          <GameEndScreen
+            status={status === 'victory' ? 'victory' : 'defeat'}
+            score={totalCorrect}
             xp={resultXp}
             accuracy={resultAccuracy}
+            customStats={[
+              { label: 'Enemy', value: selectedEnemy?.label ?? 'Unknown' },
+              { label: 'Longest Streak', value: longestStreak },
+            ]}
             onRestart={handleRestart}
           />
         ) : (
