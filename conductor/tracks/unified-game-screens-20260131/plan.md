@@ -171,12 +171,12 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Test manually on desktop and mobile dc6abe1
 
 ### Task 6.2: Migrate Potion Rush
-- [ ] Sub-task: Replace PotionRushStartScreen import with GameStartScreen
-- [ ] Sub-task: Migrate instructions to new prop format
-- [ ] Sub-task: Replace PotionRushSummary import with GameEndScreen
-- [ ] Sub-task: Pass custom stats (customers served) via customStats prop
-- [ ] Sub-task: Update styling from purple to amber
-- [ ] Sub-task: Test manually on desktop and mobile
+- [x] Sub-task: Replace PotionRushStartScreen import with GameStartScreen a897a93
+- [x] Sub-task: Migrate instructions to new prop format a897a93
+- [x] Sub-task: Replace PotionRushSummary import with GameEndScreen a897a93
+- [x] Sub-task: Pass custom stats (customers served) via customStats prop a897a93
+- [x] Sub-task: Update styling from purple to amber a897a93
+- [x] Sub-task: Test manually on desktop and mobile a897a93
 
 **Verification**: Both games use shared screens, no purple colors, amber styling throughout.
 
