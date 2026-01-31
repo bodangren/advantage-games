@@ -64,6 +64,60 @@ XP = Math.floor(correctAnswers * accuracy)
 **Implementation Requirement:**
 Games should expose this final XP value (e.g., via a callback prop like `onComplete(xp)` or by updating a shared store) so it can be persisted.
 
+### Vocabulary Management
+
+Each game loads its vocabulary from a dedicated JSON file in the `public/vocab/` directory. This allows you to customize vocabulary for each game without rebuilding the application.
+
+#### File Structure
+
+```
+public/vocab/
+├── default.json           # Fallback vocabulary
+├── enchanted-library.json # Word-based game
+├── rune-match.json       # Word-based game
+├── wizard-vs-zombie.json # Word-based game
+├── dragon-flight.json    # Word-based game
+├── rpg-battle.json       # Word-based game
+├── magic-defense.json    # Word-based game
+├── potion-rush.json      # Sentence-based game
+└── castle-defense.json   # Sentence-based game
+```
+
+#### JSON File Format
+
+All vocabulary files use the same simple JSON structure:
+
+```json
+[
+  { "term": "สวัสดี", "translation": "Hello" },
+  { "term": "ขอบคุณ", "translation": "Thank you" },
+  { "term": "แมว", "translation": "Cat" }
+]
+```
+
+**Word-based games** (6 games): Use Thai terms with English translations
+**Sentence-based games** (2 games): Use English sentences with Thai translations
+
+#### Editing Vocabulary
+
+1. Navigate to `public/vocab/`
+2. Open the JSON file for the game you want to edit
+3. Modify the vocabulary items following the JSON format
+4. Save the file
+5. Refresh the game page in your browser (no rebuild needed!)
+
+**Example:** To change Enchanted Library's first word:
+```json
+[
+  { "term": "สวัสดีครับ", "translation": "Hello (polite)" },
+  ...
+]
+```
+
+#### Fallback Behavior
+
+If a game's vocabulary file is missing or fails to load, the system automatically falls back to `default.json`. Check the browser console for warnings if vocabulary doesn't load as expected.
+
 ## 🚀 Getting Started
 
 First, install dependencies:
