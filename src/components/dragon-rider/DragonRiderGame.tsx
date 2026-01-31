@@ -321,7 +321,6 @@ export function DragonRiderGame({
   const [feedback, setFeedback] = useState<GateFeedback | null>(null)
   const [results, setResults] = useState<DragonRiderResults | null>(null)
   const [showResults, setShowResults] = useState(false)
-  const [gateFrame, setGateFrame] = useState(0)
   const [playerFrame, setPlayerFrame] = useState(0)
   const [bossFrame, setBossFrame] = useState(0)
   const [playerX, setPlayerX] = useState(DEFAULT_STAGE.width / 2)
@@ -572,10 +571,6 @@ export function DragonRiderGame({
   }, [layout, createGatePair, gatePairs.length])
 
   useInterval(() => {
-    setGateFrame((prev) => (prev + 1) % 3)
-  }, gamePhase === 'playing' ? GATE_ANIM_MS : null)
-
-  useInterval(() => {
     setPlayerFrame((prev) => (prev + 1) % 9)
   }, gamePhase === 'playing' ? PLAYER_ANIM_MS : null)
 
@@ -608,9 +603,10 @@ export function DragonRiderGame({
     if (state.status === 'boss' && !bossBattleStarted && layout) {
       const proximityThreshold = layout.bossFrameHeight * layout.bossScale * 0.5
       const bossBottom = bossY + proximityThreshold
-      const playerTop = layout.playerY - layout.playerFrameHeight * layout.playerScale * 0.5
+      // Army is positioned above the player, so check collision with army position
+      const armyTop = layout.playerY - layout.armyFrameHeight * layout.armyScale - 60
 
-      if (bossBottom >= playerTop) {
+      if (bossBottom >= armyTop) {
         setBossBattleStarted(true)
       }
     }
@@ -803,7 +799,6 @@ export function DragonRiderGame({
           gatePairs={gatePairs}
           activePairId={activePairId}
           layout={layout!}
-          gateFrame={gateFrame}
           playerFrame={playerFrame}
           playerX={playerX}
           dragonCount={dragonCountDisplay}
@@ -1036,7 +1031,6 @@ type DragonRiderCanvasProps = {
   gatePairs: GatePair[]
   activePairId: string | null
   layout: FlightLayout
-  gateFrame: number
   playerFrame: number
   playerX: number
   dragonCount: number
@@ -1071,7 +1065,6 @@ const DragonRiderCanvas = ({
   gatePairs,
   activePairId,
   layout,
-  gateFrame,
   playerFrame,
   playerX,
   dragonCount,
@@ -1284,9 +1277,10 @@ const DragonRiderCanvas = ({
           const gateCenterY = pair.y + layout.leftGate.height / 2
           const isActive = pair.id === activePairId
           const isFeedbackPair = feedback?.pairId === pair.id
-          const leftRow = isFeedbackPair ? (pair.round.correctSide === 'left' ? 1 : 2) : 0
-          const rightRow = isFeedbackPair ? (pair.round.correctSide === 'right' ? 1 : 2) : 0
+          const leftColumn = isFeedbackPair ? (pair.round.correctSide === 'left' ? 1 : 2) : 0
+          const rightColumn = isFeedbackPair ? (pair.round.correctSide === 'right' ? 1 : 2) : 0
           const gateOpacity = isActive ? 1 : 0.7
+          const gateRow = 0 // Use first row of sprite sheet
 
           return (
             <React.Fragment key={pair.id}>
@@ -1301,7 +1295,7 @@ const DragonRiderCanvas = ({
               >
                 <KonvaImage
                   image={assets.gates}
-                  crop={getSpriteCrop(gateGrid, gateFrame, leftRow)}
+                  crop={getSpriteCrop(gateGrid, leftColumn, gateRow)}
                   width={layout.gateFrameWidth}
                   height={layout.gateFrameHeight}
                   offsetX={layout.gateFrameWidth / 2}
@@ -1313,7 +1307,7 @@ const DragonRiderCanvas = ({
                     height={layout.gateFrameHeight}
                     offsetX={layout.gateFrameWidth / 2}
                     offsetY={layout.gateFrameHeight / 2}
-                    fill={leftRow === 1 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}
+                    fill={leftColumn === 1 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}
                   />
                 )}
               </Group>
@@ -1329,7 +1323,7 @@ const DragonRiderCanvas = ({
               >
                 <KonvaImage
                   image={assets.gates}
-                  crop={getSpriteCrop(gateGrid, gateFrame, rightRow)}
+                  crop={getSpriteCrop(gateGrid, rightColumn, gateRow)}
                   width={layout.gateFrameWidth}
                   height={layout.gateFrameHeight}
                   offsetX={layout.gateFrameWidth / 2}
@@ -1341,7 +1335,7 @@ const DragonRiderCanvas = ({
                     height={layout.gateFrameHeight}
                     offsetX={layout.gateFrameWidth / 2}
                     offsetY={layout.gateFrameHeight / 2}
-                    fill={rightRow === 1 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}
+                    fill={rightColumn === 1 ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}
                   />
                 )}
               </Group>
