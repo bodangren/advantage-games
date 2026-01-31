@@ -47,21 +47,21 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 2: Shared End Screen Component
 
 ### Task 2.1: Create GameEndScreen component
-- [ ] Sub-task: Create `src/components/game/GameEndScreen.tsx` with TypeScript interfaces:
+- [x] Sub-task: Create `src/components/game/GameEndScreen.tsx` with TypeScript interfaces: d3d4b06
   - `GameEndScreenProps` with required (status, score, xp, accuracy, onRestart) and optional props
   - `GameStat` type for custom stats
-- [ ] Sub-task: Implement full-screen overlay with backdrop blur
-- [ ] Sub-task: Implement status-conditional styling:
+- [x] Sub-task: Implement full-screen overlay with backdrop blur d3d4b06
+- [x] Sub-task: Implement status-conditional styling: d3d4b06
   - Victory: emerald colors, Shield icon
   - Defeat: rose colors, Swords icon
   - Complete: amber colors, Trophy icon
-- [ ] Sub-task: Implement header with status icon, title, and subtitle
-- [ ] Sub-task: Implement 2x2 stats grid (Score, Accuracy, + up to 2 custom stats)
-- [ ] Sub-task: Implement prominent XP display with status-themed border
-- [ ] Sub-task: Implement "Play Again" button (white background, dark text)
-- [ ] Sub-task: Implement optional "Exit" button when onExit provided
-- [ ] Sub-task: Add Framer Motion scale-in animation
-- [ ] Sub-task: Handle edge cases (0% accuracy, missing custom stats)
+- [x] Sub-task: Implement header with status icon, title, and subtitle d3d4b06
+- [x] Sub-task: Implement 2x2 stats grid (Score, Accuracy, + up to 2 custom stats) d3d4b06
+- [x] Sub-task: Implement prominent XP display with status-themed border d3d4b06
+- [x] Sub-task: Implement "Play Again" button (white background, dark text) d3d4b06
+- [x] Sub-task: Implement optional "Exit" button when onExit provided d3d4b06
+- [x] Sub-task: Add Framer Motion scale-in animation d3d4b06
+- [x] Sub-task: Handle edge cases (0% accuracy, missing custom stats) d3d4b06
 
 ### Task 2.2: Write tests for GameEndScreen
 - [ ] Sub-task: Create `src/components/game/__tests__/GameEndScreen.test.tsx`
