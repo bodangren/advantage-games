@@ -3,12 +3,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva'
 import { AnimatePresence, motion } from 'framer-motion'
+import { Shield, Sparkles, Swords, Trophy } from 'lucide-react'
 import { createRuneMatchState, initializeGrid, swapRunes, findMatches, processMatches, applyMatchResult, advanceTime, type RuneMatchState } from '@/lib/runeMatch'
 import { RUNE_MATCH_CONFIG, type MonsterType } from '@/lib/runeMatchConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import { withBasePath } from '@/lib/basePath'
 import { MonsterSelection } from './MonsterSelection'
 import { Button } from '@/components/ui/button'
+import { GameStartScreen } from '@/components/game/GameStartScreen'
 
 export type RuneMatchGameResult = { xp: number; accuracy: number }
 export type RuneMatchGameProps = { vocabulary: VocabularyItem[]; onComplete: (result: RuneMatchGameResult) => void }
@@ -26,6 +28,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const [animFrame, setAnimFrame] = useState(0)
   const [monsterAnimFrame, setMonsterAnimFrame] = useState(0)
+  const [gamePhase, setGamePhase] = useState<'start' | 'selecting' | 'playing' | 'ended'>('start')
 
   const layout = useMemo(() => {
     // Mobile optimization: Reduce padding
@@ -118,6 +121,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
       const grid = initializeGrid(prev.vocabulary, { rng: prev.rng })
       return { ...prev, status: 'playing', selectedMonster: monsterType, monster: { type: monsterType, hp: config.hp, maxHp: config.hp, attack: config.attack, xp: config.xp }, grid }
     })
+    setGamePhase('playing')
   }, [])
 
   const handleCellClick = useCallback((row: number, col: number) => {
@@ -181,16 +185,8 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
     return () => { observer.disconnect(); clearInterval(interval); clearTimeout(timeout) }
   }, [])
 
-  if (!assets || !gameState || dimensions.width === 0) {
-    return (
-      <div ref={containerRef} data-testid="rune-match-container" className="relative h-[80vh] w-full overflow-hidden rounded-2xl bg-slate-950 flex items-center justify-center border border-white/10 md:aspect-video md:h-auto">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white"></div>
-          <p className="text-sm text-white/60">Loading assets...</p>
-        </div>
-      </div>
-    )
-  }
+  const canRenderStage = Boolean(assets && gameState && dimensions.width > 0)
+  const isReady = Boolean(assets && gameState)
 
   const renderHealthBar = (x: number, y: number, width: number, current: number, max: number, color: string, label: string) => {
     const height = 20; const progress = Math.max(0, Math.min(1, current / max))
@@ -209,13 +205,89 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
 
   return (
     <div ref={containerRef} data-testid="rune-match-container" className="relative h-[80vh] w-full overflow-hidden rounded-2xl bg-slate-950 border border-white/10 md:aspect-video md:h-auto">
+      {canRenderStage ? (
+        <Stage width={dimensions.width} height={dimensions.height}>
+          <Layer>
+            <Group x={gameState!.shakeIntensity * (Math.random() * 10 - 5)} y={gameState!.shakeIntensity * (Math.random() * 10 - 5)}>
+              <KonvaImage image={assets!.background} width={dimensions.width} height={dimensions.height}/>
+              {(gameState!.status === 'playing' || gameState!.status === 'victory' || gameState!.status === 'defeat') && (
+                <Group>
+                <Rect x={0} y={0} width={dimensions.width} height={layout.monsterAreaHeight} fill="rgba(0, 0, 0, 0.2)"/>
+                {gameState!.monster && (
+                  <Group>
+                    <KonvaImage image={assets!.monsters[gameState!.monster.type]} x={dimensions.width / 2 - 60} y={layout.monsterAreaHeight * 0.05} width={120} height={120} crop={{ x: monsterAnimFrame * (assets!.monsters[gameState!.monster.type].width / 3), y: (gameState!.monsterState === 'idle' ? 0 : gameState!.monsterState === 'attack' ? 1 : gameState!.monsterState === 'hurt' ? 2 : 3) * (assets!.monsters[gameState!.monster.type].height / 4), width: assets!.monsters[gameState!.monster.type].width / 3, height: assets!.monsters[gameState!.monster.type].height / 4 }}/>
+                    {renderHealthBar(barX, layout.monsterAreaHeight * 0.45, barWidth, gameState!.monster.hp, gameState!.monster.maxHp, "#ef4444", gameState!.monster.type.toUpperCase())}
+                    <Rect x={barX} y={layout.monsterAreaHeight * 0.45 + 25} width={barWidth * (1 - gameState!.attackTimer / RUNE_MATCH_CONFIG.combat.attackIntervalMs)} height={4} fill="#f87171" opacity={0.6}/>
+                  </Group>
+                )}
+                {renderHealthBar(barX, layout.monsterAreaHeight * 0.8, barWidth, gameState!.player.hp, gameState!.player.maxHp, "#22c55e", "PLAYER")}
+                <Text text={`POWER WORD: ${gameState!.powerWord?.toUpperCase()}`} x={dimensions.width / 2} y={layout.monsterAreaHeight * 0.65} offsetX={150} width={300} fontSize={18} fill="#facc15" fontStyle="bold" align="center" fontFamily="Arial"/>
+                {gameState!.player.hasShield && ( <Text text="🛡️ SHIELD ACTIVE" x={dimensions.width / 2 + 160} y={layout.monsterAreaHeight * 0.8} fontSize={14} fill="#60a5fa" fontStyle="bold"/> )}
+                <Rect x={layout.gridX - 8} y={layout.gridY - 8} width={layout.gridWidth + 16} height={layout.gridHeight + 16} fill="rgba(0, 0, 0, 0.4)" cornerRadius={12} stroke="rgba(255, 255, 255, 0.1)" strokeWidth={2}/>
+                {gameState!.grid.map((row, r) => row.map((rune, c) => {
+                  const isSelected = gameState!.selectedCell?.row === r && gameState!.selectedCell?.col === c; const runeSize = layout.cellSize - 4
+                  const spriteSheet = rune.type === 'vocabulary' ? assets!.runes.base : rune.type === 'heal' ? assets!.runes.heal : assets!.runes.shield
+                  const fw = spriteSheet.width / 3; const fh = spriteSheet.height / 2; const crop = { x: animFrame * fw, y: 0, width: fw, height: fh }
+                  return (
+                    <Group key={rune.id} x={layout.gridX + c * layout.cellSize + 2} y={layout.gridY + r * layout.cellSize + 2} onClick={() => handleCellClick(r, c)} onTap={() => handleCellClick(r, c)}>
+                      {isSelected && ( <Rect width={runeSize + 8} height={runeSize + 8} x={-4} y={-4} fill="rgba(96, 165, 250, 0.3)" cornerRadius={8} stroke="#60a5fa" strokeWidth={2}/> )}
+                      <KonvaImage image={spriteSheet} width={runeSize} height={runeSize} cornerRadius={6} crop={crop}/>
+                      {rune.type === 'vocabulary' && ( <Text text={rune.text} width={runeSize - 6} height={runeSize - 6} x={3} y={3} fontSize={Math.max(14, layout.cellSize / 3.5)} fill="#0f172a" align="center" verticalAlign="middle" fontFamily="Arial" fontStyle="bold"/> )}
+                    </Group>
+                  )
+                }))}
+              </Group>
+            )}
+              {gameState!.floatingTexts.map((ft) => {
+              let screenX = dimensions.width / 2; let screenY = layout.monsterAreaHeight / 2
+              if (ft.x !== -1) { screenX = layout.gridX + ft.x * layout.cellSize + layout.cellSize / 2; screenY = layout.gridY + ft.y * layout.cellSize + layout.cellSize / 2 }
+              return ( <Text key={ft.id} text={ft.text} x={screenX + ft.offsetX} y={screenY + ft.offsetY - 20} fontSize={28} scaleX={ft.scale} scaleY={ft.scale} fill={ft.color} opacity={ft.opacity} fontStyle="bold" fontFamily="Arial" align="center" shadowColor="black" shadowBlur={4} shadowOpacity={0.8} offsetX={50}/> )
+            })}
+            </Group>
+          </Layer>
+        </Stage>
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center">
+          {gamePhase !== 'start' ? (
+            <div className="flex flex-col items-center gap-4">
+              <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-white"></div>
+              <p className="text-sm text-white/60">Loading assets...</p>
+            </div>
+          ) : null}
+        </div>
+      )}
       <AnimatePresence mode="wait">
-        {gameState.status === 'selection' && (
+        {gamePhase === 'start' && (
+          <GameStartScreen
+            gameTitle="Rune Match"
+            gameSubtitle="Mystic Duel"
+            vocabulary={vocabulary}
+            instructions={[
+              { step: 1, text: 'Match rune translations to strike the monster.', icon: Swords },
+              { step: 2, text: 'Create longer matches for stronger attacks.', icon: Sparkles },
+              { step: 3, text: 'Use shield and heal runes to survive.', icon: Shield },
+              { step: 4, text: 'Defeat the monster to claim XP rewards.', icon: Trophy },
+            ]}
+            proTip="Combos trigger bonus damage, so look for cascade opportunities."
+            controls={[
+              { label: 'Select', keys: 'Tap or Click', color: 'bg-amber-500' },
+              { label: 'Swap', keys: 'Adjacent Runes', color: 'bg-emerald-500' },
+            ]}
+            startButtonText={isReady ? 'Start Match' : 'Loading...'}
+            icon={Swords}
+            onStart={() => {
+              if (!isReady) return
+              resetGame()
+              setGamePhase('selecting')
+            }}
+          />
+        )}
+        {gamePhase === 'selecting' && gameState && (
           <motion.div key="selection" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-10 flex items-start justify-center bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
             <MonsterSelection onSelect={handleSelectMonster}/>
           </motion.div>
         )}
-        {gameState.status === 'victory' && (
+        {gameState?.status === 'victory' && assets && (
           <motion.div key="victory" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md text-center space-y-6">
             <div className="w-[140px] h-[140px] bg-yellow-500/20 rounded-3xl flex items-center justify-center overflow-hidden border-2 border-yellow-500/30 shadow-lg shadow-yellow-500/10">
               <div 
@@ -234,7 +306,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
             <Button onClick={() => onComplete({ xp: gameState.monster?.xp || 0, accuracy: gameState.totalAttempts > 0 ? (gameState.correctAnswers / gameState.totalAttempts) * 100 : 100 })} size="lg" className="px-12 bg-yellow-500 hover:bg-yellow-600 text-black font-bold">Continue</Button>
           </motion.div>
         )}
-        {gameState.status === 'defeat' && (
+        {gameState?.status === 'defeat' && assets && (
           <motion.div key="defeat" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-950/90 backdrop-blur-md text-center space-y-6">
             <div className="w-[140px] h-[140px] bg-red-500/20 rounded-3xl flex items-center justify-center overflow-hidden border-2 border-red-500/30 shadow-lg shadow-red-500/10">
               <div 
@@ -253,46 +325,6 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           </motion.div>
         )}
       </AnimatePresence>
-      <Stage width={dimensions.width} height={dimensions.height}>
-        <Layer>
-          <Group x={gameState.shakeIntensity * (Math.random() * 10 - 5)} y={gameState.shakeIntensity * (Math.random() * 10 - 5)}>
-            <KonvaImage image={assets.background} width={dimensions.width} height={dimensions.height}/>
-            {(gameState.status === 'playing' || gameState.status === 'victory' || gameState.status === 'defeat') && (
-              <Group>
-                <Rect x={0} y={0} width={dimensions.width} height={layout.monsterAreaHeight} fill="rgba(0, 0, 0, 0.2)"/>
-                {gameState.monster && (
-                  <Group>
-                    <KonvaImage image={assets.monsters[gameState.monster.type]} x={dimensions.width / 2 - 60} y={layout.monsterAreaHeight * 0.05} width={120} height={120} crop={{ x: monsterAnimFrame * (assets.monsters[gameState.monster.type].width / 3), y: (gameState.monsterState === 'idle' ? 0 : gameState.monsterState === 'attack' ? 1 : gameState.monsterState === 'hurt' ? 2 : 3) * (assets.monsters[gameState.monster.type].height / 4), width: assets.monsters[gameState.monster.type].width / 3, height: assets.monsters[gameState.monster.type].height / 4 }}/>
-                    {renderHealthBar(barX, layout.monsterAreaHeight * 0.45, barWidth, gameState.monster.hp, gameState.monster.maxHp, "#ef4444", gameState.monster.type.toUpperCase())}
-                    <Rect x={barX} y={layout.monsterAreaHeight * 0.45 + 25} width={barWidth * (1 - gameState.attackTimer / RUNE_MATCH_CONFIG.combat.attackIntervalMs)} height={4} fill="#f87171" opacity={0.6}/>
-                  </Group>
-                )}
-                {renderHealthBar(barX, layout.monsterAreaHeight * 0.8, barWidth, gameState.player.hp, gameState.player.maxHp, "#22c55e", "PLAYER")}
-                <Text text={`POWER WORD: ${gameState.powerWord?.toUpperCase()}`} x={dimensions.width / 2} y={layout.monsterAreaHeight * 0.65} offsetX={150} width={300} fontSize={18} fill="#facc15" fontStyle="bold" align="center" fontFamily="Arial"/>
-                {gameState.player.hasShield && ( <Text text="🛡️ SHIELD ACTIVE" x={dimensions.width / 2 + 160} y={layout.monsterAreaHeight * 0.8} fontSize={14} fill="#60a5fa" fontStyle="bold"/> )}
-                <Rect x={layout.gridX - 8} y={layout.gridY - 8} width={layout.gridWidth + 16} height={layout.gridHeight + 16} fill="rgba(0, 0, 0, 0.4)" cornerRadius={12} stroke="rgba(255, 255, 255, 0.1)" strokeWidth={2}/>
-                {gameState.grid.map((row, r) => row.map((rune, c) => {
-                  const isSelected = gameState.selectedCell?.row === r && gameState.selectedCell?.col === c; const runeSize = layout.cellSize - 4
-                  const spriteSheet = rune.type === 'vocabulary' ? assets.runes.base : rune.type === 'heal' ? assets.runes.heal : assets.runes.shield
-                  const fw = spriteSheet.width / 3; const fh = spriteSheet.height / 2; const crop = { x: animFrame * fw, y: 0, width: fw, height: fh }
-                  return (
-                    <Group key={rune.id} x={layout.gridX + c * layout.cellSize + 2} y={layout.gridY + r * layout.cellSize + 2} onClick={() => handleCellClick(r, c)} onTap={() => handleCellClick(r, c)}>
-                      {isSelected && ( <Rect width={runeSize + 8} height={runeSize + 8} x={-4} y={-4} fill="rgba(96, 165, 250, 0.3)" cornerRadius={8} stroke="#60a5fa" strokeWidth={2}/> )}
-                      <KonvaImage image={spriteSheet} width={runeSize} height={runeSize} cornerRadius={6} crop={crop}/>
-                      {rune.type === 'vocabulary' && ( <Text text={rune.text} width={runeSize - 6} height={runeSize - 6} x={3} y={3} fontSize={Math.max(14, layout.cellSize / 3.5)} fill="#0f172a" align="center" verticalAlign="middle" fontFamily="Arial" fontStyle="bold"/> )}
-                    </Group>
-                  )
-                }))}
-              </Group>
-            )}
-            {gameState.floatingTexts.map((ft) => {
-              let screenX = dimensions.width / 2; let screenY = layout.monsterAreaHeight / 2
-              if (ft.x !== -1) { screenX = layout.gridX + ft.x * layout.cellSize + layout.cellSize / 2; screenY = layout.gridY + ft.y * layout.cellSize + layout.cellSize / 2 }
-              return ( <Text key={ft.id} text={ft.text} x={screenX + ft.offsetX} y={screenY + ft.offsetY - 20} fontSize={28} scaleX={ft.scale} scaleY={ft.scale} fill={ft.color} opacity={ft.opacity} fontStyle="bold" fontFamily="Arial" align="center" shadowColor="black" shadowBlur={4} shadowOpacity={0.8} offsetX={50}/> )
-            })}
-          </Group>
-        </Layer>
-      </Stage>
     </div>
   )
 }

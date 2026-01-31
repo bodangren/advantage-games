@@ -23,11 +23,17 @@ jest.mock('react-konva', () => ({
 }))
 
 // Mock lucide-react
-jest.mock('lucide-react', () => ({
-  Swords: () => <div data-testid="icon-swords" />,
-  Trophy: () => <div data-testid="icon-trophy" />,
-  Heart: () => <div data-testid="icon-heart" />,
-}))
+jest.mock('lucide-react', () =>
+  new Proxy(
+    {},
+    {
+      get: (_target, prop) => {
+        if (prop === '__esModule') return true
+        return () => <div data-testid={`icon-${String(prop)}`} />
+      },
+    }
+  )
+)
 
 jest.mock('konva', () => ({
   Animation: class {
@@ -79,9 +85,11 @@ describe('RuneMatchGame', () => {
     expect(screen.getByTestId('rune-match-container')).toBeInTheDocument()
   })
 
-  it('shows loading state while assets load', () => {
+  it('shows the start screen before monster selection', () => {
     render(<RuneMatchGame vocabulary={SAMPLE_VOCAB} onComplete={mockOnComplete} />)
-    expect(screen.getByText(/loading/i)).toBeInTheDocument()
+    expect(screen.getByText('Rune Match')).toBeInTheDocument()
+    expect(screen.getByText(/how to play/i)).toBeInTheDocument()
+    expect(screen.queryByText(/Choose Your Opponent/i)).not.toBeInTheDocument()
   })
 
   it('has correct container aspect ratio', () => {
@@ -132,11 +140,13 @@ describe('RuneMatchGame', () => {
 
     render(<RuneMatchGame vocabulary={SAMPLE_VOCAB} onComplete={mockOnComplete} />)
 
-    // Wait for assets to "load" (our mock triggers this)
-    await waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument())
+    // Wait for assets to "load" (our mock triggers this) and start button to appear
+    await waitFor(() => expect(screen.getByRole('button', { name: /start match/i })).toBeInTheDocument())
 
-    // Should show selection screen
-    expect(screen.getByText(/Choose Your Opponent/i)).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /start match/i }))
+
+    // Should show selection screen after start
+    await waitFor(() => expect(screen.getByText(/Choose Your Opponent/i)).toBeInTheDocument())
 
     // Select Dragon
     const battleButtons = screen.getAllByRole('button', { name: /Battle/i })
@@ -175,7 +185,9 @@ describe('RuneMatchGame', () => {
     })
 
     render(<RuneMatchGame vocabulary={SAMPLE_VOCAB} onComplete={mockOnComplete} />)
-    await waitFor(() => expect(screen.queryByText(/loading/i)).not.toBeInTheDocument())
+    await waitFor(() => expect(screen.getByRole('button', { name: /start match/i })).toBeInTheDocument())
+    fireEvent.click(screen.getByRole('button', { name: /start match/i }))
+    await waitFor(() => expect(screen.getByText(/Choose Your Opponent/i)).toBeInTheDocument())
 
     // Select Dragon
     const battleButtons = screen.getAllByRole('button', { name: /Battle/i })
