@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useRef } from 'react'
 
 declare global {
   interface Window {
@@ -9,12 +9,23 @@ declare global {
 }
 
 export function useSound() {
+  const ctxRef = useRef<AudioContext | null>(null)
+
   const playSynth = useCallback((type: 'success' | 'error' | 'missile-hit' | 'bubbling' | 'clinking' | 'angry-grunt' | 'cash-register') => {
     try {
       const AudioContextClass = window.AudioContext || window.webkitAudioContext
       if (!AudioContextClass) return
 
-      const ctx = new AudioContextClass()
+      if (!ctxRef.current) {
+        ctxRef.current = new AudioContextClass()
+      }
+      const ctx = ctxRef.current
+
+      // Resume context if suspended (browser autoplay policy)
+      if (ctx.state === 'suspended') {
+        ctx.resume()
+      }
+
       const oscillator = ctx.createOscillator()
       const gainNode = ctx.createGain()
 
