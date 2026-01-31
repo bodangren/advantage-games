@@ -22,7 +22,7 @@
 
 - [ ] Task: Conductor - Phase 1 Verification (Protocol in workflow.md)
 
-## Phase 2: Vocabulary Data Files
+## Phase 2: Vocabulary Data Files [checkpoint: 3d39fca]
 
 ### Task 2.1: Create Default Fallback Vocabulary
 - [x] Create `public/vocab/default.json` with generic vocabulary (current SAMPLE_VOCABULARY content) [64061dd]
