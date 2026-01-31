@@ -1,4 +1,5 @@
 import type { VocabularyItem } from '@/store/useGameStore'
+import { withBasePath } from './basePath'
 
 // In-memory cache for vocabulary data
 const vocabularyCache = new Map<string, VocabularyItem[]>()
@@ -43,7 +44,7 @@ export async function loadVocabulary(gameName: string): Promise<VocabularyItem[]
 
   try {
     // Try to fetch game-specific vocabulary
-    const response = await fetch(`/vocab/${gameName}.json`)
+    const response = await fetch(withBasePath(`/vocab/${gameName}.json`))
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`)
@@ -65,7 +66,7 @@ export async function loadVocabulary(gameName: string): Promise<VocabularyItem[]
 
     // Try to load default vocabulary
     try {
-      const defaultResponse = await fetch('/vocab/default.json')
+      const defaultResponse = await fetch(withBasePath('/vocab/default.json'))
 
       if (!defaultResponse.ok) {
         throw new Error(`Failed to load default vocabulary: HTTP ${defaultResponse.status}`)
