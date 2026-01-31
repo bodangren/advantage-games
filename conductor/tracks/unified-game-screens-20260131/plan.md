@@ -82,6 +82,11 @@ Before starting ANY phase, the implementer MUST:
 
 ## Phase 3: Migrate Canvas Games (No Existing Screens)
 
+### Task 3.0: Create dev preview page for shared screens
+- [x] Sub-task: Create `src/app/dev/game-screens/page.test.tsx` e5a23e6
+- [x] Sub-task: Create `src/app/dev/game-screens/page.tsx` with sample data and mode toggles e5a23e6
+- [x] Sub-task: Run tests: `CI=true npm test src/app/dev/game-screens/page.test.tsx` e5a23e6
+
 ### Task 3.1: Migrate Dragon Flight
 - [ ] Sub-task: Add `gamePhase: 'start' | 'playing' | 'ended'` to game state
 - [ ] Sub-task: Import and render GameStartScreen when phase is 'start'
