@@ -30,6 +30,10 @@ export interface GameStartScreenProps {
   icon?: LucideIcon
 }
 
+/**
+ * Shared RPG-themed start screen for vocabulary games.
+ * Renders instructions, vocabulary list, and a CTA to begin play.
+ */
 export function GameStartScreen({
   gameTitle,
   vocabulary,

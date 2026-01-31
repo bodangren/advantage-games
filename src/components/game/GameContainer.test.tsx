@@ -25,7 +25,10 @@ describe('GameContainer', () => {
     })
 
     render(<GameContainer />)
-    expect(screen.getByText(/Missile Command: Vocab Edition/i)).toBeInTheDocument()
+    expect(screen.getByText(/Magic Defense/i)).toBeInTheDocument()
+    expect(screen.getByText(/How to Play/i)).toBeInTheDocument()
+    expect(screen.getByText(/Vocabulary List/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Start Game/i })).toBeInTheDocument()
   })
 
   it('renders GameEngine when status is playing', () => {
@@ -60,6 +63,7 @@ describe('GameContainer', () => {
 
     render(<GameContainer />)
     expect(screen.getByText(/Game Over/i)).toBeInTheDocument()
+    expect(screen.getByText(/Final Score/i)).toBeInTheDocument()
     expect(screen.getByText('100')).toBeInTheDocument()
   })
 })

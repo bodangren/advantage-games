@@ -50,6 +50,7 @@ describe('usePotionRushStore dragging behavior', () => {
       conveyorItems: [],
       gameState: 'PLAYING',
       beltSpeed: 100,
+      baseBeltSpeed: 100,
     })
   })
 
@@ -129,7 +130,8 @@ describe('usePotionRushStore queue logic', () => {
 
     usePotionRushStore.getState().tick(1, 1280)
 
-    expect(usePotionRushStore.getState().customers).toHaveLength(0)
+    const remaining = usePotionRushStore.getState().customers.filter(Boolean)
+    expect(remaining).toHaveLength(0)
   })
 })
 

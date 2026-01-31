@@ -65,6 +65,10 @@ const STATUS_STYLES: Record<
   },
 }
 
+/**
+ * Shared RPG-themed end screen for vocabulary games.
+ * Displays score, accuracy, XP, and optional custom stats.
+ */
 export function GameEndScreen({
   status,
   score,
