@@ -41,7 +41,7 @@ type DragonRiderResultInput = {
   dragonCount: number
 }
 
-const DEFAULT_DURATION_MS = 30000
+const DEFAULT_DURATION_MS = 150000
 
 const pickIndex = (rng: () => number, max: number) => Math.min(max - 1, Math.floor(rng() * max))
 

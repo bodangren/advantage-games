@@ -304,7 +304,7 @@ const getActiveGatePair = (pairs: GatePair[]) => {
 
 export function DragonRiderGame({
   vocabulary,
-  durationMs = 30000,
+  durationMs = 150000,
   onComplete,
   preloadedAssets,
 }: DragonRiderGameProps) {
