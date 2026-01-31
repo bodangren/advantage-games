@@ -41,7 +41,7 @@
 
 - [ ] Task: Conductor - Phase 2 Verification (Protocol in workflow.md)
 
-## Phase 3: Game Migration
+## Phase 3: Game Migration [checkpoint: cd44791]
 
 ### Task 3.1: Migrate Enchanted Library
 - [x] Write integration test for vocabulary loading
