@@ -50,3 +50,11 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Description: Refactor start and end screens across all games to use shared, themeable components for consistent UX*
 *Priority: Medium*
 *Type: Chore*
+
+---
+
+- [ ] **Track: Dragon Rider - Reskin of Dragon Flight**
+*Link: [./conductor/tracks/dragon-rider-reskin-20260131/](./conductor/tracks/dragon-rider-reskin-20260131/)*
+*Description: Create a reskinned version of the Dragon Flight game using new dragon-rider assets while maintaining identical gameplay mechanics*
+*Priority: Medium*
+*Type: Feature*
