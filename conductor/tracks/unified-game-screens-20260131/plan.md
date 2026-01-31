@@ -185,13 +185,13 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 7: Cleanup
 
 ### Task 7.1: Remove deprecated components
-- [ ] Sub-task: Delete `src/components/castle-defense/CastleDefenseStartScreen.tsx`
-- [ ] Sub-task: Delete `src/components/castle-defense/CastleDefenseEndScreen.tsx`
-- [ ] Sub-task: Delete `src/components/potion-rush/PotionRushStartScreen.tsx`
-- [ ] Sub-task: Delete `src/components/potion-rush/PotionRushSummary.tsx`
-- [ ] Sub-task: Delete `src/components/rpg-battle/BattleResults.tsx`
-- [ ] Sub-task: Delete associated test files for removed components
-- [ ] Sub-task: Verify build succeeds: `CI=true npm run build`
+- [x] Sub-task: Delete `src/components/castle-defense/CastleDefenseStartScreen.tsx` 556bde6
+- [x] Sub-task: Delete `src/components/castle-defense/CastleDefenseEndScreen.tsx` 556bde6
+- [x] Sub-task: Delete `src/components/potion-rush/PotionRushStartScreen.tsx` 556bde6
+- [x] Sub-task: Delete `src/components/potion-rush/PotionRushSummary.tsx` 556bde6
+- [x] Sub-task: Delete `src/components/rpg-battle/BattleResults.tsx` 556bde6
+- [x] Sub-task: Delete associated test files for removed components 556bde6
+- [x] Sub-task: Verify build succeeds: `CI=true npm run build` 556bde6
 
 ### Task 7.2: Update old shared components
 - [ ] Sub-task: Remove or deprecate `src/components/game/StartScreen.tsx` (old generic)
