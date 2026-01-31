@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { Stage, Layer, Rect, Circle, Text, Image as KonvaImage, Group } from 'react-konva'
-import CastleDefenseStartScreen from './CastleDefenseStartScreen'
-import CastleDefenseEndScreen from './CastleDefenseEndScreen'
+import { Shield } from 'lucide-react'
+import { GameStartScreen, type ControlHint, type Instruction } from '@/components/game/GameStartScreen'
+import { GameEndScreen } from '@/components/game/GameEndScreen'
 
 // Import shared components (REUSE from Wizard)
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
@@ -57,6 +58,18 @@ type Props = {
   vocabulary: VocabularyItem[]
   onComplete?: (results: { xp: number; accuracy: number }) => void
 }
+
+const CASTLE_DEFENSE_INSTRUCTIONS: Instruction[] = [
+  { step: 1, text: 'Collect the sentence words in order to prepare a tower.' },
+  { step: 2, text: 'Move to an empty tower base to build and protect the path.' },
+  { step: 3, text: 'Defeat incoming enemies before they reach the castle.' },
+]
+
+const CASTLE_DEFENSE_CONTROLS: ControlHint[] = [
+  { label: 'Move', keys: 'Arrows / WASD', color: 'bg-amber-500' },
+  { label: 'Build', keys: 'Walk to base', color: 'bg-emerald-500' },
+  { label: 'Collect', keys: 'Touch words', color: 'bg-blue-500' },
+]
 
 export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
   // ============================================
@@ -278,7 +291,17 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
   if (!hasStarted) {
     return (
       <div className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 border border-white/10 md:aspect-video md:h-auto">
-        <CastleDefenseStartScreen onStart={startGame} vocabulary={vocabulary} />
+        <GameStartScreen
+          gameTitle="Castle Defense"
+          gameSubtitle="Kingdom Defense"
+          icon={Shield}
+          vocabulary={vocabulary}
+          instructions={CASTLE_DEFENSE_INSTRUCTIONS}
+          proTip="Finish sentences quickly to unlock more towers and control the waves."
+          controls={CASTLE_DEFENSE_CONTROLS}
+          startButtonText="Start Defense"
+          onStart={startGame}
+        />
       </div>
     )
   }
@@ -286,16 +309,23 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
   if (gameState?.status === 'gameover' || gameState?.status === 'victory') {
     const totalAttempts = gameState.correctWordCollections + gameState.incorrectWordCollections
     const accuracy = totalAttempts > 0 ? gameState.correctWordCollections / totalAttempts : 0
+    const endStatus = gameState.status === 'victory' ? 'victory' : 'defeat'
+    const endTitle = gameState.status === 'victory' ? 'Victory!' : 'Defeated'
+    const endSubtitle = gameState.status === 'victory' ? 'The castle stands strong.' : 'The castle has fallen.'
 
     return (
       <div className="relative h-[60vh] w-full overflow-hidden rounded-2xl bg-slate-950 border border-white/10 md:aspect-video md:h-auto">
-        <CastleDefenseEndScreen
-          status={gameState.status}
+        <GameEndScreen
+          status={endStatus}
           score={gameState.score}
           xp={calculateCastleDefenseXP(gameState.score)}
-          wavesCompleted={gameState.wavesCompleted}
-          enemiesDefeated={gameState.totalEnemiesDefeated}
           accuracy={accuracy}
+          title={endTitle}
+          subtitle={endSubtitle}
+          customStats={[
+            { label: 'Waves Cleared', value: gameState.wavesCompleted },
+            { label: 'Enemies Defeated', value: gameState.totalEnemiesDefeated },
+          ]}
           onRestart={startGame}
         />
       </div>

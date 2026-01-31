@@ -84,6 +84,7 @@ describe('CastleDefenseGame', () => {
   it('renders the start screen initially', async () => {
     render(<CastleDefenseGame vocabulary={vocabulary} onComplete={jest.fn()} />)
     expect(await screen.findByRole('heading', { name: /castle defense/i })).toBeInTheDocument()
+    expect(screen.getByText(/how to play/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /start defense/i })).toBeInTheDocument()
   })
 
