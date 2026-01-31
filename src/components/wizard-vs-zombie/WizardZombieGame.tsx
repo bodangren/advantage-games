@@ -16,9 +16,10 @@ import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
 import { calculateIndicators } from '@/lib/wizardZombieIndicators'
 import { withBasePath } from '@/lib/basePath'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Shield, Zap, BookOpen, Trophy, Target, Sparkles, Home, RotateCcw, Skull } from 'lucide-react'
+import { Skull, Sparkles, Zap } from 'lucide-react'
 import { calculateXP } from '@/lib/xp'
+import { GameEndScreen } from '@/components/game/GameEndScreen'
+import { GameStartScreen } from '@/components/game/GameStartScreen'
 
 export type WizardZombieGameResult = {
   xp: number
@@ -48,7 +49,9 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   const { playSound } = useSound() 
   const { input, setVirtualInput, triggerCast, consumeCast } = useDirectionalInput()
   const [gameState, setGameState] = useState<WizardZombieState | null>(null)
-  const [hasStarted, setHasStarted] = useState(false)
+  const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
+  const [results, setResults] = useState<WizardZombieGameResult | null>(null)
+  const hasReportedRef = useRef(false)
   
   const [assets, setAssets] = useState<{
       player: HTMLImageElement
@@ -97,16 +100,19 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   const resetGame = useCallback(() => {
     if (vocabulary.length > 0) {
         setGameState(createWizardZombieState(vocabulary))
+        setResults(null)
+        hasReportedRef.current = false
     }
   }, [vocabulary])
 
   useEffect(() => {
     resetGame()
+    setGamePhase('start')
   }, [resetGame])
 
   // Animation Loop
   useInterval(() => {
-      if (hasStarted) {
+      if (gamePhase === 'playing') {
           setPlayerFrame(f => (f + 1) % 3)
           setZombieFrame(f => (f + 1) % 3)
           setOrbFrame(f => (f + 1) % 3)
@@ -122,7 +128,7 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
 
   // Game Loop
   useInterval(() => {
-    if (gameState && gameState.status === 'playing' && assets && hasStarted) {
+    if (gameState && gameState.status === 'playing' && assets && gamePhase === 'playing') {
         const nextState = advanceWizardZombieTime(gameState, 50, input, vocabulary)
         setGameState(nextState)
 
@@ -150,7 +156,23 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
              setCamera({ x: camX, y: camY, scale })
         }
     }
-  }, gameState?.status === 'playing' && hasStarted ? 50 : null)
+  }, gameState?.status === 'playing' && gamePhase === 'playing' ? 50 : null)
+
+  useEffect(() => {
+    if (!gameState || gameState.status !== 'gameover') return
+    const accuracy =
+      gameState.totalAttempts > 0
+        ? gameState.correctAnswers / gameState.totalAttempts
+        : 0
+    const xp = calculateXP(gameState.score, gameState.correctAnswers, gameState.totalAttempts)
+    const nextResults = { xp, accuracy }
+    setResults(nextResults)
+    if (!hasReportedRef.current) {
+      onComplete(nextResults)
+      hasReportedRef.current = true
+    }
+    setGamePhase('ended')
+  }, [gameState, onComplete])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -208,181 +230,32 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
         style={{ minHeight: '400px' }}
         className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto"
     >
-        <AnimatePresence>
-            {!hasStarted && (
-                <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-50 flex flex-col bg-slate-950/90 text-white overflow-hidden"
-                >
-                    <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8">
-                        <header className="flex flex-wrap items-center justify-between gap-4">
-                            <div>
-                                <div className="text-xs uppercase tracking-[0.4em] text-blue-400 font-bold">Arcane Survival</div>
-                                <h2 className="mt-1 text-3xl font-bold tracking-tight sm:text-4xl">Wizard vs Zombie</h2>
-                            </div>
-                            <div className="px-4 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                                Ready to Cast
-                            </div>
-                        </header>
+        {gamePhase === 'start' && (
+            <GameStartScreen
+                gameTitle="Wizard vs Zombie"
+                gameSubtitle="Horde Survival"
+                vocabulary={vocabulary}
+                instructions={[
+                    { step: 1, text: 'Collect the correct healing orb to restore HP.', icon: Sparkles },
+                    { step: 2, text: 'Wrong orbs reshuffle the field and cost points.', icon: Skull },
+                    { step: 3, text: 'Build shockwave charges and blast zombies back.', icon: Zap },
+                ]}
+                proTip="Use Shockwave when surrounded to create space for an escape."
+                controls={[
+                    { label: 'Move', keys: 'Arrows / WASD', color: 'bg-amber-500' },
+                    { label: 'Cast', keys: 'Space / Enter', color: 'bg-emerald-500' },
+                ]}
+                startButtonText="Start Survival"
+                icon={Skull}
+                onStart={() => {
+                    resetGame()
+                    setGamePhase('playing')
+                }}
+            />
+        )}
 
-                        <div className="grid gap-8 lg:grid-cols-2">
-                            <div className="space-y-6">
-                                <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm space-y-4">
-                                    <h3 className="flex items-center gap-2 font-bold text-lg text-white">
-                                        <Shield className="w-5 h-5 text-blue-400" /> Game Rules
-                                    </h3>
-                                    <ul className="space-y-3 text-sm text-slate-300">
-                                        <li className="flex gap-3">
-                                            <span className="text-blue-400 font-bold">01.</span>
-                                            <span>The horde is endless. Survive as long as possible by collecting <b>Healing Orbs</b>.</span>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-blue-400 font-bold">02.</span>
-                                            <span>Match the <b>Target Word</b> shown at the bottom to heal (+10 HP).</span>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-blue-400 font-bold">03.</span>
-                                            <span>Picking the <b>Wrong Orb</b> reshuffles the field and costs <b>5 points</b>.</span>
-                                        </li>
-                                        <li className="flex gap-3">
-                                            <span className="text-blue-400 font-bold">04.</span>
-                                            <span>Each correct orb grants one <b>Shockwave</b> charge. Use it to blast zombies back!</span>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                <div className="flex items-center gap-4 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4 text-sm text-blue-200">
-                                    <Zap className="w-6 h-6 text-yellow-400 shrink-0" />
-                                    <p><b>Pro Tip:</b> Use Shockwave when surrounded to create space for an escape!</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div className="flex items-center justify-between">
-                                    <h3 className="flex items-center gap-2 font-bold text-lg text-white">
-                                        <BookOpen className="w-5 h-5 text-emerald-400" /> Grimoire Preview
-                                    </h3>
-                                    <span className="text-xs text-white/40">{vocabulary.length} Arcane Words</span>
-                                </div>
-                                <div className="max-h-[240px] overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/50 scrollbar-thin scrollbar-thumb-white/10">
-                                    {vocabulary.length === 0 ? (
-                                        <div className="p-8 text-center text-white/40 italic">Grimoire is empty...</div>
-                                    ) : (
-                                        <div className="divide-y divide-white/5">
-                                            {vocabulary.map((item, i) => (
-                                                <div key={i} className="flex items-center justify-between p-3 px-4 hover:bg-white/5 transition-colors">
-                                                    <span className="font-medium text-white">{item.term}</span>
-                                                    <span className="text-slate-400 text-sm">{item.translation}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <footer className="p-6 sm:p-8 border-t border-white/10 bg-slate-900/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-6">
-                        <div className="flex items-center gap-6 text-xs uppercase tracking-[0.2em] text-white/50">
-                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-blue-500" /> Move: Arrows / WASD</div>
-                            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-yellow-500" /> Cast: Space / Enter</div>
-                        </div>
-                        <button 
-                            onClick={() => {
-                                resetGame()
-                                setHasStarted(true)
-                            }}
-                            className="group relative px-10 py-4 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
-                        >
-                            <span className="relative z-10">Start Survival</span>
-                            <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
-                        </button>
-                    </footer>
-                </motion.div>
-            )}
-        </AnimatePresence>
-
-        {hasStarted && gameState && grids && (
+        {gamePhase === 'playing' && gameState && grids && (
             <>
-                {/* Game Over Overlay */}
-                <AnimatePresence>
-                    {gameState.status === 'gameover' && (
-                        <motion.div 
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-6"
-                        >
-                            <motion.div 
-                                initial={{ scale: 0.9, y: 20 }}
-                                animate={{ scale: 1, y: 0 }}
-                                className="w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl shadow-2xl p-8 text-center space-y-8"
-                            >
-                                <header className="space-y-2">
-                                    <div className="w-20 h-20 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <Skull className="w-10 h-10" />
-                                    </div>
-                                    <h2 className="text-3xl font-bold text-white">Survival Failed</h2>
-                                    <p className="text-slate-400">The horde has overwhelmed you.</p>
-                                </header>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-white/5 rounded-2xl p-4 space-y-1">
-                                        <div className="text-xs uppercase tracking-wider text-slate-500 font-bold flex items-center justify-center gap-1">
-                                            <Trophy className="w-3 h-3" /> Score
-                                        </div>
-                                        <div className="text-2xl font-bold text-white">{gameState.score}</div>
-                                    </div>
-                                    <div className="bg-white/5 rounded-2xl p-4 space-y-1">
-                                        <div className="text-xs uppercase tracking-wider text-slate-500 font-bold flex items-center justify-center gap-1">
-                                            <Target className="w-3 h-3" /> Accuracy
-                                        </div>
-                                        <div className="text-2xl font-bold text-white">
-                                            {gameState.totalAttempts > 0 
-                                                ? Math.round((gameState.correctAnswers / gameState.totalAttempts) * 100) 
-                                                : 0}%
-                                        </div>
-                                    </div>
-                                    <div className="col-span-2 bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 space-y-1">
-                                        <div className="text-xs uppercase tracking-wider text-blue-400 font-bold flex items-center justify-center gap-1">
-                                            <Sparkles className="w-3 h-3" /> XP Gained
-                                        </div>
-                                        <div className="text-3xl font-black text-blue-400">
-                                            +{calculateXP(gameState.score, gameState.correctAnswers, gameState.totalAttempts)}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex flex-col gap-3">
-                                    <button 
-                                        onClick={() => {
-                                            resetGame()
-                                            setHasStarted(true)
-                                        }}
-                                        className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold rounded-2xl transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <RotateCcw className="w-5 h-5" /> Play Again
-                                    </button>
-                                    <button 
-                                        onClick={() => {
-                                            const results: WizardZombieGameResult = {
-                                                xp: calculateXP(gameState.score, gameState.correctAnswers, gameState.totalAttempts),
-                                                accuracy: gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0
-                                            }
-                                            onComplete(results)
-                                            window.location.href = '/'
-                                        }}
-                                        className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2"
-                                    >
-                                        <Home className="w-5 h-5" /> Exit to Menu
-                                    </button>
-                                </div>
-                            </motion.div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-
                 {/* HUD Overlay */}
                 <div className="absolute top-4 left-4 z-10 flex flex-col gap-1 text-white font-bold text-lg pointer-events-none drop-shadow-md">
                     <div>HP: {Math.ceil(gameState.player.hp)}</div>
@@ -522,6 +395,28 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                     </Layer>
                 </Stage>
             </>
+        )}
+
+        {gamePhase === 'ended' && gameState && results && (
+            <GameEndScreen
+                status="defeat"
+                title="Survival Failed"
+                subtitle="The horde has overwhelmed you."
+                score={gameState.score}
+                xp={results.xp}
+                accuracy={results.accuracy}
+                customStats={[
+                    { label: 'Survival Time', value: `${Math.round(gameState.gameTime / 1000)}s` },
+                    { label: 'Correct Orbs', value: gameState.correctAnswers },
+                ]}
+                onRestart={() => {
+                    resetGame()
+                    setGamePhase('start')
+                }}
+                onExit={() => {
+                    window.location.href = '/'
+                }}
+            />
         )}
     </div>
   )

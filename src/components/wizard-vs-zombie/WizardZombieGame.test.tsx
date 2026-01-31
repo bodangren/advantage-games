@@ -68,7 +68,9 @@ describe('WizardZombieGame', () => {
 
   it('renders the briefing screen initially', async () => {
     render(<WizardZombieGame vocabulary={vocabulary} onComplete={jest.fn()} />)
-    expect(await screen.findByText(/Arcane Survival/i)).toBeInTheDocument()
+    expect(await screen.findByText(/Horde Survival/i)).toBeInTheDocument()
+    expect(screen.getByText(/How to Play/i)).toBeInTheDocument()
+    expect(screen.getByText(/Vocabulary List/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /start survival/i })).toBeInTheDocument()
   })
 
