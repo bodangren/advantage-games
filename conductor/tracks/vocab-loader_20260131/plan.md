@@ -93,7 +93,7 @@
 - [x] Update any remaining imports [99b809c]
 
 ### Task 4.2: Documentation
-- [ ] Add README section explaining vocabulary file format
-- [ ] Document how to add/edit vocabulary for each game
+- [x] Add README section explaining vocabulary file format
+- [x] Document how to add/edit vocabulary for each game [63ae2eb]
 
 - [ ] Task: Conductor - Phase 4 Verification (Protocol in workflow.md)
