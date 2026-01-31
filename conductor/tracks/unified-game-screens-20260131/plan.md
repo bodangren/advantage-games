@@ -142,13 +142,13 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 5: Migrate RPG Battle
 
 ### Task 5.1: Add start screen before battle selection
-- [ ] Sub-task: Analyze BattleSelectionModal flow (hero → location → enemy → ready)
-- [ ] Sub-task: Add new phase before selection: `'start' | 'selecting' | 'battling' | 'ended'`
-- [ ] Sub-task: Render GameStartScreen when phase is 'start'
-- [ ] Sub-task: Create RPG Battle instructions array (select hero, choose location, battle enemy)
-- [ ] Sub-task: Wire onStart to transition to 'selecting' phase (opens BattleSelectionModal)
-- [ ] Sub-task: Keep BattleSelectionModal unchanged - it handles hero/location/enemy flow
-- [ ] Sub-task: Test flow: Start Screen → Selection Modal → Battle → End Screen
+- [x] Sub-task: Analyze BattleSelectionModal flow (hero → location → enemy → ready) 59a0dc0
+- [x] Sub-task: Add new phase before selection: `'start' | 'selecting' | 'battling' | 'ended'` 59a0dc0
+- [x] Sub-task: Render GameStartScreen when phase is 'start' 59a0dc0
+- [x] Sub-task: Create RPG Battle instructions array (select hero, choose location, battle enemy) 59a0dc0
+- [x] Sub-task: Wire onStart to transition to 'selecting' phase (opens BattleSelectionModal) 59a0dc0
+- [x] Sub-task: Keep BattleSelectionModal unchanged - it handles hero/location/enemy flow 59a0dc0
+- [x] Sub-task: Test flow: Start Screen → Selection Modal → Battle → End Screen 59a0dc0
 
 ### Task 5.2: Replace BattleResults with GameEndScreen
 - [ ] Sub-task: Replace BattleResults component usage with GameEndScreen
