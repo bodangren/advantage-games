@@ -102,54 +102,54 @@
 ## Phase 5: Gameplay Adjustments
 
 ### Task 5.1: Fix sprite orientations
-- [ ] Flip player sprite vertically (currently upside down)
+- [x] Flip player sprite vertically (currently upside down)
   - Update scaleY for player sprite in DragonRiderCanvas
   - Change from `-layout.playerScale` to `layout.playerScale`
-- [ ] Flip dragon army sprites vertically (currently upside down)
+- [x] Flip dragon army sprites vertically (currently upside down)
   - Update scaleY for army sprites in DragonRiderCanvas
   - Change from `-layout.armyScale` to `layout.armyScale`
-- [ ] **Test**: Visual verification - sprites render correctly
-- [ ] **Commit**: "fix(dragon-rider): correct player and army sprite orientations"
+- [x] **Test**: Visual verification - sprites render correctly
+- [x] **Commit**: "fix(dragon-rider): correct player and army sprite orientations"
 
 ### Task 5.2: Extend game duration
-- [ ] Change default duration from 30 seconds to 2.5 minutes (150000ms)
+- [x] Change default duration from 30 seconds to 2.5 minutes (150000ms)
   - Update DEFAULT_DURATION_MS constant in dragonRider.ts
   - Update default prop in DragonRiderGame component
-- [ ] Update tests to work with new duration
-- [ ] **Test**: Run `npm test -- dragonRider` - all tests pass
-- [ ] **Commit**: "feat(dragon-rider): extend game duration to 2.5 minutes"
+- [x] Update tests to work with new duration
+- [x] **Test**: Run `npm test -- dragonRider` - all tests pass
+- [x] **Commit**: "feat(dragon-rider): extend game duration to 2.5 minutes"
 
 ### Task 5.3: Redesign boss battle mechanics
-- [ ] Add collision/proximity detection before boss starts attacking
+- [x] Add collision/proximity detection before boss starts attacking
   - Implement distance calculation between boss and player/army
   - Boss only starts battle when within collision range
-- [ ] Add boss health meter UI
+- [x] Add boss health meter UI
   - Display boss health bar on screen during battle
   - Show remaining boss health visually
-- [ ] Slow down boss battle sequence
+- [x] Slow down boss battle sequence
   - Increase BOSS_HEALTH_TICK_MS from 450ms to reduce battle speed
   - Add tension and give player time to assess their chances
-- [ ] Update boss battle state management
+- [x] Update boss battle state management
   - Track boss battle started/not started state
   - Trigger battle start on collision/proximity
-- [ ] **Test**: Visual verification and gameplay testing
-- [ ] **Commit**: "feat(dragon-rider): redesign boss battle with proximity trigger and health meter"
+- [x] **Test**: Visual verification and gameplay testing
+- [x] **Commit**: "feat(dragon-rider): redesign boss battle with proximity trigger and health meter"
 
 ### Task 5.4: Increase difficulty/victory threshold
-- [ ] Analyze current difficulty with 2.5 minute duration
+- [x] Analyze current difficulty with 2.5 minute duration
   - Current: bossPower = max(3, ceil(attempts × 0.6))
   - With ~90-120 attempts in 2.5min, boss power = 54-72
   - Current requires 60% accuracy to win
-- [ ] Increase difficulty multiplier
+- [x] Increase difficulty multiplier
   - Change from 0.6 to 0.75 or 0.8 to require 75-80% accuracy
   - Or add minimum boss power threshold (e.g., max(50, ceil(attempts × 0.6)))
-- [ ] Update tests with new victory calculations
-- [ ] **Test**: Run full test suite
-- [ ] **Commit**: "feat(dragon-rider): increase difficulty threshold for victory"
+- [x] Update tests with new victory calculations
+- [x] **Test**: Run full test suite
+- [x] **Commit**: "feat(dragon-rider): increase difficulty threshold for victory"
 
 ### Task 5.5: Integration testing of gameplay changes
-- [ ] Run complete test suite
-- [ ] Verify all tests pass with new mechanics
+- [x] Run complete test suite
+- [x] Verify all tests pass with new mechanics
 - [ ] Manual gameplay testing
   - Verify sprites render correctly
   - Verify 2.5 minute duration feels appropriate
