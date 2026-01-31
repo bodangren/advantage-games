@@ -1,12 +1,12 @@
 [
-  { "term": "The cat is on the mat", "translation": "แมวอยู่บนพรม" },
-  { "term": "I like to eat apples", "translation": "ฉันชอบกินแอปเปิ้ล" },
-  { "term": "The sun is very hot", "translation": "พระอาทิตย์ร้อนมาก" },
-  { "term": "She runs in the park", "translation": "เธอวิ่งในสวนสาธารณะ" },
-  { "term": "We go to school", "translation": "พวกเราไปโรงเรียน" },
-  { "term": "They play with a ball", "translation": "พวกเขาเล่นกับลูกบอล" },
-  { "term": "A big blue bird flies", "translation": "นกสีฟ้าตัวใหญ่บิน" },
-  { "term": "He drinks cold water", "translation": "เขาดื่มน้ำเย็น" },
-  { "term": "My house is small", "translation": "บ้านของฉันหลังเล็ก" },
-  { "term": "It is a rainy day", "translation": "มันเป็นวันที่ฝนตก" }
+  { "term": "The picture is a cat", "translation": "รูปภาพคือแมว" },
+  { "term": "The puppy is happy", "translation": "ลูกสุนัขมีความสุข" },
+  { "term": "They walk to a building", "translation": "พวกเขาเดินไปที่อาคาร" },
+  { "term": "This building is big", "translation": "อาคารนี้ใหญ่" },
+  { "term": "A library is quiet", "translation": "ห้องสมุดเงียบ" },
+  { "term": "Mom is the puppy's mom", "translation": "แม่คือแม่ของลูกสุนัข" },
+  { "term": "The girl has a book", "translation": "เด็กหญิงมีหนังสือ" },
+  { "term": "The puppy sees a boy", "translation": "ลูกสุนัขเห็นเด็กชาย" },
+  { "term": "Friends are happy", "translation": "เพื่อนมีความสุข" },
+  { "term": "The puppy likes the book", "translation": "ลูกสุนัขชอบหนังสือ" }
 ]

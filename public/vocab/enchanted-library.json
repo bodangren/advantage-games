@@ -1,12 +1,13 @@
 [
-  { "term": "สวัสดี", "translation": "Hello" },
-  { "term": "ขอบคุณ", "translation": "Thank you" },
-  { "term": "ใช่", "translation": "Yes" },
-  { "term": "ไม่ใช่", "translation": "No" },
-  { "term": "สบายดีไหม", "translation": "How are you" },
-  { "term": "แมว", "translation": "Cat" },
-  { "term": "หมา", "translation": "Dog" },
-  { "term": "น้ำ", "translation": "Water" },
-  { "term": "ข้าว", "translation": "Rice" },
-  { "term": "รัก", "translation": "Love" }
+  { "term": "ลูกสุนัข", "translation": "puppy" },
+  { "term": "อยากรู้", "translation": "curious" },
+  { "term": "ผ้าห่ม", "translation": "blanket" },
+  { "term": "รู้สึก", "translation": "feel" },
+  { "term": "นุ่ม", "translation": "soft" },
+  { "term": "พรม", "translation": "rug" },
+  { "term": "ขรุขระ", "translation": "rough" },
+  { "term": "เรียบ", "translation": "smooth" },
+  { "term": "สีแดง", "translation": "red" },
+  { "term": "สีฟ้า", "translation": "blue" },
+  { "term": "เหลือง", "translation": "yellow" }
 ]
