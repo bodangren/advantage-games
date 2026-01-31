@@ -19,6 +19,8 @@ import { BattleEffects } from '@/components/rpg-battle/BattleEffects'
 import { BattleSelectionModal } from '@/components/rpg-battle/BattleSelectionModal'
 import { useSound } from '@/hooks/useSound'
 import { AnimatePresence, motion } from 'framer-motion'
+import { GameStartScreen } from '@/components/game/GameStartScreen'
+import { Shield, Sparkles, Swords, Wand2 } from 'lucide-react'
 
 const ACTION_COUNT = 3
 const BASIC_DAMAGE = 10
@@ -68,6 +70,7 @@ export default function RpgBattlePage() {
   const [showResults, setShowResults] = useState(false)
   const [resultXp, setResultXp] = useState(1)
   const [resultAccuracy, setResultAccuracy] = useState(0)
+  const [gamePhase, setGamePhase] = useState<'start' | 'selecting' | 'battling' | 'ended'>('start')
   const [heroSprite, setHeroSprite] = useState(() => battleHeroes[0].sprite)
   const [enemySprite, setEnemySprite] = useState(() => battleEnemies[0].sprite)
   const { playSound } = useSound()
@@ -89,6 +92,7 @@ export default function RpgBattlePage() {
       .catch((error) => console.error('Failed to load vocabulary:', error))
     resetSelection()
     setStatus('idle')
+    setGamePhase('start')
   }, [resetSelection, setStatus, setVocabulary])
 
   useEffect(() => {
@@ -102,6 +106,7 @@ export default function RpgBattlePage() {
     setHeroSprite(heroSelection.sprite)
     setEnemySprite(enemySelection.sprite)
     initializeBattle({ enemyMaxHealth: scaleEnemyHealth(enemySelection.multiplier) })
+    setGamePhase('battling')
   }, [initializeBattle, selectedEnemy, selectedEnemyId, selectedHeroId, selectionStep])
 
   useEffect(() => {
@@ -245,10 +250,11 @@ export default function RpgBattlePage() {
     setResultAccuracy(0)
     setStatus('idle')
     resetSelection()
+    setGamePhase('selecting')
   }
 
   return (
-    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+    <main className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative">
       <div className="w-full max-w-5xl space-y-6">
         <header className="space-y-2 text-center">
           <div className="flex items-center justify-between text-sm">
@@ -336,15 +342,44 @@ export default function RpgBattlePage() {
           </BattleEffects>
         )}
       </div>
-      <BattleSelectionModal
-        step={selectionStep}
-        heroes={battleHeroes}
-        locations={battleLocations}
-        enemies={battleEnemies}
-        onSelectHero={selectHero}
-        onSelectLocation={selectLocation}
-        onSelectEnemy={selectEnemy}
-      />
+      {gamePhase === 'selecting' ? (
+        <BattleSelectionModal
+          step={selectionStep}
+          heroes={battleHeroes}
+          locations={battleLocations}
+          enemies={battleEnemies}
+          onSelectHero={selectHero}
+          onSelectLocation={selectLocation}
+          onSelectEnemy={selectEnemy}
+        />
+      ) : null}
+      <AnimatePresence>
+        {gamePhase === 'start' ? (
+          <GameStartScreen
+            gameTitle="RPG Battle"
+            gameSubtitle="Arcane Duel"
+            vocabulary={vocabulary}
+            instructions={[
+              { step: 1, text: 'Choose a hero, location, and enemy to begin your quest.', icon: Shield },
+              { step: 2, text: 'Type the correct translation to cast spells.', icon: Wand2 },
+              { step: 3, text: 'Build streaks to unlock stronger attacks.', icon: Sparkles },
+              { step: 4, text: 'Defeat the enemy before the turns run out.', icon: Swords },
+            ]}
+            proTip="Power spells hit harder, so save them for tough foes."
+            controls={[
+              { label: 'Cast', keys: 'Type + Enter', color: 'bg-amber-500' },
+              { label: 'Focus', keys: 'Stay Accurate', color: 'bg-emerald-500' },
+            ]}
+            startButtonText="Start Battle"
+            icon={Swords}
+            onStart={() => {
+              setGamePhase('selecting')
+              resetSelection()
+              setStatus('idle')
+            }}
+          />
+        ) : null}
+      </AnimatePresence>
     </main>
   )
 }

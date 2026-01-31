@@ -25,7 +25,7 @@ describe('RpgBattlePage', () => {
   it('renders the RPG battle shell', () => {
     render(<RpgBattlePage />)
 
-    expect(screen.getByText(/RPG Battle/i)).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /RPG Battle/i, level: 1 })).toBeInTheDocument()
     expect(screen.getByText('Actions')).toBeInTheDocument()
     expect(screen.getByText('Battle Log')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /back to home/i })).toHaveAttribute('href', '/')
@@ -34,12 +34,18 @@ describe('RpgBattlePage', () => {
   it('shows the selection modal before the battle starts', () => {
     render(<RpgBattlePage />)
 
-    expect(screen.getByRole('heading', { name: /choose your hero/i })).toBeInTheDocument()
+    expect(screen.getByText(/How to Play/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /start battle/i })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: /choose your hero/i })).not.toBeInTheDocument()
     expect(useRPGBattleStore.getState().status).toBe('idle')
   })
 
   it('starts the battle once selections are complete', async () => {
     render(<RpgBattlePage />)
+
+    act(() => {
+      screen.getByRole('button', { name: /start battle/i }).click()
+    })
 
     act(() => {
       const { selectHero, selectLocation, selectEnemy } = useRPGBattleStore.getState()
@@ -57,6 +63,10 @@ describe('RpgBattlePage', () => {
     render(<RpgBattlePage />)
 
     act(() => {
+      screen.getByRole('button', { name: /start battle/i }).click()
+    })
+
+    act(() => {
       const { selectHero, selectLocation, selectEnemy } = useRPGBattleStore.getState()
       selectHero('female')
       selectLocation('magic-arena')
@@ -69,5 +79,15 @@ describe('RpgBattlePage', () => {
         backgroundImage: `url(${withBasePath('/games/rpg-battle/background_magic_arena.png')})`,
       })
     })
+  })
+
+  it('reveals the selection modal after starting the battle', () => {
+    render(<RpgBattlePage />)
+
+    act(() => {
+      screen.getByRole('button', { name: /start battle/i }).click()
+    })
+
+    expect(screen.getByRole('heading', { name: /choose your hero/i })).toBeInTheDocument()
   })
 })
