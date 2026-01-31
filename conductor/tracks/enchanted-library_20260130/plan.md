@@ -431,7 +431,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 9: Testing and Quality Assurance
+## Phase 9: Testing and Quality Assurance [checkpoint: 6ff6daa]
 
 ### Task 9.1: Integration testing
 - [x] Sub-task: Test complete gameplay flow:
@@ -475,7 +475,7 @@ Before starting ANY phase, the implementer MUST:
 
 **Verification**: Game works across browsers. ✅
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 9: Testing and Quality Assurance' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 9: Testing and Quality Assurance' (Protocol in workflow.md) 6ff6daa
 
 ---
 
