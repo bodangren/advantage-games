@@ -130,10 +130,10 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Test flow: Start Screen → Monster Selection → Game → End Screen 3efba97
 
 ### Task 4.2: Replace inline end screen
-- [ ] Sub-task: Replace inline victory/defeat JSX with GameEndScreen
-- [ ] Sub-task: Pass monster-specific custom stats (monster defeated, XP reward)
-- [ ] Sub-task: Wire onRestart to go back to 'selecting' phase (not 'start')
-- [ ] Sub-task: Test manually on desktop and mobile
+- [x] Sub-task: Replace inline victory/defeat JSX with GameEndScreen a9929db
+- [x] Sub-task: Pass monster-specific custom stats (monster defeated, XP reward) a9929db
+- [x] Sub-task: Wire onRestart to go back to 'selecting' phase (not 'start') a9929db
+- [x] Sub-task: Test manually on desktop and mobile a9929db
 
 **Verification**: Rune Match shows vocabulary first, then monster selection, uses shared end screen.
 
