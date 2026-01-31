@@ -30,15 +30,15 @@ Before starting ANY phase, the implementer MUST:
 - [x] Sub-task: Ensure responsive design (stacks on mobile) 45ff2f8
 
 ### Task 1.2: Write tests for GameStartScreen
-- [ ] Sub-task: Create `src/components/game/__tests__/GameStartScreen.test.tsx`
-- [ ] Sub-task: Test: renders game title
-- [ ] Sub-task: Test: renders subtitle badge when provided
-- [ ] Sub-task: Test: renders vocabulary list with correct item count
-- [ ] Sub-task: Test: renders instructions when provided
-- [ ] Sub-task: Test: renders pro tip when provided
-- [ ] Sub-task: Test: calls onStart when button clicked
-- [ ] Sub-task: Test: uses custom startButtonText when provided
-- [ ] Sub-task: Run tests: `CI=true npm test src/components/game/__tests__/GameStartScreen.test.tsx`
+- [x] Sub-task: Create `src/components/game/__tests__/GameStartScreen.test.tsx` a93de89
+- [x] Sub-task: Test: renders game title a93de89
+- [x] Sub-task: Test: renders subtitle badge when provided a93de89
+- [x] Sub-task: Test: renders vocabulary list with correct item count a93de89
+- [x] Sub-task: Test: renders instructions when provided a93de89
+- [x] Sub-task: Test: renders pro tip when provided a93de89
+- [x] Sub-task: Test: calls onStart when button clicked a93de89
+- [x] Sub-task: Test: uses custom startButtonText when provided a93de89
+- [x] Sub-task: Run tests: `CI=true npm test src/components/game/__tests__/GameStartScreen.test.tsx` a93de89
 
 **Verification**: Start screen renders correctly, all tests pass with >80% coverage.
 
