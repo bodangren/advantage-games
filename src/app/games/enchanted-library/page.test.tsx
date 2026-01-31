@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import EnchantedLibraryPage from './page'
 
 // Mock the dynamic import
@@ -13,6 +13,7 @@ jest.mock('next/dynamic', () => ({
 
 const mockSetVocabulary = jest.fn()
 const mockSetLastResult = jest.fn()
+const mockLoadVocabulary = jest.fn().mockResolvedValue([])
 
 jest.mock('@/store/useGameStore', () => ({
   useGameStore: (selector: (state: { vocabulary: string[]; setVocabulary: () => void; setLastResult: () => void }) => unknown) =>
@@ -21,6 +22,10 @@ jest.mock('@/store/useGameStore', () => ({
       setVocabulary: mockSetVocabulary,
       setLastResult: mockSetLastResult,
     }),
+}))
+
+jest.mock('@/lib/vocabLoader', () => ({
+  loadVocabulary: (...args: unknown[]) => mockLoadVocabulary(...args),
 }))
 
 describe('EnchantedLibraryPage', () => {
@@ -46,8 +51,27 @@ describe('EnchantedLibraryPage', () => {
     expect(link).toHaveAttribute('href', '/')
   })
 
-  it('sets sample vocabulary if vocabulary is empty', () => {
+  it('sets vocabulary if vocabulary is empty', async () => {
     render(<EnchantedLibraryPage />)
-    expect(mockSetVocabulary).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(mockSetVocabulary).toHaveBeenCalled()
+    })
+  })
+
+  it('loads vocabulary from JSON file for enchanted-library game', async () => {
+    const mockVocab = [
+      { term: 'test', translation: 'ทดสอบ' },
+    ]
+    mockLoadVocabulary.mockResolvedValue(mockVocab)
+
+    render(<EnchantedLibraryPage />)
+
+    await waitFor(() => {
+      expect(mockLoadVocabulary).toHaveBeenCalledWith('enchanted-library')
+    })
+
+    await waitFor(() => {
+      expect(mockSetVocabulary).toHaveBeenCalledWith(mockVocab)
+    })
   })
 })

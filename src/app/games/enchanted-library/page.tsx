@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useCallback, useEffect } from 'react'
 import type { EnchantedLibraryGameResult } from '@/components/enchanted-library/EnchantedLibraryGame'
-import { SAMPLE_VOCABULARY } from '@/lib/sampleVocabulary'
+import { loadVocabulary } from '@/lib/vocabLoader'
 import { useGameStore } from '@/store/useGameStore'
 
 const EnchantedLibraryGame = dynamic(
@@ -19,7 +19,9 @@ export default function EnchantedLibraryPage() {
 
   useEffect(() => {
     if (vocabulary.length === 0) {
-      setVocabulary(SAMPLE_VOCABULARY)
+      loadVocabulary('enchanted-library')
+        .then((vocab) => setVocabulary(vocab))
+        .catch((error) => console.error('Failed to load vocabulary:', error))
     }
   }, [vocabulary.length, setVocabulary])
 
