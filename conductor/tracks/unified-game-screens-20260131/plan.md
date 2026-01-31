@@ -121,13 +121,13 @@ Before starting ANY phase, the implementer MUST:
 ## Phase 4: Migrate Rune Match
 
 ### Task 4.1: Add start screen before monster selection
-- [ ] Sub-task: Analyze current flow (MonsterSelection → gameplay)
-- [ ] Sub-task: Add new game phase: `'start' | 'selecting' | 'playing' | 'ended'`
-- [ ] Sub-task: Render GameStartScreen when phase is 'start'
-- [ ] Sub-task: Create Rune Match instructions array (match runes, defeat monster, etc.)
-- [ ] Sub-task: Wire onStart to transition to 'selecting' phase (shows MonsterSelection)
-- [ ] Sub-task: Keep MonsterSelection unchanged - it transitions to 'playing'
-- [ ] Sub-task: Test flow: Start Screen → Monster Selection → Game → End Screen
+- [x] Sub-task: Analyze current flow (MonsterSelection → gameplay) 3efba97
+- [x] Sub-task: Add new game phase: `'start' | 'selecting' | 'playing' | 'ended'` 3efba97
+- [x] Sub-task: Render GameStartScreen when phase is 'start' 3efba97
+- [x] Sub-task: Create Rune Match instructions array (match runes, defeat monster, etc.) 3efba97
+- [x] Sub-task: Wire onStart to transition to 'selecting' phase (shows MonsterSelection) 3efba97
+- [x] Sub-task: Keep MonsterSelection unchanged - it transitions to 'playing' 3efba97
+- [x] Sub-task: Test flow: Start Screen → Monster Selection → Game → End Screen 3efba97
 
 ### Task 4.2: Replace inline end screen
 - [ ] Sub-task: Replace inline victory/defeat JSX with GameEndScreen
