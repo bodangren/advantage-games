@@ -45,6 +45,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Per-Game Vocabulary Loading System**
+- [x] **Track: Per-Game Vocabulary Loading System**
 *Link: [./conductor/tracks/vocab-loader_20260131/](./conductor/tracks/vocab-loader_20260131/)*
 *Description: Replace hardcoded vocabulary with per-game JSON files in public/vocab/ that can be edited without rebuild*
