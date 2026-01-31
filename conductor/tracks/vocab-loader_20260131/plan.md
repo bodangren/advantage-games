@@ -88,9 +88,9 @@
 ## Phase 4: Cleanup
 
 ### Task 4.1: Remove Legacy Vocabulary Files
-- [ ] Remove or deprecate `src/lib/sampleVocabulary.ts`
-- [ ] Remove or deprecate `src/lib/sampleSentences.ts`
-- [ ] Update any remaining imports
+- [x] Remove or deprecate `src/lib/sampleVocabulary.ts`
+- [x] Remove or deprecate `src/lib/sampleSentences.ts`
+- [x] Update any remaining imports [99b809c]
 
 ### Task 4.2: Documentation
 - [ ] Add README section explaining vocabulary file format
