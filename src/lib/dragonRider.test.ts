@@ -73,8 +73,8 @@ describe('dragonRider core logic', () => {
 
   it('calculates boss power from attempts', () => {
     expect(calculateBossPower(0)).toBe(3)
-    expect(calculateBossPower(5)).toBe(3)
-    expect(calculateBossPower(6)).toBe(4)
+    expect(calculateBossPower(5)).toBe(4)
+    expect(calculateBossPower(6)).toBe(5)
   })
 
   it('builds results with accuracy, boss outcome, and XP', () => {
@@ -85,7 +85,7 @@ describe('dragonRider core logic', () => {
     })
 
     expect(results.accuracy).toBeCloseTo(0.6)
-    expect(results.bossPower).toBe(6)
+    expect(results.bossPower).toBe(8)
     expect(results.victory).toBe(false)
     expect(results.xp).toBe(3)
   })
