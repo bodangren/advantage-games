@@ -1,6 +1,6 @@
 # Implementation Plan: Per-Game Vocabulary Loading System
 
-## Phase 1: Core Infrastructure
+## Phase 1: Core Infrastructure [checkpoint: 3bc5b75]
 
 ### Task 1.1: Create Vocabulary Loader Utility
 - [x] Write unit tests for vocabulary loader
