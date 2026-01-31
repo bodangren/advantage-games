@@ -120,7 +120,7 @@ const GATE_TRAVEL_MS = 7200
 const PLAYER_LERP = 0.22
 const PLAYER_ANIM_MS = 120
 const BOSS_ANIM_MS = 180
-const BOSS_HEALTH_TICK_MS = 450
+const BOSS_HEALTH_TICK_MS = 1800
 const RESULTS_REVEAL_MS = 900
 const GATE_SCALE_FACTOR = 0.5
 const PLAYER_BASE_SCALE = 0.22
@@ -331,6 +331,7 @@ export function DragonRiderGame({
   const [bossHealth, setBossHealth] = useState(0)
   const [bossY, setBossY] = useState(DEFAULT_STAGE.height * 0.28)
   const [bossSequenceDone, setBossSequenceDone] = useState(false)
+  const [bossBattleStarted, setBossBattleStarted] = useState(false)
   const { playSound } = useSound()
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pendingSelectionRef = useRef<PendingSelection | null>(null)
@@ -389,6 +390,7 @@ export function DragonRiderGame({
     setDisplayDragonCount(1)
     setBossHealth(0)
     setBossSequenceDone(false)
+    setBossBattleStarted(false)
     pendingSelectionRef.current = null
     playerTargetRef.current = null
   }, [vocabulary, durationMs])
@@ -598,9 +600,21 @@ export function DragonRiderGame({
   useInterval(() => {
     setBossHealth((prev) => Math.max(0, prev - 1))
     setDisplayDragonCount((prev) => Math.max(0, prev - 1))
-  }, state.status === 'boss' && bossHealth > 0 && displayDragonCount > 0 && gamePhase === 'playing'
+  }, state.status === 'boss' && bossBattleStarted && bossHealth > 0 && displayDragonCount > 0 && gamePhase === 'playing'
     ? BOSS_HEALTH_TICK_MS
     : null)
+
+  useEffect(() => {
+    if (state.status === 'boss' && !bossBattleStarted && layout) {
+      const proximityThreshold = layout.bossFrameHeight * layout.bossScale * 0.5
+      const bossBottom = bossY + proximityThreshold
+      const playerTop = layout.playerY - layout.playerFrameHeight * layout.playerScale * 0.5
+
+      if (bossBottom >= playerTop) {
+        setBossBattleStarted(true)
+      }
+    }
+  }, [state.status, bossBattleStarted, bossY, layout])
 
   useEffect(() => {
     if (feedback) {
@@ -929,6 +943,41 @@ export function DragonRiderGame({
               >
                 Skeleton King Approaches
               </motion.div>
+            )}
+            {state.status === 'boss' && bossBattleStarted && !showResults && (
+              <>
+                <motion.div
+                  className='absolute inset-x-0 top-16 mx-auto flex w-fit items-center gap-3 rounded-full border border-red-500/40 bg-red-950/70 px-6 py-3 text-xl font-bold uppercase tracking-[0.2em] text-red-200'
+                  initial={{ opacity: 0, scale: 0.8, y: -20 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.4, type: 'spring' }}
+                >
+                  ⚔️ Big Boss Battle! ⚔️
+                </motion.div>
+                <motion.div
+                  className='absolute inset-x-0 top-36 mx-auto w-80'
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3, delay: 0.2 }}
+                >
+                  <div className='rounded-lg border border-white/10 bg-slate-900/70 p-3 backdrop-blur'>
+                    <div className='text-xs uppercase tracking-[0.2em] text-white/70 mb-1'>Boss Health</div>
+                    <div className='h-4 w-full overflow-hidden rounded-full bg-white/10'>
+                      <motion.div
+                        className='h-full rounded-full bg-gradient-to-r from-red-500 to-red-600'
+                        initial={{ width: '100%' }}
+                        animate={{ width: `${Math.max(0, (bossHealth / calculateBossPower(state.attempts)) * 100)}%` }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </div>
+                    <div className='mt-1 text-xs text-white/60 text-center'>
+                      {bossHealth} / {calculateBossPower(state.attempts)}
+                    </div>
+                  </div>
+                </motion.div>
+              </>
             )}
           </AnimatePresence>
         </div>
