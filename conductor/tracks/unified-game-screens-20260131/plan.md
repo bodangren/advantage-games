@@ -118,7 +118,7 @@ Before starting ANY phase, the implementer MUST:
 
 ---
 
-## Phase 4: Migrate Rune Match
+## Phase 4: Migrate Rune Match [checkpoint: ed42ca5]
 
 ### Task 4.1: Add start screen before monster selection
 - [x] Sub-task: Analyze current flow (MonsterSelection → gameplay) 3efba97
