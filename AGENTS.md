@@ -2,10 +2,9 @@
 
 ## Worktree Rules
 
-- Use one git worktree and branch per game.
-- Do all game work in that game's worktree only.
-- Keep the base repo clean; use it only for worktree management and global admin tasks unless explicitly requested otherwise.
-- If a change impacts multiple games or shared code, get explicit approval and use a dedicated worktree/branch (e.g., `shared/<topic>`).
+- Use one git worktree and branch per game for single-game changes.
+- Do all single-game work in that game's worktree only.
+- For cross-game or shared changes that touch multiple games, work in the base repo unless explicitly requested otherwise.
 
 ## Naming and Paths
 
@@ -37,7 +36,6 @@ git worktree prune
 ## Sync & Integration
 
 - Sync cadence: pull main at least daily, before starting new tasks, and before opening a PR or merge.
-- Shared changes (engine/components/config): use a dedicated `shared/<topic>` worktree/branch, then merge to main so all game branches can pull cleanly.
 - Standard sync commands (run inside your game worktree):
   ```bash
   git fetch
