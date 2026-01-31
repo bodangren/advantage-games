@@ -132,13 +132,16 @@ describe('DragonRiderGame', () => {
     expect(screen.getByTestId('dragon-rider-boss')).toBeInTheDocument()
 
     act(() => {
-      jest.advanceTimersByTime(10000)
+      jest.advanceTimersByTime(8000)
     })
     act(() => {
-      jest.advanceTimersByTime(10000)
+      jest.advanceTimersByTime(8000)
     })
     act(() => {
-      jest.advanceTimersByTime(2000)
+      jest.advanceTimersByTime(8000)
+    })
+    act(() => {
+      jest.advanceTimersByTime(3000)
     })
 
     expect(screen.getByTestId('dragon-rider')).toHaveAttribute('data-status', 'results')

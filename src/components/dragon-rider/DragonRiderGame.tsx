@@ -586,7 +586,7 @@ export function DragonRiderGame({
     const gateEndY = stageSize.height + layout.leftGate.height
     const gateSpeed = (gateEndY - gateStartY) / (GATE_TRAVEL_MS / 1000)
     const deltaSeconds = TICK_MS / 1000
-    const targetY = layout.playerY
+    const targetY = stageSize.height * 0.45 // Stop boss at 45% down the screen
 
     setBossY((prev) => {
       const next = prev + gateSpeed * deltaSeconds
@@ -602,17 +602,14 @@ export function DragonRiderGame({
     : null)
 
   useEffect(() => {
-    if (state.status === 'boss' && !bossBattleStarted && layout) {
-      const proximityThreshold = layout.bossFrameHeight * layout.bossScale * 0.5
-      const bossBottom = bossY + proximityThreshold
-      // Army is positioned above the player, so check collision with army position
-      const armyTop = layout.playerY - layout.armyFrameHeight * layout.armyScale - 60
-
-      if (bossBottom >= armyTop) {
+    if (state.status === 'boss' && !bossBattleStarted) {
+      const targetY = stageSize.height * 0.45
+      // Start battle when boss reaches target position
+      if (bossY >= targetY - 10) {
         setBossBattleStarted(true)
       }
     }
-  }, [state.status, bossBattleStarted, bossY, layout])
+  }, [state.status, bossBattleStarted, bossY, stageSize.height])
 
   useEffect(() => {
     if (feedback) {
@@ -626,13 +623,12 @@ export function DragonRiderGame({
   }, [feedback])
 
   useEffect(() => {
-    if (state.status !== 'boss' || !layout) return
-    const bossHit = bossY >= layout.playerY
+    if (state.status !== 'boss') return
     const battleOver = bossHealth <= 0 || displayDragonCount <= 0
-    if (bossHit && battleOver) {
+    if (bossBattleStarted && battleOver) {
       setBossSequenceDone(true)
     }
-  }, [bossHealth, bossY, displayDragonCount, layout, state.status])
+  }, [bossHealth, displayDragonCount, state.status, bossBattleStarted])
 
   useEffect(() => {
     if (resultsTimeoutRef.current) {
@@ -835,7 +831,7 @@ export function DragonRiderGame({
             </div>
           </div>
 
-          <div className='absolute left-6 right-6 top-20'>
+          <div className='absolute left-6 right-6 top-[88px]'>
             <div
               className='h-2 w-full overflow-hidden rounded-full bg-white/10'
               role='progressbar'
