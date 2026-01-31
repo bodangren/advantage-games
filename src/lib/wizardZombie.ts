@@ -42,6 +42,7 @@ export type WizardZombieState = {
   spawnTimer: number
   difficultyMultiplier: number
   gameTime: number
+  totalSpawns: number
 }
 
 export type WizardZombieConfig = {
@@ -96,6 +97,7 @@ export const createWizardZombieState = (
     spawnTimer: 0,
     difficultyMultiplier: 1,
     gameTime: 0,
+    totalSpawns: 0,
   }
 }
 
@@ -262,12 +264,18 @@ function checkCollisions(
 }
 
 function updateZombies(state: WizardZombieState, dt: number, speedFactor: number): WizardZombieState {
-  let { zombies, spawnTimer } = state
+  let { zombies, spawnTimer, totalSpawns } = state
   spawnTimer += dt
 
-  // Spawn Logic (Cap at 50)
-  if (spawnTimer >= SPAWN_RATE_MS && zombies.length < 50) {
+  // Spawn Logic (Continuous with replacement)
+  if (spawnTimer >= SPAWN_RATE_MS) {
     spawnTimer = 0
+
+    // If at max capacity, remove oldest zombie
+    if (zombies.length >= 20) {
+      zombies = zombies.slice(1)
+    }
+
     const gateIndex = Math.floor(Math.random() * 4) // 0-3
     const gates = [
         { x: GAME_WIDTH / 2, y: -50 }, // N
@@ -276,7 +284,11 @@ function updateZombies(state: WizardZombieState, dt: number, speedFactor: number
         { x: GAME_WIDTH + 50, y: GAME_HEIGHT / 2 }, // E
     ]
     const gate = gates[gateIndex]
-    
+
+    // Calculate speed multiplier: +1% per spawn
+    const speedMultiplier = Math.pow(1.01, totalSpawns)
+    const baseSpeed = 1.05
+
     zombies = [
         ...zombies,
         {
@@ -284,10 +296,12 @@ function updateZombies(state: WizardZombieState, dt: number, speedFactor: number
             x: gate.x,
             y: gate.y,
             radius: ZOMBIE_RADIUS,
-            speed: 1.5 + (state.difficultyMultiplier * 0.1), // Mild speed increase
+            speed: baseSpeed * speedMultiplier,
             damage: 10
         }
     ]
+
+    totalSpawns += 1
   }
 
   // Move Zombies (Vector-based optimization)
@@ -318,7 +332,8 @@ function updateZombies(state: WizardZombieState, dt: number, speedFactor: number
   return {
       ...state,
       zombies: nextZombies,
-      spawnTimer
+      spawnTimer,
+      totalSpawns
   }
 }
 

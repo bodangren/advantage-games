@@ -52,6 +52,16 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<WizardZombieGameResult | null>(null)
   const hasReportedRef = useRef(false)
+
+  type PopupNotification = {
+    id: string
+    text: string
+    x: number
+    y: number
+    color: string
+    timestamp: number
+  }
+  const [popups, setPopups] = useState<PopupNotification[]>([])
   
   const [assets, setAssets] = useState<{
       player: HTMLImageElement
@@ -119,6 +129,12 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
       }
   }, 150)
 
+  // Cleanup old popups (remove after 1.5 seconds)
+  useInterval(() => {
+      const now = Date.now()
+      setPopups(prev => prev.filter(p => now - p.timestamp < 1500))
+  }, 100)
+
   // Calculate indicators
   const indicators = gameState && dimensions.width > 0 ? calculateIndicators(
       gameState.orbs,
@@ -129,24 +145,79 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
   // Game Loop
   useInterval(() => {
     if (gameState && gameState.status === 'playing' && assets && gamePhase === 'playing') {
+        const prevState = gameState
         const nextState = advanceWizardZombieTime(gameState, 50, input, vocabulary)
         setGameState(nextState)
 
+        // Detect events and create popups
+        const now = Date.now()
+        const newPopups: PopupNotification[] = []
+
+        // Score change (correct or wrong orb)
+        if (nextState.score > prevState.score) {
+            const diff = nextState.score - prevState.score
+            newPopups.push({
+                id: `score-${now}-${Math.random()}`,
+                text: `+${diff}`,
+                x: nextState.player.x,
+                y: nextState.player.y - 30,
+                color: '#fbbf24', // bright yellow/gold
+                timestamp: now
+            })
+        } else if (nextState.score < prevState.score) {
+            const diff = prevState.score - nextState.score
+            newPopups.push({
+                id: `score-${now}-${Math.random()}`,
+                text: `-${diff}`,
+                x: nextState.player.x,
+                y: nextState.player.y - 30,
+                color: '#ff6b6b', // bright red
+                timestamp: now
+            })
+        }
+
+        // HP change
+        if (nextState.player.hp > prevState.player.hp) {
+            const diff = Math.round(nextState.player.hp - prevState.player.hp)
+            newPopups.push({
+                id: `hp-${now}-${Math.random()}`,
+                text: `+${diff} HP`,
+                x: nextState.player.x,
+                y: nextState.player.y - 50,
+                color: '#4ade80', // bright green
+                timestamp: now
+            })
+        } else if (nextState.player.hp < prevState.player.hp) {
+            const diff = Math.round(prevState.player.hp - nextState.player.hp)
+            newPopups.push({
+                id: `hp-${now}-${Math.random()}`,
+                text: `-${diff} HP`,
+                x: nextState.player.x,
+                y: nextState.player.y - 50,
+                color: '#ff4444', // bright red/orange
+                timestamp: now
+            })
+        }
+
+        if (newPopups.length > 0) {
+            setPopups(prev => [...prev, ...newPopups])
+        }
+
         if (input.cast) {
             consumeCast()
-            playSound('success') 
+            playSound('success')
         }
 
         if (dimensions.width > 0 && dimensions.height > 0) {
              const scaleY = dimensions.height / GAME_HEIGHT
-             const scale = Math.max(scaleY, 0.8) 
+             const scale = Math.max(scaleY, 0.8)
 
              let camX = (dimensions.width / 2) - (nextState.player.x * scale)
              let camY = (dimensions.height / 2) - (nextState.player.y * scale)
 
              const minX = dimensions.width - (GAME_WIDTH * scale)
              const minY = dimensions.height - (GAME_HEIGHT * scale)
-             
+
              if (minX > 0) camX = (dimensions.width - GAME_WIDTH * scale) / 2
              else camX = Math.max(minX, Math.min(0, camX))
 
@@ -366,31 +437,71 @@ export function WizardZombieGame({ vocabulary, onComplete }: WizardZombieGamePro
                             ))}
                             
                             {/* Orbs - Offset animation */}
-                            {gameState.orbs.map((orb, i) => (
-                                <Group key={orb.id} x={orb.x} y={orb.y}>
-                                    <KonvaImage 
-                                        image={assets.orb}
-                                        name="orb"
-                                        width={orb.radius * 2}
-                                        height={orb.radius * 2}
-                                        offsetX={orb.radius}
-                                        offsetY={orb.radius}
-                                        crop={getSpriteCrop(grids.orb.fw, grids.orb.fh, (orbFrame + i) % 3, 0)}
-                                    />
-                                    <Text 
-                                        text={orb.translation} 
-                                        fontSize={14} 
+                            {gameState.orbs.map((orb, i) => {
+                                // Measure text to create proper background
+                                const textWidth = orb.translation.length * 9 // Approximate width
+                                const textHeight = 18
+                                const padding = 4
+
+                                return (
+                                    <Group key={orb.id} x={orb.x} y={orb.y}>
+                                        <KonvaImage
+                                            image={assets.orb}
+                                            name="orb"
+                                            width={orb.radius * 2}
+                                            height={orb.radius * 2}
+                                            offsetX={orb.radius}
+                                            offsetY={orb.radius}
+                                            crop={getSpriteCrop(grids.orb.fw, grids.orb.fh, (orbFrame + i) % 3, 0)}
+                                        />
+                                        {/* Black background for text */}
+                                        <Rect
+                                            x={-textWidth / 2}
+                                            y={orb.radius + 5}
+                                            width={textWidth + padding * 2}
+                                            height={textHeight}
+                                            fill="black"
+                                            cornerRadius={3}
+                                        />
+                                        <Text
+                                            text={orb.translation}
+                                            fontSize={14}
+                                            fontStyle="bold"
+                                            fill="white"
+                                            x={-textWidth / 2 + padding}
+                                            y={orb.radius + 7}
+                                            wrap="none"
+                                        />
+                                    </Group>
+                                )
+                            })}
+
+                            {/* Floating Popups */}
+                            {popups.map(popup => {
+                                const age = Date.now() - popup.timestamp
+                                const progress = age / 1500 // 0 to 1 over 1.5 seconds
+                                const opacity = Math.max(0, 1 - progress)
+                                const yOffset = progress * -60 // Float upward
+
+                                return (
+                                    <Text
+                                        key={popup.id}
+                                        text={popup.text}
+                                        x={popup.x}
+                                        y={popup.y + yOffset}
+                                        fontSize={24}
                                         fontStyle="bold"
-                                        fill="white" 
-                                        offsetX={orb.radius} 
-                                        offsetY={orb.radius + 20}
-                                        width={orb.radius * 2}
-                                        align="center"
+                                        fill={popup.color}
+                                        offsetX={popup.text.length * 7}
+                                        opacity={opacity}
                                         shadowColor="black"
-                                        shadowBlur={4}
+                                        shadowBlur={10}
+                                        shadowOpacity={1}
+                                        shadowOffsetX={2}
+                                        shadowOffsetY={2}
                                     />
-                                </Group>
-                            ))}
+                                )
+                            })}
                         </Group>
                     </Layer>
                 </Stage>
