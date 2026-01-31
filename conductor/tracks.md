@@ -45,7 +45,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Unified Start and End Screens**
+- [x] **Track: Unified Start and End Screens**
 *Link: [./conductor/tracks/unified-game-screens-20260131/](./conductor/tracks/unified-game-screens-20260131/)*
 *Description: Refactor start and end screens across all games to use shared, themeable components for consistent UX*
 *Priority: Medium*
