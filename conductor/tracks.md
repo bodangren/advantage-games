@@ -43,3 +43,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: Potion Rush Gameplay Refinements**
 *Link: [./conductor/archive/potion-rush-refinements-20260129/](./conductor/archive/potion-rush-refinements-20260129/)*
 
+---
+
+- [~] **Track: Unified Start and End Screens**
+*Link: [./conductor/tracks/unified-game-screens-20260131/](./conductor/tracks/unified-game-screens-20260131/)*
+*Description: Refactor start and end screens across all games to use shared, themeable components for consistent UX*
+*Priority: Medium*
+*Type: Chore*
