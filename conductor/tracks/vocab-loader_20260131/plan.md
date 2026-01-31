@@ -85,7 +85,7 @@
 
 - [ ] Task: Conductor - Phase 3 Verification (Protocol in workflow.md)
 
-## Phase 4: Cleanup
+## Phase 4: Cleanup [checkpoint: bf888e1]
 
 ### Task 4.1: Remove Legacy Vocabulary Files
 - [x] Remove or deprecate `src/lib/sampleVocabulary.ts`
