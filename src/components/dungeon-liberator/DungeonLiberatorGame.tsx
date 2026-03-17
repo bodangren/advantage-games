@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Stage, Layer, Text, Group, Rect, Circle, Line, Ring } from 'react-konva'
+import { Stage, Layer, Text, Group, Rect, Circle, Line, Ring, Image as KonvaImage } from 'react-konva'
 import {
   createDungeonLiberatorState,
   advanceDungeonLiberatorTime,
@@ -22,6 +22,22 @@ import { calculateXP } from '@/lib/xp'
 import { GameEndScreen } from '@/components/game/GameEndScreen'
 import { GameStartScreen } from '@/components/game/GameStartScreen'
 import { Shield, Sword, Users, AlertTriangle } from 'lucide-react'
+import { withBasePath } from '@/lib/basePath'
+
+const SPRITE_SIZE = {
+  player: 48,
+  prisoner: 40,
+  slime: 48,
+}
+
+function loadSprite(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.src = withBasePath(src)
+    img.onload = () => resolve(img)
+    img.onerror = reject
+  })
+}
 
 export type DungeonLiberatorGameResult = {
   xp: number
@@ -39,6 +55,36 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<DungeonLiberatorGameResult | null>(null)
   const hasReportedRef = useRef(false)
+
+  const [assets, setAssets] = useState<{
+    background: HTMLImageElement
+    player: HTMLImageElement
+    prisoner: HTMLImageElement
+    slime: HTMLImageElement
+  } | null>(null)
+  const [animFrame, setAnimFrame] = useState(0)
+
+  useEffect(() => {
+    const load = async () => {
+      const [background, player, prisoner, slime] = await Promise.all([
+        loadSprite('/games/dungeon-liberator/background.png'),
+        loadSprite('/games/dungeon-liberator/player-sheet.png'),
+        loadSprite('/games/dungeon-liberator/prisoner-sheet.png'),
+        loadSprite('/games/dungeon-liberator/slime-sheet.png'),
+      ])
+      setAssets({ background, player, prisoner, slime })
+    }
+    load()
+  }, [])
+
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      const interval = setInterval(() => {
+        setAnimFrame(f => (f + 1) % 3)
+      }, 200)
+      return () => clearInterval(interval)
+    }
+  }, [gamePhase])
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -220,22 +266,17 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
 
           <Stage width={dimensions.width} height={dimensions.height}>
             <Layer scaleX={scale} scaleY={scale} x={offsetX} y={offsetY}>
-              <Rect x={0} y={0} width={GAME_WIDTH} height={GAME_HEIGHT} fill="#1a1a2e" />
-
-              <Rect
-                x={0}
-                y={0}
-                width={100}
-                height={GAME_HEIGHT}
-                fill="#0f0f1a"
-              />
-              <Rect
-                x={GAME_WIDTH - 100}
-                y={0}
-                width={100}
-                height={GAME_HEIGHT}
-                fill="#0f0f1a"
-              />
+              {assets ? (
+                <KonvaImage
+                  image={assets.background}
+                  x={0}
+                  y={0}
+                  width={GAME_WIDTH}
+                  height={GAME_HEIGHT}
+                />
+              ) : (
+                <Rect x={0} y={0} width={GAME_WIDTH} height={GAME_HEIGHT} fill="#1a1a2e" />
+              )}
 
               {gameState.portal && (
                 <Group x={gameState.portal.x} y={gameState.portal.y}>
@@ -268,13 +309,30 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
                   const isWrong = prisoner.fleeing
                   return (
                     <Group key={prisoner.id} x={prisoner.x} y={prisoner.y}>
-                      <Circle
-                        radius={PRISONER_RADIUS}
-                        fill={isWrong ? '#ef4444' : '#64748b'}
-                        stroke="#ffffff"
-                        strokeWidth={1}
-                        opacity={isWrong ? 0.5 : 1}
-                      />
+                      {assets ? (
+                        <KonvaImage
+                          image={assets.prisoner}
+                          x={-SPRITE_SIZE.prisoner / 2}
+                          y={-SPRITE_SIZE.prisoner / 2}
+                          width={SPRITE_SIZE.prisoner}
+                          height={SPRITE_SIZE.prisoner}
+                          crop={{
+                            x: isWrong ? 0 : animFrame * (assets.prisoner.width / 3),
+                            y: isWrong ? assets.prisoner.height / 3 : 0,
+                            width: assets.prisoner.width / 3,
+                            height: assets.prisoner.height / 3,
+                          }}
+                          opacity={isWrong ? 0.5 : 1}
+                        />
+                      ) : (
+                        <Circle
+                          radius={PRISONER_RADIUS}
+                          fill={isWrong ? '#ef4444' : '#64748b'}
+                          stroke="#ffffff"
+                          strokeWidth={1}
+                          opacity={isWrong ? 0.5 : 1}
+                        />
+                      )}
                       <Text
                         text={prisoner.word}
                         fontSize={10}
@@ -282,6 +340,7 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
                         fontStyle="bold"
                         offsetX={prisoner.word.length * 2.5}
                         offsetY={4}
+                        y={SPRITE_SIZE.prisoner / 2 + 4}
                       />
                     </Group>
                   )
@@ -342,37 +401,56 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
 
               {gameState.player && (
                 <Group x={gameState.player.x} y={gameState.player.y}>
-                  <Circle
-                    radius={PLAYER_RADIUS}
-                    fill={gameState.player.invulnerabilityTime > 0 ? '#60a5fa' : '#3b82f6'}
-                    stroke="#93c5fd"
-                    strokeWidth={3}
-                  />
-                  <Text
-                    text="KNIGHT"
-                    fontSize={8}
-                    fill="white"
-                    fontStyle="bold"
-                    offsetX={14}
-                    offsetY={3}
-                  />
+                  {assets ? (
+                    <KonvaImage
+                      image={assets.player}
+                      x={-SPRITE_SIZE.player / 2}
+                      y={-SPRITE_SIZE.player / 2}
+                      width={SPRITE_SIZE.player}
+                      height={SPRITE_SIZE.player}
+                      crop={{
+                        x: animFrame * (assets.player.width / 3),
+                        y: 0,
+                        width: assets.player.width / 3,
+                        height: assets.player.height / 3,
+                      }}
+                      opacity={gameState.player.invulnerabilityTime > 0 ? 0.5 : 1}
+                    />
+                  ) : (
+                    <Circle
+                      radius={PLAYER_RADIUS}
+                      fill={gameState.player.invulnerabilityTime > 0 ? '#60a5fa' : '#3b82f6'}
+                      stroke="#93c5fd"
+                      strokeWidth={3}
+                    />
+                  )}
                 </Group>
               )}
 
               {gameState.monsters.map((monster) => (
                 <Group key={monster.id} x={monster.x} y={monster.y}>
-                  <Circle
-                    radius={MONSTER_RADIUS}
-                    fill="#dc2626"
-                    stroke="#fca5a5"
-                    strokeWidth={2}
-                  />
-                  <Text
-                    text="👹"
-                    fontSize={16}
-                    offsetX={8}
-                    offsetY={8}
-                  />
+                  {assets ? (
+                    <KonvaImage
+                      image={assets.slime}
+                      x={-SPRITE_SIZE.slime / 2}
+                      y={-SPRITE_SIZE.slime / 2}
+                      width={SPRITE_SIZE.slime}
+                      height={SPRITE_SIZE.slime}
+                      crop={{
+                        x: animFrame * (assets.slime.width / 3),
+                        y: 0,
+                        width: assets.slime.width / 3,
+                        height: assets.slime.height / 3,
+                      }}
+                    />
+                  ) : (
+                    <Circle
+                      radius={MONSTER_RADIUS}
+                      fill="#dc2626"
+                      stroke="#fca5a5"
+                      strokeWidth={2}
+                    />
+                  )}
                 </Group>
               ))}
             </Layer>
