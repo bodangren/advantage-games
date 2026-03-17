@@ -15,7 +15,7 @@ export const gameCards: GameCard[] = [
     title: 'Castle Defense',
     description: 'Collect words to build towers and defend your castle!',
     cover: withBasePath('/games/cover/castle-defense-cover.png'),
-    href: '/games/castle-defense',
+    href: '/en/student/games/sentence/castle-defense',
     status: 'playable',
   },
   {
@@ -23,7 +23,7 @@ export const gameCards: GameCard[] = [
     title: 'Dragon Rider',
     description: 'Ride your dragon to protect your village',
     cover: withBasePath('/games/dragon-rider/loading-screen-background.png'),
-    href: '/games/dragon-rider',
+    href: '/en/student/games/vocabulary/dragon-rider',
     status: 'playable',
   },
   {
@@ -31,7 +31,7 @@ export const gameCards: GameCard[] = [
     title: 'Magic Defense',
     description: 'Defend your castles from falling words by typing their translations.',
     cover: withBasePath('/games/cover/magic-defense-cover.png'),
-    href: '/games/magic-defense',
+    href: '/en/student/games/vocabulary/magic-defense',
     status: 'playable',
   },
   {
@@ -39,7 +39,7 @@ export const gameCards: GameCard[] = [
     title: 'RPG Battle',
     description: 'Duel monsters by typing the correct translations.',
     cover: withBasePath('/games/cover/rpg-battle-cover.png'),
-    href: '/games/rpg-battle',
+    href: '/en/student/games/vocabulary/rpg-battle',
     status: 'playable',
   },
   {
@@ -47,7 +47,7 @@ export const gameCards: GameCard[] = [
     title: 'Dragon Flight',
     description: 'Choose the correct gate to grow your dragon flight.',
     cover: withBasePath('/games/cover/dragon-flight-cover.png'),
-    href: '/games/dragon-flight',
+    href: '/en/student/games/vocabulary/dragon-flight',
     status: 'playable',
   },
   {
@@ -55,7 +55,7 @@ export const gameCards: GameCard[] = [
     title: 'Wizard vs Zombie',
     description: 'Survive the horde by collecting vocabulary orbs.',
     cover: withBasePath('/games/cover/wizard-vs-zombie-cover.png'),
-    href: '/games/wizard-vs-zombie',
+    href: '/en/student/games/vocabulary/wizard-vs-zombie',
     status: 'playable',
   },
   {
@@ -63,7 +63,7 @@ export const gameCards: GameCard[] = [
     title: 'Enchanted Library',
     description: 'Collect magic books and dodge spirits to master new words.',
     cover: withBasePath('/games/cover/enchanted-library-cover.png'),
-    href: '/games/enchanted-library',
+    href: '/en/student/games/vocabulary/enchanted-library',
     status: 'playable',
   },
   {
@@ -71,7 +71,7 @@ export const gameCards: GameCard[] = [
     title: 'Rune Match',
     description: 'Match vocabulary runes to defeat monsters in this RPG puzzle battle.',
     cover: withBasePath('/games/cover/rune-match-cover.png'),
-    href: '/games/rune-match',
+    href: '/en/student/games/vocabulary/rune-match',
     status: 'playable',
   },
   {
@@ -79,15 +79,15 @@ export const gameCards: GameCard[] = [
     title: 'Potion Rush',
     description: 'Manage a busy potion shop! Brew orders by collecting the correct ingredients from the conveyor belt.',
     cover: withBasePath('/games/cover/potion-rush-cover.png'),
-    href: '/games/potion-rush',
+    href: '/en/student/games/sentence/potion-rush',
     status: 'playable',
   },
   {
     id: 'dungeon-liberator',
     title: 'Dungeon Liberator',
     description: 'Rescue prisoners by collecting them in the correct word order and escape the dungeon!',
-    cover: withBasePath('/games/cover/castle-defense-cover.png'),
-    href: '/games/dungeon-liberator',
+    cover: withBasePath('/games/cover/dungeon-liberator.png'),
+    href: '/en/student/games/sentence/dungeon-liberator',
     status: 'playable',
   },
 ]

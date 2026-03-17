@@ -221,59 +221,59 @@ Before starting, ensure:
 ## Phase 6: Update Main Menu & Cleanup
 
 ### Task 6.1: Update main menu
-- [ ] Sub-task: Update `src/app/page.tsx` with new game paths
-- [ ] Sub-task: Update `src/lib/gameCards.ts` with vocabulary/sentence structure
-- [ ] Sub-task: Ensure all game cards link to correct paths
-- [ ] Sub-task: Manual test all links work
-- [ ] **Commit**: "feat: update main menu for new game structure"
+- [x] Sub-task: Update `src/app/page.tsx` with new game paths
+- [x] Sub-task: Update `src/lib/gameCards.ts` with vocabulary/sentence structure
+- [x] Sub-task: Ensure all game cards link to correct paths
+- [x] Sub-task: Manual test all links work
+- [x] **Commit**: "feat: update main menu for new game structure"
 
 ### Task 6.2: Remove old flat-structure pages
-- [ ] Sub-task: Delete `src/app/games/castle-defense/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/dragon-flight/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/dragon-rider/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/dungeon-liberator/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/enchanted-library/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/magic-defense/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/potion-rush/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/rpg-battle/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/rune-match/` (old flat)
-- [ ] Sub-task: Delete `src/app/games/wizard-vs-zombie/` (old flat)
-- [ ] **Commit**: "chore: remove old flat-structure game pages"
+- [x] Sub-task: Delete `src/app/games/castle-defense/` (old flat)
+- [x] Sub-task: Delete `src/app/games/dragon-flight/` (old flat)
+- [x] Sub-task: Delete `src/app/games/dragon-rider/` (old flat)
+- [x] Sub-task: Delete `src/app/games/dungeon-liberator/` (old flat)
+- [x] Sub-task: Delete `src/app/games/enchanted-library/` (old flat)
+- [x] Sub-task: Delete `src/app/games/magic-defense/` (old flat)
+- [x] Sub-task: Delete `src/app/games/potion-rush/` (old flat)
+- [x] Sub-task: Delete `src/app/games/rpg-battle/` (old flat)
+- [x] Sub-task: Delete `src/app/games/rune-match/` (old flat)
+- [x] Sub-task: Delete `src/app/games/wizard-vs-zombie/` (old flat)
+- [x] **Commit**: "chore: remove old flat-structure game pages"
 
 ### Task 6.3: Remove old flat-structure components
-- [ ] Sub-task: Delete `src/components/castle-defense/`
-- [ ] Sub-task: Delete `src/components/dragon-flight/`
-- [ ] Sub-task: Delete `src/components/dragon-rider/`
-- [ ] Sub-task: Delete `src/components/dungeon-liberator/`
-- [ ] Sub-task: Delete `src/components/enchanted-library/`
-- [ ] Sub-task: Delete `src/components/potion-rush/`
-- [ ] Sub-task: Delete `src/components/rpg-battle/`
-- [ ] Sub-task: Delete `src/components/rune-match/`
-- [ ] Sub-task: Delete `src/components/wizard-vs-zombie/`
-- [ ] Sub-task: Delete `src/components/game/` (old shared, replaced by games/game/)
-- [ ] **Commit**: "chore: remove old flat-structure game components"
+- [x] Sub-task: Delete `src/components/castle-defense/`
+- [x] Sub-task: Delete `src/components/dragon-flight/`
+- [x] Sub-task: Delete `src/components/dragon-rider/`
+- [x] Sub-task: Delete `src/components/dungeon-liberator/`
+- [x] Sub-task: Delete `src/components/enchanted-library/`
+- [x] Sub-task: Delete `src/components/potion-rush/`
+- [x] Sub-task: Delete `src/components/rpg-battle/`
+- [x] Sub-task: Delete `src/components/rune-match/`
+- [x] Sub-task: Delete `src/components/wizard-vs-zombie/`
+- [x] Sub-task: Delete `src/components/game/` (old shared, replaced by games/game/)
+- [x] **Commit**: "chore: remove old flat-structure game components"
 
 ### Task 6.4: Remove old flat-structure lib files
-- [ ] Sub-task: Delete `src/lib/castleDefense.ts`
-- [ ] Sub-task: Delete `src/lib/dragonFlight.ts`
-- [ ] Sub-task: Delete `src/lib/dragonRider.ts`
-- [ ] Sub-task: Delete `src/lib/dungeonLiberator.ts`
-- [ ] Sub-task: Delete `src/lib/enchantedLibrary.ts`
-- [ ] Sub-task: Delete `src/lib/potionRushEffects.ts`
-- [ ] Sub-task: Delete `src/lib/rpgBattleScaling.ts`
-- [ ] Sub-task: Delete `src/lib/rpgBattleSelection.ts`
-- [ ] Sub-task: Delete `src/lib/gameCards.ts` (moved if needed)
-- [ ] Sub-task: Delete `src/lib/vocabLoader.ts` (replaced by API)
-- [ ] **Commit**: "chore: remove old flat-structure lib files"
+- [x] Sub-task: Delete `src/lib/castleDefense.ts`
+- [x] Sub-task: Delete `src/lib/dragonFlight.ts`
+- [x] Sub-task: Delete `src/lib/dragonRider.ts`
+- [x] Sub-task: Delete `src/lib/dungeonLiberator.ts`
+- [x] Sub-task: Delete `src/lib/enchantedLibrary.ts`
+- [x] Sub-task: Delete `src/lib/potionRushEffects.ts`
+- [x] Sub-task: Delete `src/lib/rpgBattleScaling.ts`
+- [x] Sub-task: Delete `src/lib/rpgBattleSelection.ts`
+- [x] Sub-task: Delete `src/lib/gameCards.ts` (moved if needed)
+- [x] Sub-task: Delete `src/lib/vocabLoader.ts` (replaced by API)
+- [x] **Commit**: "chore: remove old flat-structure lib files"
 
 ### Task 6.5: Final verification
-- [ ] Sub-task: Run full test suite: `CI=true npm test`
-- [ ] Sub-task: Run build: `CI=true npm run build`
+- [x] Sub-task: Run full test suite: `CI=true npm test`
+- [x] Sub-task: Run build: `CI=true npm run build`
 - [ ] Sub-task: Manual test all 10 games load and play
 - [ ] Sub-task: Verify no console errors
 - [ ] **Commit**: "test: verify migration complete"
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Update Main Menu & Cleanup' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 6: Update Main Menu & Cleanup' (Protocol in workflow.md)
 
 ---
 

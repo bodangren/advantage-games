@@ -2,9 +2,9 @@
 
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import { GameEndScreen } from '@/components/game/GameEndScreen'
-import { GameStartScreen } from '@/components/game/GameStartScreen'
-import type { GameStartScreenProps } from '@/components/game/GameStartScreen'
+import { GameEndScreen } from '@/components/games/game/GameEndScreen'
+import { GameStartScreen } from '@/components/games/game/GameStartScreen'
+import type { GameStartScreenProps } from '@/components/games/game/GameStartScreen'
 import { Crown, ScrollText, Shield, Swords, Wand2 } from 'lucide-react'
 
 type PreviewMode = 'start' | 'victory' | 'defeat' | 'complete'
