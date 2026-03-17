@@ -82,4 +82,12 @@ export const gameCards: GameCard[] = [
     href: '/games/potion-rush',
     status: 'playable',
   },
+  {
+    id: 'dungeon-liberator',
+    title: 'Dungeon Liberator',
+    description: 'Rescue prisoners by collecting them in the correct word order and escape the dungeon!',
+    cover: withBasePath('/games/cover/castle-defense-cover.png'),
+    href: '/games/dungeon-liberator',
+    status: 'playable',
+  },
 ]
