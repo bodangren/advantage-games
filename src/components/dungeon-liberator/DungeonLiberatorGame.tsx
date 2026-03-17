@@ -379,14 +379,30 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
                       lineCap="round"
                       lineJoin="round"
                     />
-                    <Circle
-                      x={segment.x}
-                      y={segment.y}
-                      radius={12}
-                      fill="#22c55e"
-                      stroke="#86efac"
-                      strokeWidth={2}
-                    />
+                    {assets ? (
+                      <KonvaImage
+                        image={assets.prisoner}
+                        x={segment.x - SPRITE_SIZE.prisoner / 2}
+                        y={segment.y - SPRITE_SIZE.prisoner / 2}
+                        width={SPRITE_SIZE.prisoner}
+                        height={SPRITE_SIZE.prisoner}
+                        crop={{
+                          x: 0,
+                          y: 0,
+                          width: assets.prisoner.width / 3,
+                          height: assets.prisoner.height / 3,
+                        }}
+                      />
+                    ) : (
+                      <Circle
+                        x={segment.x}
+                        y={segment.y}
+                        radius={12}
+                        fill="#22c55e"
+                        stroke="#86efac"
+                        strokeWidth={2}
+                      />
+                    )}
                     <Text
                       text={segment.word}
                       fontSize={8}
@@ -395,7 +411,7 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
                       offsetX={segment.word.length * 2}
                       offsetY={3}
                       x={segment.x}
-                      y={segment.y}
+                      y={segment.y + SPRITE_SIZE.prisoner / 2 + 4}
                     />
                   </Group>
                 )})}
