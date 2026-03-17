@@ -1,0 +1,80 @@
+export default {
+  games: {
+    common: {
+      start: 'Start',
+      play: 'Play',
+      pause: 'Pause',
+      resume: 'Resume',
+      quit: 'Quit',
+      restart: 'Restart',
+      score: 'Score',
+      highScore: 'High Score',
+      level: 'Level',
+      time: 'Time',
+      gameOver: 'Game Over',
+      victory: 'Victory!',
+      loading: 'Loading...',
+      ready: 'Ready?',
+      go: 'Go!',
+      correct: 'Correct!',
+      incorrect: 'Incorrect',
+      combo: 'Combo',
+      xp: 'XP',
+      mana: 'Mana',
+    },
+    gameEndScreen: {
+      title: 'Game Complete!',
+      scoreLabel: 'Final Score',
+      xpEarned: 'XP Earned',
+      wordsLearned: 'Words Learned',
+      accuracy: 'Accuracy',
+      playAgain: 'Play Again',
+      backToMenu: 'Back to Menu',
+    },
+    gameStartScreen: {
+      instructions: 'Instructions',
+      ready: "Ready to play?",
+      start: 'Start Game',
+    },
+    dragonFlight: {
+      title: 'Dragon Flight',
+      description: 'Choose the correct gate to grow your dragon flight.',
+    },
+    dragonRider: {
+      title: 'Dragon Rider',
+      description: 'Ride your dragon to protect your village.',
+    },
+    enchantedLibrary: {
+      title: 'Enchanted Library',
+      description: 'Collect magic books and dodge spirits to master new words.',
+    },
+    magicDefense: {
+      title: 'Magic Defense',
+      description: 'Defend your castles from falling words by typing their translations.',
+    },
+    rpgBattle: {
+      title: 'RPG Battle',
+      description: 'Duel monsters by typing the correct translations.',
+    },
+    runeMatch: {
+      title: 'Rune Match',
+      description: 'Match vocabulary runes to defeat monsters in this RPG puzzle battle.',
+    },
+    wizardVsZombie: {
+      title: 'Wizard vs Zombie',
+      description: 'Survive the horde by collecting vocabulary orbs.',
+    },
+    castleDefense: {
+      title: 'Castle Defense',
+      description: 'Collect words to build towers and defend your castle!',
+    },
+    potionRush: {
+      title: 'Potion Rush',
+      description: 'Manage a busy potion shop! Brew orders by collecting the correct ingredients.',
+    },
+    dungeonLiberator: {
+      title: 'Dungeon Liberator',
+      description: 'Rescue prisoners by collecting them in the correct word order!',
+    },
+  },
+}
