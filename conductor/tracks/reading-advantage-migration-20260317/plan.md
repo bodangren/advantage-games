@@ -86,16 +86,16 @@ Before starting, ensure:
 - [x] Sub-task: Copy test files and update imports
 - [~] Sub-task: Run tests: `CI=true npm test -- dragon-flight` (lib tests pass, component tests timeout)
 - [ ] Sub-task: Manual test: game loads and plays
-- [ ] **Commit**: "feat: import dragon-flight from reading-advantage"
+- [x] **Commit**: "feat: import dragon-flight from reading-advantage"
 
 ### Task 3.2: Import dragon-rider
-- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/dragon-rider/`
-- [ ] Sub-task: Copy components to `src/components/games/vocabulary/dragon-rider/`
-- [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create mock API routes
-- [ ] Sub-task: Copy and update tests
-- [ ] Sub-task: Run tests and manual verify
+- [x] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/dragon-rider/`
+- [x] Sub-task: Copy components to `src/components/games/vocabulary/dragon-rider/`
+- [x] Sub-task: Copy lib files to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create mock API routes
+- [x] Sub-task: Copy and update tests
+- [~] Sub-task: Run tests and manual verify (lib tests pass)
 - [ ] **Commit**: "feat: import dragon-rider from reading-advantage"
 
 ### Task 3.3: Import enchanted-library
