@@ -183,37 +183,38 @@ Before starting, ensure:
 
 ---
 
-## Phase 5: Port dungeon-liberator
+## Phase 5: Port dungeon-liberator (Sentence Game)
 
 ### Task 5.1: Restructure dungeon-liberator page
-- [ ] Sub-task: Create `src/app/[locale]/(student)/student/games/vocabulary/dungeon-liberator/`
-- [ ] Sub-task: Create page.tsx with reading-advantage patterns (API fetch, i18n)
-- [ ] Sub-task: Create `src/app/api/v1/games/dungeon-liberator/vocabulary/route.ts`
-- [ ] Sub-task: Create `src/app/api/v1/games/dungeon-liberator/complete/route.ts`
-- [ ] **Commit**: "feat: create dungeon-liberator page with reading-advantage structure"
+- [x] Sub-task: Page already exists at `src/app/[locale]/(student)/student/games/sentence/dungeon-liberator/`
+- [x] Sub-task: Page already uses reading-advantage patterns (API fetch, i18n)
+- [x] Sub-task: Create `src/app/api/v1/games/dungeon-liberator/sentences/route.ts`
+- [x] Sub-task: Create `src/app/api/v1/games/dungeon-liberator/complete/route.ts`
+- [x] **Commit**: "feat: create dungeon-liberator API routes"
 
 ### Task 5.2: Restructure dungeon-liberator components
-- [ ] Sub-task: Create `src/components/games/vocabulary/dungeon-liberator/`
-- [ ] Sub-task: Move DungeonLiberatorGame.tsx to new location
-- [ ] Sub-task: Add GameStartScreen wrapper
-- [ ] Sub-task: Add GameEndScreen wrapper
-- [ ] Sub-task: Update imports
-- [ ] **Commit**: "feat: restructure dungeon-liberator components"
+- [x] Sub-task: Create `src/components/games/sentence/dungeon-liberator/`
+- [x] Sub-task: Move DungeonLiberatorGame.tsx to new location
+- [x] Sub-task: Already has GameStartScreen wrapper
+- [x] Sub-task: Already has GameEndScreen wrapper
+- [x] Sub-task: Update imports to use `@/lib/games/dungeonLiberator`
+- [x] **Commit**: "feat: restructure dungeon-liberator components"
 
 ### Task 5.3: Move dungeon-liberator lib
-- [ ] Sub-task: Move `src/lib/dungeonLiberator.ts` to `src/lib/games/dungeonLiberator.ts`
-- [ ] Sub-task: Update all imports
-- [ ] Sub-task: Move tests to `src/lib/games/dungeonLiberator.test.ts`
-- [ ] Sub-task: Run tests: `CI=true npm test -- dungeon-liberator`
-- [ ] **Commit**: "feat: move dungeon-liberator lib to games directory"
+- [x] Sub-task: Lib already at `src/lib/games/dungeonLiberator.ts`
+- [x] Sub-task: Imports updated
+- [~] Sub-task: No tests exist for dungeon-liberator
+- [~] Sub-task: No tests to run
+- [x] **Commit**: combined with Task 5.2
 
 ### Task 5.4: Add dungeon-liberator to game cards
-- [ ] Sub-task: Update `src/lib/gameCards.ts` with new path
-- [ ] Sub-task: Add cover image if needed
+- [~] Sub-task: Game cards handled in Phase 6
+- [x] Sub-task: Assets already in `public/games/dungeon-liberator/`
 - [ ] Sub-task: Manual test from main menu
-- [ ] **Commit**: "feat: add dungeon-liberator to game cards"
+- [ ] **Commit**: deferred to Phase 6
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Port dungeon-liberator' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Port dungeon-liberator' (Protocol in workflow.md)
+  - NOTE: Game works with no errors, imported correctly to sentence/dungeon-liberator
 
 ---
 
