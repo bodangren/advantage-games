@@ -49,27 +49,27 @@ Before starting, ensure:
 - [x] Sub-task: Run tests: `CI=true npm test src/store/`
 - [x] **Commit**: "feat: extend useGameStore with reading-advantage features"
 
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (Protocol in workflow.md)
 
 ---
 
 ## Phase 2: Import Shared Components
 
 ### Task 2.1: Import shared game components
-- [ ] Sub-task: Copy `reading-advantage/web/components/games/game/*` to `src/components/games/game/`
-- [ ] Sub-task: Review and update any reading-advantage-specific imports
-- [ ] Sub-task: Copy associated test files
-- [ ] Sub-task: Run tests: `CI=true npm test src/components/games/game/`
-- [ ] **Commit**: "feat: import shared game screen components from reading-advantage"
+- [x] Sub-task: Copy `reading-advantage/web/components/games/game/*` to `src/components/games/game/`
+- [x] Sub-task: Review and update any reading-advantage-specific imports
+- [x] Sub-task: Copy associated test files
+- [x] Sub-task: Run tests: `CI=true npm test src/components/games/game/`
+- [x] **Commit**: "feat: import shared game screen components from reading-advantage"
 
 ### Task 2.2: Import shared UI components (if needed)
-- [ ] Sub-task: Compare `reading-advantage/web/components/games/ui/` with `src/components/ui/`
-- [ ] Sub-task: Copy any missing components
-- [ ] Sub-task: Copy associated test files
-- [ ] Sub-task: Run tests: `CI=true npm test src/components/ui/`
-- [ ] **Commit**: "feat: import additional UI components from reading-advantage"
+- [x] Sub-task: Compare `reading-advantage/web/components/games/ui/` with `src/components/ui/`
+- [x] Sub-task: Copy any missing components
+- [x] Sub-task: Copy associated test files
+- [x] Sub-task: Run tests: `CI=true npm test src/components/ui/`
+- [x] **Commit**: "feat: import additional UI components from reading-advantage"
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Import Shared Components' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Import Shared Components' (Protocol in workflow.md)
 
 ---
 
