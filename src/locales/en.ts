@@ -1,4 +1,48 @@
 export default {
+  common: {
+    ready: 'Ready',
+    gameOver: 'Game Over',
+    score: 'Score',
+    accuracy: 'Accuracy',
+    xpEarned: 'XP Earned',
+    xp: 'XP',
+    wordsToReview: 'Words to Review',
+    tryAgain: 'Try Again',
+    viewLeaderboard: 'View Leaderboard',
+  },
+  pages: {
+    student: {
+      gamesPage: {
+        common: {
+          ready: 'Ready',
+          gameOver: 'Game Over',
+          score: 'Score',
+          accuracy: 'Accuracy',
+          xpEarned: 'XP Earned',
+          xp: 'XP',
+          wordsToReview: 'Words to Review',
+          tryAgain: 'Try Again',
+          viewLeaderboard: 'View Leaderboard',
+        },
+        magicDefense: {
+          defenseBriefing: 'Defense Briefing',
+          reviewSpells: 'Review the spells (vocabulary) to defend your castles.',
+          leaderboard: 'Leaderboard',
+          theSiegeBegins: 'The Siege Begins',
+          siegeDescription: 'Type correct translations to destroy falling meteors before they impact your kingdom.',
+          spellBook: 'Spell Book',
+          noVocabularyLoaded: 'No vocabulary loaded yet.',
+          startDefense: 'Start Defense',
+          difficulty: {
+            easy: 'Easy',
+            normal: 'Normal',
+            hard: 'Hard',
+            extreme: 'Extreme',
+          },
+        },
+      },
+    },
+  },
   games: {
     common: {
       start: 'Start',

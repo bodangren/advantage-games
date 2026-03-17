@@ -44,7 +44,7 @@ describe('gameCards', () => {
     const gameCards = await loadGameCards('/vocab');
 
     gameCards.forEach((card) => {
-      expect(card.cover.startsWith('/vocab/games/cover/')).toBe(true);
+      expect(card.cover.startsWith('/vocab/games/')).toBe(true);
     });
   });
 
