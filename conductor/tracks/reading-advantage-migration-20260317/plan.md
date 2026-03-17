@@ -159,27 +159,27 @@ Before starting, ensure:
 ## Phase 4: Import Sentence Games
 
 ### Task 4.1: Import castle-defense
-- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/sentence/castle-defense/`
-- [ ] Sub-task: Copy components to `src/components/games/sentence/castle-defense/`
-- [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create `src/app/api/v1/games/castle-defense/sentences/route.ts`
-- [ ] Sub-task: Create `src/app/api/v1/games/castle-defense/complete/route.ts`
-- [ ] Sub-task: Copy and update tests
-- [ ] Sub-task: Run tests and manual verify
-- [ ] **Commit**: "feat: import castle-defense from reading-advantage"
+- [x] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/sentence/castle-defense/`
+- [x] Sub-task: Copy components to `src/components/games/sentence/castle-defense/`
+- [x] Sub-task: Copy lib files to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create `src/app/api/v1/games/castle-defense/sentences/route.ts`
+- [x] Sub-task: Create `src/app/api/v1/games/castle-defense/complete/route.ts`
+- [x] Sub-task: Copy and update tests
+- [x] Sub-task: Run tests and manual verify
+- [x] **Commit**: "feat: import castle-defense from reading-advantage"
 
 ### Task 4.2: Import potion-rush
-- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/sentence/potion-rush/`
-- [ ] Sub-task: Copy components to `src/components/games/sentence/potion-rush/`
-- [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create mock API routes (sentences, complete)
-- [ ] Sub-task: Copy and update tests
-- [ ] Sub-task: Run tests and manual verify
-- [ ] **Commit**: "feat: import potion-rush from reading-advantage"
+- [x] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/sentence/potion-rush/`
+- [x] Sub-task: Copy components to `src/components/games/sentence/potion-rush/`
+- [x] Sub-task: Copy lib files to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create mock API routes (sentences, complete)
+- [x] Sub-task: Copy and update tests
+- [x] Sub-task: Run tests and manual verify
+- [x] **Commit**: "feat: import potion-rush from reading-advantage"
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Import Sentence Games' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 4: Import Sentence Games' (Protocol in workflow.md)
 
 ---
 
