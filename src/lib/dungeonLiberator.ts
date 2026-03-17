@@ -525,6 +525,12 @@ export function advanceToNextLevel(
   return {
     ...state,
     phase: 'playing',
+    player: {
+      ...state.player,
+      x: 100,
+      y: GAME_HEIGHT / 2,
+      invulnerabilityTime: 0,
+    },
     prisoners,
     trail: [],
     monsters,
