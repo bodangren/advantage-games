@@ -12,8 +12,8 @@ Before starting, ensure:
 ## Phase 1: Infrastructure Setup
 
 ### Task 1.1: Create directory structure
-- [x] Sub-task: Create `src/app/games/vocabulary/`
-- [x] Sub-task: Create `src/app/games/sentence/`
+- [ ] Sub-task: Create `src/app/[locale]/(student)/student/games/vocabulary/`
+- [ ] Sub-task: Create `src/app/[locale]/(student)/student/games/sentence/`
 - [x] Sub-task: Create `src/app/api/v1/games/`
 - [x] Sub-task: Create `src/components/games/vocabulary/`
 - [x] Sub-task: Create `src/components/games/sentence/`
@@ -21,8 +21,8 @@ Before starting, ensure:
 - [x] Sub-task: Create `src/lib/games/`
 - [x] Sub-task: Create `src/hooks/`
 - [x] Sub-task: Create `src/locales/`
-- [x] Sub-task: Verify directories exist with `ls -la`
-- [x] **Commit**: "chore: create reading-advantage-compatible directory structure"
+- [ ] Sub-task: Verify directories exist with `ls -la`
+- [ ] **Commit**: "chore: create reading-advantage-compatible directory structure"
 
 ### Task 1.2: Create i18n stubs
 - [x] Sub-task: Create `src/locales/en.ts` with extracted UI strings from games page
@@ -49,7 +49,8 @@ Before starting, ensure:
 - [x] Sub-task: Run tests: `CI=true npm test src/store/`
 - [x] **Commit**: "feat: extend useGameStore with reading-advantage features"
 
-- [x] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (Protocol in workflow.md)
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (Protocol in workflow.md)
+  - NOTE: Task 1.1 page directories need correct `[locale]/(student)/student/` structure
 
 ---
 
@@ -76,73 +77,72 @@ Before starting, ensure:
 ## Phase 3: Import Vocabulary Games
 
 ### Task 3.1: Import dragon-flight
-- [ ] Sub-task: Copy `reading-advantage/web/app/[locale]/(student)/student/games/vocabulary/dragon-flight/` to `src/app/games/vocabulary/dragon-flight/`
-- [ ] Sub-task: Copy `reading-advantage/web/components/games/vocabulary/dragon-flight/` to `src/components/games/vocabulary/dragon-flight/`
-- [ ] Sub-task: Copy `reading-advantage/web/lib/games/dragonFlight*.ts` to `src/lib/games/`
-- [ ] Sub-task: Update navigation links: `/student/games` → `/games`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create `src/app/api/v1/games/dragon-flight/vocabulary/route.ts`
-- [ ] Sub-task: Create `src/app/api/v1/games/dragon-flight/complete/route.ts`
-- [ ] Sub-task: Copy test files and update imports
-- [ ] Sub-task: Run tests: `CI=true npm test -- dragon-flight`
+- [x] Sub-task: Copy `reading-advantage/web/app/[locale]/(student)/student/games/vocabulary/dragon-flight/` to `src/app/[locale]/(student)/student/games/vocabulary/dragon-flight/`
+- [x] Sub-task: Copy `reading-advantage/web/components/games/vocabulary/dragon-flight/` to `src/components/games/vocabulary/dragon-flight/`
+- [x] Sub-task: Copy `reading-advantage/web/lib/games/dragonFlight*.ts` to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create `src/app/api/v1/games/dragon-flight/vocabulary/route.ts`
+- [x] Sub-task: Create `src/app/api/v1/games/dragon-flight/complete/route.ts`
+- [x] Sub-task: Copy test files and update imports
+- [~] Sub-task: Run tests: `CI=true npm test -- dragon-flight` (lib tests pass, component tests timeout)
 - [ ] Sub-task: Manual test: game loads and plays
 - [ ] **Commit**: "feat: import dragon-flight from reading-advantage"
 
 ### Task 3.2: Import dragon-rider
-- [ ] Sub-task: Copy page to `src/app/games/vocabulary/dragon-rider/`
+- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/dragon-rider/`
 - [ ] Sub-task: Copy components to `src/components/games/vocabulary/dragon-rider/`
 - [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update navigation and imports
+- [ ] Sub-task: Update imports to use local paths
 - [ ] Sub-task: Create mock API routes
 - [ ] Sub-task: Copy and update tests
 - [ ] Sub-task: Run tests and manual verify
 - [ ] **Commit**: "feat: import dragon-rider from reading-advantage"
 
 ### Task 3.3: Import enchanted-library
-- [ ] Sub-task: Copy page to `src/app/games/vocabulary/enchanted-library/`
+- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/enchanted-library/`
 - [ ] Sub-task: Copy components to `src/components/games/vocabulary/enchanted-library/`
 - [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update navigation and imports
+- [ ] Sub-task: Update imports to use local paths
 - [ ] Sub-task: Create mock API routes
 - [ ] Sub-task: Copy and update tests
 - [ ] Sub-task: Run tests and manual verify
 - [ ] **Commit**: "feat: import enchanted-library from reading-advantage"
 
 ### Task 3.4: Import magic-defense
-- [ ] Sub-task: Copy page to `src/app/games/vocabulary/magic-defense/`
+- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/magic-defense/`
 - [ ] Sub-task: Copy components to `src/components/games/vocabulary/magic-defense/`
 - [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update navigation and imports
+- [ ] Sub-task: Update imports to use local paths
 - [ ] Sub-task: Create mock API routes
 - [ ] Sub-task: Copy and update tests
 - [ ] Sub-task: Run tests and manual verify
 - [ ] **Commit**: "feat: import magic-defense from reading-advantage"
 
 ### Task 3.5: Import rpg-battle
-- [ ] Sub-task: Copy page to `src/app/games/vocabulary/rpg-battle/`
+- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/rpg-battle/`
 - [ ] Sub-task: Copy components to `src/components/games/vocabulary/rpg-battle/`
 - [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update navigation and imports
+- [ ] Sub-task: Update imports to use local paths
 - [ ] Sub-task: Create mock API routes
 - [ ] Sub-task: Copy and update tests
 - [ ] Sub-task: Run tests and manual verify
 - [ ] **Commit**: "feat: import rpg-battle from reading-advantage"
 
 ### Task 3.6: Import rune-match
-- [ ] Sub-task: Copy page to `src/app/games/vocabulary/rune-match/`
+- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/rune-match/`
 - [ ] Sub-task: Copy components to `src/components/games/vocabulary/rune-match/`
 - [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update navigation and imports
+- [ ] Sub-task: Update imports to use local paths
 - [ ] Sub-task: Create mock API routes
 - [ ] Sub-task: Copy and update tests
 - [ ] Sub-task: Run tests and manual verify
 - [ ] **Commit**: "feat: import rune-match from reading-advantage"
 
 ### Task 3.7: Import wizard-vs-zombie
-- [ ] Sub-task: Copy page to `src/app/games/vocabulary/wizard-vs-zombie/`
+- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/wizard-vs-zombie/`
 - [ ] Sub-task: Copy components to `src/components/games/vocabulary/wizard-vs-zombie/`
 - [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update navigation and imports
+- [ ] Sub-task: Update imports to use local paths
 - [ ] Sub-task: Create mock API routes
 - [ ] Sub-task: Copy and update tests
 - [ ] Sub-task: Run tests and manual verify
@@ -155,10 +155,10 @@ Before starting, ensure:
 ## Phase 4: Import Sentence Games
 
 ### Task 4.1: Import castle-defense
-- [ ] Sub-task: Copy page to `src/app/games/sentence/castle-defense/`
+- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/sentence/castle-defense/`
 - [ ] Sub-task: Copy components to `src/components/games/sentence/castle-defense/`
 - [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update navigation and imports
+- [ ] Sub-task: Update imports to use local paths
 - [ ] Sub-task: Create `src/app/api/v1/games/castle-defense/sentences/route.ts`
 - [ ] Sub-task: Create `src/app/api/v1/games/castle-defense/complete/route.ts`
 - [ ] Sub-task: Copy and update tests
@@ -166,10 +166,10 @@ Before starting, ensure:
 - [ ] **Commit**: "feat: import castle-defense from reading-advantage"
 
 ### Task 4.2: Import potion-rush
-- [ ] Sub-task: Copy page to `src/app/games/sentence/potion-rush/`
+- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/sentence/potion-rush/`
 - [ ] Sub-task: Copy components to `src/components/games/sentence/potion-rush/`
 - [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update navigation and imports
+- [ ] Sub-task: Update imports to use local paths
 - [ ] Sub-task: Create mock API routes (sentences, complete)
 - [ ] Sub-task: Copy and update tests
 - [ ] Sub-task: Run tests and manual verify
@@ -182,11 +182,10 @@ Before starting, ensure:
 ## Phase 5: Port dungeon-liberator
 
 ### Task 5.1: Restructure dungeon-liberator page
-- [ ] Sub-task: Create `src/app/games/vocabulary/dungeon-liberator/`
+- [ ] Sub-task: Create `src/app/[locale]/(student)/student/games/vocabulary/dungeon-liberator/`
 - [ ] Sub-task: Create page.tsx with reading-advantage patterns (API fetch, i18n)
 - [ ] Sub-task: Create `src/app/api/v1/games/dungeon-liberator/vocabulary/route.ts`
 - [ ] Sub-task: Create `src/app/api/v1/games/dungeon-liberator/complete/route.ts`
-- [ ] Sub-task: Update navigation: `/games/` → `/games/`
 - [ ] **Commit**: "feat: create dungeon-liberator page with reading-advantage structure"
 
 ### Task 5.2: Restructure dungeon-liberator components
@@ -276,7 +275,7 @@ Before starting, ensure:
 ## Summary
 
 **Track Goals:**
-1. Match reading-advantage directory structure (vocabulary/sentence split)
+1. Match reading-advantage directory structure exactly (including `[locale]/(student)/student/` segments)
 2. Create mock API routes for data loading
 3. Add i18n and session stubs
 4. Import 9 games from reading-advantage

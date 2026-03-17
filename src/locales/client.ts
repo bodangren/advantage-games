@@ -1,20 +1,20 @@
 import en from './en'
 
-type TranslationKeys = typeof en
-type TranslationValue = string | TranslationKeys
+type TranslationValue = string | Record<string, unknown>
+type TranslationObject = Record<string, TranslationValue>
 
-const translations: Record<string, TranslationValue> = flattenTranslations(en)
+const translations: Record<string, string> = flattenTranslations(en as TranslationObject)
 
-function flattenTranslations(obj: TranslationKeys, prefix = ''): Record<string, TranslationValue> {
-  const result: Record<string, TranslationValue> = {}
+function flattenTranslations(obj: TranslationObject, prefix = ''): Record<string, string> {
+  const result: Record<string, string> = {}
   
   for (const [key, value] of Object.entries(obj)) {
     const fullKey = prefix ? `${prefix}.${key}` : key
     
     if (typeof value === 'string') {
       result[fullKey] = value
-    } else {
-      Object.assign(result, flattenTranslations(value, fullKey))
+    } else if (typeof value === 'object' && value !== null) {
+      Object.assign(result, flattenTranslations(value as TranslationObject, fullKey))
     }
   }
   
@@ -55,4 +55,3 @@ export function useI18n() {
 }
 
 export { en }
-export type { TranslationKeys }
