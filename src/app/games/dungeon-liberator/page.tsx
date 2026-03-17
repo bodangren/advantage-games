@@ -42,14 +42,6 @@ export default function DungeonLiberatorPage() {
           Back to Home
         </Link>
 
-        <header className='flex flex-col gap-3'>
-          <h1 className='text-4xl font-semibold tracking-tight md:text-5xl'>Dungeon Liberator</h1>
-          <p className='max-w-2xl text-base text-white/70'>
-            Rescue prisoners trapped in the dungeon by collecting them in the correct word order. 
-            Guide your party safely to the exit portal!
-          </p>
-        </header>
-
         <DungeonLiberatorGame vocabulary={vocabulary} onComplete={handleComplete} />
       </div>
     </main>
