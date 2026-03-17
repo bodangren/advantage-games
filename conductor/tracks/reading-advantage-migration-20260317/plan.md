@@ -96,57 +96,57 @@ Before starting, ensure:
 - [x] Sub-task: Create mock API routes
 - [x] Sub-task: Copy and update tests
 - [~] Sub-task: Run tests and manual verify (lib tests pass)
-- [ ] **Commit**: "feat: import dragon-rider from reading-advantage"
+- [x] **Commit**: "feat: import dragon-rider from reading-advantage"
 
 ### Task 3.3: Import enchanted-library
-- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/enchanted-library/`
-- [ ] Sub-task: Copy components to `src/components/games/vocabulary/enchanted-library/`
-- [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create mock API routes
-- [ ] Sub-task: Copy and update tests
-- [ ] Sub-task: Run tests and manual verify
-- [ ] **Commit**: "feat: import enchanted-library from reading-advantage"
+- [x] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/enchanted-library/`
+- [x] Sub-task: Copy components to `src/components/games/vocabulary/enchanted-library/`
+- [x] Sub-task: Copy lib files to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create mock API routes
+- [x] Sub-task: Copy and update tests
+- [~] Sub-task: Run tests and manual verify
+- [x] **Commit**: "feat: import enchanted-library from reading-advantage"
 
 ### Task 3.4: Import magic-defense
-- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/magic-defense/`
-- [ ] Sub-task: Copy components to `src/components/games/vocabulary/magic-defense/`
-- [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create mock API routes
-- [ ] Sub-task: Copy and update tests
-- [ ] Sub-task: Run tests and manual verify
-- [ ] **Commit**: "feat: import magic-defense from reading-advantage"
+- [x] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/magic-defense/`
+- [x] Sub-task: Copy components to `src/components/games/vocabulary/magic-defense/`
+- [x] Sub-task: Copy lib files to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create mock API routes
+- [~] Sub-task: Copy and update tests
+- [~] Sub-task: Run tests and manual verify
+- [x] **Commit**: "feat: import magic-defense from reading-advantage"
 
 ### Task 3.5: Import rpg-battle
-- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/rpg-battle/`
-- [ ] Sub-task: Copy components to `src/components/games/vocabulary/rpg-battle/`
-- [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create mock API routes
-- [ ] Sub-task: Copy and update tests
-- [ ] Sub-task: Run tests and manual verify
-- [ ] **Commit**: "feat: import rpg-battle from reading-advantage"
+- [x] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/rpg-battle/`
+- [x] Sub-task: Copy components to `src/components/games/vocabulary/rpg-battle/`
+- [x] Sub-task: Copy lib files to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create mock API routes
+- [~] Sub-task: Copy and update tests
+- [~] Sub-task: Run tests and manual verify
+- [x] **Commit**: "feat: import rpg-battle from reading-advantage"
 
 ### Task 3.6: Import rune-match
-- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/rune-match/`
-- [ ] Sub-task: Copy components to `src/components/games/vocabulary/rune-match/`
-- [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create mock API routes
-- [ ] Sub-task: Copy and update tests
-- [ ] Sub-task: Run tests and manual verify
-- [ ] **Commit**: "feat: import rune-match from reading-advantage"
+- [x] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/rune-match/`
+- [x] Sub-task: Copy components to `src/components/games/vocabulary/rune-match/`
+- [x] Sub-task: Copy lib files to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create mock API routes
+- [~] Sub-task: Copy and update tests
+- [~] Sub-task: Run tests and manual verify
+- [x] **Commit**: "feat: import rune-match from reading-advantage"
 
 ### Task 3.7: Import wizard-vs-zombie
-- [ ] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/wizard-vs-zombie/`
-- [ ] Sub-task: Copy components to `src/components/games/vocabulary/wizard-vs-zombie/`
-- [ ] Sub-task: Copy lib files to `src/lib/games/`
-- [ ] Sub-task: Update imports to use local paths
-- [ ] Sub-task: Create mock API routes
-- [ ] Sub-task: Copy and update tests
-- [ ] Sub-task: Run tests and manual verify
-- [ ] **Commit**: "feat: import wizard-vs-zombie from reading-advantage"
+- [x] Sub-task: Copy page to `src/app/[locale]/(student)/student/games/vocabulary/wizard-vs-zombie/`
+- [x] Sub-task: Copy components to `src/components/games/vocabulary/wizard-vs-zombie/`
+- [x] Sub-task: Copy lib files to `src/lib/games/`
+- [x] Sub-task: Update imports to use local paths
+- [x] Sub-task: Create mock API routes
+- [~] Sub-task: Copy and update tests
+- [~] Sub-task: Run tests and manual verify
+- [x] **Commit**: "feat: import wizard-vs-zombie from reading-advantage"
 
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Import Vocabulary Games' (Protocol in workflow.md)
 
