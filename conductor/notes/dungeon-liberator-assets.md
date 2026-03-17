@@ -27,7 +27,7 @@
 **Key Elements:**
 - Stone tile floor (gray/brown tones)
 - Left edge: Dark wall with entry archway hint
-- Right edge: Dark wall with glowing purple portal archway (centered vertically at y:300)
+- Right edge: Dark wall with glowing purple portal archway (at y:200, 100px above center)
 - Atmospheric lighting (torches, ambient glow from portal)
 - Dungeon details (cracks, debris, cobwebs)
 
