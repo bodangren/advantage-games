@@ -284,13 +284,14 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
                     innerRadius={PORTAL_RADIUS - 10}
                     outerRadius={PORTAL_RADIUS + 10}
                     fill="#8b5cf6"
-                    opacity={0.3}
+                    opacity={0.2}
                   />
                   <Circle
                     radius={PORTAL_RADIUS}
                     fill="#4c1d95"
                     stroke="#8b5cf6"
                     strokeWidth={3}
+                    opacity={0.2}
                   />
                   <Text
                     text="EXIT"

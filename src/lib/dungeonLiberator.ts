@@ -99,7 +99,7 @@ export function createDungeonLiberatorState(
   const portal: Portal = {
     id: 'portal',
     x: GAME_WIDTH - 80,
-    y: 200,
+    y: 220,
     radius: PORTAL_RADIUS,
   }
 
