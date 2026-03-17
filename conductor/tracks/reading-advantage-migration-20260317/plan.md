@@ -85,7 +85,7 @@ Before starting, ensure:
 - [x] Sub-task: Create `src/app/api/v1/games/dragon-flight/complete/route.ts`
 - [x] Sub-task: Copy test files and update imports
 - [~] Sub-task: Run tests: `CI=true npm test -- dragon-flight` (lib tests pass, component tests timeout)
-- [ ] Sub-task: Manual test: game loads and plays
+- [x] Sub-task: Manual test: game loads and plays
 - [x] **Commit**: "feat: import dragon-flight from reading-advantage"
 
 ### Task 3.2: Import dragon-rider
@@ -144,11 +144,15 @@ Before starting, ensure:
 - [x] Sub-task: Copy lib files to `src/lib/games/`
 - [x] Sub-task: Update imports to use local paths
 - [x] Sub-task: Create mock API routes
-- [~] Sub-task: Copy and update tests
-- [~] Sub-task: Run tests and manual verify
+- [x] Sub-task: Copy and update tests
+- [x] Sub-task: Run tests and manual verify
 - [x] **Commit**: "feat: import wizard-vs-zombie from reading-advantage"
 
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Import Vocabulary Games' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Import Vocabulary Games' (Protocol in workflow.md)
+  - NOTE: All 7 vocabulary games imported successfully
+  - Games: dragon-flight, dragon-rider, enchanted-library, magic-defense, rpg-battle, rune-match, wizard-vs-zombie
+  - Added: API routes, components, lib files, translations, assets
+  - Build: Passing
 
 ---
 
