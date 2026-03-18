@@ -148,6 +148,22 @@ export function useCurrentLocale() {
   - `mana: number`
   - `Difficulty` type with 'extreme' option
 
+### FR6: Unified Mock API Routes
+- Create reusable factory functions for API routes:
+  - `createVocabularyRoute(vocabulary)` - returns GET handler for `/vocabulary`
+  - `createSentencesRoute(sentences)` - returns GET handler for `/sentences`
+  - `createCompleteRoute()` - returns POST handler for `/complete`
+  - `createRankingRoute()` - returns GET handler for `/ranking`
+- Routes return data matching reading-advantage API schemas
+- Easy one-liner setup for new games
+
+### FR7: Modernized Game Templates
+- Templates use `[locale]/(student)/student/games/{type}/{game}/` structure
+- Templates include API route scaffolding
+- Templates reference `@/components/games/game/` for shared components
+- Templates reference `@/lib/games/` for game logic
+- Clear game type distinction (vocabulary vs sentence)
+
 ## Non-Functional Requirements
 
 ### NFR1: Compatibility
@@ -179,6 +195,9 @@ export function useCurrentLocale() {
 - [ ] Main menu updated with new paths
 - [ ] Old flat-structure code removed
 - [ ] Documentation for reading-advantage integration
+- [ ] Unified mock API route factories
+- [ ] Updated game templates matching new directory structure
+- [ ] Updated vocab-game skill documentation
 
 ## Out of Scope
 
@@ -191,12 +210,34 @@ export function useCurrentLocale() {
 ## Integration Checklist for reading-advantage Dev
 
 When importing a new game from advantage-games:
-- [ ] Copy `src/app/games/{type}/{game}/` → `app/[locale]/(student)/student/games/{type}/{game}/`
+- [ ] Copy `src/app/[locale]/(student)/student/games/{type}/{game}/` → `app/[locale]/(student)/student/games/{type}/{game}/`
 - [ ] Copy `src/components/games/{type}/{game}/` → `components/games/{type}/{game}/`
 - [ ] Copy `src/lib/games/{game}.ts` → `lib/games/{game}.ts`
-- [ ] Update navigation: `/games/` → `/student/games/`
-- [ ] Add API controller to `server/controllers/{game}-controller.ts`
+- [ ] Update navigation paths (usually no change needed)
+- [ ] Replace mock API routes with real controllers:
+  - [ ] `server/controllers/{game}-controller.ts` for vocabulary/sentences
+  - [ ] `server/controllers/{game}-ranking-controller.ts` if game has rankings
 - [ ] Add translations to `locales/{lang}.ts`
+- [ ] Update `useSession()` to use real auth if needed
+
+## Creating a New Game in advantage-games
+
+When creating a new game for eventual reading-advantage import:
+- [ ] Determine game type: `vocabulary` or `sentence`
+- [ ] Use templates from `src/templates/game/`
+- [ ] Create page at `src/app/[locale]/(student)/student/games/{type}/{game}/page.tsx`
+- [ ] Create components at `src/components/games/{type}/{game}/`
+- [ ] Create lib at `src/lib/games/{gameName}.ts`
+- [ ] Create API routes using unified factories:
+  ```typescript
+  // src/app/api/v1/games/{game}/vocabulary/route.ts
+  import { createVocabularyRoute } from '@/lib/games/api/vocabularyRoute'
+  import { SAMPLE_VOCABULARY } from '@/lib/games/sampleVocabulary'
+  export const { GET } = createVocabularyRoute(SAMPLE_VOCABULARY)
+  ```
+- [ ] Add assets to `public/games/{type}/{game}/`
+- [ ] Add i18n keys to `src/locales/en.ts`
+- [ ] Test with `CI=true npm run build && CI=true npm test`
 
 ## Files to Create
 
@@ -206,6 +247,26 @@ When importing a new game from advantage-games:
 - `src/hooks/useCurrentLocale.ts`
 - `src/locales/en.ts`
 - `src/locales/client.ts`
+
+### Mock API Route Factories (Phase 7)
+- `src/lib/games/api/vocabularyRoute.ts`
+- `src/lib/games/api/sentencesRoute.ts`
+- `src/lib/games/api/completeRoute.ts`
+- `src/lib/games/api/rankingRoute.ts`
+- `src/lib/games/api/types.ts`
+
+### Updated Templates (Phase 7)
+- `src/templates/game/page.tsx.template` (updated paths)
+- `src/templates/game/GameNameGame.tsx.template` (updated imports)
+- `src/templates/game/gameName.ts.template` (updated imports)
+- `src/templates/game/README.md` (updated instructions)
+- `src/templates/game/api/vocabulary/route.ts.template`
+- `src/templates/game/api/sentences/route.ts.template`
+- `src/templates/game/api/complete/route.ts.template`
+- `src/templates/game/api/ranking/route.ts.template`
+
+### Documentation (Phase 7)
+- `docs/reading-advantage-integration.md`
 
 ### Mock API Routes (per game)
 - `src/app/api/v1/games/{game}/vocabulary/route.ts`

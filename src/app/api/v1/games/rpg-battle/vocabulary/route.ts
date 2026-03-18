@@ -1,10 +1,7 @@
-import { NextResponse } from "next/server";
+import { createVocabularyRoute } from "@/lib/games/api";
+export const dynamic = "force-static";
 import { SAMPLE_VOCABULARY } from "@/lib/games/sampleVocabulary";
 
-export const dynamic = "force-static";
+const { GET } = createVocabularyRoute(SAMPLE_VOCABULARY);
 
-export async function GET() {
-  return NextResponse.json({
-    vocabulary: SAMPLE_VOCABULARY,
-  });
-}
+export { GET };

@@ -1,54 +1,110 @@
 # Game Templates
 
-Copy these templates to create a new vocabulary game.
+Copy these templates to create a new vocabulary or sentence game.
 
 ## Quick Start
 
-1. Replace all instances of:
-   - `game-name` → your game slug (kebab-case, e.g., `dragon-flight`)
-   - `GameName` → your game name (PascalCase, e.g., `DragonFlight`)
-   - `gameName` → your game name (camelCase, e.g., `dragonFlight`)
-   - `Game Name` → your display title (e.g., `Dragon Flight`)
+### 1. Choose Your Game Type
 
-2. Create directories and files:
-   ```
-   src/
-   ├── app/games/[game-name]/
-   │   └── page.tsx              # From page.tsx.template
-   ├── components/[game-name]/
-   │   └── [GameName]Game.tsx    # From GameNameGame.tsx.template
-   └── lib/
-       └── [gameName].ts         # From gameName.ts.template
-   ```
+Determine whether your game is a **vocabulary** (word-based) or **sentence** (phrase-based):
 
-3. Create vocabulary file:
-   ```
-   public/vocab/[game-name].json
-   ```
+| Type | Best For | Examples |
+|------|----------|----------|
+| Vocabulary | Word matching, spelling games | dragon-flight, wizard-vs-zombie |
+| Sentence | Grammar, translation games | castle-defense, potion-rush |
 
-4. Create asset directory:
-   ```
-   public/games/[game-name]/
-   ├── player-3x3-sheet.png
-   ├── enemy-3x3-sheet.png
-   └── background.png
-   ```
+### 2. Create Directories and Files
+
+Replace placeholders in all template files:
+
+| Placeholder | Replace With | Example |
+|-------------|--------------|---------|
+| `game-name` | kebab-case slug | `dragon-flight` |
+| `GameName` | PascalCase | `DragonFlight` |
+| `gameName` | camelCase | `dragonFlight` |
+| `Game Name` | Display title | `Dragon Flight` |
+| `{type}` | vocabulary or sentence | `vocabulary` |
+
+```
+src/
+├── app/[locale]/(student)/student/games/{type}/[game-name]/
+│   └── page.tsx              # From vocabulary/page.tsx.template or sentence/page.tsx.template
+├── components/games/{type}/[game-name]/
+│   └── [GameName]Game.tsx    # From GameNameGame.tsx.template
+├── lib/games/
+│   └── [gameName].ts             # From gameName.ts.template
+└── app/api/v1/games/[game-name]/
+    ├── vocabulary/route.ts    # From api/vocabulary-route.ts.template (vocabulary games)
+    ├── sentences/route.ts     # From api/sentences-route.ts.template (sentence games)
+    ├── complete/route.ts      # From api/complete-route.ts.template
+    └── ranking/route.ts       # From api/ranking-route.ts.template (optional)
+```
+
+### 3. Copy Templates
+
+```bash
+# For vocabulary games
+cp src/templates/game/vocabulary/page.tsx.template src/app/[locale]/(student)/student/games/vocabulary/[game-name]/page.tsx
+cp src/templates/game/GameNameGame.tsx.template src/components/games/vocabulary/[game-name]/[GameName]Game.tsx
+cp src/templates/game/gameName.ts.template src/lib/games/[gameName].ts
+cp src/templates/game/api/vocabulary-route.ts.template src/app/api/v1/games/[game-name]/vocabulary/route.ts
+cp src/templates/game/api/complete-route.ts.template src/app/api/v1/games/[game-name]/complete/route.ts
+
+# For sentence games
+cp src/templates/game/sentence/page.tsx.template src/app/[locale]/(student)/student/games/sentence/[game-name]/page.tsx
+cp src/templates/game/GameNameGame.tsx.template src/components/games/sentence/[game-name]/[GameName]Game.tsx
+cp src/templates/game/gameName.ts.template src/lib/games/[gameName].ts
+cp src/templates/game/api/sentences-route.ts.template src/app/api/v1/games/[game-name]/sentences/route.ts
+cp src/templates/game/api/complete-route.ts.template src/app/api/v1/games/[game-name]/complete/route.ts
+```
+
+### 4. Create Assets
+
+```
+public/games/{type}/[game-name]/
+├── player-3x3-sheet.png      # Animated player sprite
+├── enemy-3x3-sheet.png       # Animated enemy sprite (if applicable)
+└── background.png            # Background image
+```
+
+### 5. Add Translations
+
+Add keys to `src/locales/en.ts`:
+
+```typescript
+games: {
+  gameName: {
+    title: 'Game Name',
+    description: 'Game description goes here.',
+    loading: 'Loading...',
+  },
+  // ... other game translations
+}
+```
 
 ## File Checklist
 
-- [ ] `src/app/games/[game-name]/page.tsx`
-- [ ] `src/components/[game-name]/[GameName]Game.tsx`
-- [ ] `src/lib/[gameName].ts`
-- [ ] `public/vocab/[game-name].json`
-- [ ] `public/games/[game-name]/` (assets)
+- [ ] `src/app/[locale]/(student)/student/games/{type}/[game-name]/page.tsx`
+- [ ] `src/components/games/{type}/[game-name]/[GameName]Game.tsx`
+- [ ] `src/lib/games/[gameName].ts`
+- [ ] `src/app/api/v1/games/[game-name]/vocabulary|sentences/route.ts`
+- [ ] `src/app/api/v1/games/[game-name]/complete/route.ts`
+- [ ] `src/app/api/v1/games/[game-name]/ranking/route.ts` (optional)
+- [ ] `public/games/{type}/[game-name]/` (assets)
+- [ ] Translations added to `src/locales/en.ts`
 
 ## Template Files
 
 | Template | Output | Purpose |
 |----------|--------|---------|
-| `GameNameGame.tsx.template` | `components/[game-name]/[GameName]Game.tsx` | Main game component with Konva canvas |
-| `gameName.ts.template` | `lib/[gameName].ts` | Game logic (pure functions) |
-| `page.tsx.template` | `app/games/[game-name]/page.tsx` | Page wrapper with vocabulary loading |
+| `vocabulary/page.tsx.template` | `app/[locale]/(student)/student/games/vocabulary/{game}/page.tsx` | Page wrapper with vocabulary API fetch |
+| `sentence/page.tsx.template` | `app/[locale]/(student)/student/games/sentence/{game}/page.tsx` | Page wrapper with sentences API fetch |
+| `GameNameGame.tsx.template` | `components/games/{type}/{game}/GameNameGame.tsx` | Main Konva game component |
+| `gameName.ts.template` | `lib/games/{gameName}.ts` | Game logic (pure functions) |
+| `api/vocabulary-route.ts.template` | `app/api/v1/games/{game}/vocabulary/route.ts` | Vocabulary API route |
+| `api/sentences-route.ts.template` | `app/api/v1/games/{game}/sentences/route.ts` | Sentences API route |
+| `api/complete-route.ts.template` | `app/api/v1/games/{game}/complete/route.ts` | Game completion API route |
+| `api/ranking-route.ts.template` | `app/api/v1/games/{game}/ranking/route.ts` | Rankings API route |
 
 ## Key Patterns
 
@@ -61,7 +117,7 @@ const [phase, setPhase] = useState<GamePhase>('start')
 ### Asset Loading
 ```tsx
 const ASSETS = {
-  player: withBasePath('/games/game-name/player-3x3-sheet.png'),
+  player: withBasePath('/games/{type}/game-name/player-3x3-sheet.png'),
 }
 ```
 
@@ -102,7 +158,7 @@ onComplete?.(results)
 
 ## Pre-Ship Checklist
 
-- [ ] Vocabulary loads from JSON
+- [ ] Vocabulary/sentences load from API
 - [ ] GameStartScreen shows instructions + vocab preview
 - [ ] GameEndScreen shows XP + accuracy
 - [ ] Touch input works (DPad or VirtualDPad)
