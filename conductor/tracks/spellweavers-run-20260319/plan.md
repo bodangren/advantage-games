@@ -6,23 +6,23 @@ This plan outlines the steps to build "Spellweaver's Run" using **React-Konva (C
 **Assets Required:** None (can start immediately)
 
 - [x] Task: Create configuration file `src/lib/games/spellweaversRunConfig.ts` with all balance values <e7808c2>
-- [~] Task: Define game state types in `src/lib/games/spellweaversRun.ts`
-- [ ] Task: Create `src/app/[locale]/(student)/student/games/sentence/spellweavers-run/` route and page structure
-- [ ] Task: Create `SpellweaversRunGame` container component with React-Konva Stage
-- [ ] Task: Write initial tests for state creation and configuration
+- [x] Task: Define game state types in `src/lib/games/spellweaversRun.ts` <3ab747e>
+- [x] Task: Create `src/app/[locale]/(student)/student/games/sentence/spellweavers-run/` route and page structure
+- [x] Task: Create `SpellweaversRunGame` container component with React-Konva Stage
+- [x] Task: Write initial tests for state creation and configuration
 
 ## Phase 2: Core Game Logic
 **Assets Required:** None (logic only)
 
-- [ ] Task: Implement `createSpellweaversRunState()` initialization function
-- [ ] Task: Implement `tickSpellweaversRun()` game loop update function
-- [ ] Task: Implement orb spawning logic (3 lanes, word assignment)
-- [ ] Task: Implement orb movement/scrolling
-- [ ] Task: Implement word collection and sequence validation
-- [ ] Task: Implement mana system (wrong word penalty)
-- [ ] Task: Implement win/lose condition detection
-- [ ] Task: Implement sentence completion and next sentence logic
-- [ ] Task: Write comprehensive tests for all game logic (>80% coverage)
+- [x] Task: Implement `createSpellweaversRunState()` initialization function
+- [x] Task: Implement `tickSpellweaversRun()` game loop update function
+- [x] Task: Implement orb spawning logic (3 lanes, word assignment)
+- [x] Task: Implement orb movement/scrolling
+- [x] Task: Implement word collection and sequence validation
+- [x] Task: Implement mana system (wrong word penalty)
+- [x] Task: Implement win/lose condition detection
+- [x] Task: Implement sentence completion and next sentence logic
+- [x] Task: Write comprehensive tests for all game logic (>80% coverage) - 100% achieved
 
 ## Phase 3: Rendering
 **Assets Required:**
@@ -30,20 +30,20 @@ This plan outlines the steps to build "Spellweaver's Run" using **React-Konva (C
 - [ ] /public/games/spellweavers-run/scroll.png (floating scroll background)
 - [ ] /public/games/spellweavers-run/background-*.png (parallax layers)
 
-- [ ] Task: Implement asset preloading
-- [ ] Task: Render parallax background layers
-- [ ] Task: Render floating scroll with translation text
-- [ ] Task: Render word orbs with text labels
-- [ ] Task: Render collection zone indicator
-- [ ] Task: Render collected words display
-- [ ] Task: Implement visual feedback (correct/wrong collection)
+- [ ] Task: Implement asset preloading (using primitives for MVP)
+- [x] Task: Render parallax background layers (gradient background)
+- [x] Task: Render floating scroll with translation text
+- [x] Task: Render word orbs with text labels
+- [x] Task: Render collection zone indicator
+- [x] Task: Render collected words display
+- [x] Task: Implement visual feedback (correct/wrong collection) - target orb highlight
 
 ## Phase 4: Input & Controls
 **Assets Required:** None
 
-- [ ] Task: Implement touch/tap handling for lane selection
-- [ ] Task: Implement keyboard support (arrow keys for lanes)
-- [ ] Task: Ensure 44×44px minimum touch targets for lanes
+- [x] Task: Implement touch/tap handling for lane selection
+- [x] Task: Implement keyboard support (arrow keys for lanes)
+- [x] Task: Ensure 44×44px minimum touch targets for lanes
 - [ ] Task: Implement difficulty selection UI
 - [ ] Task: Write tests for input handling
 
