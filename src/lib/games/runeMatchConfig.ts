@@ -44,11 +44,11 @@ export const RUNE_MATCH_CONFIG: RuneMatchConfig = {
   },
   combat: {
     attackIntervalMs: 5000,
-    match3Damage: 6,
-    match4Damage: 12,
-    match5Damage: 20,
-    lShapeDamage: 10,
-    cascadeBonus: 2,
+    match3Damage: 10,
+    match4Damage: 20,
+    match5Damage: 30,
+    lShapeDamage: 25,
+    cascadeBonus: 5,
     powerRuneMultiplier: 2,
     invalidSwapPenalty: 1,
   },
@@ -58,7 +58,7 @@ export const RUNE_MATCH_CONFIG: RuneMatchConfig = {
     spawnRate: 0.1,
   },
   grid: {
-    columns: 5,
-    rows: 5,
+    columns: 6,
+    rows: 8,
   },
 };

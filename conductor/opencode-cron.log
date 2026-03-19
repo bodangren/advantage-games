@@ -1,0 +1,718 @@
+[0m
+> build · glm-5
+[0m
+[0m→ [0mRead conductor/autonomous_prompt.md
+[0m→ [0mSkill "conductor"
+[0m→ [0mSkill "vocab-game-builder"
+[0m→ [0mRead conductor/notes/sentence-game-concepts.md
+[0m
+[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/conductor/tracks/
+total 28
+drwxrwxr-x 7 daniel-bo daniel-bo 4096 Mar 19 22:18 .
+drwxrwxr-x 6 daniel-bo daniel-bo 4096 Mar 19 21:15 ..
+drwxrwxr-x 2 daniel-bo daniel-bo 4096 Mar 17 19:22 castle-defense-start-end-screens-20260130
+drwxrwxr-x 2 daniel-bo daniel-bo 4096 Mar 17 19:22 dragon-rider-reskin-20260131
+drwxrwxr-x 2 daniel-bo daniel-bo 4096 Mar 17 19:44 reading-advantage-migration-20260317
+drwxrwxr-x 2 daniel-bo daniel-bo 4096 Mar 19 22:20 spellweavers-run-20260319
+drwxrwxr-x 2 daniel-bo daniel-bo 4096 Mar 17 19:22 unified-game-screens-20260131
+[0m
+[0m→ [0mRead conductor/tracks/spellweavers-run-20260319/metadata.json
+[0m→ [0mRead conductor/tracks/spellweavers-run-20260319/plan.md
+Found track `spellweavers-run-20260319` (status: new, 0/42 tasks complete). Resuming implementation.
+[0m✱ [0mGlob "src/app/**/games/sentence/**/*.tsx"[90m 3 matches[0m
+[0m→ [0mRead conductor/tracks/spellweavers-run-20260319/spec.md
+[0m✱ [0mGlob "src/lib/games/*.ts"[90m 37 matches[0m
+[0m→ [0mRead src/lib/games/dungeonLiberator.ts
+[0m→ [0mRead src/lib/games/magicDefenseConfig.ts
+[0m→ [0mRead src/app/[locale]/(student)/student/games/sentence/dungeon-liberator/page.tsx
+Starting Phase 1: Setup & Infrastructure. Marking first task in-progress.
+[0m
+[0m← [0mEdit conductor/tracks/spellweavers-run-20260319/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/spellweavers-run-20260319/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/spellweavers-run-20260319/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/spellweavers-run-20260319/plan.md
+@@ -4,9 +4,9 @@
+ 
+ ## Phase 1: Setup & Infrastructure
+ **Assets Required:** None (can start immediately)
+ 
+-- [ ] Task: Create configuration file `src/lib/games/spellweaversRunConfig.ts` with all balance values
++- [~] Task: Create configuration file `src/lib/games/spellweaversRunConfig.ts` with all balance values
+ - [ ] Task: Define game state types in `src/lib/games/spellweaversRun.ts`
+ - [ ] Task: Create `src/app/[locale]/(student)/student/games/sentence/spellweavers-run/` route and page structure
+ - [ ] Task: Create `SpellweaversRunGame` container component with React-Konva Stage
+ - [ ] Task: Write initial tests for state creation and configuration
+
+[0m
+[0m← [0mWrite src/lib/games/spellweaversRunConfig.test.ts
+Wrote file successfully.
+[0m
+[0m$ [0mCI=true npm test -- src/lib/games/spellweaversRunConfig.test.ts --run 2>&1 | head -50
+> vocabulary-games@0.1.0 test
+> jest src/lib/games/spellweaversRunConfig.test.ts --run
+
+● Unrecognized CLI Parameter:
+
+  Unrecognized option "run". Did you mean "u"?
+
+  CLI Options Documentation:
+  https://jestjs.io/docs/cli
+[0m
+[0m$ [0mCI=true npm test -- src/lib/games/spellweaversRunConfig.test.ts 2>&1 | head -50
+> vocabulary-games@0.1.0 test
+> jest src/lib/games/spellweaversRunConfig.test.ts
+
+FAIL src/lib/games/spellweaversRunConfig.test.ts
+  ● Test suite failed to run
+
+    Cannot find module 'vitest' from 'src/lib/games/spellweaversRunConfig.test.ts'
+
+    [0m [90m 3 |[39m
+     [90m 4 |[39m describe([32m'spellweaversRunConfig'[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 5 |[39m   describe([32m'SPELLWEAVERS_RUN_CONFIG'[39m[33m,[39m () [33m=>[39m {
+     [90m   |[39m                 [31m[1m^[22m[39m
+     [90m 6 |[39m     it([32m'should have lane count of 3'[39m[33m,[39m () [33m=>[39m {
+     [90m 7 |[39m       expect([33mSPELLWEAVERS_RUN_CONFIG[39m[33m.[39mlaneCount)[33m.[39mtoBe([35m3[39m)
+     [90m 8 |[39m     })[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (src/lib/games/spellweaversRunConfig.test.ts:5:17)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        4.886 s
+Ran all test suites matching src/lib/games/spellweaversRunConfig.test.ts.
+[0m
+[0m→ [0mRead src/lib/games/dragonFlight.test.ts[90m [limit=50][0m
+[0m
+[0m← [0mWrite src/lib/games/spellweaversRunConfig.test.ts
+Wrote file successfully.
+
+LSP errors detected in this file, please fix:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts">
+ERROR [1:62] Cannot find module './spellweaversRunConfig' or its corresponding type declarations.
+ERROR [2:33] Cannot find module './spellweaversRunConfig' or its corresponding type declarations.
+ERROR [4:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [5:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [6:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [7:7] Cannot find name 'expect'.
+ERROR [10:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [11:7] Cannot find name 'expect'.
+ERROR [12:7] Cannot find name 'expect'.
+ERROR [13:7] Cannot find name 'expect'.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [17:7] Cannot find name 'expect'.
+ERROR [18:7] Cannot find name 'expect'.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [22:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:7] Cannot find name 'expect'.
+ERROR [30:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [31:7] Cannot find name 'expect'.
+... and 27 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/dragonFlight.test.ts">
+ERROR [8:37] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [19:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [25:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [32:5] Cannot find name 'expect'.
+ERROR [33:5] Cannot find name 'expect'.
+ERROR [34:5] Cannot find name 'expect'.
+ERROR [35:5] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'expect'.
+ERROR [37:5] Cannot find name 'expect'.
+ERROR [38:5] Cannot find name 'expect'.
+ERROR [39:5] Cannot find name 'expect'.
+ERROR [40:5] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'expect'.
+ERROR [44:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [55:5] Cannot find name 'expect'.
+ERROR [56:5] Cannot find name 'expect'.
+ERROR [57:5] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'expect'.
+ERROR [61:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [72:5] Cannot find name 'expect'.
+... and 14 more
+</diagnostics>
+[0m
+[0m$ [0mCI=true npm test -- src/lib/games/spellweaversRunConfig.test.ts 2>&1 | head -40
+> vocabulary-games@0.1.0 test
+> jest src/lib/games/spellweaversRunConfig.test.ts
+
+FAIL src/lib/games/spellweaversRunConfig.test.ts
+  ● Test suite failed to run
+
+    Cannot find module './spellweaversRunConfig' from 'src/lib/games/spellweaversRunConfig.test.ts'
+
+    However, Jest was able to find:
+    	'./spellweaversRunConfig.test.ts'
+
+    You might want to include a file extension in your import, or update your 'moduleFileExtensions', which is currently ['js', 'mjs', 'cjs', 'jsx', 'ts', 'mts', 'cts', 'tsx', 'json', 'node'].
+
+    See https://jestjs.io/docs/configuration#modulefileextensions-arraystring
+
+    [0m [90m 3 |[39m
+     [90m 4 |[39m describe([32m'spellweaversRunConfig'[39m[33m,[39m () [33m=>[39m {
+    [31m[1m>[22m[39m[90m 5 |[39m   describe([32m'SPELLWEAVERS_RUN_CONFIG'[39m[33m,[39m () [33m=>[39m {
+     [90m   |[39m                                [31m[1m^[22m[39m
+     [90m 6 |[39m     it([32m'should have lane count of 3'[39m[33m,[39m () [33m=>[39m {
+     [90m 7 |[39m       expect([33mSPELLWEAVERS_RUN_CONFIG[39m[33m.[39mlaneCount)[33m.[39mtoBe([35m3[39m)
+     [90m 8 |[39m     })[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (src/lib/games/spellweaversRunConfig.test.ts:5:32)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        3.804 s
+Ran all test suites matching src/lib/games/spellweaversRunConfig.test.ts.
+[0m
+Now implementing the config file (GREEN phase):
+[0m← [0mWrite src/lib/games/spellweaversRunConfig.ts
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts">
+ERROR [1:62] Cannot find module './spellweaversRunConfig' or its corresponding type declarations.
+ERROR [2:33] Cannot find module './spellweaversRunConfig' or its corresponding type declarations.
+ERROR [4:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [5:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [6:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [7:7] Cannot find name 'expect'.
+ERROR [10:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [11:7] Cannot find name 'expect'.
+ERROR [12:7] Cannot find name 'expect'.
+ERROR [13:7] Cannot find name 'expect'.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [17:7] Cannot find name 'expect'.
+ERROR [18:7] Cannot find name 'expect'.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [22:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:7] Cannot find name 'expect'.
+ERROR [30:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [31:7] Cannot find name 'expect'.
+... and 27 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/dragonFlight.test.ts">
+ERROR [8:37] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [19:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [25:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [32:5] Cannot find name 'expect'.
+ERROR [33:5] Cannot find name 'expect'.
+ERROR [34:5] Cannot find name 'expect'.
+ERROR [35:5] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'expect'.
+ERROR [37:5] Cannot find name 'expect'.
+ERROR [38:5] Cannot find name 'expect'.
+ERROR [39:5] Cannot find name 'expect'.
+ERROR [40:5] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'expect'.
+ERROR [44:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [55:5] Cannot find name 'expect'.
+ERROR [56:5] Cannot find name 'expect'.
+ERROR [57:5] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'expect'.
+ERROR [61:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [72:5] Cannot find name 'expect'.
+... and 14 more
+</diagnostics>
+
+LSP errors detected in this file, please fix:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts">
+ERROR [59:10] Element implicitly has an 'any' type because expression of type 'Difficulty' can't be used to index type '{ easy: { name: string; scrollSpeed: number; spawnInterval: number; maxWords: number; }; medium: { name: string; scrollSpeed: number; spawnInterval: number; maxWords: number; }; hard: { name: string; scrollSpeed: number; spawnInterval: number; maxWords: number; }; }'.
+  Property 'normal' does not exist on type '{ easy: { name: string; scrollSpeed: number; spawnInterval: number; maxWords: number; }; medium: { name: string; scrollSpeed: number; spawnInterval: number; maxWords: number; }; hard: { name: string; scrollSpeed: number; spawnInterval: number; maxWords: number; }; }'.
+</diagnostics>
+[0m
+[0m✱ [0mGrep "type Difficulty|export type Difficulty"[90m 5 matches[0m
+[0m
+[0m← [0mEdit src/lib/games/spellweaversRunConfig.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+@@ -15,14 +15,14 @@
+ export const SPELLWEAVERS_RUN_CONFIG = {
+   laneCount: 3,
+   scrollSpeed: {
+     easy: 60,
+-    medium: 90,
++    normal: 90,
+     hard: 120,
+   },
+   spawnInterval: {
+     easy: 2000,
+-    medium: 1500,
++    normal: 1500,
+     hard: 1000,
+   },
+   collectionZoneHeight: 80,
+   initialMana: 100,
+
+[0m
+[0m← [0mEdit src/lib/games/spellweaversRunConfig.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+@@ -39,9 +39,9 @@
+   scrollSpeed: 60,
+   spawnInterval: 2000,
+   maxWords: 4,
+ },
+-medium: {
++normal: {
+   name: 'Mystic Mountain',
+   scrollSpeed: 90,
+   spawnInterval: 1500,
+   maxWords: 6,
+
+[0m
+[0m→ [0mRead src/lib/games/enchantedLibrary.ts[90m [limit=100][0m
+[0m
+[0m← [0mEdit src/lib/games/spellweaversRunConfig.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+@@ -17,13 +17,15 @@
+ scrollSpeed: {
+   easy: 60,
+   normal: 90,
+   hard: 120,
++  extreme: 150,
+ },
+ spawnInterval: {
+   easy: 2000,
+   normal: 1500,
+   hard: 1000,
++  extreme: 700,
+ },
+ collectionZoneHeight: 80,
+ initialMana: 100,
+ wrongWordPenalty: 20,
+
+[0m
+[0m← [0mEdit src/lib/games/spellweaversRunConfig.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+@@ -53,8 +53,14 @@
+       scrollSpeed: 120,
+       spawnInterval: 1000,
+       maxWords: 8,
+     },
++    extreme: {
++      name: 'Void Passage Extreme',
++      scrollSpeed: 150,
++      spawnInterval: 700,
++      maxWords: 10,
++    },
+   },
+ }
+ 
+ export function getDifficultyConfig(difficulty: SpellweaversRunDifficulty): DifficultyConfig {
+
+[0m
+[0m→ [0mRead src/lib/games/spellweaversRunConfig.ts
+[0m
+[0m← [0mEdit src/lib/games/spellweaversRunConfig.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.ts
+@@ -63,6 +63,6 @@
+   },
+ }
+ 
+ export function getDifficultyConfig(difficulty: SpellweaversRunDifficulty): DifficultyConfig {
+-  return SPELLWEAVERS_RUN_CONFIG.difficulties[difficulty] ?? SPELLWEAVERS_RUN_CONFIG.difficulties.medium
++  return SPELLWEAVERS_RUN_CONFIG.difficulties[difficulty] ?? SPELLWEAVERS_RUN_CONFIG.difficulties.normal
+ }
+
+[0m
+[0m← [0mEdit src/lib/games/spellweaversRunConfig.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
+@@ -8,15 +8,15 @@
+ })
+ 
+ it('should have scroll speeds for all difficulties', () => {
+   expect(SPELLWEAVERS_RUN_CONFIG.scrollSpeed.easy).toBe(60)
+-  expect(SPELLWEAVERS_RUN_CONFIG.scrollSpeed.medium).toBe(90)
++  expect(SPELLWEAVERS_RUN_CONFIG.scrollSpeed.normal).toBe(90)
+   expect(SPELLWEAVERS_RUN_CONFIG.scrollSpeed.hard).toBe(120)
+ })
+ 
+ it('should have spawn intervals for all difficulties', () => {
+   expect(SPELLWEAVERS_RUN_CONFIG.spawnInterval.easy).toBe(2000)
+-  expect(SPELLWEAVERS_RUN_CONFIG.spawnInterval.medium).toBe(1500)
++  expect(SPELLWEAVERS_RUN_CONFIG.spawnInterval.normal).toBe(1500)
+   expect(SPELLWEAVERS_RUN_CONFIG.spawnInterval.hard).toBe(1000)
+ })
+ 
+ it('should have initial mana of 100', () => {
+
+[0m
+[0m← [0mEdit src/lib/games/spellweaversRunConfig.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
+@@ -56,9 +56,9 @@
+   expect(config.maxWords).toBe(4)
+ })
+ 
+ it('should return medium config', () => {
+-  const config = getDifficultyConfig('medium')
++  const config = getDifficultyConfig('normal')
+   expect(config.name).toBe('Mystic Mountain')
+   expect(config.scrollSpeed).toBe(90)
+   expect(config.spawnInterval).toBe(1500)
+   expect(config.maxWords).toBe(6)
+
+[0m
+[0m$ [0mCI=true npm test -- src/lib/games/spellweaversRunConfig.test.ts 2>&1
+> vocabulary-games@0.1.0 test
+> jest src/lib/games/spellweaversRunConfig.test.ts
+
+FAIL src/lib/games/spellweaversRunConfig.test.ts
+  spellweaversRunConfig
+    SPELLWEAVERS_RUN_CONFIG
+      ✓ should have lane count of 3 (9 ms)
+      ✓ should have scroll speeds for all difficulties (4 ms)
+      ✓ should have spawn intervals for all difficulties (3 ms)
+      ✓ should have initial mana of 100 (3 ms)
+      ✓ should have wrong word penalty of 20 (1 ms)
+      ✓ should have XP values configured (3 ms)
+      ✓ should have visual dimensions configured (3 ms)
+      ✕ should have difficulty presets (2 ms)
+    getDifficultyConfig
+      ✓ should return easy config (12 ms)
+      ✓ should return medium config (6 ms)
+      ✓ should return hard config (6 ms)
+
+  ● spellweaversRunConfig › SPELLWEAVERS_RUN_CONFIG › should have difficulty presets
+
+    TypeError: Cannot read properties of undefined (reading 'name')
+
+    [0m [90m 43 |[39m     it([32m'should have difficulty presets'[39m[33m,[39m () [33m=>[39m {
+     [90m 44 |[39m       expect([33mSPELLWEAVERS_RUN_CONFIG[39m[33m.[39mdifficulties[33m.[39measy[33m.[39mname)[33m.[39mtoBe([32m'Whisper Woods'[39m)
+    [31m[1m>[22m[39m[90m 45 |[39m       expect([33mSPELLWEAVERS_RUN_CONFIG[39m[33m.[39mdifficulties[33m.[39mmedium[33m.[39mname)[33m.[39mtoBe([32m'Mystic Mountain'[39m)
+     [90m    |[39m                                                          [31m[1m^[22m[39m
+     [90m 46 |[39m       expect([33mSPELLWEAVERS_RUN_CONFIG[39m[33m.[39mdifficulties[33m.[39mhard[33m.[39mname)[33m.[39mtoBe([32m'Void Passage'[39m)
+     [90m 47 |[39m     })
+     [90m 48 |[39m   })[0m
+
+      at Object.name (src/lib/games/spellweaversRunConfig.test.ts:45:58)
+
+Test Suites: 1 failed, 1 total
+Tests:       1 failed, 10 passed, 11 total
+Snapshots:   0 total
+Time:        5.733 s
+Ran all test suites matching src/lib/games/spellweaversRunConfig.test.ts.
+[0m
+[0m← [0mEdit src/lib/games/spellweaversRunConfig.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts
+@@ -41,9 +41,9 @@
+   })
+ 
+   it('should have difficulty presets', () => {
+     expect(SPELLWEAVERS_RUN_CONFIG.difficulties.easy.name).toBe('Whisper Woods')
+-    expect(SPELLWEAVERS_RUN_CONFIG.difficulties.medium.name).toBe('Mystic Mountain')
++    expect(SPELLWEAVERS_RUN_CONFIG.difficulties.normal.name).toBe('Mystic Mountain')
+     expect(SPELLWEAVERS_RUN_CONFIG.difficulties.hard.name).toBe('Void Passage')
+   })
+ })
+ 
+
+[0m
+[0m$ [0mCI=true npm test -- src/lib/games/spellweaversRunConfig.test.ts 2>&1
+> vocabulary-games@0.1.0 test
+> jest src/lib/games/spellweaversRunConfig.test.ts
+
+PASS src/lib/games/spellweaversRunConfig.test.ts
+  spellweaversRunConfig
+    SPELLWEAVERS_RUN_CONFIG
+      ✓ should have lane count of 3 (8 ms)
+      ✓ should have scroll speeds for all difficulties (3 ms)
+      ✓ should have spawn intervals for all difficulties (3 ms)
+      ✓ should have initial mana of 100 (1 ms)
+      ✓ should have wrong word penalty of 20 (2 ms)
+      ✓ should have XP values configured (2 ms)
+      ✓ should have visual dimensions configured (3 ms)
+      ✓ should have difficulty presets (3 ms)
+    getDifficultyConfig
+      ✓ should return easy config (3 ms)
+      ✓ should return medium config (2 ms)
+      ✓ should return hard config (3 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       11 passed, 11 total
+Snapshots:   0 total
+Time:        2.384 s, estimated 3 s
+Ran all test suites matching src/lib/games/spellweaversRunConfig.test.ts.
+[0m
+All tests pass. Committing task 1:
+[0m$ [0mgit add src/lib/games/spellweaversRunConfig.ts src/lib/games/spellweaversRunConfig.test.ts && git commit -m "feat(spellweavers-run): add configuration file with balance values"
+[master e7808c2] feat(spellweavers-run): add configuration file with balance values
+ 2 files changed, 143 insertions(+)
+ create mode 100644 src/lib/games/spellweaversRunConfig.test.ts
+ create mode 100644 src/lib/games/spellweaversRunConfig.ts
+[0m
+[0m← [0mEdit conductor/tracks/spellweavers-run-20260319/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/spellweavers-run-20260319/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/spellweavers-run-20260319/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/spellweavers-run-20260319/plan.md
+@@ -4,10 +4,10 @@
+ 
+ ## Phase 1: Setup & Infrastructure
+ **Assets Required:** None (can start immediately)
+ 
+-- [~] Task: Create configuration file `src/lib/games/spellweaversRunConfig.ts` with all balance values
+-- [ ] Task: Define game state types in `src/lib/games/spellweaversRun.ts`
++- [x] Task: Create configuration file `src/lib/games/spellweaversRunConfig.ts` with all balance values <e7808c2>
++- [~] Task: Define game state types in `src/lib/games/spellweaversRun.ts`
+ - [ ] Task: Create `src/app/[locale]/(student)/student/games/sentence/spellweavers-run/` route and page structure
+ - [ ] Task: Create `SpellweaversRunGame` container component with React-Konva Stage
+ - [ ] Task: Write initial tests for state creation and configuration
+ 
+
+[0m
+Task 2: Define game state types. Writing tests first:
+[0m← [0mWrite src/lib/games/spellweaversRun.test.ts
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts">
+ERROR [1:62] Cannot find module './spellweaversRunConfig' or its corresponding type declarations.
+ERROR [2:33] Cannot find module './spellweaversRunConfig' or its corresponding type declarations.
+ERROR [4:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [5:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [6:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [7:7] Cannot find name 'expect'.
+ERROR [10:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [11:7] Cannot find name 'expect'.
+ERROR [12:7] Cannot find name 'expect'.
+ERROR [13:7] Cannot find name 'expect'.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [17:7] Cannot find name 'expect'.
+ERROR [18:7] Cannot find name 'expect'.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [22:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:7] Cannot find name 'expect'.
+ERROR [30:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [31:7] Cannot find name 'expect'.
+... and 27 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/dragonFlight.test.ts">
+ERROR [8:37] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [19:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [25:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [32:5] Cannot find name 'expect'.
+ERROR [33:5] Cannot find name 'expect'.
+ERROR [34:5] Cannot find name 'expect'.
+ERROR [35:5] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'expect'.
+ERROR [37:5] Cannot find name 'expect'.
+ERROR [38:5] Cannot find name 'expect'.
+ERROR [39:5] Cannot find name 'expect'.
+ERROR [40:5] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'expect'.
+ERROR [44:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [55:5] Cannot find name 'expect'.
+ERROR [56:5] Cannot find name 'expect'.
+ERROR [57:5] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'expect'.
+ERROR [61:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [72:5] Cannot find name 'expect'.
+... and 14 more
+</diagnostics>
+
+LSP errors detected in this file, please fix:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRun.test.ts">
+ERROR [6:8] Cannot find module './spellweaversRun' or its corresponding type declarations.
+ERROR [7:37] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [9:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [15:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [18:7] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:7] Cannot find name 'expect'.
+ERROR [31:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [33:7] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [38:7] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [43:7] Cannot find name 'expect'.
+ERROR [46:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [48:7] Cannot find name 'expect'.
+ERROR [51:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [53:7] Cannot find name 'expect'.
+... and 27 more
+</diagnostics>
+[0m
+[0m$ [0mCI=true npm test -- src/lib/games/spellweaversRun.test.ts 2>&1 | head -30
+> vocabulary-games@0.1.0 test
+> jest src/lib/games/spellweaversRun.test.ts
+
+FAIL src/lib/games/spellweaversRun.test.ts
+  ● Test suite failed to run
+
+    Cannot find module './spellweaversRun' from 'src/lib/games/spellweaversRun.test.ts'
+
+    However, Jest was able to find:
+    	'./spellweaversRun.test.ts'
+
+    You might want to include a file extension in your import, or update your 'moduleFileExtensions', which is currently ['js', 'mjs', 'cjs', 'jsx', 'ts', 'mts', 'cts', 'tsx', 'json', 'node'].
+
+    See https://jestjs.io/docs/configuration#modulefileextensions-arraystring
+
+    [0m [90m 3 |[39m   type [33mSpellweaversRunState[39m[33m,[39m
+     [90m 4 |[39m   type [33mWordOrb[39m[33m,[39m
+    [31m[1m>[22m[39m[90m 5 |[39m   type [33mLane[39m[33m,[39m
+     [90m   |[39m                          [31m[1m^[22m[39m
+     [90m 6 |[39m } [36mfrom[39m [32m'./spellweaversRun'[39m
+     [90m 7 |[39m [36mimport[39m type { [33mVocabularyItem[39m } [36mfrom[39m [32m'@/store/useGameStore'[39m
+     [90m 8 |[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (src/lib/games/spellweaversRun.test.ts:5:26)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+[0m
+Implementing the state types (GREEN phase):
+[0m← [0mWrite src/lib/games/spellweaversRun.ts
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRunConfig.test.ts">
+ERROR [1:62] Cannot find module './spellweaversRunConfig' or its corresponding type declarations.
+ERROR [2:33] Cannot find module './spellweaversRunConfig' or its corresponding type declarations.
+ERROR [4:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [5:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [6:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [7:7] Cannot find name 'expect'.
+ERROR [10:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [11:7] Cannot find name 'expect'.
+ERROR [12:7] Cannot find name 'expect'.
+ERROR [13:7] Cannot find name 'expect'.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [17:7] Cannot find name 'expect'.
+ERROR [18:7] Cannot find name 'expect'.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [22:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:7] Cannot find name 'expect'.
+ERROR [30:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [31:7] Cannot find name 'expect'.
+... and 27 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/dragonFlight.test.ts">
+ERROR [8:37] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [19:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [25:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [32:5] Cannot find name 'expect'.
+ERROR [33:5] Cannot find name 'expect'.
+ERROR [34:5] Cannot find name 'expect'.
+ERROR [35:5] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'expect'.
+ERROR [37:5] Cannot find name 'expect'.
+ERROR [38:5] Cannot find name 'expect'.
+ERROR [39:5] Cannot find name 'expect'.
+ERROR [40:5] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'expect'.
+ERROR [44:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [55:5] Cannot find name 'expect'.
+ERROR [56:5] Cannot find name 'expect'.
+ERROR [57:5] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'expect'.
+ERROR [61:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [72:5] Cannot find name 'expect'.
+... and 14 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/spellweaversRun.test.ts">
+ERROR [6:8] Cannot find module './spellweaversRun' or its corresponding type declarations.
+ERROR [7:37] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [9:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [15:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [18:7] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:7] Cannot find name 'expect'.
+ERROR [31:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [33:7] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [38:7] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [43:7] Cannot find name 'expect'.
+ERROR [46:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [48:7] Cannot find name 'expect'.
+ERROR [51:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [53:7] Cannot find name 'expect'.
+... and 27 more
+</diagnostics>
+[0m
+[0m$ [0mCI=true npm test -- src/lib/games/spellweaversRun.test.ts 2>&1
+> vocabulary-games@0.1.0 test
+> jest src/lib/games/spellweaversRun.test.ts
+
+PASS src/lib/games/spellweaversRun.test.ts
+  spellweaversRun
+    createSpellweaversRunState
+      ✓ should initialize with playing status (6 ms)
+      ✓ should initialize with full mana (1 ms)
+      ✓ should initialize with zero score (1 ms)
+      ✓ should initialize with zero combo (1 ms)
+      ✓ should initialize with empty collected words (3 ms)
+      ✓ should initialize with target index 0 (1 ms)
+      ✓ should initialize with empty orbs array (1 ms)
+      ✓ should set current sentence from vocabulary (3 ms)
+      ✓ should set words array from sentence term (2 ms)
+      ✓ should set correct answers and total attempts to zero (1 ms)
+      ✓ should set sentences completed to zero
+      ✓ should throw error if vocabulary is empty (20 ms)
+      ✓ should accept difficulty parameter (1 ms)
+      ✓ should default to normal difficulty (1 ms)
+    WordOrb type
+      ✓ should have correct structure (2 ms)
+    Lane type
+      ✓ should be left, center, or right (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       16 passed, 16 total
+Snapshots:   0 total
+Time:        1.942 s
+Ran all test suites matching src/lib/games/spellweaversRun.test.ts.
+[0m
