@@ -98,4 +98,12 @@ export const gameCards: GameCard[] = [
     href: '/en/student/games/sentence/spellweavers-run',
     status: 'playable',
   },
+  {
+    id: 'shadow-gate-dungeon',
+    title: 'Shadow Gate Dungeon',
+    description: 'Collect word crystals and escape the shadow creature in this dark dungeon survival game!',
+    cover: withBasePath('/games/cover/dungeon-liberator.png'),
+    href: '/en/student/games/sentence/shadow-gate-dungeon',
+    status: 'playable',
+  },
 ]
