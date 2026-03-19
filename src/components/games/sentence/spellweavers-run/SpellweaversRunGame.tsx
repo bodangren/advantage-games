@@ -17,6 +17,7 @@ import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { Wand2, Zap, BookOpen, AlertTriangle } from 'lucide-react'
 import type { Difficulty } from '@/store/useGameStore'
+import type Konva from 'konva'
 
 export type SpellweaversRunGameResult = {
   xp: number
@@ -138,16 +139,25 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
     }
   }, [gameState, gamePhase])
 
-  const handleStageClick = useCallback((e: any) => {
-    if (!dimensions.width || !dimensions.height) return
-    const stage = e.target.getStage()
-    const pointerPos = stage.getPointerPosition()
-    if (!pointerPos) return
-
-    const gameX = pointerPos.x / scale
+  const handleStageClick = useCallback((e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
+    if (!containerRef.current || !dimensions.width || !dimensions.height) return
+    
+    const rect = containerRef.current.getBoundingClientRect()
+    let clientX: number, clientY: number
+    
+    if ('touches' in e) {
+      clientX = e.touches[0].clientX
+      clientY = e.touches[0].clientY
+    } else {
+      clientX = e.clientX
+      clientY = e.clientY
+    }
+    
+    const x = clientX - rect.left
+    const gameX = x / scale
     const laneIndex = Math.floor(gameX / laneWidth)
     const lanes: Lane[] = ['left', 'center', 'right']
-    const lane = lanes[Math.min(laneIndex, 2)]
+    const lane = lanes[Math.min(Math.max(laneIndex, 0), 2)]
     handleLaneTap(lane)
   }, [dimensions, scale, laneWidth, handleLaneTap])
 
@@ -193,7 +203,21 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
             resetGame()
             setGamePhase('playing')
           }}
-        />
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-xs uppercase tracking-wider text-white/50">Difficulty:</span>
+            <select
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
+              className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+            >
+              <option value="easy">Whisper Woods</option>
+              <option value="normal">Mystic Mountain</option>
+              <option value="hard">Void Passage</option>
+              <option value="extreme">Void Passage Extreme</option>
+            </select>
+          </div>
+        </GameStartScreen>
       </div>
     )
   }
@@ -203,15 +227,15 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
       ref={containerRef}
       style={{ minHeight: '400px' }}
       className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto"
+      onClick={handleStageClick}
+      onTouchStart={handleStageClick}
     >
       {gamePhase === 'playing' && gameState && (
         <>
           <Stage
             width={dimensions.width}
             height={dimensions.height}
-            style={{ position: 'absolute', top: 0, left: 0 }}
-            onClick={handleStageClick}
-            onTap={handleStageClick}
+            style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
           >
             <Layer>
               <Group scale={{ x: scale, y: scale }} offsetX={0} offsetY={0}>

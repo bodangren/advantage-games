@@ -44,7 +44,7 @@ This plan outlines the steps to build "Spellweaver's Run" using **React-Konva (C
 - [x] Task: Implement touch/tap handling for lane selection
 - [x] Task: Implement keyboard support (arrow keys for lanes)
 - [x] Task: Ensure 44×44px minimum touch targets for lanes
-- [ ] Task: Implement difficulty selection UI
+- [x] Task: Implement difficulty selection UI
 - [ ] Task: Write tests for input handling
 
 ## Phase 5: UI & HUD
