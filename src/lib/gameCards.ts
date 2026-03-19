@@ -90,4 +90,12 @@ export const gameCards: GameCard[] = [
     href: '/en/student/games/sentence/dungeon-liberator',
     status: 'playable',
   },
+  {
+    id: 'spellweavers-run',
+    title: "Spellweaver's Run",
+    description: 'Collect word orbs in the correct order to form sentences in this enchanted forest runner!',
+    cover: withBasePath('/games/cover/potion-rush-cover.png'),
+    href: '/en/student/games/sentence/spellweavers-run',
+    status: 'playable',
+  },
 ]

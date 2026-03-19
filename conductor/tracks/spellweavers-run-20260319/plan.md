@@ -50,19 +50,19 @@ This plan outlines the steps to build "Spellweaver's Run" using **React-Konva (C
 ## Phase 5: UI & HUD
 **Assets Required:** None
 
-- [ ] Task: Implement mana bar display
-- [ ] Task: Implement sentence progress indicator
-- [ ] Task: Implement score display
-- [ ] Task: Implement combo counter
+- [x] Task: Implement mana bar display
+- [x] Task: Implement sentence progress indicator (collected words display)
+- [x] Task: Implement score display
+- [x] Task: Implement combo counter
 - [ ] Task: Write tests for UI components
 
 ## Phase 6: Game States
 **Assets Required:** None (uses shared GameStartScreen/GameEndScreen)
 
-- [ ] Task: Implement start screen with difficulty selection (use GameStartScreen)
-- [ ] Task: Implement victory state and XP display (use GameEndScreen)
-- [ ] Task: Implement defeat state (use GameEndScreen)
-- [ ] Task: Wire state transitions (start → playing → ended)
+- [x] Task: Implement start screen with difficulty selection (use GameStartScreen)
+- [x] Task: Implement victory state and XP display (use GameEndScreen)
+- [x] Task: Implement defeat state (use GameEndScreen)
+- [x] Task: Wire state transitions (start → playing → ended)
 - [ ] Task: Write tests for state transitions
 
 ## Phase 7: Polish & Integration
@@ -71,8 +71,8 @@ This plan outlines the steps to build "Spellweaver's Run" using **React-Konva (C
 - [ ] Task: Add visual feedback and juice (particles, screen shake)
 - [ ] Task: Add sound effects using useSound hook (optional)
 - [ ] Task: Balance tuning based on playtesting
-- [ ] Task: Create API routes: `/api/v1/games/spellweavers-run/sentences` and `/api/v1/games/spellweavers-run/complete`
-- [ ] Task: Register game in gameCards.ts
+- [x] Task: Create API routes: `/api/v1/games/spellweavers-run/sentences` and `/api/v1/games/spellweavers-run/complete`
+- [x] Task: Register game in gameCards.ts
 - [ ] Task: Final integration test
 
 ---
