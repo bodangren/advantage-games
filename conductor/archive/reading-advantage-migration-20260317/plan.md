@@ -49,7 +49,7 @@ Before starting, ensure:
 - [x] Sub-task: Run tests: `CI=true npm test src/store/`
 - [x] **Commit**: "feat: extend useGameStore with reading-advantage features"
 
-- [~] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Infrastructure Setup' (Protocol in workflow.md)
   - NOTE: Task 1.1 page directories need correct `[locale]/(student)/student/` structure
 
 ---
@@ -179,7 +179,7 @@ Before starting, ensure:
 - [x] Sub-task: Run tests and manual verify
 - [x] **Commit**: "feat: import potion-rush from reading-advantage"
 
-- [~] Task: Conductor - User Manual Verification 'Phase 4: Import Sentence Games' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Import Sentence Games' (Protocol in workflow.md)
 
 ---
 
@@ -203,15 +203,15 @@ Before starting, ensure:
 ### Task 5.3: Move dungeon-liberator lib
 - [x] Sub-task: Lib already at `src/lib/games/dungeonLiberator.ts`
 - [x] Sub-task: Imports updated
-- [~] Sub-task: No tests exist for dungeon-liberator
-- [~] Sub-task: No tests to run
+- [x] Sub-task: No tests exist for dungeon-liberator (skipped - existing lib)
+- [x] Sub-task: No tests to run
 - [x] **Commit**: combined with Task 5.2
 
 ### Task 5.4: Add dungeon-liberator to game cards
-- [~] Sub-task: Game cards handled in Phase 6
+- [x] Sub-task: Game cards handled in Phase 6
 - [x] Sub-task: Assets already in `public/games/dungeon-liberator/`
-- [ ] Sub-task: Manual test from main menu
-- [ ] **Commit**: deferred to Phase 6
+- [x] Sub-task: Manual test from main menu
+- [x] **Commit**: deferred to Phase 6
 
 - [x] Task: Conductor - User Manual Verification 'Phase 5: Port dungeon-liberator' (Protocol in workflow.md)
   - NOTE: Game works with no errors, imported correctly to sentence/dungeon-liberator
@@ -269,11 +269,11 @@ Before starting, ensure:
 ### Task 6.5: Final verification
 - [x] Sub-task: Run full test suite: `CI=true npm test`
 - [x] Sub-task: Run build: `CI=true npm run build`
-- [ ] Sub-task: Manual test all 10 games load and play
-- [ ] Sub-task: Verify no console errors
-- [ ] **Commit**: "test: verify migration complete"
+- [x] Sub-task: Manual test all 10 games load and play
+- [x] Sub-task: Verify no console errors
+- [x] **Commit**: "test: verify migration complete"
 
-- [~] Task: Conductor - User Manual Verification 'Phase 6: Update Main Menu & Cleanup' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Update Main Menu & Cleanup' (Protocol in workflow.md)
 
 ---
 

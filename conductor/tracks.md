@@ -53,19 +53,21 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Dragon Rider - Reskin of Dragon Flight**
-*Link: [./conductor/tracks/dragon-rider-reskin-20260131/](./conductor/tracks/dragon-rider-reskin-20260131/)*
+- [x] **Track: Dragon Rider - Reskin of Dragon Flight**
+*Link: [./conductor/archive/dragon-rider-reskin-20260131/](./conductor/archive/dragon-rider-reskin-20260131/)*
 *Description: Create a reskinned version of the Dragon Flight game using new dragon-rider assets while maintaining identical gameplay mechanics*
 *Priority: Medium*
 *Type: Feature*
+*Status: ✅ COMPLETE*
 
 ---
 
-- [ ] **Track: Reading Advantage Games Migration**
-*Link: [./conductor/tracks/reading-advantage-migration-20260317/](./conductor/tracks/reading-advantage-migration-20260317/)*
+- [x] **Track: Reading Advantage Games Migration**
+*Link: [./conductor/archive/reading-advantage-migration-20260317/](./conductor/archive/reading-advantage-migration-20260317/)*
 *Description: Import games from reading-advantage with vocabulary/sentence directory structure, mock API routes, i18n stubs, and session stubs for minimal integration friction*
 *Priority: High*
 *Type: Chore*
+*Status: ✅ COMPLETE*
 
 ---
 
@@ -96,12 +98,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Village Guardian**
-*Link: [./conductor/tracks/village-guardian-20260320/](./conductor/tracks/village-guardian-20260320/)*
+- [x] **Track: Village Guardian**
+*Link: [./conductor/archive/village-guardian-20260320/](./conductor/archive/village-guardian-20260320/)*
 *Description: Snake-style village defense sentence game with word collection, trailing line mechanics, and monster AI*
 *Priority: High*
 *Type: Feature*
-*Status: 🔄 IN PROGRESS*
+*Status: ✅ COMPLETE*
 
 ---
 
