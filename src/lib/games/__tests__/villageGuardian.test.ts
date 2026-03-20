@@ -15,13 +15,8 @@ import {
 const mockVocabulary = [
   { term: 'The cat sits', translation: 'Le chat est assis' },
   { term: 'A dog runs', translation: 'Un chien court' },
-  { term: 'The bird flies', translation: 'L\'oiseau vole' },
+  { term: 'The bird flies', translation: "L'oiseau vole" },
 ]
-
-const createRng = (values: number[]): (() => number) => {
-  let index = 0
-  return () => values[index++ % values.length]
-}
 
 describe('villageGuardianConfig', () => {
   it('exports correct game dimensions', () => {
@@ -38,13 +33,11 @@ describe('villageGuardianConfig', () => {
     expect(normalConfig.name).toBe('War Band')
     expect(normalConfig.wordCount).toBe(6)
   })
-
   it('returns correct timer duration', () => {
     expect(getTimerDuration('easy')).toBe(30000)
     expect(getTimerDuration('normal')).toBe(25000)
     expect(getTimerDuration('hard')).toBe(20000)
   })
-
   it('returns correct monster speed', () => {
     expect(getMonsterSpeed('bandits')).toBe(1.5)
     expect(getMonsterSpeed('goblins')).toBe(2.5)
@@ -63,41 +56,34 @@ describe('createVillageGuardianState', () => {
     expect(state.difficulty).toBe('normal')
     expect(state.opponentType).toBe('bandits')
   })
-
   it('creates state with custom difficulty', () => {
     const state = createVillageGuardianState(mockVocabulary, { difficulty: 'hard' })
     expect(state.difficulty).toBe('hard')
   })
-
   it('creates state with custom opponent type', () => {
     const state = createVillageGuardianState(mockVocabulary, { opponentType: 'dragons' })
     expect(state.opponentType).toBe('dragons')
   })
-
   it('initializes knight at correct position', () => {
     const state = createVillageGuardianState(mockVocabulary)
     expect(state.knight.x).toBe(GAME_WIDTH / 2)
     expect(state.knight.y).toBe(100)
     expect(state.knight.lives).toBe(VILLAGE_GUARDIAN_CONFIG.initialLives)
   })
-
   it('spawns villagers based on word count', () => {
     const state = createVillageGuardianState(mockVocabulary, { difficulty: 'easy' })
     const diffConfig = getDifficultyConfig('easy')
     expect(state.villagers.length).toBe(Math.min(diffConfig.wordCount, state.words.length))
   })
-
   it('spawns one monster', () => {
     const state = createVillageGuardianState(mockVocabulary)
     expect(state.monsters.length).toBe(1)
   })
-
   it('initializes empty trail and collectedWords', () => {
     const state = createVillageGuardianState(mockVocabulary)
     expect(state.trail).toEqual([])
     expect(state.collectedWords).toEqual([])
   })
-
   it('sets correct timer based on difficulty', () => {
     const state = createVillageGuardianState(mockVocabulary, { difficulty: 'hard' })
     expect(state.timer).toBe(getTimerDuration('hard'))
@@ -125,40 +111,35 @@ describe('tickVillageGuardian', () => {
     const newState = tickVillageGuardian(lowTimerState, 100)
     expect(newState.status).toBe('defeat')
   })
-
   it('increments game time', () => {
     const state = createVillageGuardianState(mockVocabulary)
     const newState = tickVillageGuardian(state, 50)
     expect(newState.gameTime).toBe(50)
   })
-
   it('moves knight based on input', () => {
     const state = createVillageGuardianState(mockVocabulary)
-    const input: InputState = { dx: 1, dy: 0 }
+    const input = { dx: 1, dy: 0 }
     const newState = tickVillageGuardian(state, 100, input)
     expect(newState.knight.x).toBeGreaterThan(state.knight.x)
   })
-
   it('moves knight diagonally with normalized speed', () => {
     const state = createVillageGuardianState(mockVocabulary)
-    const input: InputState = { dx: 1, dy: 1 }
+    const input = { dx: 1, dy: 1 }
     const newState = tickVillageGuardian(state, 100, input)
     expect(newState.knight.x).toBeGreaterThan(state.knight.x)
     expect(newState.knight.y).toBeGreaterThan(state.knight.y)
   })
-
   it('keeps knight within bounds', () => {
     const state = createVillageGuardianState(mockVocabulary)
     const cornerState = {
       ...state,
       knight: { ...state.knight, x: 10, y: 10 },
     }
-    const input: InputState = { dx: -1, dy: -1 }
+    const input = { dx: -1, dy: -1 }
     const newState = tickVillageGuardian(cornerState, 100, input)
     expect(newState.knight.x).toBeGreaterThanOrEqual(VILLAGE_GUARDIAN_CONFIG.knightSize / 2)
     expect(newState.knight.y).toBeGreaterThanOrEqual(VILLAGE_GUARDIAN_CONFIG.knightSize / 2)
   })
-
   it('decreases invulnerability time', () => {
     const state = createVillageGuardianState(mockVocabulary)
     const invincibleState = {
@@ -169,7 +150,6 @@ describe('tickVillageGuardian', () => {
     expect(newState.knight.invulnerabilityTime).toBe(400)
   })
 })
-
 describe('calculateXP', () => {
   it('calculates base XP from correct answers', () => {
     const state = createVillageGuardianState(mockVocabulary)
@@ -178,13 +158,6 @@ describe('calculateXP', () => {
       correctAnswers: 5,
       wrongAnswers: 0,
       timer: state.maxTimer * 0.6,
-      trail: state.words.slice(0, 5).map((w, i) => ({
-        id: `trail-${i}`,
-        x: 100,
-        y: 100,
-        word: w,
-        orderIndex: i,
-      })),
     }
     const xp = calculateXP(completedState)
     expect(xp).toBeGreaterThanOrEqual(5)
@@ -200,7 +173,6 @@ describe('calculateXP', () => {
     const xp = calculateXP(highAccuracyState)
     expect(xp).toBeGreaterThanOrEqual(7)
   })
-
   it('caps XP at maxXP', () => {
     const state = createVillageGuardianState(mockVocabulary)
     const perfectState = {
@@ -208,13 +180,6 @@ describe('calculateXP', () => {
       correctAnswers: 10,
       wrongAnswers: 0,
       timer: state.maxTimer * 0.6,
-      trail: state.words.map((w, i) => ({
-        id: `trail-${i}`,
-        x: 100,
-        y: 100,
-        word: w,
-        orderIndex: i,
-      })),
     }
     const xp = calculateXP(perfectState)
     expect(xp).toBeLessThanOrEqual(VILLAGE_GUARDIAN_CONFIG.maxXP)

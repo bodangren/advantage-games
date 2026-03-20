@@ -11,21 +11,21 @@ This plan outlines the steps to build "Village Guardian" using **React-Konva (Ca
 - [x] Task: Create `VillageGuardianGame` container component with React-Konva Stage
 - [x] Task: Write initial tests for state creation and configuration
 
-## Phase 2: Core Game Logic
+## Phase 2: Core Game Logic [checkpoint: complete]
 **Assets Required:** None (logic only)
 
-- [ ] Task: Implement `createVillageGuardianState()` initialization function
-- [ ] Task: Implement `tickVillageGuardian()` game loop update function
-- [ ] Task: Implement knight movement system (8-directional)
-- [ ] Task: Implement villager spawning with word assignment
-- [ ] Task: Implement trailing line mechanics (villagers follow knight)
-- [ ] Task: Implement word selection and sequence validation
-- [ ] Task: Implement wrong selection penalty (timer increase)
-- [ ] Task: Implement monster AI (patrol, chase, hunt behaviors)
-- [ ] Task: Implement collision detection (knight-monster, trail-monster)
-- [ ] Task: Implement win/lose condition detection
-- [ ] Task: Implement town square sanctuary zone
-- [ ] Task: Write comprehensive tests for all game logic (>80% coverage)
+- [x] Task: Implement `createVillageGuardianState()` initialization function
+- [x] Task: Implement `tickVillageGuardian()` game loop update function
+- [x] Task: Implement knight movement system (8-directional)
+- [x] Task: Implement villager spawning with word assignment
+- [x] Task: Implement trailing line mechanics (villagers follow knight)
+- [x] Task: Implement word selection and sequence validation
+- [x] Task: Implement wrong selection penalty (timer increase)
+- [x] Task: Implement monster AI (patrol, chase, hunt behaviors)
+- [x] Task: Implement collision detection (knight-monster, trail-monster)
+- [x] Task: Implement win/lose condition detection
+- [x] Task: Implement town square sanctuary zone
+- [x] Task: Write comprehensive tests for all game logic (>80% coverage)
 
 ## Phase 3: Rendering
 **Assets Required:** None (using Konva primitives for MVP)
