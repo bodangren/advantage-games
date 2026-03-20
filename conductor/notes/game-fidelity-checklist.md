@@ -63,22 +63,25 @@ Derived from `vocab-game-builder` skill requirements. Use this checklist when au
 - [ ] Canvas dimensions reference `GAME_WIDTH` / `GAME_HEIGHT` from config (390×844 baseline)
 - [ ] Component uses `containerRef` + `ResizeObserver` (or equivalent) to scale canvas to fit screen
 - [ ] All touch targets are ≥ 44×44px
-- [ ] All in-game text is ≥ 16px
+- [ ] All in-game text is **legible at 390×844** — vocabulary/sentence text large enough to read without zooming (typically ≥ 18px at base resolution; scale with canvas)
+- [ ] HUD labels (score, health, timer) are not so small they require squinting on a phone
 - [ ] Portrait orientation is the primary layout
 - [ ] `GameStartScreen` shared component is used for the start screen
 - [ ] `GameEndScreen` shared component is used for the end/results screen
 
 ---
 
-## G. Tests
+## G. Tests & Performance
 
 - [ ] Game logic test file exists: `src/lib/games/__tests__/[gameName].test.ts`
   *(Note: some older games have tests at `src/lib/games/[gameName].test.ts` — these are acceptable but should be co-located in `__tests__/` for new games)*
 - [ ] Config test file exists (verifies constant values and structure)
 - [ ] `createXxxState()` is tested
-- [ ] `tickXxx()` / update logic is tested for at least: idle tick, collision/collection, win condition, lose condition
-- [ ] XP calculation is tested
+- [ ] `tickXxx()` / update logic is tested for **real behavior** — actual state transitions, not just mocks returning mocks. Tests must assert meaningful outcomes (positions change, health decreases, words collected, win/lose triggers correctly)
+- [ ] Win condition, lose condition, and XP/scoring are each covered by at least one test
+- [ ] Tests do NOT over-mock: game logic is pure TS, so no mocking needed — call the functions directly
 - [ ] Test coverage for game logic file is **>80%**
+- [ ] **Tick rate**: game loop interval is ≤ 50ms (≥ 20 FPS) — preferably 33ms (30 FPS). Verify `useInterval` call in the component.
 
 ---
 

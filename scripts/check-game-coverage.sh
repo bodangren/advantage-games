@@ -1,47 +1,27 @@
 #!/bin/bash
 # check-game-coverage.sh
-# Run test coverage for all game-specific logic files under audit.
-# Usage: bash scripts/check-game-coverage.sh [game-slug]
-#   e.g. bash scripts/check-game-coverage.sh shadow-gate-dungeon
+# Run jest coverage for audited game logic files.
+# Usage: bash scripts/check-game-coverage.sh [camelCaseGameName]
 #        bash scripts/check-game-coverage.sh          (runs all)
+#
+# PSEUDOCODE:
+#   if arg given:
+#     jest --coverage --collectCoverageFrom=src/lib/games/<arg>*.ts
+#                     --testPathPatterns=<arg>
+#   else:
+#     jest --coverage --collectCoverageFrom=src/lib/games/{shadowGateDungeon,runeForgeChamber,
+#                       villageGuardian,labyrinthGoblinKing,abyssalWell,archersRevenge}*.ts
+#                     --testPathPatterns=(all six games)
+#
+# NOTE: Coverage numbers are only meaningful if tests assert real behavior.
+# A test that mocks the entire game and checks nothing will show 100% and catch 0 bugs.
+# Each game's tests should call createXxxState() and tickXxx() directly and assert
+# that state changes correctly — no mocking of pure functions.
 
-GAMES=(
-  "shadowGateDungeon"
-  "shadowGateDungeonConfig"
-  "runeForgeChamber"
-  "runeForgeChamberConfig"
-  "villageGuardian"
-  "villageGuardianConfig"
-  "labyrinthGoblinKing"
-  "labyrinthGoblinKingConfig"
-  "abyssalWell"
-  "abyssalWellConfig"
-  "archersRevenge"
-  "archersRevengeConfig"
-)
+GAMES="shadowGateDungeon|runeForgeChamber|villageGuardian|labyrinthGoblinKing|abyssalWell|archersRevenge"
+PATTERN="${1:-$GAMES}"
 
-if [ -n "$1" ]; then
-  # Convert slug to camelCase pattern (simple heuristic)
-  PATTERN="$1"
-  echo "Running coverage for: $PATTERN"
-  CI=true npx jest --coverage \
-    --collectCoverageFrom="src/lib/games/${PATTERN}*.ts" \
-    --testPathPatterns="src/lib/games/((__tests__/)?(${PATTERN}))" \
-    2>&1
-else
-  echo "Running coverage for all audited games..."
-  COLLECT_FROM=""
-  for game in "${GAMES[@]}"; do
-    COLLECT_FROM="${COLLECT_FROM}--collectCoverageFrom=src/lib/games/${game}.ts "
-  done
-
-  CI=true npx jest --coverage \
-    --collectCoverageFrom="src/lib/games/shadowGateDungeon*.ts" \
-    --collectCoverageFrom="src/lib/games/runeForgeChamber*.ts" \
-    --collectCoverageFrom="src/lib/games/villageGuardian*.ts" \
-    --collectCoverageFrom="src/lib/games/labyrinthGoblinKing*.ts" \
-    --collectCoverageFrom="src/lib/games/abyssalWell*.ts" \
-    --collectCoverageFrom="src/lib/games/archersRevenge*.ts" \
-    --testPathPatterns="(shadowGateDungeon|runeForgeChamber|villageGuardian|labyrinthGoblinKing|abyssalWell|archersRevenge)" \
-    2>&1
-fi
+CI=true npx jest --coverage \
+  $(for g in ${PATTERN//|/ }; do echo "--collectCoverageFrom=src/lib/games/${g}*.ts"; done) \
+  --testPathPatterns="($PATTERN)" \
+  2>&1
