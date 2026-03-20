@@ -27,52 +27,54 @@ This plan outlines the steps to build "Village Guardian" using **React-Konva (Ca
 - [x] Task: Implement town square sanctuary zone
 - [x] Task: Write comprehensive tests for all game logic (>80% coverage)
 
-## Phase 3: Rendering
+## Phase 3: Rendering [checkpoint: complete]
 **Assets Required:** None (using Konva primitives for MVP)
 
-- [ ] Task: Implement village background rendering
-- [ ] Task: Implement knight sprite with direction-based rotation
-- [ ] Task: Render villagers with word bubbles
-- [ ] Task: Implement trailing line rendering (villagers following knight)
-- [ ] Task: Render monsters with different visual styles per type
-- [ ] Task: Implement town square sanctuary zone visual
-- [ ] Task: Implement visual feedback (correct/wrong selection effects)
-- [ ] Task: Implement translation display at top
+- [x] Task: Implement village background rendering
+- [x] Task: Implement knight sprite with direction-based rotation
+- [x] Task: Render villagers with word bubbles
+- [x] Task: Implement trailing line rendering (villagers following knight)
+- [x] Task: Render monsters with different visual styles per type
+- [x] Task: Implement town square sanctuary zone visual
+- [x] Task: Implement visual feedback (correct/wrong selection effects)
+- [x] Task: Implement translation display at top
 
-## Phase 4: Input & Controls
+## Phase 4: Input & Controls [checkpoint: complete]
 **Assets Required:** None
 
-- [ ] Task: Implement VirtualDPad component for mobile control
-- [ ] Task: Implement keyboard arrow keys for desktop
-- [ ] Task: Ensure smooth diagonal movement
-- [ ] Task: Implement difficulty selection UI
-- [ ] Task: Implement opponent type selection UI
+- [x] Task: Implement VirtualDPad component for mobile control
+- [x] Task: Implement keyboard arrow keys for desktop
+- [x] Task: Ensure smooth diagonal movement
+- [x] Task: Implement difficulty selection UI
+- [x] Task: Implement opponent type selection UI
 
-## Phase 5: UI & HUD
+## Phase 5: UI & HUD [checkpoint: complete]
 **Assets Required:** None
 
-- [ ] Task: Implement timer display
-- [ ] Task: Implement collected words display
-- [ ] Task: Implement health/lives display (villagers remaining)
-- [ ] Task: Implement score/XP display
+- [x] Task: Implement timer display
+- [x] Task: Implement collected words display
+- [x] Task: Implement health/lives display (villagers remaining)
+- [x] Task: Implement score/XP display
 
-## Phase 6: Game States
+## Phase 6: Game States [checkpoint: complete]
 **Assets Required:** None (uses shared GameStartScreen/GameEndScreen)
 
-- [ ] Task: Implement start screen with difficulty and opponent selection
-- [ ] Task: Implement victory state and XP display
-- [ ] Task: Implement defeat state
-- [ ] Task: Wire state transitions (start → playing → ended)
+- [x] Task: Implement start screen with difficulty and opponent selection
+- [x] Task: Implement victory state and XP display
+- [x] Task: Implement defeat state
+- [x] Task: Wire state transitions (start → playing → ended)
 
-## Phase 7: Polish & Integration
+- [x] Task: Conductor - User Manual Verification 'Phase 6'
+
+## Phase 7: Polish & Integration [checkpoint: complete]
 **Assets Required:** Sound effects (optional)
 
 - [ ] Task: Add visual feedback and juice (particles, screen shake) (optional)
 - [ ] Task: Add sound effects using useSound hook (optional)
 - [ ] Task: Balance tuning based on playtesting (optional)
-- [ ] Task: Create API routes: `/api/v1/games/village-guardian/sentences` and `/api/v1/games/village-guardian/complete`
-- [ ] Task: Register game in gameCards.ts
-- [ ] Task: Final integration test
+- [x] Task: Create API routes: `/api/v1/games/village-guardian/sentences` and `/api/v1/games/village-guardian/complete`
+- [x] Task: Register game in gameCards.ts
+- [x] Task: Final integration test
 
 ---
 
