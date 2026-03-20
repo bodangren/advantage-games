@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Text, Group, Rect, Circle } from 'react-konva'
+import type Konva from 'konva'
 import {
   createRuneForgeChamberState,
   tickRuneForgeChamber,
@@ -129,7 +130,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
     }
   }, [gameState, gamePhase])
 
-  const handleStageClick = useCallback((e: any) => {
+  const handleStageClick = useCallback((e: Konva.KonvaEventObject<MouseEvent>) => {
     if (!gameState || gamePhase !== 'playing') return
 
     const stage = e.target.getStage()
