@@ -143,20 +143,17 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gamePhase !== 'playing') return
-      let dx = inputRef.current.dx, dy = inputRef.current.dy
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') dx = -1
-      else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') dx = 1
-      else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') dy = -1
-      else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') dy = 1
-      inputRef.current = { dx, dy }
+      const arrowKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']
+      if (arrowKeys.includes(e.key)) e.preventDefault()
+      // Set desired direction — player keeps moving even after key release
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') inputRef.current = { dx: -1, dy: 0 }
+      else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') inputRef.current = { dx: 1, dy: 0 }
+      else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') inputRef.current = { dx: 0, dy: -1 }
+      else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') inputRef.current = { dx: 0, dy: 1 }
     }
 
-    const handleKeyUp = (e: KeyboardEvent) => {
-      if (gamePhase !== 'playing') return
-      let dx = inputRef.current.dx, dy = inputRef.current.dy
-      if (['ArrowLeft', 'a', 'A', 'ArrowRight', 'd', 'D'].includes(e.key)) dx = 0
-      if (['ArrowUp', 'w', 'W', 'ArrowDown', 's', 'S'].includes(e.key)) dy = 0
-      inputRef.current = { dx, dy }
+    const handleKeyUp = (_e: KeyboardEvent) => {
+      // Don't clear input on keyup — Pac-Man style: player keeps moving in last direction
     }
 
     window.addEventListener('keydown', handleKeyDown)

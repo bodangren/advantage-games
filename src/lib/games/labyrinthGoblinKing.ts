@@ -152,7 +152,7 @@ export function createLabyrinthGoblinKingState(
     y: playerStartY,
     speed: LABYRINTH_CONFIG.playerSpeed,
     lives: diffConfig.lives,
-    direction: 'none',
+    direction: 'right',
     invulnerabilityTime: 0,
     heroicAura: false,
     heroicAuraTimer: 0,
@@ -270,25 +270,59 @@ export function tickLabyrinthGoblinKing(
     }
   }
 
+  // Pac-Man movement: player always moves, input sets desired direction
   const dx = input.dx
   const dy = input.dy
-  let newDirection: Direction = state.player.direction
+  const tileSize = LABYRINTH_CONFIG.tileSize
+  const speed = state.player.speed * dt
 
+  // Derive desired direction from input (if any)
+  let desiredDirection: Direction = state.player.direction
   if (Math.abs(dx) > Math.abs(dy)) {
-    newDirection = dx > 0 ? 'right' : dx < 0 ? 'left' : state.player.direction
+    if (dx > 0) desiredDirection = 'right'
+    else if (dx < 0) desiredDirection = 'left'
   } else if (dy !== 0) {
-    newDirection = dy > 0 ? 'down' : dy < 0 ? 'up' : state.player.direction
+    if (dy > 0) desiredDirection = 'down'
+    else if (dy < 0) desiredDirection = 'up'
   }
 
-  if (dx !== 0 || dy !== 0) {
-    const speed = state.player.speed * dt
-    const newPos = moveInDirection(state.player.x, state.player.y, newDirection, speed)
+  let moved = false
+
+  // Try desired direction first (with corner-rounding snap)
+  if (desiredDirection !== state.player.direction) {
+    let snapX = state.player.x
+    let snapY = state.player.y
+
+    // Snap perpendicular axis to nearest tile center for smooth turning
+    if (desiredDirection === 'up' || desiredDirection === 'down') {
+      const col = Math.round((state.player.x - tileSize / 2) / tileSize)
+      snapX = col * tileSize + tileSize / 2
+    } else {
+      const row = Math.round((state.player.y - tileSize / 2) / tileSize)
+      snapY = row * tileSize + tileSize / 2
+    }
+
+    const snapDist = Math.abs(snapX - state.player.x) + Math.abs(snapY - state.player.y)
+    if (snapDist < tileSize * 0.45) {
+      const testPos = moveInDirection(snapX, snapY, desiredDirection, speed)
+      if (canMove(testPos.x, testPos.y, state.maze, LABYRINTH_CONFIG.playerSize)) {
+        newState.player.x = testPos.x
+        newState.player.y = testPos.y
+        newState.player.direction = desiredDirection
+        moved = true
+      }
+    }
+  }
+
+  // If desired direction didn't work, keep moving in current direction
+  if (!moved && state.player.direction !== 'none') {
+    const newPos = moveInDirection(state.player.x, state.player.y, state.player.direction, speed)
     if (canMove(newPos.x, newPos.y, state.maze, LABYRINTH_CONFIG.playerSize)) {
       newState.player.x = newPos.x
       newState.player.y = newPos.y
     }
+    // If blocked, just stop against the wall (don't change direction)
   }
-  newState.player.direction = newDirection
 
   newState.wordOrbs = state.wordOrbs.map(orb => {
     if (orb.collected) return orb
