@@ -122,4 +122,12 @@ export const gameCards: GameCard[] = [
     href: '/en/student/games/sentence/village-guardian',
     status: 'playable',
   },
+  {
+    id: 'labyrinth-goblin-king',
+    title: 'Labyrinth of the Goblin King',
+    description: 'Navigate the maze! Collect word orbs in order and become a Paladin to defeat the goblins!',
+    cover: withBasePath('/games/cover/rune-match-cover.png'),
+    href: '/en/student/games/sentence/labyrinth-goblin-king',
+    status: 'playable',
+  },
 ]

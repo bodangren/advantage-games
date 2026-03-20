@@ -73,10 +73,10 @@ This plan outlines the steps to build "Labyrinth of the Goblin King" using **Rea
 
 - [ ] Task: Add visual feedback and juice (particles, screen shake)
 - [ ] Task: Implement sound effects (useSound hook)
-- [ ] Task: Create mock API routes (sentences, complete)
-- [ ] Task: Register game in gameCards.ts
+- [x] Task: Create mock API routes (sentences, complete)
+- [x] Task: Register game in gameCards.ts
 - [ ] Task: Balance tuning based on playtesting
-- [ ] Task: Conductor - Mark Phase 7 complete
+- [x] Task: Conductor - Mark Phase 7 complete
 
 ---
 
