@@ -328,16 +328,19 @@ function spawnWordOrbs(
   })
 }
 
-function respawnGoblin(goblin: Goblin, playerX: number, playerY: number, fleeing: boolean): Goblin {
-  const entrances = getEntrancePositions()
-  // Pick entrance farthest from player
-  const best = entrances.reduce((a, b) =>
-    distance(a.x, a.y, playerX, playerY) > distance(b.x, b.y, playerX, playerY) ? a : b
+function respawnGoblin(goblin: Goblin, maze: Maze, playerX: number, playerY: number, fleeing: boolean): Goblin {
+  const tileSize = LABYRINTH_CONFIG.tileSize
+  const minDist = tileSize * 5
+  const floorPositions = getFloorPositions(maze, Math.random)
+  // Pick a floor position far from player
+  const farPositions = floorPositions.filter(
+    p => distance(p.x, p.y, playerX, playerY) > minDist
   )
+  const pos = farPositions.length > 0 ? farPositions[0] : floorPositions[floorPositions.length - 1]
   return {
     ...goblin,
-    x: best.x,
-    y: best.y,
+    x: pos.x,
+    y: pos.y,
     direction: 'none',
     eaten: false,
     fleeing,
@@ -364,14 +367,13 @@ function moveGoblinTileBased(
     }
   }
 
-  // At tile centers, decide next direction
+  // At tile centers, decide next direction then nudge past center
+  // so this doesn't retrigger every frame
   if (isNearTileCenter(newGoblin.x, newGoblin.y)) {
     const available = getAvailableDirections(newGoblin.x, newGoblin.y, maze, LABYRINTH_CONFIG.goblinSize)
     if (available.length === 0) return newGoblin
 
     const snapped = snapToTileCenter(newGoblin.x, newGoblin.y)
-    newGoblin.x = snapped.x
-    newGoblin.y = snapped.y
     const tileSize = LABYRINTH_CONFIG.tileSize
 
     if (newGoblin.fleeing) {
@@ -402,11 +404,24 @@ function moveGoblinTileBased(
       const choices = nonReverse.length > 0 ? nonReverse : available
       newGoblin.direction = choices[Math.floor(rng() * choices.length)]
     }
+
+    // Nudge past tile center so isNearTileCenter won't retrigger next frame
+    const nudged = moveInDirection(snapped.x, snapped.y, newGoblin.direction, 4)
+    if (canMove(nudged.x, nudged.y, maze, LABYRINTH_CONFIG.goblinSize)) {
+      newGoblin.x = nudged.x
+      newGoblin.y = nudged.y
+    } else {
+      newGoblin.x = snapped.x
+      newGoblin.y = snapped.y
+    }
   }
 
   // Initialize direction if 'none'
   if (newGoblin.direction === 'none') {
-    newGoblin.direction = getRandomDirection(rng)
+    const available = getAvailableDirections(newGoblin.x, newGoblin.y, maze, LABYRINTH_CONFIG.goblinSize)
+    newGoblin.direction = available.length > 0
+      ? available[Math.floor(rng() * available.length)]
+      : getRandomDirection(rng)
   }
 
   return newGoblin
@@ -557,8 +572,8 @@ export function tickLabyrinthGoblinKing(
   // --- Goblin movement (tile-based) ---
   newState.goblins = (newState.goblins ?? state.goblins).map(goblin => {
     if (goblin.eaten) {
-      // Respawn eaten goblins at an entrance
-      return respawnGoblin(goblin, newState.player.x, newState.player.y, newState.player.heroicAura)
+      // Respawn eaten goblins at a far floor position
+      return respawnGoblin(goblin, state.maze, newState.player.x, newState.player.y, newState.player.heroicAura)
     }
 
     const newGoblin = moveGoblinTileBased(

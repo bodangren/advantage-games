@@ -34,7 +34,7 @@ export const LABYRINTH_CONFIG = {
 
   orbSize: 24,
 
-  heroicAuraDuration: 10000,
+  heroicAuraDuration: 6000,
 
   difficulties: {
     easy: { name: 'Small Dungeon', wordCount: 4, lives: 3, goblinCount: 2 },
