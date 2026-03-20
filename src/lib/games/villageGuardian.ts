@@ -534,7 +534,11 @@ function checkCollisions(state: VillageGuardianState): VillageGuardianState {
           targetIndex = 0
           knight = { ...knight, invulnerabilityTime: VILLAGE_GUARDIAN_CONFIG.invulnerabilityDuration }
         } else {
-          knight = { ...knight, lives: knight.lives - 1 }
+          knight = { 
+            ...knight, 
+            lives: Math.max(0, knight.lives - 1),
+            invulnerabilityTime: VILLAGE_GUARDIAN_CONFIG.invulnerabilityDuration 
+          }
         }
         break
       }

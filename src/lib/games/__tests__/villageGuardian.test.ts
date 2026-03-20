@@ -286,13 +286,24 @@ describe('level progression (no victory state)', () => {
 })
 
 describe('monster collision', () => {
+  let randomSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    randomSpy = jest.spyOn(Math, 'random').mockReturnValue(0);
+  });
+
+  afterEach(() => {
+    randomSpy.mockRestore();
+  });
+
   it('knight loses a life when monster hits and trail is empty', () => {
+
     const state = createVillageGuardianState(mockVocabulary)
     const stateWithMonsterOnKnight: VillageGuardianState = {
       ...state,
       trail: [],
       knight: { ...state.knight, x: 195, y: 350, invulnerabilityTime: 0 },
-      monsters: [{ ...state.monsters[0], x: 195, y: 350 }],
+      monsters: [{ ...state.monsters[0], x: 195, y: 350, velocityX: 0, velocityY: 0 }],
     }
     const newState = tickVillageGuardian(stateWithMonsterOnKnight, 50)
     expect(newState.knight.lives).toBe(state.knight.lives - 1)

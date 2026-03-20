@@ -1,4 +1,4 @@
-import { getPortalFrame } from '../potionRushEffects'
+import { getPortalFrame } from '../games/potionRushEffects'
 
 describe('getPortalFrame', () => {
   it('returns a stable frame at time 0', () => {

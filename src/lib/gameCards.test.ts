@@ -36,7 +36,7 @@ describe('gameCards', () => {
       ])
     );
     playable.forEach((card) => {
-      expect(card.href).toMatch(/^\/games\//);
+      expect(card.href).toMatch(/^\/([a-z]{2}\/)?student\/games\//);
     });
   });
 

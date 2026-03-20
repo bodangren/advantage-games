@@ -87,8 +87,8 @@ describe("DragonRiderGame", () => {
       />,
     );
 
-    expect(screen.getByText(/skyward trials/i)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: /start flight/i }));
+    expect(screen.getByText(/Dragon Rider/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /start adventure/i }));
 
     expect(screen.getByText("Apple")).toBeInTheDocument();
     expect(screen.getByTestId("dragon-rider")).toHaveAttribute(
@@ -116,7 +116,7 @@ describe("DragonRiderGame", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /start flight/i }));
+    fireEvent.click(screen.getByRole("button", { name: /start adventure/i }));
 
     fireEvent.keyDown(window, { key: "ArrowLeft" });
 
@@ -144,7 +144,7 @@ describe("DragonRiderGame", () => {
       />,
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /start flight/i }));
+    fireEvent.click(screen.getByRole("button", { name: /start adventure/i }));
 
     act(() => {
       jest.advanceTimersByTime(120);

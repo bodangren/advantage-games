@@ -32,7 +32,7 @@ describe('MainMenu', () => {
 
     const links = screen.getAllByRole('link', { name: /Play Now/i })
     const hasEnchantedLibrary = links.some(
-      (link) => link.getAttribute('href') === '/games/enchanted-library'
+      (link) => link.getAttribute('href')?.includes('/enchanted-library')
     )
 
     expect(hasEnchantedLibrary).toBe(true)

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import WizardZombiePage from './page'
 import type { VocabularyItem } from '@/store/useGameStore'
 
@@ -20,27 +20,51 @@ jest.mock('@/store/useGameStore', () => ({
   },
 }))
 
+// Mock the session hook
+jest.mock('@/hooks/useSession', () => ({
+  useSession: () => ({
+    data: { user: { xp: 100 } },
+    status: 'authenticated',
+  }),
+}))
+
 // Mock the Game Component to avoid canvas/complex render issues in page test
-jest.mock('@/components/games/wizard-vs-zombie/WizardZombieGame', () => ({
+jest.mock('@/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame', () => ({
   WizardZombieGame: () => <div data-testid="wizard-zombie-game">Game Component</div>,
 }))
 
 describe('WizardZombiePage', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ vocabulary: [] }),
+      })
+    ) as jest.Mock;
+  });
+
   it('renders the page title and description', () => {
     render(<WizardZombiePage />)
     expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent('Wizard vs Zombie')
     expect(screen.getByText(/Collect healing orbs/i)).toBeInTheDocument()
   })
 
-  it('renders the game container', () => {
+  it('renders StartScreen initially and transitions to game', async () => {
     render(<WizardZombiePage />)
-    expect(screen.getByTestId('wizard-zombie-game')).toBeInTheDocument()
+    expect(screen.getByText(/Arcane Defense/i)).toBeInTheDocument()
+    
+    const startButton = screen.getByRole('button', { name: /Start Game/i })
+    fireEvent.click(startButton)
+    
+    await waitFor(() => {
+      expect(screen.getByTestId('wizard-zombie-game')).toBeInTheDocument()
+    })
   })
 
-  it('contains a link back to home', () => {
+  it('contains a link back to games', () => {
     render(<WizardZombiePage />)
-    const link = screen.getByRole('link', { name: /back to home/i })
+    const link = screen.getByRole('link', { name: /back to games/i })
     expect(link).toBeInTheDocument()
-    expect(link).toHaveAttribute('href', '/')
+    expect(link).toHaveAttribute('href', '/student/games')
   })
 })

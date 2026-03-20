@@ -1,6 +1,18 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import DragonRiderPage from "./page";
 import { useGameStore, DEFAULT_CASTLES } from "@/store/useGameStore";
+import React from "react";
+
+// Mock React.use to handle the params promise
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  use: (promise: any) => {
+    if (promise && typeof promise.then === "function") {
+      return { locale: "en" }; // Return resolved value directly
+    }
+    return promise;
+  },
+}));
 
 const mockVocab = [
   { term: "test", translation: "test translation" },
@@ -46,6 +58,15 @@ jest.mock("@/components/games/vocabulary/dragon-rider/DragonRiderGame", () => ({
 }));
 
 describe("DragonRiderPage", () => {
+  beforeAll(() => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ vocabulary: mockVocab }),
+      })
+    ) as jest.Mock;
+  });
+
   beforeEach(() => {
     useGameStore.setState({
       vocabulary: [],
@@ -62,6 +83,10 @@ describe("DragonRiderPage", () => {
   it("renders the Dragon Rider shell and loads vocabulary", async () => {
     render(<DragonRiderPage params={Promise.resolve({ locale: "en" })} />);
 
+    await waitFor(() => {
+      expect(screen.queryByText(/Loading Dragon Rider/i)).not.toBeInTheDocument();
+    });
+
     expect(screen.getByTestId("dragon-rider-vocab")).toBeInTheDocument();
 
     await waitFor(() => {
@@ -69,8 +94,12 @@ describe("DragonRiderPage", () => {
     });
   });
 
-  it("records XP results on completion", () => {
+  it("records XP results on completion", async () => {
     render(<DragonRiderPage params={Promise.resolve({ locale: "en" })} />);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/Loading Dragon Rider/i)).not.toBeInTheDocument();
+    });
 
     fireEvent.click(screen.getByRole("button", { name: "Complete" }));
 

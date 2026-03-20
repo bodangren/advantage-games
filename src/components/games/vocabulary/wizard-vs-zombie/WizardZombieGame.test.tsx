@@ -96,7 +96,7 @@ describe("WizardZombieGame", () => {
         difficulty="normal"
       />,
     );
-    expect(await screen.findByText(/Arcane Survival/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Arcane Defense/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /start survival/i }),
     ).toBeInTheDocument();

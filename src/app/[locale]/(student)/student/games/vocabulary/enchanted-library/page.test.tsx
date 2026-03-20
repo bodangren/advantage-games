@@ -2,7 +2,19 @@ import { render, screen, waitFor } from "@testing-library/react";
 import EnchantedLibraryPage from "./page";
 import React from "react";
 
+// Mock React.use to handle the params promise
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  use: (promise: any) => {
+    if (promise && typeof promise.then === 'function') {
+      return { locale: 'en' }; // Return resolved value directly
+    }
+    return promise;
+  },
+}));
+
 // Mock the dynamic import
+// ...
 jest.mock("next/dynamic", () => ({
   __esModule: true,
   default: () => {
@@ -20,12 +32,15 @@ jest.mock("@/components/header", () => ({
   Header: ({
     children,
     heading,
+    text,
   }: {
     children: React.ReactNode;
     heading: string;
+    text: string;
   }) => (
     <div>
       <h1>{heading}</h1>
+      <p>{text}</p>
       {children}
     </div>
   ),
@@ -54,15 +69,25 @@ describe("EnchantedLibraryPage", () => {
     const params = Promise.resolve({ locale: "en" });
     render(<EnchantedLibraryPage params={params} />);
 
+    // Wait for loading to finish
+    await waitFor(() => {
+      expect(screen.queryByText(/กำลังโหลดคำศัพท์/i)).not.toBeInTheDocument();
+    }, { timeout: 2000 });
+
     expect(await screen.findByRole("heading", { level: 1 })).toHaveTextContent(
       "Enchanted Library",
     );
-    expect(screen.getByText(/collect magic books/i)).toBeInTheDocument();
+    expect(screen.getByText(/Collect magic books to master new words while dodging friendly spirits/i)).toBeInTheDocument();
   });
 
   it("renders the game container", async () => {
     const params = Promise.resolve({ locale: "en" });
     render(<EnchantedLibraryPage params={params} />);
+    
+    await waitFor(() => {
+      expect(screen.queryByText(/กำลังโหลดคำศัพท์/i)).not.toBeInTheDocument();
+    });
+
     expect(
       await screen.findByTestId("enchanted-library-game"),
     ).toBeInTheDocument();
@@ -71,6 +96,11 @@ describe("EnchantedLibraryPage", () => {
   it("contains a link back to games", async () => {
     const params = Promise.resolve({ locale: "en" });
     render(<EnchantedLibraryPage params={params} />);
+    
+    await waitFor(() => {
+      expect(screen.queryByText(/กำลังโหลดคำศัพท์/i)).not.toBeInTheDocument();
+    });
+
     const link = await screen.findByRole("link", { name: /back to games/i });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute("href", "/student/games");

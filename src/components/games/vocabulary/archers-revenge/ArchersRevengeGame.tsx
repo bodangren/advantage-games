@@ -1,184 +1,320 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
-import { Stage, Layer, Rect, Text, Circle } from "react-konva";
-import { useInterval } from "@/hooks/useInterval";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Stage, Layer, Rect, Text, Circle, Group } from "react-konva";
 import {
   createArchersRevengeState,
+  tickArchersRevenge,
+  fireArrow,
+  calculateXP,
   GAME_WIDTH,
   GAME_HEIGHT,
   type ArchersRevengeState,
   type ArchersRevengeResults,
 } from "@/lib/games/archersRevenge";
+import { ARCHERS_REVENGE_CONFIG } from "@/lib/games/archersRevengeConfig";
 import type { VocabularyItem, Difficulty } from "@/store/useGameStore";
+import { GameStartScreen } from "@/components/games/game/GameStartScreen";
+import { GameEndScreen } from "@/components/games/game/GameEndScreen";
+import { Target, Shield, Zap, Sword, Heart, Clock, Award } from "lucide-react";
 
 type ArchersRevengeGameProps = {
   vocabulary: VocabularyItem[];
-    difficulty?: Difficulty;
-    onComplete?: (results: ArchersRevengeResults) => void;
-    onRestart?: () => void;
+  onComplete?: (results: ArchersRevengeResults) => void;
+  onRestart?: () => void;
 };
 
 export function ArchersRevengeGame({
   vocabulary,
-  difficulty = "normal",
   onComplete,
-  onRestart,
 }: ArchersRevengeGameProps) {
   const [gameState, setGameState] = useState<ArchersRevengeState | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [scale, setScale] = useState(1);
+  const [gamePhase, setGamePhase] = useState<"start" | "playing" | "ended">("start");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("normal");
+  
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const lastFrameRef = useRef<number>(0);
+  const rafRef = useRef<number>(0);
+  const hasReportedRef = useRef(false);
 
   const startGame = useCallback(() => {
     try {
-      const state = createArchersRevengeState(vocabulary, { difficulty });
+      const state = createArchersRevengeState(vocabulary, { difficulty: selectedDifficulty });
       setGameState(state);
-      setIsPlaying(true);
+      setGamePhase("playing");
+      hasReportedRef.current = false;
+      lastFrameRef.current = 0;
     } catch (error) {
       console.error("Failed to start game:", error);
     }
-  }, [vocabulary, difficulty]);
+  }, [vocabulary, selectedDifficulty]);
 
-  const handleComplete = useCallback(() => {
-    if (!gameState) return;
+  useEffect(() => {
+    if (!containerRef.current) return;
 
-    const results: ArchersRevengeResults = {
-      score: gameState.score,
-      accuracy:
-        gameState.totalAttempts > 0
-          ? gameState.correctAnswers / gameState.totalAttempts
-          : 0,
-      xp: Math.floor(gameState.score / 10),
-      correctAnswers: gameState.correctAnswers,
-      totalAttempts: gameState.totalAttempts,
-      wavesCompleted: gameState.wave - 1,
-      timeTaken: Math.floor(gameState.gameTime / 1000),
-      difficulty: gameState.difficulty,
+    const updateDimensions = () => {
+      if (!containerRef.current) return;
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      if (width > 0 && height > 0) setDimensions({ width, height });
     };
 
-    setIsPlaying(false);
-    onComplete?.(results);
-  }, [gameState, onComplete]);
+    const observer = new ResizeObserver(updateDimensions);
+    observer.observe(containerRef.current);
+    updateDimensions();
 
-  React.useEffect(() => {
-    const handleResize = () => {
-      const containerWidth = window.innerWidth;
-      const containerHeight = window.innerHeight;
-      const scaleX = containerWidth / GAME_WIDTH;
-      const scaleY = containerHeight / GAME_HEIGHT;
-      setScale(Math.min(scaleX, scaleY, 1));
-    };
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => observer.disconnect();
   }, []);
 
-  if (!isPlaying || !gameState) {
+  useEffect(() => {
+    if (gamePhase !== "playing") return;
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16;
+      lastFrameRef.current = timestamp;
+      const clampedDelta = Math.min(delta, 50);
+
+      setGameState((prevState) => {
+        if (!prevState || prevState.status !== "playing") return prevState;
+        return tickArchersRevenge(prevState, clampedDelta);
+      });
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      lastFrameRef.current = 0;
+    };
+  }, [gamePhase]);
+
+  useEffect(() => {
+    if (gameState?.status === "defeat") {
+      setGamePhase("ended");
+    }
+  }, [gameState?.status]);
+
+  useEffect(() => {
+    if (gamePhase === "ended" && gameState && !hasReportedRef.current) {
+      hasReportedRef.current = true;
+      const accuracy = gameState.totalAttempts > 0 
+        ? gameState.correctAnswers / gameState.totalAttempts 
+        : 0;
+      const xp = calculateXP(gameState);
+      onComplete?.({
+        score: Math.floor(gameState.score),
+        accuracy,
+        xp,
+        correctAnswers: gameState.correctAnswers,
+        totalAttempts: gameState.totalAttempts,
+        wavesCompleted: gameState.wave,
+        timeTaken: Math.floor(gameState.gameTime / 1000),
+        difficulty: gameState.difficulty,
+      });
+    }
+  }, [gamePhase, gameState, onComplete]);
+
+  const scale = useMemo(() => {
+    if (dimensions.width === 0 || dimensions.height === 0) return 1;
+    return Math.min(dimensions.width / GAME_WIDTH, dimensions.height / GAME_HEIGHT);
+  }, [dimensions]);
+
+  const handleStageClick = useCallback((e: any) => {
+    if (gamePhase !== "playing") return;
+    const stage = e.target.getStage();
+    const pointerPosition = stage.getPointerPosition();
+    if (pointerPosition) {
+      const x = pointerPosition.x / scale;
+      setGameState(prev => prev ? fireArrow(prev, x) : null);
+    }
+  }, [gamePhase, scale]);
+
+  if (gamePhase === "start") {
     return (
-      <div className="flex flex-col items-center justify-center bg-slate-900 p-8">
-        <h2 className="mb-4 text-2xl font-bold text-white">
-          Archer&apos;s Revenge
-        </h2>
-        <p className="mb-2 text-slate-300">
-          Target: {gameState?.targetWord.term || "Loading..."}
-        </p>
-        <p className="mb-6 text-slate-400">
-          Enemies: {gameState?.enemies.length || 0}
-        </p>
-        <button
-          onClick={startGame}
-          className="rounded-lg bg-primary px-6 py-3 font-semibold text-white hover:bg-primary/90"
+      <div ref={containerRef} className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto">
+        <GameStartScreen
+          gameTitle="Archer's Revenge"
+          gameSubtitle="Defend the Realm"
+          vocabulary={vocabulary}
+          instructions={[
+            { step: 1, text: "Target word is shown at the top. Find the enemy with the matching translation.", icon: Target },
+            { step: 2, text: "Tap a column to fire an arrow. Only the enemy with their SHIELD DOWN is vulnerable.", icon: Shield },
+            { step: 3, text: "Don't hit shielded enemies! They will shoot back and damage your HP.", icon: Zap },
+          ]}
+          proTip="The target changes every few seconds. Keep an eye on the top text!"
+          controls={[
+            { label: "Shoot", keys: "Tap / Click", color: "bg-amber-500" },
+          ]}
+          startButtonText="Draw Your Bow"
+          icon={Sword}
+          onStart={startGame}
         >
-          Start Game
-        </button>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-slate-400">Difficulty:</span>
+            <div className="flex gap-2">
+              {(["easy", "normal", "hard", "extreme"] as Difficulty[]).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setSelectedDifficulty(d)}
+                  className={`rounded-lg px-3 py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
+                    selectedDifficulty === d
+                      ? "bg-amber-500 text-white"
+                      : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+        </GameStartScreen>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center bg-slate-900">
-      <Stage width={GAME_WIDTH * scale} height={GAME_HEIGHT * scale}>
-        <Layer>
-          <Rect
-            x={0}
-            y={0}
-            width={GAME_WIDTH}
-            height={GAME_HEIGHT}
-            fill="#1e293b"
-          />
+    <div ref={containerRef} className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto">
+      {gamePhase === "playing" && gameState && (
+        <>
+          <Stage
+            width={dimensions.width}
+            height={dimensions.height}
+            onClick={handleStageClick}
+            onTap={handleStageClick}
+          >
+            <Layer scaleX={scale} scaleY={scale}>
+              {/* Background */}
+              <Rect x={0} y={0} width={GAME_WIDTH} height={GAME_HEIGHT} fill="#0f172a" />
+              
+              {/* HUD */}
+              <Group y={20}>
+                <Rect x={20} y={0} width={GAME_WIDTH - 40} height={80} fill="rgba(30, 41, 59, 0.8)" cornerRadius={12} stroke="#334155" strokeWidth={2} />
+                <Text
+                  x={GAME_WIDTH / 2}
+                  y={15}
+                  text={gameState.targetWord.term}
+                  fontSize={32}
+                  fontStyle="bold"
+                  fill="#fbbf24"
+                  align="center"
+                  width={GAME_WIDTH}
+                  offsetX={GAME_WIDTH / 2}
+                />
+                <Text
+                  x={GAME_WIDTH / 2}
+                  y={55}
+                  text="Target Translation"
+                  fontSize={12}
+                  fill="#94a3b8"
+                  align="center"
+                  width={GAME_WIDTH}
+                  offsetX={GAME_WIDTH / 2}
+                />
+              </Group>
 
-          <Text
-            x={10}
-            y={10}
-            text={`Target: ${gameState.targetWord.term}`}
-            fontSize={20}
-            fill="#ffffff"
-          />
+              {/* Stats */}
+              <Group y={110}>
+                <Text x={30} y={0} text={`HP: ${gameState.hp}/${gameState.maxHp}`} fontSize={18} fontStyle="bold" fill="#ef4444" />
+                <Text x={GAME_WIDTH - 120} y={0} text={`Score: ${Math.floor(gameState.score)}`} fontSize={18} fontStyle="bold" fill="#22c55e" align="right" width={90} />
+                <Text x={GAME_WIDTH / 2 - 40} y={0} text={`Wave ${gameState.wave}`} fontSize={18} fontStyle="bold" fill="#3b82f6" align="center" width={80} />
+              </Group>
 
-          <Text
-            x={10}
-            y={40}
-            text={`HP: ${gameState.hp}/${gameState.maxHp}`}
-            fontSize={16}
-            fill="#ef4444"
-          />
+              {/* Enemies */}
+              {gameState.enemies.map((enemy) => (
+                <Group key={enemy.id} x={enemy.x} y={enemy.y}>
+                  <Circle
+                    radius={22}
+                    fill={enemy.shieldUp ? "#334155" : "#059669"}
+                    stroke={enemy.shieldUp ? "#475569" : "#10b981"}
+                    strokeWidth={enemy.shieldUp ? 2 : 4}
+                    shadowBlur={enemy.shieldUp ? 0 : 15}
+                    shadowColor="#10b981"
+                  />
+                  {!enemy.shieldUp && (
+                    <Circle radius={28} stroke="#10b981" strokeWidth={2} opacity={0.5} />
+                  )}
+                  <Text
+                    x={-40}
+                    y={25}
+                    text={enemy.translation}
+                    fontSize={14}
+                    fontStyle="bold"
+                    fill="white"
+                    width={80}
+                    align="center"
+                  />
+                </Group>
+              ))}
 
-          <Text
-            x={10}
-            y={60}
-            text={`Score: ${gameState.score}`}
-            fontSize={16}
-            fill="#22c55e"
-          />
+              {/* Arrows */}
+              {gameState.arrows.map((arrow) => (
+                <Rect
+                  key={arrow.id}
+                  x={arrow.x - 2}
+                  y={arrow.y}
+                  width={4}
+                  height={20}
+                  fill="#fbbf24"
+                  cornerRadius={2}
+                />
+              ))}
 
-          <Text
-            x={10}
-            y={80}
-            text={`Wave: ${gameState.wave}`}
-            fontSize={16}
-            fill="#3b82f6"
-          />
+              {/* Enemy Projectiles */}
+              {gameState.enemyProjectiles.map((proj) => (
+                <Circle
+                  key={proj.id}
+                  x={proj.x}
+                  y={proj.y}
+                  radius={6}
+                  fill="#ef4444"
+                  shadowBlur={10}
+                  shadowColor="#ef4444"
+                />
+              ))}
 
-          {gameState.enemies.map((enemy) => (
-            <React.Fragment key={enemy.id}>
-              <Circle
-                x={enemy.x}
-                y={enemy.y}
-                radius={25}
-                fill={enemy.shieldUp ? "#6b7280" : "#22c55e"}
-                stroke={enemy.shieldUp ? "#374151" : "#16a34a"}
-                strokeWidth={2}
+              {/* Player */}
+              <Group x={gameState.playerX} y={ARCHERS_REVENGE_CONFIG.layout.playerY}>
+                <Text x={-15} y={-15} text="🏹" fontSize={30} />
+              </Group>
+
+              {/* Target Timer Progress */}
+              <Rect
+                x={20}
+                y={102}
+                width={(gameState.targetChangeTimer / (ARCHERS_REVENGE_CONFIG.targetChangeInterval[gameState.difficulty] || 7000)) * (GAME_WIDTH - 40)}
+                height={4}
+                fill="#fbbf24"
+                cornerRadius={2}
               />
-              <Text
-                x={enemy.x - 30}
-                y={enemy.y + 30}
-                text={enemy.translation}
-                fontSize={12}
-                fill="#ffffff"
-                width={60}
-                align="center"
-              />
-            </React.Fragment>
-          ))}
+            </Layer>
+          </Stage>
+        </>
+      )}
 
-          <Rect
-            x={GAME_WIDTH / 2 - 20}
-            y={GAME_HEIGHT - 60}
-            width={40}
-            height={40}
-            fill="#f59e0b"
-            cornerRadius={4}
-          />
-
-          <Text
-            x={GAME_WIDTH / 2 - 10}
-            y={GAME_HEIGHT - 50}
-            text="🏹"
-            fontSize={24}
-          />
-        </Layer>
-      </Stage>
+      {gamePhase === "ended" && gameState && (
+        <GameEndScreen
+          status={gameState.status === "victory" ? "victory" : "defeat"}
+          title={gameState.status === "victory" ? "Champion Archer!" : "Wall Breached!"}
+          subtitle={gameState.status === "victory" ? "The realm is safe... for now." : "The monsters have overrun the defense."}
+          score={Math.floor(gameState.score)}
+          xp={calculateXP(gameState)}
+          accuracy={gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0}
+          customStats={[
+            { label: "Correct", value: gameState.correctAnswers, icon: Target },
+            { label: "Wave", value: gameState.wave, icon: Award },
+            { label: "Time", value: `${Math.floor(gameState.gameTime / 1000)}s`, icon: Clock },
+            { label: "Health", value: `${gameState.hp}/${gameState.maxHp}`, icon: Heart },
+          ]}
+          onRestart={() => {
+            setGamePhase("start");
+            setGameState(null);
+          }}
+          onExit={() => {
+            window.location.href = "/student/games";
+          }}
+        />
+      )}
     </div>
   );
 }

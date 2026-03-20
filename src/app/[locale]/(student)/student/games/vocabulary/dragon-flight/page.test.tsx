@@ -3,7 +3,7 @@ import DragonFlightPage from './page'
 import { SAMPLE_VOCABULARY } from '@/lib/games/sampleVocabulary'
 import { useGameStore, DEFAULT_CASTLES } from '@/store/useGameStore'
 
-jest.mock('@/components/games/dragon-flight/DragonFlightGame', () => ({
+jest.mock('@/components/games/vocabulary/dragon-flight/DragonFlightGame', () => ({
   DragonFlightGame: ({ vocabulary, onComplete }: {
     vocabulary: { term: string; translation: string }[]
     onComplete?: (results: {
@@ -39,6 +39,15 @@ jest.mock('@/components/games/dragon-flight/DragonFlightGame', () => ({
 }))
 
 describe('DragonFlightPage', () => {
+  beforeAll(() => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ vocabulary: SAMPLE_VOCABULARY }),
+      })
+    ) as jest.Mock;
+  });
+
   beforeEach(() => {
     useGameStore.setState({
       vocabulary: [],
@@ -56,6 +65,11 @@ describe('DragonFlightPage', () => {
     render(<DragonFlightPage />)
 
     expect(screen.getByRole('heading', { name: /dragon flight/i })).toBeInTheDocument()
+    
+    await waitFor(() => {
+      expect(screen.queryByText(/loading vocabulary/i)).not.toBeInTheDocument();
+    });
+
     expect(screen.getByText(/choose the correct gate/i)).toBeInTheDocument()
 
     await waitFor(() => {
@@ -67,8 +81,12 @@ describe('DragonFlightPage', () => {
     )
   })
 
-  it('records XP results on completion', () => {
+  it('records XP results on completion', async () => {
     render(<DragonFlightPage />)
+
+    await waitFor(() => {
+      expect(screen.queryByText(/loading vocabulary/i)).not.toBeInTheDocument();
+    });
 
     fireEvent.click(screen.getByRole('button', { name: 'Complete' }))
 

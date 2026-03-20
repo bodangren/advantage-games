@@ -29,9 +29,10 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Castle Defense - Start and End Screens**
-*Link: [./conductor/tracks/castle-defense-start-end-screens-20260130/](./conductor/tracks/castle-defense-start-end-screens-20260130/)*
+- [x] **Track: Castle Defense - Start and End Screens**
+*Link: [./conductor/archive/castle-defense-start-end-screens-20260130/](./conductor/archive/castle-defense-start-end-screens-20260130/)*
 *Description: Add Wizard vs Zombie-style start/end screens with sentence list, XP, and performance breakdown.*
+*Status: ✅ COMPLETE*
 
 ---
 
@@ -46,7 +47,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Unified Start and End Screens**
-*Link: [./conductor/tracks/unified-game-screens-20260131/](./conductor/tracks/unified-game-screens-20260131/)*
+*Link: [./conductor/archive/unified-game-screens-20260131/](./conductor/archive/unified-game-screens-20260131/)*
 *Description: Refactor start and end screens across all games to use shared, themeable components for consistent UX*
 *Priority: Medium*
 *Type: Chore*
@@ -125,26 +126,30 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Storm the Castle Tower**
-*Link: [./conductor/tracks/storm-castle-tower-20260320/](./conductor/tracks/storm-castle-tower-20260320/)*
+- [x] **Track: Storm the Castle Tower**
+*Link: [./conductor/archive/storm-castle-tower-20260320/](./conductor/archive/storm-castle-tower-20260320/)*
 *Description: Crazy Climber-style wall scaling sentence game with word collection*
 *Priority: Medium*
 *Type: Feature*
-*Status: 🔄 IN PROGRESS*
+*Status: ✅ COMPLETE*
 
 ---
 
-- [ ] **Track: Griffin Sky-Joust**
-*Description: Joust-style momentum aerial combat game*
+- [x] **Track: Griffin Sky-Joust**
+*Link: [./conductor/archive/griffin-sky-joust-20260320/](./conductor/archive/griffin-sky-joust-20260320/)*
+*Description: Joust-style momentum aerial combat sentence game with griffin rider theme*
 *Priority: Medium*
 *Type: Feature*
+*Status: ✅ COMPLETE*
 
 ---
 
-- [ ] **Track: Realm Carver**
-*Description: Qix-style territory claiming game*
+- [~] **Track: Realm Carver**
+*Link: [./conductor/tracks/realm-carver-20260320/](./conductor/tracks/realm-carver-20260320/)*
+*Description: Qix-style territory claiming sentence game with magical cartographer theme*
 *Priority: Medium*
 *Type: Feature*
+*Status: 🆕 NEW*
 
 ---
 
@@ -218,14 +223,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Archer's Revenge - Space Invaders Vocabulary Game**
-*Link: [./conductor/tracks/archers-revenge-20260318/](./conductor/tracks/archers-revenge-20260318/)*
+- [x] **Track: Archer's Revenge - Space Invaders Vocabulary Game**
+*Link: [./conductor/archive/archers-revenge-20260318/](./conductor/archive/archers-revenge-20260318/)*
 *Description: Space Invaders-style vocabulary game where players shoot enemies matching the target word. Only shield-down enemies can be destroyed; wrong targets shoot back.*
 *Priority: Medium*
 *Type: Feature*
+*Status: ✅ COMPLETE*
 
 ---
 
-- [~] **Track: Game Triage and Fidelity Audit (Post-Spellweaver's Run)**
-*Link: [./conductor/tracks/game-triage-fidelity-20260320/](./conductor/tracks/game-triage-fidelity-20260320/)*
-*Status: 🔄 IN PROGRESS*
+- [x] **Track: Game Triage and Fidelity Audit (Post-Spellweaver's Run)**
+*Link: [./conductor/archive/game-triage-fidelity-20260320/](./conductor/archive/game-triage-fidelity-20260320/)*
+*Status: ✅ COMPLETE*

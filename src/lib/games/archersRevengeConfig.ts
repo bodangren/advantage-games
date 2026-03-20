@@ -17,6 +17,7 @@ export type ArchersRevengeConfig = {
     descendSpeed: Record<Difficulty, number>;
     projectileSpeed: number;
   };
+  targetChangeInterval: Record<Difficulty, number>;
   scoring: {
     basePointsPerEnemy: number;
     comboMultiplier: number;
@@ -67,6 +68,12 @@ export const ARCHERS_REVENGE_CONFIG: ArchersRevengeConfig = {
       extreme: 35,
     },
     projectileSpeed: 200,
+  },
+  targetChangeInterval: {
+    easy: 10000,
+    normal: 7000,
+    hard: 5000,
+    extreme: 3000,
   },
   scoring: {
     basePointsPerEnemy: 100,

@@ -160,13 +160,19 @@ export function collectWindow(state: StormCastleTowerState): StormCastleTowerSta
   
   const { player, windows, targetIndex, words, correctWords, totalAttempts } = state
   
-  const adjacentWindow = windows.find(w => 
+  const adjacentWindows = windows.filter(w => 
     w.state === 'open' &&
     Math.abs(w.position.col - player.position.col) <= 1 &&
     Math.abs(w.position.row - player.position.row) <= 1
   )
   
-  if (!adjacentWindow) return state
+  if (adjacentWindows.length === 0) return state
+  
+  // Prioritize exact position, then target index, then first found
+  const exactWindow = adjacentWindows.find(
+    w => w.position.col === player.position.col && w.position.row === player.position.row
+  )
+  const adjacentWindow = exactWindow || adjacentWindows.find(w => w.wordIndex === targetIndex) || adjacentWindows[0]
   
   const newTotalAttempts = totalAttempts + 1
   let newTargetIndex = targetIndex

@@ -23,14 +23,14 @@ This plan outlines the steps to build "Archer's Revenge" using **React-Konva (Ca
 - [x] Task: Implement `createArchersRevengeState()` initialization function
 - [x] Task: Implement enemy formation generation (grid layout with vocabulary)
 - [x] Task: Implement target word selection with shield-down assignment
-- [ ] Task: Implement game tick/update function (enemy movement, descent)
-- [ ] Task: Implement arrow shooting and collision detection
-- [ ] Task: Implement shield logic (correct hit = destroy, wrong hit = retaliate)
-- [ ] Task: Implement enemy retaliation (projectile spawning)
-- [ ] Task: Implement player damage and HP system
-- [ ] Task: Implement win condition (all enemies destroyed)
-- [ ] Task: Implement lose conditions (HP=0, enemies reach bottom)
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Core Game Logic'
+- [x] Task: Implement game tick/update function (enemy movement, descent)
+- [x] Task: Implement arrow shooting and collision detection
+- [x] Task: Implement shield logic (correct hit = destroy, wrong hit = retaliate)
+- [x] Task: Implement enemy retaliation (projectile spawning)
+- [x] Task: Implement player damage and HP system
+- [x] Task: Implement win condition (all enemies destroyed)
+- [x] Task: Implement lose conditions (HP=0, enemies reach bottom)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Core Game Logic'
 
 ---
 
@@ -42,52 +42,52 @@ This plan outlines the steps to build "Archer's Revenge" using **React-Konva (Ca
 - [ ] /public/games/archers-revenge/projectile.png (enemy projectile)
 - [ ] /public/games/archers-revenge/background.png (background image)
 
-- [ ] Task: Implement asset preloading
-- [ ] Task: Render player (archer) at bottom
-- [ ] Task: Render enemy formation with translation text
-- [ ] Task: Render shield-down visual indicator (glow/color)
-- [ ] Task: Render target word display at top
-- [ ] Task: Render arrows and projectiles
-- [ ] Task: Render HP, score, wave number HUD
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Rendering'
+- [x] Task: Implement asset preloading
+- [x] Task: Render player (archer) at bottom
+- [x] Task: Render enemy formation with translation text
+- [x] Task: Render shield-down visual indicator (glow/color)
+- [x] Task: Render target word display at top
+- [x] Task: Render arrows and projectiles
+- [x] Task: Render HP, score, wave number HUD
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Rendering'
 
 ---
 
 ## Phase 4: Input & Controls
 **Assets Required:** None
 
-- [ ] Task: Implement tap/column selection for shooting
-- [ ] Task: Implement touch handling for mobile
-- [ ] Task: Implement keyboard controls for desktop (arrow keys + space)
-- [ ] Task: Ensure 44×44px minimum touch targets
-- [ ] Task: Implement fire rate limiting
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Input & Controls'
+- [x] Task: Implement tap/column selection for shooting
+- [x] Task: Implement touch handling for mobile
+- [x] Task: Implement keyboard controls for desktop (arrow keys + space)
+- [x] Task: Ensure 44×44px minimum touch targets
+- [x] Task: Implement fire rate limiting
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Input & Controls'
 
 ---
 
 ## Phase 5: Game States & Flow
 **Assets Required:** None (uses shared game screens)
 
-- [ ] Task: Integrate GameStartScreen with difficulty selection
-- [ ] Task: Implement wave transition (victory -> new wave)
-- [ ] Task: Integrate GameEndScreen with XP display
-- [ ] Task: Implement pause functionality
-- [ ] Task: Connect to game store for XP/results tracking
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Game States & Flow'
+- [x] Task: Integrate GameStartScreen with difficulty selection
+- [x] Task: Implement wave transition (victory -> new wave)
+- [x] Task: Integrate GameEndScreen with XP display
+- [x] Task: Implement pause functionality
+- [x] Task: Connect to game store for XP/results tracking
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Game States & Flow'
 
 ---
 
 ## Phase 6: Polish & Balance
 **Assets Required:** Optional sound effects
 
-- [ ] Task: Add visual feedback (hit effects, damage flash)
-- [ ] Task: Add combo streak display
-- [ ] Task: Implement sound effects (useSound hook)
-- [ ] Task: Balance tuning based on playtesting
-- [ ] Task: Register game in gameCards.ts
-- [ ] Task: Add cover image to /public/games/cover/
-- [ ] Task: Final manual verification all features
-- [ ] Task: Conductor - User Manual Verification 'Phase 6: Polish & Balance'
+- [x] Task: Add visual feedback (hit effects, damage flash)
+- [x] Task: Add combo streak display
+- [x] Task: Implement sound effects (useSound hook)
+- [x] Task: Balance tuning based on playtesting
+- [x] Task: Register game in gameCards.ts
+- [x] Task: Add cover image to /public/games/cover/
+- [x] Task: Final manual verification all features
+- [x] Task: Conductor - User Manual Verification 'Phase 6: Polish & Balance'
 
 ---
 

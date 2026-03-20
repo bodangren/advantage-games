@@ -179,6 +179,9 @@ export function createLabyrinthGoblinKingState(
   sentences: VocabularyItem[],
   config: LabyrinthGoblinKingConfig = {}
 ): LabyrinthGoblinKingState {
+  if (!sentences || sentences.length === 0) {
+    throw new Error('Sentences cannot be empty')
+  }
   const rng = config.rng ?? Math.random
   const difficulty = config.difficulty ?? 'normal'
   const goblinType = config.goblinType ?? 'scout'

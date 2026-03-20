@@ -1,4 +1,4 @@
-import { advanceWizardZombieTime, createWizardZombieState } from './wizardZombie'
+import { advanceWizardZombieTime, createWizardZombieState } from './games/wizardZombie'
 
 describe('advanceWizardZombieTime', () => {
   const vocabulary = [{ term: 'A', translation: 'B' }]

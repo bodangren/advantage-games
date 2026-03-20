@@ -138,4 +138,28 @@ export const gameCards: GameCard[] = [
     href: '/en/student/games/sentence/abyssal-well',
     status: 'playable',
   },
+  {
+    id: 'archers-revenge',
+    title: "Archer's Revenge",
+    description: "Shoot enemies matching the target translation. Don't hit shielded enemies!",
+    cover: withBasePath('/games/cover/dragon-flight-cover.png'),
+    href: '/en/student/games/vocabulary/archers-revenge',
+    status: 'playable',
+  },
+  {
+    id: 'storm-castle-tower',
+    title: 'Storm the Castle Tower',
+    description: 'Scale the castle walls! Collect words in the correct order while dodging boiling oil and falling rocks!',
+    cover: withBasePath('/games/cover/castle-defense-cover.png'),
+    href: '/en/student/games/sentence/storm-castle-tower',
+    status: 'playable',
+  },
+  {
+    id: 'griffin-sky-joust',
+    title: 'Griffin Sky-Joust',
+    description: 'Take to the skies! Strike down enemy knights from above in the correct word order!',
+    cover: withBasePath('/games/cover/dragon-flight-cover.png'),
+    href: '/en/student/games/sentence/griffin-sky-joust',
+    status: 'playable',
+  },
 ]

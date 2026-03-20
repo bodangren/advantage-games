@@ -108,11 +108,11 @@ Derived from `vocab-game-builder` skill requirements. Use this checklist when au
 
 | Game | Type | Logic Tests | Config Tests | Component | Page | API Routes | Registry | Status |
 |------|------|-------------|--------------|-----------|------|------------|----------|--------|
-| Shadow Gate Dungeon | sentence | ✅ (flat) | ✅ (flat) | ✅ | ✅ | ✅ (manual) | TBD | TBD |
-| Rune Forge Chamber | sentence | ✅ (flat) | ✅ (flat) | ✅ | ✅ | TBD | TBD | TBD |
-| Village Guardian | sentence | ✅ (__tests__) | ❌ missing | ✅ | ✅ | TBD | TBD | TBD |
-| Labyrinth of the Goblin King | sentence | ✅ (__tests__) | ❌ missing | ✅ | ✅ | TBD | TBD | TBD |
-| The Abyssal Well | sentence | ✅ (__tests__) | ✅ (__tests__) | ✅ | ✅ | TBD | TBD | TBD |
-| Archer's Revenge | vocabulary | ✅ (flat) | ✅ (flat) | ✅ | ✅ | TBD | TBD | TBD |
+| Shadow Gate Dungeon | sentence | ✅ (flat) | ✅ (flat) | ✅ | ✅ | ✅ | ✅ | ✅ Pass |
+| Rune Forge Chamber | sentence | ✅ (flat) | ✅ (flat) | ✅ | ✅ | ✅ | ✅ | ✅ Pass |
+| Village Guardian | sentence | ✅ (__tests__) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ Pass |
+| Labyrinth of the Goblin King | sentence | ✅ (__tests__) | ✅ (__tests__) | ✅ | ✅ | ✅ | ✅ | ✅ Pass |
+| The Abyssal Well | sentence | ✅ (__tests__) | ✅ (__tests__) | ✅ | ✅ | ✅ | ✅ | ✅ Pass |
+| Archer's Revenge | vocabulary | ✅ (flat) | ✅ (flat) | ✅ | ✅ | ✅ | ✅ | ✅ Pass |
 | Griffin Sky-Joust | sentence | ❌ not built | ❌ not built | ❌ | ❌ | ❌ | ❌ | Out of scope (Phase 4) |
 | Realm Carver | sentence | ❌ not built | ❌ not built | ❌ | ❌ | ❌ | ❌ | Out of scope (Phase 4) |

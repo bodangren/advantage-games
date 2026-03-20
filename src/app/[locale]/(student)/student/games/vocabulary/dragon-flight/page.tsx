@@ -103,7 +103,7 @@ export default function DragonFlightPage() {
     <div className="space-y-6">
       {/* Back Button */}
       <Button variant="ghost" size="sm" asChild>
-        <Link href="/games">
+        <Link href="/student/games">
           <ChevronLeft className="mr-1 h-4 w-4" />
           {t("backToGames")}
         </Link>

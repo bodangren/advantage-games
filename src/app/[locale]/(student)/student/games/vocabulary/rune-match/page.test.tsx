@@ -1,5 +1,14 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import RuneMatchPage from './page'
+
+// Mock next/navigation
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    back: jest.fn(),
+  }),
+}))
 
 // Mock the dynamic import
 jest.mock('next/dynamic', () => ({
@@ -25,38 +34,54 @@ jest.mock('@/store/useGameStore', () => ({
 }))
 
 describe('RuneMatchPage', () => {
+  beforeAll(() => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ vocabulary: [] }),
+      })
+    ) as jest.Mock;
+  });
+
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
   it('renders without crashing', () => {
     render(<RuneMatchPage />)
-    expect(screen.getByText('Rune Match')).toBeInTheDocument()
+    expect(screen.getAllByText(/Rune Match/i).length).toBeGreaterThan(0)
   })
 
   it('displays game title', () => {
     render(<RuneMatchPage />)
-    expect(screen.getByText('Rune Match')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: /Rune Match/i })).toBeInTheDocument()
   })
 
   it('displays game description', () => {
     render(<RuneMatchPage />)
-    expect(screen.getByText(/match vocabulary runes/i)).toBeInTheDocument()
+    expect(screen.getByText(/Match runes and vocabulary/i)).toBeInTheDocument()
   })
 
-  it('includes back to home link', () => {
+  it('includes back to games link', () => {
     render(<RuneMatchPage />)
-    const backLink = screen.getByRole('link', { name: /back to home/i })
-    expect(backLink).toHaveAttribute('href', '/')
+    const backLink = screen.getByRole('link', { name: /back to games/i })
+    expect(backLink).toHaveAttribute('href', '/student/games')
   })
 
-  it('renders RuneMatchGame component', () => {
+  it('renders StartScreen initially and RuneMatchGame after start', async () => {
     render(<RuneMatchPage />)
+    expect(screen.getByText(/Adventure awaits/i)).toBeInTheDocument()
+    
+    const startButton = screen.getByRole('button', { name: /Start Game/i })
+    fireEvent.click(startButton)
+    
     expect(screen.getByTestId('rune-match-game')).toBeInTheDocument()
   })
 
-  it('sets sample vocabulary if vocabulary is empty', () => {
+  it('sets sample vocabulary if vocabulary is empty', async () => {
     render(<RuneMatchPage />)
-    expect(mockSetVocabulary).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(mockSetVocabulary).toHaveBeenCalled()
+    })
   })
 })

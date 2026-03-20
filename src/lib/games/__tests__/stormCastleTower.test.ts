@@ -142,7 +142,13 @@ describe('stormCastleTower', () => {
     let playingState: StormCastleTowerState
 
     beforeEach(() => {
-      const state = createStormCastleTowerState(mockVocabulary)
+      // Use seeded RNG for deterministic placement
+      let seed = 0.5
+      const rng = () => {
+        seed = (seed * 9301 + 49297) % 233280
+        return seed / 233280
+      }
+      const state = createStormCastleTowerState(mockVocabulary, { rng })
       playingState = startGame(state)
       playingState = { ...playingState, gameTime: 1000 }
     })
@@ -153,7 +159,7 @@ describe('stormCastleTower', () => {
         ...playingState,
         player: {
           ...playingState.player,
-          position: { col: targetWindow.position.col, row: targetWindow.position.row - 1 },
+          position: { col: targetWindow.position.col, row: targetWindow.position.row },
         },
       }
       
@@ -171,7 +177,7 @@ describe('stormCastleTower', () => {
         ...playingState,
         player: {
           ...playingState.player,
-          position: { col: wrongWindow.position.col, row: wrongWindow.position.row - 1 },
+          position: { col: wrongWindow.position.col, row: wrongWindow.position.row },
         },
       }
       
@@ -192,7 +198,7 @@ describe('stormCastleTower', () => {
         ...state,
         player: {
           ...state.player,
-          position: { col: lastWindow.position.col, row: lastWindow.position.row - 1 },
+          position: { col: lastWindow.position.col, row: lastWindow.position.row },
         },
       }
       
@@ -211,7 +217,7 @@ describe('stormCastleTower', () => {
         ...state,
         player: {
           ...state.player,
-          position: { col: wrongWindow.position.col, row: wrongWindow.position.row - 1 },
+          position: { col: wrongWindow.position.col, row: wrongWindow.position.row },
         },
       }
       

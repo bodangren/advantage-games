@@ -120,8 +120,8 @@ describe("EnchantedLibraryGame", () => {
     render(<EnchantedLibraryGame {...defaultProps} />);
     // Wait for assets to "load"
     const startButton = await screen.findByRole("button", {
-      name: /start game/i,
-    }); // startButtonText default is "Start Game"
+      name: /start adventure/i,
+    });
     fireEvent.click(startButton);
   };
 
@@ -131,7 +131,7 @@ describe("EnchantedLibraryGame", () => {
     // The previous text "Mystic Studies" might be wrong if translations are used.
     // Let's assume title is rendered.
     expect(
-      screen.getByRole("button", { name: /start game/i }),
+      screen.getByRole("button", { name: /start adventure/i }),
     ).toBeInTheDocument();
   });
 

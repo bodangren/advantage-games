@@ -28,21 +28,23 @@ const SAMPLE_VOCAB: VocabularyItem[] = [
 ];
 
 describe("advanceTime", () => {
-  it("increments attack timer", () => {
+  it("decrements attack timer", () => {
     const state = createRuneMatchState(SAMPLE_VOCAB);
     state.status = "playing";
+    state.monster = { type: "goblin", hp: 50, maxHp: 50, attack: 10, xp: 3 };
     const newState = advanceTime(state, 1000);
-    expect(newState.nextAttackTimer).toBe(1000);
+    expect(newState.nextAttackTimer).toBe(2000); // 3000 - 1000
   });
 
   it("triggers monster attack when timer exceeds interval", () => {
     const state = createRuneMatchState(SAMPLE_VOCAB);
     state.status = "playing";
     state.monster = { type: "goblin", hp: 50, maxHp: 50, attack: 10, xp: 3 };
-    state.nextAttackTimer = 4500;
+    state.nextAttackTimer = 500;
     const newState = advanceTime(state, 1000);
 
-    expect(newState.nextAttackTimer).toBe(500);
+    // After attack, timer resets to 3000-5000 range
+    expect(newState.nextAttackTimer).toBeGreaterThanOrEqual(3000);
     expect(newState.player.hp).toBeLessThan(100);
     expect(newState.floatingTexts.some((ft) => ft.text.startsWith("-"))).toBe(
       true,
@@ -54,7 +56,7 @@ describe("advanceTime", () => {
     state.status = "playing";
     state.monster = { type: "goblin", hp: 50, maxHp: 50, attack: 10, xp: 3 };
     state.player.hasShield = true;
-    state.nextAttackTimer = 4500;
+    state.nextAttackTimer = 500;
 
     const newState = advanceTime(state, 1000);
 

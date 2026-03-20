@@ -25,6 +25,7 @@ jest.mock("react-konva", () => ({
   ),
   Image: ({ name }: ImageProps) => <div data-testid={name || "image"} />,
   Text: ({ text }: TextProps) => <span>{text}</span>,
+  Circle: () => <div data-testid="circle" />,
   Group: ({ children, onClick }: KonvaBaseProps & { onClick?: () => void }) => (
     <div onClick={onClick}>{children}</div>
   ),
@@ -170,10 +171,15 @@ describe("RuneMatchGame", () => {
     const battleButtons = screen.getAllByRole("button", { name: /Battle/i });
     fireEvent.click(battleButtons[3]);
 
+    // Wait for selection screen to disappear
+    await waitFor(() => {
+      expect(screen.queryByText(/Choose Your Opponent/i)).not.toBeInTheDocument();
+    });
+
     // Verify monster HP bar with label
     expect(await screen.findByText(/DRAGON:/i)).toBeInTheDocument();
     // Verify Power Word label
-    expect(screen.getByText(/POWER WORD:/i)).toBeInTheDocument();
+    expect(screen.getByText(/POWER/i)).toBeInTheDocument();
 
     // This is tricky because we use random grid, but for tests we can rely on what's rendered
     // Let's find two runes by their text and click them

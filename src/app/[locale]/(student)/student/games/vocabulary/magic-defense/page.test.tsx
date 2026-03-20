@@ -8,6 +8,15 @@ jest.mock('@/components/games/game/GameContainer', () => ({
 }));
 
 describe('MagicDefensePage', () => {
+  beforeAll(() => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ vocabulary: SAMPLE_VOCABULARY }),
+      })
+    ) as jest.Mock;
+  });
+
   beforeEach(() => {
     useGameStore.setState({
       vocabulary: [],
@@ -19,11 +28,17 @@ describe('MagicDefensePage', () => {
     });
   });
 
-  it('renders the Magic Defense shell', () => {
+  it('renders the Magic Defense shell', async () => {
     render(<MagicDefensePage />);
 
     expect(screen.getByRole('heading', { name: /magic defense/i })).toBeInTheDocument();
-    expect(screen.getByText(/defend your castles/i)).toBeInTheDocument();
+    
+    // Wait for vocabulary to load so the game container appears
+    await waitFor(() => {
+      expect(screen.queryByText(/loading vocabulary/i)).not.toBeInTheDocument();
+    });
+
+    expect(screen.getByText(/defend your tower/i)).toBeInTheDocument();
     expect(screen.getByTestId('game-container')).toBeInTheDocument();
   });
 

@@ -23,7 +23,7 @@ import {
   buildTowerAtSlot,
   isWaveComplete,
   calculateCastleDefenseXP,
-} from '../castleDefense'
+} from '../games/castleDefense'
 
 describe('castleDefense', () => {
   describe('parseSentenceWords', () => {

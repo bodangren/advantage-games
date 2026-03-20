@@ -360,8 +360,10 @@ export function WizardZombieGame({
             className="absolute inset-0 z-50 flex flex-col bg-slate-950/90 text-white overflow-hidden"
           >
             <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8">
-              {/* Header removed to avoid duplication with Main Page Header */}
-              <div className="flex justify-end">
+              <div className="flex items-center justify-between">
+                <h2 className="text-3xl font-bold tracking-tight text-white">
+                  Arcane Defense
+                </h2>
                 <div className="px-4 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider">
                   Ready to Cast
                 </div>

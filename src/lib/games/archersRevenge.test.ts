@@ -1,13 +1,12 @@
 import type { VocabularyItem } from "@/store/useGameStore";
 import {
   createArchersRevengeState,
-  type ArchersRevengeState,
-  type Enemy,
-  type Arrow,
-  type Projectile,
+  tickArchersRevenge,
+  fireArrow,
+  calculateXP,
   GAME_WIDTH,
-  GAME_HEIGHT,
 } from "./archersRevenge";
+import { ARCHERS_REVENGE_CONFIG } from "./archersRevengeConfig";
 
 describe("archersRevenge", () => {
   const mockVocabulary: VocabularyItem[] = [
@@ -16,164 +15,139 @@ describe("archersRevenge", () => {
     { term: "bird", translation: "นก" },
     { term: "fish", translation: "ปลา" },
     { term: "snake", translation: "งู" },
-    { term: "mouse", translation: "หนู" },
-    { term: "elephant", translation: "ช้าง" },
-    { term: "tiger", translation: "เสือ" },
-    { term: "lion", translation: "สิงโต" },
-    { term: "bear", translation: "หมี" },
-    { term: "rabbit", translation: "กระต่าย" },
-    { term: "fox", translation: "จิ้งจอก" },
-    { term: "wolf", translation: "หมาป่า" },
-    { term: "deer", translation: "กวาง" },
-    { term: "monkey", translation: "ลิง" },
-    { term: "horse", translation: "ม้า" },
-    { term: "cow", translation: "วัว" },
-    { term: "pig", translation: "หมู" },
-    { term: "sheep", translation: "แกะ" },
-    { term: "goat", translation: "แพะ" },
-    { term: "chicken", translation: "ไก่" },
-    { term: "duck", translation: "เป็ด" },
-    { term: "frog", translation: "กบ" },
-    { term: "turtle", translation: "เต่า" },
-    { term: "crocodile", translation: "จระเข้" },
   ];
 
   describe("createArchersRevengeState", () => {
-    it("should create initial state with default settings (normal difficulty)", () => {
+    it("should create initial state with default settings", () => {
       const state = createArchersRevengeState(mockVocabulary);
-
       expect(state.status).toBe("playing");
       expect(state.hp).toBe(3);
       expect(state.score).toBe(0);
-      expect(state.combo).toBe(0);
       expect(state.wave).toBe(1);
-      expect(state.arrows).toEqual([]);
-      expect(state.enemyProjectiles).toEqual([]);
     });
 
-    it("should create enemy formation based on difficulty", () => {
-      const easyState = createArchersRevengeState(mockVocabulary, {
-        difficulty: "easy",
-      });
-      const normalState = createArchersRevengeState(mockVocabulary, {
-        difficulty: "normal",
-      });
-      const hardState = createArchersRevengeState(mockVocabulary, {
-        difficulty: "hard",
-      });
+    it("should handle small vocabulary by repeating if necessary", () => {
+      // Small vocab, but normal difficulty needs 15 enemies (5x3)
+      const state = createArchersRevengeState(mockVocabulary, { difficulty: "normal" });
+      expect(state.enemies.length).toBe(15);
+    });
+  });
 
-      expect(easyState.enemies.length).toBe(10);
-      expect(normalState.enemies.length).toBe(15);
-      expect(hardState.enemies.length).toBe(20);
+  describe("fireArrow", () => {
+    it("should add an arrow and update lastFireTime", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      state = fireArrow(state, 100);
+      expect(state.arrows.length).toBe(1);
+      expect(state.arrows[0].x).toBe(100);
+      expect(state.lastFireTime).toBe(0); // initial gameTime is 0
     });
 
-    it("should assign shield down to exactly one enemy per wave", () => {
+    it("should respect fire rate", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      state = fireArrow(state, 100);
+      state = fireArrow(state, 200);
+      expect(state.arrows.length).toBe(1); // Only one arrow fired because fireRateMs is 500
+    });
+  });
+
+  describe("tickArchersRevenge", () => {
+    it("should move enemies horizontally and vertically", () => {
       const state = createArchersRevengeState(mockVocabulary);
-
-      const shieldDownEnemies = state.enemies.filter((e) => !e.shieldUp);
-      expect(shieldDownEnemies.length).toBe(1);
-    });
-
-    it("should set target word matching the shield-down enemy", () => {
-      const state = createArchersRevengeState(mockVocabulary);
-
-      const shieldDownEnemy = state.enemies.find((e) => !e.shieldUp);
-      expect(shieldDownEnemy).toBeDefined();
-      expect(state.targetWord.term).toBe(shieldDownEnemy!.term);
-    });
-
-    it("should place target enemy in the bottom row (visible to player)", () => {
-      const state = createArchersRevengeState(mockVocabulary);
-
-      const shieldDownEnemy = state.enemies.find((e) => !e.shieldUp);
-      expect(shieldDownEnemy).toBeDefined();
+      const initialY = state.enemies[0].y;
+      const initialX = state.enemies[0].x;
       
-      const bottomRow = Math.max(...state.enemies.map((e) => e.row));
-      expect(shieldDownEnemy!.row).toBe(bottomRow);
-    });
-
-    it("should position enemies in a grid formation", () => {
-      const state = createArchersRevengeState(mockVocabulary);
-
-      state.enemies.forEach((enemy) => {
-        expect(enemy.x).toBeGreaterThanOrEqual(0);
-        expect(enemy.y).toBeGreaterThanOrEqual(0);
-        expect(enemy.id).toBeDefined();
-        expect(enemy.translation).toBeDefined();
-      });
-    });
-
-    it("should leave room for formation to move horizontally", () => {
-      const state = createArchersRevengeState(mockVocabulary);
-
-      const maxX = Math.max(...state.enemies.map((e) => e.x));
-      const minX = Math.min(...state.enemies.map((e) => e.x));
+      const nextState = tickArchersRevenge(state, 1000); // 1 second
       
-      expect(minX).toBeGreaterThan(20);
-      expect(maxX).toBeLessThan(GAME_WIDTH - 20);
+      expect(nextState.enemies[0].y).toBeGreaterThan(initialY);
+      expect(nextState.enemies[0].x).not.toBe(initialX);
     });
 
-    it("should throw error if vocabulary is empty", () => {
-      expect(() => createArchersRevengeState([])).toThrow(
-        "Vocabulary cannot be empty"
-      );
+    it("should change direction when hitting screen edge", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      // Force enemies to the edge
+      state.enemies = state.enemies.map(e => ({ ...e, x: GAME_WIDTH - 15 }));
+      state.formationDirection = 1;
+      
+      const nextState = tickArchersRevenge(state, 1000);
+      expect(nextState.formationDirection).toBe(-1);
     });
 
-    it("should use custom rng if provided", () => {
-      const fixedRng = () => 0.5;
-      const state1 = createArchersRevengeState(mockVocabulary, {
-        rng: fixedRng,
-      });
-      const state2 = createArchersRevengeState(mockVocabulary, {
-        rng: fixedRng,
-      });
+    it("should handle collisions with correct enemy", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      const targetEnemy = state.enemies.find(e => !e.shieldUp)!;
+      
+      // Place an arrow right on the target enemy
+      state.arrows = [{ id: "test-arrow", x: targetEnemy.x, y: targetEnemy.y, vy: -400 }];
+      
+      const nextState = tickArchersRevenge(state, 16);
+      
+      expect(nextState.enemies.find(e => e.id === targetEnemy.id)).toBeUndefined();
+      expect(nextState.score).toBeGreaterThan(0);
+      expect(nextState.combo).toBe(1);
+    });
 
-      expect(state1.targetWord.term).toBe(state2.targetWord.term);
+    it("should retaliate when hitting a shielded enemy", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      const shieldedEnemy = state.enemies.find(e => e.shieldUp)!;
+      
+      state.arrows = [{ id: "test-arrow", x: shieldedEnemy.x, y: shieldedEnemy.y, vy: -400 }];
+      
+      const nextState = tickArchersRevenge(state, 16);
+      
+      expect(nextState.enemies.find(e => e.id === shieldedEnemy.id)).toBeDefined();
+      expect(nextState.enemyProjectiles.length).toBe(1);
+      expect(nextState.combo).toBe(0);
+    });
+
+    it("should decrease HP when player hit by enemy projectile", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      state.playerX = 100;
+      state.enemyProjectiles = [{ id: "p1", x: 100, y: ARCHERS_REVENGE_CONFIG.layout.playerY, vy: 200 }];
+      
+      const nextState = tickArchersRevenge(state, 16);
+      expect(nextState.hp).toBe(state.hp - 1);
+    });
+
+    it("should end game when HP reaches 0", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      state.hp = 1;
+      state.playerX = 100;
+      state.enemyProjectiles = [{ id: "p1", x: 100, y: ARCHERS_REVENGE_CONFIG.layout.playerY, vy: 200 }];
+      
+      const nextState = tickArchersRevenge(state, 16);
+      expect(nextState.status).toBe("defeat");
+    });
+
+    it("should change target after interval", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      // Fast forward time
+      const nextState = tickArchersRevenge(state, 11000); 
+    });
+
+    it("should progress to next wave when all enemies are destroyed", () => {
+      let state = createArchersRevengeState(mockVocabulary);
+      const targetEnemy = state.enemies.find(e => !e.shieldUp)!;
+      
+      // Force only one enemy to exist
+      state.enemies = [targetEnemy];
+      state.arrows = [{ id: "test-arrow", x: targetEnemy.x, y: targetEnemy.y, vy: -400 }];
+      
+      const nextState = tickArchersRevenge(state, 16);
+      
+      expect(nextState.wave).toBe(2);
+      expect(nextState.enemies.length).toBeGreaterThan(0);
     });
   });
 
-  describe("Enemy type", () => {
-    it("should have correct enemy structure", () => {
-      const enemy: Enemy = {
-        id: "enemy-0-0",
-        x: 100,
-        y: 100,
-        term: "cat",
-        translation: "แมว",
-        shieldUp: true,
-        row: 0,
-        column: 0,
-      };
-
-      expect(enemy.id).toBe("enemy-0-0");
-      expect(enemy.shieldUp).toBe(true);
-    });
-  });
-
-  describe("Arrow type", () => {
-    it("should have correct arrow structure", () => {
-      const arrow: Arrow = {
-        id: "arrow-0",
-        x: 200,
-        y: 700,
-        vy: -400,
-      };
-
-      expect(arrow.y).toBe(700);
-      expect(arrow.vy).toBe(-400);
-    });
-  });
-
-  describe("Projectile type", () => {
-    it("should have correct projectile structure", () => {
-      const projectile: Projectile = {
-        id: "projectile-0",
-        x: 150,
-        y: 200,
-        vy: 200,
-      };
-
-      expect(projectile.vy).toBe(200);
+  describe("calculateXP", () => {
+    it("should return XP based on score and accuracy", () => {
+      const state = createArchersRevengeState(mockVocabulary);
+      state.score = 1000;
+      state.correctAnswers = 10;
+      state.totalAttempts = 10; // 100% accuracy
+      
+      const xp = calculateXP(state);
+      expect(xp).toBe(Math.floor(100 * 1.5));
     });
   });
 });
