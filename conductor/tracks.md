@@ -223,3 +223,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Description: Space Invaders-style vocabulary game where players shoot enemies matching the target word. Only shield-down enemies can be destroyed; wrong targets shoot back.*
 *Priority: Medium*
 *Type: Feature*
+
+---
+
+- [ ] **Track: Game Triage and Fidelity Audit (Post-Spellweaver's Run)**
+*Link: [./conductor/tracks/game-triage-fidelity-20260320/](./conductor/tracks/game-triage-fidelity-20260320/)*
