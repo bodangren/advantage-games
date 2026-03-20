@@ -8,6 +8,15 @@ Load: `conductor`, `vocab-game-builder`
 
 AUTONOMOUS = true
 
+## Critical: Work in Base Repo
+
+Always work in `/home/daniel-bo/Desktop/advantage-games` directly. Do NOT:
+- Check for or switch to git worktrees
+- Create new worktrees
+- Edit files outside the base repo
+
+Worktrees exist but are for interactive/manual development only. In cron mode, external directory access is auto-rejected.
+
 ## Logic
 
 1. Check `/conductor/tracks/` for in-progress tracks (status: `in_progress` or `active`)
@@ -38,4 +47,4 @@ When creating a new game autonomously:
 - All shell commands MUST use non-interactive flags (e.g., `--yes`, `CI=true`)
 - Never commit if tests fail
 - Never commit if build fails
-- Never edit files outside current worktree (see AGENTS.md)
+- Work in the base repo (NOT worktrees) - worktrees require interactive permission prompts that auto-reject in cron mode

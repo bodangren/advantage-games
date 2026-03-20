@@ -106,4 +106,20 @@ export const gameCards: GameCard[] = [
     href: '/en/student/games/sentence/shadow-gate-dungeon',
     status: 'playable',
   },
+  {
+    id: 'rune-forge-chamber',
+    title: 'Rune Forge Chamber',
+    description: 'Tap word circles in the correct order to forge magical runes before the forge cools!',
+    cover: withBasePath('/games/cover/rune-match-cover.png'),
+    href: '/en/student/games/sentence/rune-forge-chamber',
+    status: 'playable',
+  },
+  {
+    id: 'village-guardian',
+    title: 'Village Guardian',
+    description: 'Defend the village! Rescue villagers in correct order and lead them to safety!',
+    cover: withBasePath('/games/cover/rune-match-cover.png'),
+    href: '/en/student/games/sentence/village-guardian',
+    status: 'playable',
+  },
 ]

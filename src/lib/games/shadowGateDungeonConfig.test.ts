@@ -1,4 +1,4 @@
-import { SHADOW_GATE_DUNGEON_CONFIG, getDifficultyConfig, getCreatureSpeed } from './shadowGateDungeonConfig'
+import { SHADOW_GATE_DUNGEON_CONFIG, getDifficultyConfig, getCreatureSpeed, type ShadowGateDungeonDifficulty, type CreatureType } from './shadowGateDungeonConfig'
 
 describe('shadowGateDungeonConfig', () => {
   describe('SHADOW_GATE_DUNGEON_CONFIG', () => {
@@ -73,7 +73,7 @@ describe('shadowGateDungeonConfig', () => {
     })
 
     it('should return normal as default for unknown difficulty', () => {
-      const config = getDifficultyConfig('unknown' as any)
+      const config = getDifficultyConfig('unknown' as ShadowGateDungeonDifficulty)
       expect(config.name).toBe('Forgotten Crypt')
     })
   })
@@ -92,7 +92,7 @@ describe('shadowGateDungeonConfig', () => {
     })
 
     it('should return orc-hunter speed as default', () => {
-      expect(getCreatureSpeed('unknown' as any)).toBe(90)
+      expect(getCreatureSpeed('unknown' as CreatureType)).toBe(90)
     })
   })
 })
