@@ -42,3 +42,13 @@ git worktree prune
   git merge origin/main
   # or, if your team prefers: git rebase origin/main
   ```
+
+## Game Development
+
+All vocabulary/sentence games follow the `vocab-game-builder` skill patterns:
+- React-Konva canvas architecture
+- Mobile-first, portrait orientation (390×844 reference)
+- Strict TDD workflow with >80% coverage
+- Track-based development via conductor
+
+Reference existing games for patterns: Dragon Flight, Wizard vs Zombie, Rune Match, Potion Rush, Dungeon Liberator.

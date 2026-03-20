@@ -74,12 +74,12 @@ describe("combat logic", () => {
 
   it("calculates damage for a 3-match", () => {
     const damage = calculateMatchDamage(3, false);
-    expect(damage).toBe(6);
+    expect(damage).toBe(RUNE_MATCH_CONFIG.combat.match3Damage);
   });
 
   it("applies power rune multiplier", () => {
     const damage = calculateMatchDamage(3, true);
-    expect(damage).toBe(12); // 6 * 2
+    expect(damage).toBe(RUNE_MATCH_CONFIG.combat.match3Damage * RUNE_MATCH_CONFIG.combat.powerRuneMultiplier);
   });
 
   it("updates monster HP in state", () => {

@@ -674,7 +674,6 @@ export const advanceEnchantedLibraryTime = (
       x: newPlayerX,
       y: newPlayerY,
     },
-    gameTime: newState.gameTime + dt,
     spiritSpawnTimer: Math.max(0, newState.spiritSpawnTimer - dt),
   };
 

@@ -66,3 +66,137 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Description: Import games from reading-advantage with vocabulary/sentence directory structure, mock API routes, i18n stubs, and session stubs for minimal integration friction*
 *Priority: High*
 *Type: Chore*
+
+---
+
+- [x] **Track: Spellweaver's Run**
+*Link: [./conductor/archive/spellweavers-run-20260319/](./conductor/archive/spellweavers-run-20260319/)*
+*Description: Enchanted forest runner sentence game with word collection*
+*Priority: High*
+*Type: Feature*
+*Status: ✅ COMPLETE*
+
+---
+
+- [x] **Track: Shadow Gate Dungeon**
+*Link: [./conductor/archive/shadow-gate-dungeon-20260320/](./conductor/archive/shadow-gate-dungeon-20260320/)*
+*Description: Dark fantasy dungeon escape sentence game with word crystal collection while evading shadow creatures*
+*Priority: High*
+*Type: Feature*
+*Status: ✅ COMPLETE*
+
+---
+
+- [x] **Track: Rune Forge Chamber**
+*Link: [./conductor/archive/rune-forge-chamber-20260320/](./conductor/archive/rune-forge-chamber-20260320/)*
+*Description: Magical rune crafting sentence game*
+*Priority: High*
+*Type: Feature*
+*Status: ✅ COMPLETE*
+
+---
+
+- [~] **Track: Village Guardian**
+*Link: [./conductor/tracks/village-guardian-20260320/](./conductor/tracks/village-guardian-20260320/)*
+*Description: Snake-style village defense sentence game with word collection, trailing line mechanics, and monster AI*
+*Priority: High*
+*Type: Feature*
+*Status: 🔄 IN PROGRESS*
+
+---
+
+- [ ] **Track: The Abyssal Well**
+*Description: Tempest-style 3D tube shooter sentence game*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Storm the Castle Tower**
+*Description: Crazy Climber-style wall scaling sentence game*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Griffin Sky-Joust**
+*Description: Joust-style momentum aerial combat game*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Realm Carver**
+*Description: Qix-style territory claiming game*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Labyrinth of the Goblin King**
+*Description: Pac-Man style dungeon maze runner*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Griffin Rider's Escape**
+*Description: Subway Surfers style 3D endless runner*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Alchemist's Synthesis**
+*Description: 2048-style grid-based element merging*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Astral Mage**
+*Description: Asteroids-style zero-friction overhead space shooter*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Devourer Slime**
+*Description: Hole.io style arena growth game*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Babel's Architect**
+*Description: Tower Bloxx style precision tower stacking*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Paladin's Twin-Soul**
+*Description: Galaga-style capture and rescue vocabulary game*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Gryphon Patrol**
+*Description: Defender-style multi-directional scrolling sentence game*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: The Sorcerer's Ziggurat**
+*Description: Q*bert-style isometric jumping puzzle*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: The Haunted Library**
+*Description: Mappy-style vertical platformer with door mechanics*
+*Priority: Medium*
+*Type: Feature*

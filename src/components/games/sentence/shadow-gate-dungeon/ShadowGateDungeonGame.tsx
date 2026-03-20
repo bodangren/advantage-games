@@ -1,0 +1,418 @@
+'use client'
+
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Stage, Layer, Text, Group, Rect, Circle, Line } from 'react-konva'
+import {
+  createShadowGateDungeonState,
+  tickShadowGateDungeon,
+  setPlayerVelocity,
+  calculateXP,
+  type ShadowGateDungeonState,
+} from '@/lib/games/shadowGateDungeon'
+import { GAME_WIDTH, GAME_HEIGHT, SHADOW_GATE_DUNGEON_CONFIG } from '@/lib/games/shadowGateDungeonConfig'
+import type { VocabularyItem } from '@/store/useGameStore'
+import type { Difficulty } from '@/store/useGameStore'
+import type { CreatureType } from '@/lib/games/shadowGateDungeonConfig'
+import { useInterval } from '@/hooks/useInterval'
+import { GameEndScreen } from '@/components/games/game/GameEndScreen'
+import { GameStartScreen } from '@/components/games/game/GameStartScreen'
+import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
+import { Castle, BookOpen, AlertTriangle, Heart, Clock } from 'lucide-react'
+
+export type ShadowGateDungeonGameResult = {
+  xp: number
+  accuracy: number
+}
+
+interface ShadowGateDungeonGameProps {
+  vocabulary: VocabularyItem[]
+  onComplete: (results: ShadowGateDungeonGameResult) => void
+}
+
+export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDungeonGameProps) {
+  const [gameState, setGameState] = useState<ShadowGateDungeonState | null>(null)
+  const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
+  const [results, setResults] = useState<ShadowGateDungeonGameResult | null>(null)
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal')
+  const [selectedCreature, setSelectedCreature] = useState<CreatureType>('orc-hunter')
+  const hasReportedRef = useRef(false)
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  const resetGame = useCallback(() => {
+    if (vocabulary.length > 0) {
+      setGameState(createShadowGateDungeonState(vocabulary, {
+        difficulty: selectedDifficulty,
+        creatureType: selectedCreature,
+      }))
+      setResults(null)
+      hasReportedRef.current = false
+    }
+  }, [vocabulary, selectedDifficulty, selectedCreature])
+
+  useEffect(() => {
+    if (vocabulary.length > 0 && gamePhase === 'start') {
+      resetGame()
+    }
+  }, [vocabulary, gamePhase, resetGame])
+
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const updateDimensions = () => {
+      if (!containerRef.current) return
+      const { width, height } = containerRef.current.getBoundingClientRect()
+      if (width > 0 && height > 0) setDimensions({ width, height })
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          setDimensions({ width: entry.contentRect.width, height: entry.contentRect.height })
+        }
+      }
+    })
+
+    observer.observe(containerRef.current)
+    const interval = setInterval(updateDimensions, 200)
+    const timeout = setTimeout(() => clearInterval(interval), 2000)
+    updateDimensions()
+
+    return () => {
+      observer.disconnect()
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
+  }, [])
+
+  useInterval(() => {
+    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
+      setGameState(prevState => {
+        if (!prevState || prevState.status !== 'playing') return prevState
+        return tickShadowGateDungeon(prevState, 50)
+      })
+    }
+  }, 50)
+
+  useEffect(() => {
+    if (gameState?.status === 'victory' || gameState?.status === 'defeat') {
+      if (gamePhase !== 'ended') {
+        const accuracy = gameState.correctAnswers + gameState.wrongAnswers > 0
+          ? gameState.correctAnswers / (gameState.correctAnswers + gameState.wrongAnswers)
+          : 0
+        const xp = calculateXP(gameState)
+        setResults({ xp, accuracy })
+        setGamePhase('ended')
+      }
+    }
+  }, [gameState?.status, gamePhase, gameState])
+
+  useEffect(() => {
+    if (gamePhase === 'ended' && results && !hasReportedRef.current) {
+      hasReportedRef.current = true
+      onComplete(results)
+    }
+  }, [gamePhase, results, onComplete])
+
+  const scale = useMemo(() => {
+    if (dimensions.width === 0 || dimensions.height === 0) return 1
+    return Math.min(dimensions.width / GAME_WIDTH, dimensions.height / GAME_HEIGHT)
+  }, [dimensions])
+
+  const handleDPadInput = useCallback((input: { dx: number; dy: number }) => {
+    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
+      setGameState(prevState => {
+        if (!prevState || prevState.status !== 'playing') return prevState
+        return setPlayerVelocity(prevState, { x: input.dx, y: input.dy })
+      })
+    }
+  }, [gameState, gamePhase])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (gamePhase !== 'playing') return
+      let dx = 0, dy = 0
+      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') dx = -1
+      else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') dx = 1
+      else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') dy = -1
+      else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') dy = 1
+      if (dx !== 0 || dy !== 0) {
+        handleDPadInput({ dx, dy })
+      }
+    }
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (gamePhase !== 'playing') return
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'A', 'd', 'D', 'w', 'W', 's', 'S'].includes(e.key)) {
+        handleDPadInput({ dx: 0, dy: 0 })
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    window.addEventListener('keyup', handleKeyUp)
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+      window.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [gamePhase, handleDPadInput])
+
+  if (gamePhase === 'start') {
+    return (
+      <div
+        ref={containerRef}
+        className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto"
+      >
+        <GameStartScreen
+          gameTitle="Shadow Gate Dungeon"
+          gameSubtitle="Escape the Darkness"
+          vocabulary={vocabulary}
+          instructions={[
+            { step: 1, text: 'Collect word crystals in the correct order to unlock the exit gate.', icon: BookOpen },
+            { step: 2, text: 'The translation is shown on the gate - find the words to form the sentence!', icon: BookOpen },
+            { step: 3, text: 'Avoid the shadow creature! Wrong words and collisions drain your health.', icon: AlertTriangle },
+          ]}
+          proTip="Use the DPad to navigate. The target crystal glows gold - collect it first!"
+          controls={[
+            { label: 'Move', keys: 'Arrow Keys / WASD', color: 'bg-purple-500' },
+            { label: 'DPad', keys: 'Touch & Drag', color: 'bg-indigo-500' },
+          ]}
+          startButtonText="Enter the Dungeon"
+          icon={Castle}
+          onStart={() => {
+            resetGame()
+            setGamePhase('playing')
+          }}
+        >
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xs uppercase tracking-wider text-white/50">Difficulty:</span>
+              <select
+                value={selectedDifficulty}
+                onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
+                className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+              >
+                <option value="easy">Dark Cell</option>
+                <option value="normal">Forgotten Crypt</option>
+                <option value="hard">Abyssal Chamber</option>
+                <option value="extreme">Abyssal Depths</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs uppercase tracking-wider text-white/50">Opponent:</span>
+              <select
+                value={selectedCreature}
+                onChange={(e) => setSelectedCreature(e.target.value as CreatureType)}
+                className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+              >
+                <option value="goblin-scout">Goblin Scout (Slow)</option>
+                <option value="orc-hunter">Orc Hunter (Medium)</option>
+                <option value="shadow-dragon">Shadow Dragon (Fast)</option>
+              </select>
+            </div>
+          </div>
+        </GameStartScreen>
+      </div>
+    )
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      style={{ minHeight: '400px' }}
+      className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto"
+    >
+      {gamePhase === 'playing' && gameState && (
+        <>
+          <Stage
+            width={dimensions.width}
+            height={dimensions.height}
+            style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none' }}
+          >
+            <Layer>
+              <Group scale={{ x: scale, y: scale }} offsetX={0} offsetY={0}>
+                <Rect
+                  x={0}
+                  y={0}
+                  width={GAME_WIDTH}
+                  height={GAME_HEIGHT}
+                  fill="#1a0a2e"
+                />
+
+                <Rect
+                  x={0}
+                  y={0}
+                  width={GAME_WIDTH}
+                  height={GAME_HEIGHT}
+                  fill="url(#dungeonGradient)"
+                />
+
+                <Line
+                  points={[0, 80, GAME_WIDTH, 80]}
+                  stroke="#3d3d5c"
+                  strokeWidth={2}
+                />
+
+                <Group>
+                  <Rect
+                    x={gameState.gate.position.x}
+                    y={gameState.gate.position.y}
+                    width={gameState.gate.width}
+                    height={gameState.gate.height}
+                    fill={gameState.gate.unlocked ? 'rgba(34, 197, 94, 0.6)' : 'rgba(239, 68, 68, 0.6)'}
+                    stroke={gameState.gate.unlocked ? '#22c55e' : '#ef4444'}
+                    strokeWidth={3}
+                    cornerRadius={8}
+                  />
+                  <Text
+                    x={gameState.gate.position.x + 5}
+                    y={gameState.gate.position.y + 8}
+                    text={gameState.currentSentence.translation}
+                    fontSize={12}
+                    fill="white"
+                    fontStyle="bold"
+                    width={gameState.gate.width - 10}
+                    align="center"
+                    wrap="word"
+                  />
+                </Group>
+
+                {gameState.crystals.filter(c => !c.collected).map(crystal => {
+                  const isTarget = crystal.word === gameState.words[gameState.targetIndex]
+                  return (
+                    <Group key={crystal.id} x={crystal.position.x} y={crystal.position.y}>
+                      <Circle
+                        x={0}
+                        y={0}
+                        radius={SHADOW_GATE_DUNGEON_CONFIG.crystalRadius}
+                        fill={isTarget ? 'rgba(255, 215, 0, 0.8)' : 'rgba(0, 255, 255, 0.7)'}
+                        stroke={isTarget ? '#ffd700' : '#00ffff'}
+                        strokeWidth={isTarget ? 4 : 2}
+                      />
+                      <Text
+                        x={-SHADOW_GATE_DUNGEON_CONFIG.crystalRadius}
+                        y={-8}
+                        text={crystal.word}
+                        fontSize={11}
+                        fill="white"
+                        fontStyle="bold"
+                        width={SHADOW_GATE_DUNGEON_CONFIG.crystalRadius * 2}
+                        align="center"
+                      />
+                    </Group>
+                  )
+                })}
+
+                <Group x={gameState.creature.position.x} y={gameState.creature.position.y}>
+                  <Circle
+                    x={0}
+                    y={0}
+                    radius={SHADOW_GATE_DUNGEON_CONFIG.creatureRadius}
+                    fill="rgba(74, 0, 128, 0.9)"
+                    stroke="#9333ea"
+                    strokeWidth={3}
+                  />
+                  <Circle x={-8} y={-5} radius={4} fill="#ff0000" />
+                  <Circle x={8} y={-5} radius={4} fill="#ff0000" />
+                </Group>
+
+                <Group x={gameState.player.position.x} y={gameState.player.position.y}>
+                  <Circle
+                    x={0}
+                    y={0}
+                    radius={SHADOW_GATE_DUNGEON_CONFIG.playerRadius}
+                    fill={gameState.player.invincible ? 'rgba(100, 149, 237, 0.5)' : '#4a90d9'}
+                    stroke={gameState.player.invincible ? '#87ceeb' : '#1e40af'}
+                    strokeWidth={3}
+                  />
+                  <Circle x={0} y={0} radius={8} fill="#87ceeb" />
+                </Group>
+
+                <Group x={10} y={GAME_HEIGHT - 30}>
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={GAME_WIDTH - 20}
+                    height={20}
+                    fill="rgba(0, 0, 0, 0.5)"
+                    cornerRadius={10}
+                  />
+                  <Rect
+                    x={0}
+                    y={0}
+                    width={(gameState.player.health / SHADOW_GATE_DUNGEON_CONFIG.initialHealth) * (GAME_WIDTH - 20)}
+                    height={20}
+                    fill={gameState.player.health > 50 ? '#22c55e' : gameState.player.health > 25 ? '#eab308' : '#ef4444'}
+                    cornerRadius={10}
+                  />
+                  <Text
+                    x={GAME_WIDTH / 2 - 30}
+                    y={4}
+                    text={`HP: ${gameState.player.health}`}
+                    fontSize={12}
+                    fill="white"
+                    fontStyle="bold"
+                  />
+                </Group>
+
+                <Text
+                  x={10}
+                  y={GAME_HEIGHT - 55}
+                  text={`Words: ${gameState.collectedWords.length}/${gameState.words.length}`}
+                  fontSize={14}
+                  fill="white"
+                  fontStyle="bold"
+                />
+
+                <Text
+                  x={10}
+                  y={GAME_HEIGHT - 75}
+                  text={gameState.collectedWords.join(' ')}
+                  fontSize={12}
+                  fill="#a5b4fc"
+                  fontStyle="bold"
+                  width={GAME_WIDTH - 20}
+                />
+
+                <Text
+                  x={GAME_WIDTH - 80}
+                  y={GAME_HEIGHT - 55}
+                  text={`Time: ${Math.floor(gameState.gameTime / 1000)}s`}
+                  fontSize={12}
+                  fill="white"
+                />
+              </Group>
+            </Layer>
+          </Stage>
+
+          <div className="absolute bottom-4 left-4 z-10">
+            <VirtualDPad onInput={handleDPadInput} />
+          </div>
+        </>
+      )}
+
+      {gamePhase === 'ended' && gameState && results && (
+        <GameEndScreen
+          status={gameState.status === 'victory' ? 'victory' : 'defeat'}
+          title={gameState.status === 'victory' ? 'Escaped!' : 'Captured!'}
+          subtitle={gameState.status === 'victory' ? 'You found the way out!' : 'The shadows consumed you...'}
+          score={gameState.correctAnswers * 10}
+          xp={results.xp}
+          accuracy={results.accuracy}
+          customStats={[
+            { label: 'Words Collected', value: gameState.correctAnswers, icon: BookOpen },
+            { label: 'Time', value: `${Math.floor(gameState.gameTime / 1000)}s`, icon: Clock },
+            { label: 'Health Left', value: gameState.player.health, icon: Heart },
+          ]}
+          onRestart={() => {
+            resetGame()
+            setGamePhase('start')
+          }}
+          onExit={() => {
+            window.location.href = '/student/games'
+          }}
+        />
+      )}
+    </div>
+  )
+}
