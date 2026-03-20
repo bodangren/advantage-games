@@ -10,22 +10,22 @@ describe('shadowGateDungeonConfig', () => {
     })
 
     it('should have player configuration', () => {
-      expect(SHADOW_GATE_DUNGEON_CONFIG.playerSpeed).toBe(120)
-      expect(SHADOW_GATE_DUNGEON_CONFIG.playerRadius).toBe(20)
+      expect(SHADOW_GATE_DUNGEON_CONFIG.playerSpeed).toBe(200)
+      expect(SHADOW_GATE_DUNGEON_CONFIG.playerRadius).toBe(12)
       expect(SHADOW_GATE_DUNGEON_CONFIG.initialHealth).toBe(100)
       expect(SHADOW_GATE_DUNGEON_CONFIG.invincibilityDuration).toBe(1000)
     })
 
     it('should have word crystal configuration', () => {
-      expect(SHADOW_GATE_DUNGEON_CONFIG.crystalRadius).toBe(25)
-      expect(SHADOW_GATE_DUNGEON_CONFIG.crystalSpawnMargin).toBe(50)
+      expect(SHADOW_GATE_DUNGEON_CONFIG.crystalRadius).toBe(14)
+      expect(SHADOW_GATE_DUNGEON_CONFIG.crystalSpawnMargin).toBe(30)
     })
 
     it('should have creature speeds for all opponent types', () => {
       expect(SHADOW_GATE_DUNGEON_CONFIG.creatureSpeeds['goblin-scout']).toBe(60)
-      expect(SHADOW_GATE_DUNGEON_CONFIG.creatureSpeeds['orc-hunter']).toBe(90)
-      expect(SHADOW_GATE_DUNGEON_CONFIG.creatureSpeeds['shadow-dragon']).toBe(120)
-      expect(SHADOW_GATE_DUNGEON_CONFIG.creatureRadius).toBe(25)
+      expect(SHADOW_GATE_DUNGEON_CONFIG.creatureSpeeds['orc-hunter']).toBe(80)
+      expect(SHADOW_GATE_DUNGEON_CONFIG.creatureSpeeds['shadow-dragon']).toBe(105)
+      expect(SHADOW_GATE_DUNGEON_CONFIG.creatureRadius).toBe(14)
     })
 
     it('should have damage values', () => {
@@ -84,15 +84,15 @@ describe('shadowGateDungeonConfig', () => {
     })
 
     it('should return orc-hunter speed', () => {
-      expect(getCreatureSpeed('orc-hunter')).toBe(90)
+      expect(getCreatureSpeed('orc-hunter')).toBe(80)
     })
 
     it('should return shadow-dragon speed', () => {
-      expect(getCreatureSpeed('shadow-dragon')).toBe(120)
+      expect(getCreatureSpeed('shadow-dragon')).toBe(105)
     })
 
     it('should return orc-hunter speed as default', () => {
-      expect(getCreatureSpeed('unknown' as CreatureType)).toBe(90)
+      expect(getCreatureSpeed('unknown' as CreatureType)).toBe(80)
     })
   })
 })

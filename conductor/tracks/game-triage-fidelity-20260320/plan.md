@@ -43,6 +43,10 @@ This plan outlines the steps to audit and patch games developed after 'Spellweav
 - [x] Task: Fix Shadow Gate Dungeon — reduce creature speed, fix keyboard repeat delay, redesign creature AI as patrol/stealth (differentiated from Village Guardian and other dungeon games). 1bd5b86
 - [x] Task: Fix Rune Forge Chamber — fix click/tap targets, implement multi-level timer progression (level 1 = 2×timer, each level −20%). b32d7bc
 
+### Phase 2 Additional Bug Fixes (Manual Verification Round 2)
+
+- [~] Task: Fix Shadow Gate Dungeon — shrink all entities (player/creature/crystals) for mobile portrait canvas, reduce sight radius from 67% to ~40% of canvas width, reduce patrol radius, slow creature chase speeds, increase tick rate from 20 FPS to 60 FPS for responsive controls, reduce chase duration.
+
 ## Phase 3: Triage & Patch - Archived Games (Set 2)
 **Goal:** Audit and fix 'Labyrinth of the Goblin King' and 'The Abyssal Well'.
 

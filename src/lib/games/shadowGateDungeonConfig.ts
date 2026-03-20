@@ -18,32 +18,32 @@ export const SHADOW_GATE_DUNGEON_CONFIG = {
   gateWidth: 100,
   gateHeight: 60,
 
-  playerSpeed: 120,
-  playerRadius: 20,
+  playerSpeed: 200,
+  playerRadius: 12,
   initialHealth: 100,
   invincibilityDuration: 1000,
 
-  crystalRadius: 25,
-  crystalSpawnMargin: 50,
+  crystalRadius: 14,
+  crystalSpawnMargin: 30,
 
   // Patrol speeds (px/s) — creature moves along patrol path
   creaturePatrolSpeeds: {
-    'goblin-scout': 35,
-    'orc-hunter': 50,
-    'shadow-dragon': 70,
+    'goblin-scout': 25,
+    'orc-hunter': 35,
+    'shadow-dragon': 50,
   },
   // Chase speeds (px/s) — creature speeds up when chasing player
   creatureSpeeds: {
-    'goblin-scout': 55,
-    'orc-hunter': 75,
-    'shadow-dragon': 100,
+    'goblin-scout': 60,
+    'orc-hunter': 80,
+    'shadow-dragon': 105,
   },
-  creatureRadius: 25,
+  creatureRadius: 14,
 
   // Stealth / patrol mechanics
-  sightRadius: 130,        // player must stay beyond this to avoid detection
-  chaseDuration: 2500,     // ms creature chases before returning to patrol
-  patrolRadius: 130,       // radius of circular patrol path
+  sightRadius: 75,         // player must stay beyond this to avoid detection
+  chaseDuration: 1500,     // ms creature chases before returning to patrol
+  patrolRadius: 70,        // radius of circular patrol path
   patrolCenterX: 195,      // center of patrol circle (game center X)
   patrolCenterY: 350,      // center of patrol circle (game center Y)
 

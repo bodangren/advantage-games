@@ -13,7 +13,7 @@ import { GAME_WIDTH, GAME_HEIGHT, SHADOW_GATE_DUNGEON_CONFIG } from '@/lib/games
 import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
 import type { CreatureType } from '@/lib/games/shadowGateDungeonConfig'
-import { useInterval } from '@/hooks/useInterval'
+// rAF-based game loop — no useInterval needed
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
@@ -87,14 +87,29 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
     }
   }, [])
 
-  useInterval(() => {
-    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
+  const lastFrameRef = useRef<number>(0)
+  const rafRef = useRef<number>(0)
+
+  useEffect(() => {
+    if (gamePhase !== 'playing') return
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
+      lastFrameRef.current = timestamp
+      const clampedDelta = Math.min(delta, 50) // cap at 50ms to avoid huge jumps
       setGameState(prevState => {
         if (!prevState || prevState.status !== 'playing') return prevState
-        return tickShadowGateDungeon(prevState, 50)
+        return tickShadowGateDungeon(prevState, clampedDelta)
       })
+      rafRef.current = requestAnimationFrame(loop)
     }
-  }, 50)
+
+    rafRef.current = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(rafRef.current)
+      lastFrameRef.current = 0
+    }
+  }, [gamePhase])
 
   useEffect(() => {
     if (gameState?.status === 'victory' || gameState?.status === 'defeat') {
@@ -330,10 +345,10 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                     stroke={gameState.creature.mode === 'chase' ? '#ef4444' : '#9333ea'}
                     strokeWidth={3}
                   />
-                  <Circle x={-8} y={-5} radius={4} fill={gameState.creature.mode === 'chase' ? '#ffff00' : '#ff0000'} />
-                  <Circle x={8} y={-5} radius={4} fill={gameState.creature.mode === 'chase' ? '#ffff00' : '#ff0000'} />
+                  <Circle x={-4} y={-3} radius={2.5} fill={gameState.creature.mode === 'chase' ? '#ffff00' : '#ff0000'} />
+                  <Circle x={4} y={-3} radius={2.5} fill={gameState.creature.mode === 'chase' ? '#ffff00' : '#ff0000'} />
                   {gameState.creature.mode === 'chase' && (
-                    <Text x={-14} y={-36} text="!" fontSize={20} fill="#ef4444" fontStyle="bold" />
+                    <Text x={-8} y={-24} text="!" fontSize={16} fill="#ef4444" fontStyle="bold" />
                   )}
                 </Group>
 
@@ -346,7 +361,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                     stroke={gameState.player.invincible ? '#87ceeb' : '#1e40af'}
                     strokeWidth={3}
                   />
-                  <Circle x={0} y={0} radius={8} fill="#87ceeb" />
+                  <Circle x={0} y={0} radius={5} fill="#87ceeb" />
                 </Group>
 
                 <Group x={10} y={GAME_HEIGHT - 30}>
