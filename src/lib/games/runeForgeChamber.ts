@@ -3,7 +3,7 @@ import type { Difficulty } from '@/store/useGameStore'
 import type { RuneType } from './runeForgeChamberConfig'
 import { RUNE_FORGE_CHAMBER_CONFIG, getDifficultyConfig, GAME_WIDTH, GAME_HEIGHT } from './runeForgeChamberConfig'
 
-export type GameStatus = 'start' | 'playing' | 'victory' | 'defeat'
+export type GameStatus = 'start' | 'playing' | 'defeat'
 
 export type Position = {
   x: number
@@ -33,6 +33,8 @@ export type RuneForgeChamberState = {
   status: GameStatus
   difficulty: Difficulty
   runeType: RuneType
+  level: number
+  vocabulary: VocabularyItem[]
   player: Player
   runeStone: RuneStone
   circles: WordCircle[]
@@ -106,10 +108,14 @@ export function createRuneForgeChamberState(
     circles[j].angle = tempAngle
   }
 
+  const level1Timer = diffConfig.timer * 2
+
   return {
     status: 'playing',
     difficulty,
     runeType,
+    level: 1,
+    vocabulary,
     player,
     runeStone,
     circles,
@@ -119,9 +125,47 @@ export function createRuneForgeChamberState(
     targetIndex: 0,
     correctAnswers: 0,
     wrongAnswers: 0,
-    timer: diffConfig.timer,
-    maxTimer: diffConfig.timer,
+    timer: level1Timer,
+    maxTimer: level1Timer,
     gameTime: 0,
+    circleAngle: 0,
+  }
+}
+
+function advanceRuneForgeLevel(state: RuneForgeChamberState): RuneForgeChamberState {
+  const rng = Math.random
+  const nextLevel = state.level + 1
+  const nextMaxTimer = Math.floor(state.maxTimer * 0.8)
+  const diffConfig = getDifficultyConfig(state.difficulty)
+
+  const sentenceIndex = Math.floor(rng() * state.vocabulary.length)
+  const nextSentence = state.vocabulary[sentenceIndex]
+  const nextWords = nextSentence.term.split(' ')
+  const wordCount = Math.min(diffConfig.wordCount, nextWords.length)
+  const activeWords = nextWords.slice(0, wordCount)
+
+  const circles: WordCircle[] = activeWords.map((word, index) => {
+    const baseAngle = (2 * Math.PI * index) / activeWords.length
+    return {
+      id: generateId(),
+      word,
+      orderIndex: index,
+      angle: baseAngle,
+      orbitRadius: RUNE_FORGE_CHAMBER_CONFIG.circleOrbitRadius,
+      selected: false,
+    }
+  })
+
+  return {
+    ...state,
+    level: nextLevel,
+    currentSentence: nextSentence,
+    words: activeWords,
+    circles,
+    collectedWords: [],
+    targetIndex: 0,
+    timer: nextMaxTimer,
+    maxTimer: nextMaxTimer,
     circleAngle: 0,
   }
 }
@@ -156,7 +200,7 @@ export function tickRuneForgeChamber(
   }))
 
   if (newState.targetIndex >= state.words.length) {
-    newState.status = 'victory'
+    return advanceRuneForgeLevel(newState)
   }
 
   return newState
@@ -188,7 +232,7 @@ export function selectCircle(
     }
 
     if (newState.targetIndex >= state.words.length) {
-      newState.status = 'victory'
+      return advanceRuneForgeLevel(newState)
     }
 
     return newState

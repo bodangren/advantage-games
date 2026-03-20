@@ -39,10 +39,15 @@ describe('runeForgeChamber', () => {
       expect(state.words.length).toBeLessThanOrEqual(RUNE_FORGE_CHAMBER_CONFIG.difficulties.easy.wordCount)
     })
 
-    it('should initialize timer based on difficulty', () => {
+    it('should initialize timer at 2x difficulty value for level 1', () => {
       const state = createRuneForgeChamberState(mockVocabulary, { difficulty: 'easy' })
-      expect(state.timer).toBe(RUNE_FORGE_CHAMBER_CONFIG.timerDurations.easy)
-      expect(state.maxTimer).toBe(RUNE_FORGE_CHAMBER_CONFIG.timerDurations.easy)
+      expect(state.timer).toBe(RUNE_FORGE_CHAMBER_CONFIG.timerDurations.easy * 2)
+      expect(state.maxTimer).toBe(RUNE_FORGE_CHAMBER_CONFIG.timerDurations.easy * 2)
+    })
+
+    it('should start at level 1', () => {
+      const state = createRuneForgeChamberState(mockVocabulary)
+      expect(state.level).toBe(1)
     })
 
     it('should set rune stone at center', () => {
@@ -122,7 +127,7 @@ describe('runeForgeChamber', () => {
       })
     })
 
-    it('should set victory when all words collected', () => {
+    it('should advance to level 2 when all words collected (not victory)', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
       const completedState = {
         ...state,
@@ -130,7 +135,21 @@ describe('runeForgeChamber', () => {
         collectedWords: state.words,
       }
       const result = tickRuneForgeChamber(completedState, 50)
-      expect(result.status).toBe('victory')
+      expect(result.status).toBe('playing')
+      expect(result.level).toBe(2)
+      expect(result.collectedWords).toHaveLength(0)
+    })
+
+    it('level 2 timer is maxTimer * 0.8', () => {
+      const state = createRuneForgeChamberState(mockVocabulary, { difficulty: 'easy' })
+      const completedState = {
+        ...state,
+        targetIndex: state.words.length,
+        collectedWords: state.words,
+      }
+      const level2 = tickRuneForgeChamber(completedState, 50)
+      const expectedTimer = state.maxTimer * 0.8
+      expect(level2.maxTimer).toBeCloseTo(expectedTimer, 0)
     })
   })
 
@@ -181,17 +200,18 @@ describe('runeForgeChamber', () => {
       expect(result.status).toBe('defeat')
     })
 
-    it('should set victory when all words collected', () => {
+    it('should advance to next level when all words collected', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
       let currentState = state
-      
+
       for (let i = 0; i < state.words.length; i++) {
         const targetWord = currentState.words[i]
         const targetCircle = currentState.circles.find(c => c.word === targetWord && !c.selected)!
         currentState = selectCircle(currentState, targetCircle.id)
       }
-      
-      expect(currentState.status).toBe('victory')
+
+      expect(currentState.status).toBe('playing')
+      expect(currentState.level).toBe(2)
     })
 
     it('should not allow selecting already selected circles', () => {

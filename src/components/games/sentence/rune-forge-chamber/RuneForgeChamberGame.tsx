@@ -2,7 +2,6 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Text, Group, Rect, Circle } from 'react-konva'
-import type Konva from 'konva'
 import {
   createRuneForgeChamberState,
   tickRuneForgeChamber,
@@ -97,7 +96,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
   }, 50)
 
   useEffect(() => {
-    if (gameState?.status === 'victory' || gameState?.status === 'defeat') {
+    if (gameState?.status === 'defeat') {
       if (gamePhase !== 'ended') {
         const accuracy = gameState.correctAnswers + gameState.wrongAnswers > 0
           ? gameState.correctAnswers / (gameState.correctAnswers + gameState.wrongAnswers)
@@ -122,39 +121,11 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
   }, [dimensions])
 
   const handleCircleClick = useCallback((circleId: string) => {
-    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
-      setGameState(prevState => {
-        if (!prevState || prevState.status !== 'playing') return prevState
-        return selectCircle(prevState, circleId)
-      })
-    }
-  }, [gameState, gamePhase])
-
-  const handleStageClick = useCallback((e: Konva.KonvaEventObject<MouseEvent>) => {
-    if (!gameState || gamePhase !== 'playing') return
-
-    const stage = e.target.getStage()
-    if (!stage) return
-    const clickPos = stage.getPointerPosition()
-    if (!clickPos) return
-
-    const scaledX = clickPos.x / scale
-    const scaledY = clickPos.y / scale
-
-    for (const circle of gameState.circles) {
-      if (circle.selected) continue
-
-      const circlePos = getCirclePosition(circle, gameState.runeStone, gameState.circleAngle)
-      const dx = scaledX - circlePos.x
-      const dy = scaledY - circlePos.y
-      const distance = Math.sqrt(dx * dx + dy * dy)
-
-      if (distance <= RUNE_FORGE_CHAMBER_CONFIG.circleRadius + 10) {
-        handleCircleClick(circle.id)
-        break
-      }
-    }
-  }, [gameState, gamePhase, scale, handleCircleClick])
+    setGameState(prevState => {
+      if (!prevState || prevState.status !== 'playing') return prevState
+      return selectCircle(prevState, circleId)
+    })
+  }, [])
 
   if (gamePhase === 'start') {
     return (
@@ -225,8 +196,6 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
           width={dimensions.width}
           height={dimensions.height}
           style={{ position: 'absolute', top: 0, left: 0 }}
-          onClick={handleStageClick}
-          onTap={handleStageClick}
         >
           <Layer>
             <Group scale={{ x: scale, y: scale }} offsetX={0} offsetY={0}>
@@ -282,9 +251,20 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                 const pos = getCirclePosition(circle, gameState.runeStone, gameState.circleAngle)
                 const isTarget = !circle.selected && circle.word === gameState.words[gameState.targetIndex]
                 const isSelected = circle.selected
+                const hitRadius = RUNE_FORGE_CHAMBER_CONFIG.circleRadius + 12
 
                 return (
-                  <Group key={circle.id} x={pos.x} y={pos.y}>
+                  <Group
+                    key={circle.id}
+                    x={pos.x}
+                    y={pos.y}
+                    onClick={!isSelected ? () => handleCircleClick(circle.id) : undefined}
+                    onTap={!isSelected ? () => handleCircleClick(circle.id) : undefined}
+                  >
+                    {/* Invisible larger hit area for easier tapping */}
+                    {!isSelected && (
+                      <Circle x={0} y={0} radius={hitRadius} fill="transparent" />
+                    )}
                     <Circle
                       x={0}
                       y={0}
@@ -372,6 +352,15 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                 fill="white"
                 fontStyle="bold"
               />
+
+              <Text
+                x={GAME_WIDTH / 2 - 30}
+                y={GAME_HEIGHT - 55}
+                text={`Level ${gameState.level}`}
+                fontSize={12}
+                fill="#fbbf24"
+                fontStyle="bold"
+              />
             </Group>
           </Layer>
         </Stage>
@@ -379,15 +368,15 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
 
       {gamePhase === 'ended' && gameState && results && (
         <GameEndScreen
-          status={gameState.status === 'victory' ? 'victory' : 'defeat'}
-          title={gameState.status === 'victory' ? 'Rune Forged!' : 'Rune Shattered!'}
-          subtitle={gameState.status === 'victory' ? 'You completed the ancient ritual!' : 'The forge grew too cold...'}
+          status="defeat"
+          title="Rune Shattered!"
+          subtitle={`The forge grew too cold... You reached level ${gameState.level}.`}
           score={gameState.correctAnswers * 10}
           xp={results.xp}
           accuracy={results.accuracy}
           customStats={[
+            { label: 'Levels Forged', value: gameState.level, icon: Gem },
             { label: 'Words Forged', value: gameState.correctAnswers, icon: BookOpen },
-            { label: 'Time Left', value: `${Math.ceil(gameState.timer / 1000)}s`, icon: Clock },
             { label: 'Rune Integrity', value: gameState.player.health, icon: Heart },
           ]}
           onRestart={() => {
