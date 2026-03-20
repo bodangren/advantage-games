@@ -205,7 +205,7 @@ export default function AbyssalWellPage() {
           <Flame className="h-8 w-8 text-primary" />
         </Header>
 
-        <AbyssalWellGame vocabulary={sentences} onComplete={handleComplete} />
+        <AbyssalWellGame sentences={sentences} onComplete={handleComplete} />
       </div>
     </main>
   );

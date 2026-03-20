@@ -27,11 +27,11 @@ export type AbyssalWellGameResult = {
 }
 
 interface AbyssalWellGameProps {
-  vocabulary: VocabularyItem[]
+  sentences: VocabularyItem[]
   onComplete: (results: AbyssalWellGameResult) => void
 }
 
-export function AbyssalWellGame({ vocabulary, onComplete }: AbyssalWellGameProps) {
+export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps) {
   const [gameState, setGameState] = useState<AbyssalWellState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<AbyssalWellGameResult | null>(null)
@@ -44,8 +44,8 @@ export function AbyssalWellGame({ vocabulary, onComplete }: AbyssalWellGameProps
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
-    if (vocabulary.length > 0) {
-      setGameState(createAbyssalWellState(vocabulary, {
+    if (sentences.length > 0) {
+      setGameState(createAbyssalWellState(sentences, {
         difficulty: selectedDifficulty,
         creatureType: selectedCreature,
       }))
@@ -53,13 +53,13 @@ export function AbyssalWellGame({ vocabulary, onComplete }: AbyssalWellGameProps
       hasReportedRef.current = false
       lastSpawnRef.current = 0
     }
-  }, [vocabulary, selectedDifficulty, selectedCreature])
+  }, [sentences, selectedDifficulty, selectedCreature])
 
   useEffect(() => {
-    if (vocabulary.length > 0 && gamePhase === 'start') {
+    if (sentences.length > 0 && gamePhase === 'start') {
       resetGame()
     }
-  }, [vocabulary, gamePhase, resetGame])
+  }, [sentences, gamePhase, resetGame])
 
   useEffect(() => {
     if (!containerRef.current) return

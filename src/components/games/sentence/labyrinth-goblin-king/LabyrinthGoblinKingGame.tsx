@@ -26,11 +26,11 @@ export type LabyrinthGoblinKingGameResult = {
 }
 
 interface LabyrinthGoblinKingGameProps {
-  vocabulary: VocabularyItem[]
+  sentences: VocabularyItem[]
   onComplete: (results: LabyrinthGoblinKingGameResult) => void
 }
 
-export function LabyrinthGoblinKingGame({ vocabulary, onComplete }: LabyrinthGoblinKingGameProps) {
+export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGoblinKingGameProps) {
   const [gameState, setGameState] = useState<LabyrinthGoblinKingState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<LabyrinthGoblinKingGameResult | null>(null)
@@ -43,21 +43,21 @@ export function LabyrinthGoblinKingGame({ vocabulary, onComplete }: LabyrinthGob
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
-    if (vocabulary.length > 0) {
-      setGameState(createLabyrinthGoblinKingState(vocabulary[0], {
+    if (sentences.length > 0) {
+      setGameState(createLabyrinthGoblinKingState(sentences[0], {
         difficulty: selectedDifficulty,
         goblinType: selectedGoblinType,
       }))
       setResults(null)
       hasReportedRef.current = false
     }
-  }, [vocabulary, selectedDifficulty, selectedGoblinType])
+  }, [sentences, selectedDifficulty, selectedGoblinType])
 
   useEffect(() => {
-    if (vocabulary.length > 0 && gamePhase === 'start') {
+    if (sentences.length > 0 && gamePhase === 'start') {
       resetGame()
     }
-  }, [vocabulary, gamePhase, resetGame])
+  }, [sentences, gamePhase, resetGame])
 
   useEffect(() => {
     if (!containerRef.current) return

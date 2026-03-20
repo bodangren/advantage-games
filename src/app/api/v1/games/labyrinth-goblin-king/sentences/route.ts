@@ -1,10 +1,4 @@
-import { NextResponse } from "next/server";
+import { createSentencesRoute } from "@/lib/games/api";
 import { SAMPLE_SENTENCES } from "@/lib/games/sampleSentences";
 
-export const dynamic = "force-static";
-
-export async function GET() {
-  return NextResponse.json({
-    sentences: SAMPLE_SENTENCES,
-  });
-}
+export const { GET } = createSentencesRoute(SAMPLE_SENTENCES);

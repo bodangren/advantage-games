@@ -205,7 +205,7 @@ export default function LabyrinthGoblinKingPage() {
           <Skull className="h-8 w-8 text-primary" />
         </Header>
 
-        <LabyrinthGoblinKingGame vocabulary={sentences} onComplete={handleComplete} />
+        <LabyrinthGoblinKingGame sentences={sentences} onComplete={handleComplete} />
       </div>
     </main>
   );

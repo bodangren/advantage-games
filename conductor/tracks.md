@@ -226,5 +226,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Game Triage and Fidelity Audit (Post-Spellweaver's Run)**
+- [~] **Track: Game Triage and Fidelity Audit (Post-Spellweaver's Run)**
 *Link: [./conductor/tracks/game-triage-fidelity-20260320/](./conductor/tracks/game-triage-fidelity-20260320/)*
+*Status: 🔄 IN PROGRESS*
