@@ -43,39 +43,45 @@ This plan outlines the steps to build "Labyrinth of the Goblin King" using **Rea
 ## Phase 4: Input & Controls
 **Assets Required:** Virtual DPad (reuse existing)
 
-- [ ] Task: Implement touch DPad handling
-- [ ] Task: Implement keyboard arrow key handling
-- [ ] Task: Ensure 44×44px minimum touch targets
-- [ ] Task: Conductor - Mark Phase 4 complete
+- [x] Task: Implement touch DPad handling
+- [x] Task: Implement keyboard arrow key handling
+- [x] Task: Ensure 44×44px minimum touch targets
+- [x] Task: Conductor - Mark Phase 4 complete
+
+---
 
 ## Phase 5: UI & HUD
 **Assets Required:** UI elements (hearts, timer)
 
-- [ ] Task: Implement translation display at top
-- [ ] Task: Implement lives display (hearts)
-- [ ] Task: Implement collected words display
-- [ ] Task: Implement heroic aura timer bar
-- [ ] Task: Implement score/XP display
-- [ ] Task: Conductor - Mark Phase 5 complete
+- [x] Task: Implement translation display at top
+- [x] Task: Implement lives display (hearts)
+- [x] Task: Implement collected words display
+- [x] Task: Implement heroic aura timer bar
+- [x] Task: Implement score/XP display
+- [x] Task: Conductor - Mark Phase 5 complete
+
+---
 
 ## Phase 6: Game States
 **Assets Required:** Start/end screen backgrounds
 
-- [ ] Task: Implement start/title screen with difficulty selection
-- [ ] Task: Implement opponent type selection
-- [ ] Task: Implement victory state and XP display
-- [ ] Task: Implement defeat state
-- [ ] Task: Implement pause functionality
-- [ ] Task: Conductor - Mark Phase 6 complete
+- [x] Task: Implement start/title screen with difficulty selection
+- [x] Task: Implement opponent type selection
+- [x] Task: Implement victory state and XP display
+- [x] Task: Implement defeat state
+- [x] Task: Implement pause functionality
+- [x] Task: Conductor - Mark Phase 6 complete
+
+---
 
 ## Phase 7: Polish & Integration
 **Assets Required:** Effects, particles
 
-- [ ] Task: Add visual feedback and juice (particles, screen shake)
-- [ ] Task: Implement sound effects (useSound hook)
+- [x] Task: Add visual feedback and juice (particles, screen shake)
+- [x] Task: Implement sound effects (useSound hook)
 - [x] Task: Create mock API routes (sentences, complete)
 - [x] Task: Register game in gameCards.ts
-- [ ] Task: Balance tuning based on playtesting
+- [x] Task: Balance tuning based on playtesting
 - [x] Task: Conductor - Mark Phase 7 complete
 
 ---

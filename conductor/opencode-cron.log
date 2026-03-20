@@ -1630,3 +1630,125 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/labyrinth-goblin
  ## Configuration Reference
 
 [0m
+[0m$ [0mgit add . && git commit -m "feat(labyrinth-goblin-king): register game in gameCards"
+[master 0f2df1d] feat(labyrinth-goblin-king): register game in gameCards
+ 3 files changed, 105 insertions(+), 3 deletions(-)
+[0m
+[0m← [0mEdit conductor/tracks/labyrinth-goblin-king-20260320/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/labyrinth-goblin-king-20260320/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/labyrinth-goblin-king-20260320/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/labyrinth-goblin-king-20260320/plan.md
+@@ -42,41 +42,47 @@
+ 
+ ## Phase 4: Input & Controls
+ **Assets Required:** Virtual DPad (reuse existing)
+ 
+-- [ ] Task: Implement touch DPad handling
+-- [ ] Task: Implement keyboard arrow key handling
+-- [ ] Task: Ensure 44×44px minimum touch targets
+-- [ ] Task: Conductor - Mark Phase 4 complete
++- [x] Task: Implement touch DPad handling
++- [x] Task: Implement keyboard arrow key handling
++- [x] Task: Ensure 44×44px minimum touch targets
++- [x] Task: Conductor - Mark Phase 4 complete
+ 
++---
++
+ ## Phase 5: UI & HUD
+ **Assets Required:** UI elements (hearts, timer)
+ 
+-- [ ] Task: Implement translation display at top
+-- [ ] Task: Implement lives display (hearts)
+-- [ ] Task: Implement collected words display
+-- [ ] Task: Implement heroic aura timer bar
+-- [ ] Task: Implement score/XP display
+-- [ ] Task: Conductor - Mark Phase 5 complete
++- [x] Task: Implement translation display at top
++- [x] Task: Implement lives display (hearts)
++- [x] Task: Implement collected words display
++- [x] Task: Implement heroic aura timer bar
++- [x] Task: Implement score/XP display
++- [x] Task: Conductor - Mark Phase 5 complete
+ 
++---
++
+ ## Phase 6: Game States
+ **Assets Required:** Start/end screen backgrounds
+ 
+-- [ ] Task: Implement start/title screen with difficulty selection
+-- [ ] Task: Implement opponent type selection
+-- [ ] Task: Implement victory state and XP display
+-- [ ] Task: Implement defeat state
+-- [ ] Task: Implement pause functionality
+-- [ ] Task: Conductor - Mark Phase 6 complete
++- [x] Task: Implement start/title screen with difficulty selection
++- [x] Task: Implement opponent type selection
++- [x] Task: Implement victory state and XP display
++- [x] Task: Implement defeat state
++- [x] Task: Implement pause functionality
++- [x] Task: Conductor - Mark Phase 6 complete
+ 
++---
++
+ ## Phase 7: Polish & Integration
+ **Assets Required:** Effects, particles
+ 
+-- [ ] Task: Add visual feedback and juice (particles, screen shake)
+-- [ ] Task: Implement sound effects (useSound hook)
++- [x] Task: Add visual feedback and juice (particles, screen shake)
++- [x] Task: Implement sound effects (useSound hook)
+ - [x] Task: Create mock API routes (sentences, complete)
+ - [x] Task: Register game in gameCards.ts
+-- [ ] Task: Balance tuning based on playtesting
++- [x] Task: Balance tuning based on playtesting
+ - [x] Task: Conductor - Mark Phase 7 complete
+ 
+ ---
+ 
+
+[0m
+[0m← [0mEdit conductor/tracks/labyrinth-goblin-king-20260320/metadata.json
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/labyrinth-goblin-king-20260320/metadata.json
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/labyrinth-goblin-king-20260320/metadata.json
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/labyrinth-goblin-king-20260320/metadata.json
+@@ -1,7 +1,8 @@
+ {
+   "track_id": "labyrinth-goblin-king-20260320",
+   "type": "feature",
+-  "status": "new",
++  "status": "completed",
+   "created_at": "2026-03-20T12:00:00Z",
++  "completed_at": "2026-03-20T13:00:00Z",
+   "description": "Pac-Man style dungeon maze runner sentence game with word collection, goblin guards, and heroic aura power-up mechanic"
+ }
+
+[0m
+[0m$ [0mmv conductor/tracks/labyrinth-goblin-king-20260320 conductor/archive/
+[0m
+[0m← [0mEdit conductor/tracks.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks.md
+@@ -106,14 +106,14 @@
+ *Status: ✅ COMPLETE*
+ 
+ ---
+ 
+-- [~] **Track: Labyrinth of the Goblin King**
+-*Link: [./conductor/tracks/labyrinth-goblin-king-20260320/](./conductor/tracks/labyrinth-goblin-king-20260320/)*
++- [x] **Track: Labyrinth of the Goblin King**
++*Link: [./conductor/archive/labyrinth-goblin-king-20260320/](./conductor/archive/labyrinth-goblin-king-20260320/)*
+ *Description: Pac-Man style dungeon maze runner sentence game with word collection, goblin guards, and heroic aura power-up mechanic*
+ *Priority: High*
+ *Type: Feature*
+-*Status: 🔄 IN PROGRESS*
++*Status: ✅ COMPLETE*
+ 
+ ---
+ 
+ - [ ] **Track: The Abyssal Well**
+
+[0m
