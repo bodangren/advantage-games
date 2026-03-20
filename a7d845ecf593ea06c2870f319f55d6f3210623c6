@@ -1,0 +1,12 @@
+Task: Fix Village Guardian - multi-level progression
+
+Summary: Removed 'victory' GameStatus. When knight reaches sanctuary with all words,
+game advances to next level: picks new sentence, spawns new villagers, adds +1 monster
+per level (max 4), increases monster speed by 12% per level.
+
+Files changed:
+- src/lib/games/villageGuardian.ts: level + vocabulary in state, advanceLevelIfComplete()
+- src/lib/games/villageGuardianConfig.ts: maxMonsters=4, monsterSpeedScalePerLevel=0.12
+- src/components/games/sentence/village-guardian/VillageGuardianGame.tsx: remove victory, show level
+- src/lib/games/__tests__/villageGuardian.test.ts: updated tests for level progression
+- conductor/tracks/game-triage-fidelity-20260320/plan.md: added bug fix tasks
