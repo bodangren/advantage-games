@@ -45,7 +45,9 @@ This plan outlines the steps to audit and patch games developed after 'Spellweav
 
 ### Phase 2 Additional Bug Fixes (Manual Verification Round 2)
 
-- [~] Task: Fix Shadow Gate Dungeon — shrink all entities (player/creature/crystals) for mobile portrait canvas, reduce sight radius from 67% to ~40% of canvas width, reduce patrol radius, slow creature chase speeds, increase tick rate from 20 FPS to 60 FPS for responsive controls, reduce chase duration.
+- [x] Task: Fix Shadow Gate Dungeon — shrink all entities (player/creature/crystals) for mobile portrait canvas, reduce sight radius from 67% to ~40% of canvas width, reduce patrol radius, slow creature chase speeds, increase tick rate from 20 FPS to 60 FPS for responsive controls, reduce chase duration. 2926f49
+- [x] Task: Migrate all 6 action games from setInterval(50ms) to requestAnimationFrame for smooth 60 FPS. 4dc8f8e
+- [x] Task: Update vocab-game-builder skill and GameNameGame.tsx template to use rAF pattern. c1714f7
 
 ## Phase 3: Triage & Patch - Archived Games (Set 2)
 **Goal:** Audit and fix 'Labyrinth of the Goblin King' and 'The Abyssal Well'.
