@@ -192,6 +192,7 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
           icon={Skull}
           onStart={() => {
             resetGame()
+            setGameState(prev => prev ? startLabyrinthGoblinKing(prev) : prev)
             setGamePhase('playing')
           }}
         >
