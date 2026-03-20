@@ -1,0 +1,12 @@
+Task: Fix Shadow Gate Dungeon — speed, keyboard, patrol AI differentiation
+
+Summary: Creature now follows a circular patrol path and only chases when player enters
+its sight radius (130px). Chase lasts 2.5s then creature returns to patrol.
+Reduced speeds significantly. Fixed keyboard repeat bug with Set-based key tracking.
+Added sight ring, alert indicator, and stealth HUD status.
+
+Files changed:
+- src/lib/games/shadowGateDungeonConfig.ts: new patrol/chase speeds, sightRadius, chaseDuration, patrolRadius/center
+- src/lib/games/shadowGateDungeon.ts: CreatureMode type, patrol/chase AI in tickShadowGateDungeon
+- src/lib/games/shadowGateDungeon.test.ts: updated creature movement tests
+- src/components/games/sentence/shadow-gate-dungeon/ShadowGateDungeonGame.tsx: Set-based keyboard, stealth visuals
