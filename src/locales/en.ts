@@ -659,6 +659,11 @@ export default {
             description:
               "Ride your dragon through the skies, collecting words and defeating enemies to save the kingdom!",
           },
+          griffinRidersEscape: {
+            title: "Griffin Rider's Escape",
+            description:
+              "Soar through the skies on your griffin and collect words to complete the sentence!",
+          },
         },
 
         // Sections

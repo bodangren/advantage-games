@@ -5,7 +5,7 @@ import type { VocabularyItem } from "@/store/useGameStore";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
-  Shield,
+  Bird,
   ArrowLeft,
   Trophy,
   Gamepad2,
@@ -21,8 +21,8 @@ import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
-const DungeonLiberatorGame = dynamic(
-  () => import("@/components/games/sentence/dungeon-liberator/DungeonLiberatorGame"),
+const GryphonPatrolGame = dynamic(
+  () => import("@/components/games/sentence/gryphon-patrol/GryphonPatrolGame"),
   { ssr: false },
 );
 
@@ -41,7 +41,7 @@ type WarningStatus = {
   currentCount?: number;
 };
 
-export default function DungeonLiberatorPage() {
+export default function GryphonPatrolPage() {
   const [vocabList, setVocabList] = useState<VocabularyItem[]>([]);
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [activeTab, setActiveTab] = useState<"game" | "rankings">("game");
@@ -52,14 +52,14 @@ export default function DungeonLiberatorPage() {
   });
 
   const locale = useCurrentLocale();
-  const t = useScopedI18n("pages.student.gamesPage.dungeonLiberator");
+  const t = useScopedI18n("pages.student.gamesPage.gryphonPatrol");
 
   useEffect(() => {
     const fetchSentences = async () => {
       try {
         setIsLoading(true);
         const res = await fetch(
-          `/api/v1/games/dungeon-liberator/sentences?locale=${locale}`,
+          `/api/v1/games/gryphon-patrol/sentences?locale=${locale}`,
         );
         const data = await res.json();
 
@@ -91,7 +91,7 @@ export default function DungeonLiberatorPage() {
 
   const fetchRankings = useCallback(async () => {
     try {
-      const res = await fetch("/api/v1/games/dungeon-liberator/ranking");
+      const res = await fetch("/api/v1/games/gryphon-patrol/ranking");
       const data = await res.json();
       if (data.rankings) {
         setRankings(data.rankings);
@@ -115,7 +115,7 @@ export default function DungeonLiberatorPage() {
       score: number;
     }) => {
       try {
-        await fetch("/api/v1/games/dungeon-liberator/complete", {
+        await fetch("/api/v1/games/gryphon-patrol/complete", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -124,8 +124,8 @@ export default function DungeonLiberatorPage() {
             score: results.score,
             accuracy: results.accuracy,
             difficulty: results.difficulty,
-            correctAnswers: results.xp,
-            totalAttempts: results.xp + 2,
+            correctAnswers: results.xp, // Adjust as needed
+            totalAttempts: results.xp + 2, // Adjust as needed
             gameTime: 0,
           }),
         });
@@ -163,22 +163,22 @@ export default function DungeonLiberatorPage() {
           </Button>
 
           <Header
-            heading="Dungeon Liberator"
-            text="Rescue the prisoners and lead them to freedom!"
+            heading="Gryphon Patrol"
+            text="Patrol the skies and hunt down the target words!"
           >
-            <Shield className="h-8 w-8 text-primary" />
+            <Bird className="h-8 w-8 text-primary" />
           </Header>
 
           <div className="flex items-center justify-center min-h-[70vh]">
             <div className="max-w-2xl w-full">
-              <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border-2 border-blue-500/30 rounded-3xl p-8 md:p-12 shadow-2xl backdrop-blur-sm">
+              <div className="bg-gradient-to-br from-amber-500/10 to-red-500/10 border-2 border-amber-500/30 rounded-3xl p-8 md:p-12 shadow-2xl backdrop-blur-sm">
                 <div className="flex justify-center mb-6">
-                  <div className="bg-blue-500/20 p-6 rounded-full border-2 border-blue-500/50">
-                    <AlertTriangle className="w-16 h-16 text-blue-400" />
+                  <div className="bg-amber-500/20 p-6 rounded-full border-2 border-amber-500/50">
+                    <AlertTriangle className="w-16 h-16 text-amber-400" />
                   </div>
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-transparent">
+                <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 bg-gradient-to-r from-amber-300 to-red-300 bg-clip-text text-transparent">
                   {warningStatus.type === "NO_SENTENCES"
                     ? "No Sentences Found"
                     : "Insufficient Sentences"}
@@ -230,11 +230,11 @@ export default function DungeonLiberatorPage() {
             <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
           </Link>
           <div className="min-w-0">
-            <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent truncate">
-              {"Dungeon Liberator"}
+            <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent truncate">
+              {"Gryphon Patrol"}
             </h1>
             <p className="text-xs text-white/50 hidden sm:block">
-              Overhead snake rescue mission
+              Hunt the sentence across the skies
             </p>
           </div>
         </div>
@@ -245,7 +245,7 @@ export default function DungeonLiberatorPage() {
             className={cn(
               "px-2 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-1 sm:gap-2",
               activeTab === "game"
-                ? "bg-blue-600 text-white shadow-md"
+                ? "bg-amber-600 text-white shadow-md"
                 : "text-white/60 hover:text-white",
             )}
           >
@@ -257,7 +257,7 @@ export default function DungeonLiberatorPage() {
             className={cn(
               "px-2 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-1 sm:gap-2",
               activeTab === "rankings"
-                ? "bg-amber-600 text-white shadow-md"
+                ? "bg-yellow-600 text-white shadow-md"
                 : "text-white/60 hover:text-white",
             )}
           >
@@ -291,7 +291,7 @@ export default function DungeonLiberatorPage() {
 
             <div className="flex-1 h-full w-full bg-neutral-900 relative">
               <div className="absolute inset-0">
-                <DungeonLiberatorGame
+                <GryphonPatrolGame
                   vocabList={vocabList}
                   difficulty={difficulty}
                   onComplete={handleComplete}
@@ -342,7 +342,7 @@ export default function DungeonLiberatorPage() {
                             <div className="flex-1 truncate font-medium text-white/80">
                               {entry.name}
                             </div>
-                            <div className="font-mono text-blue-400 font-bold">
+                            <div className="font-mono text-amber-400 font-bold">
                               {entry.xp.toLocaleString()} XP
                             </div>
                           </div>

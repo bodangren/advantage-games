@@ -158,12 +158,21 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Type: Feature*
 *Status: ✅ COMPLETE*
 
-- [~] **Track: Gryphon Patrol**
-*Link: [./conductor/tracks/gryphon-patrol-20260321/](./conductor/tracks/gryphon-patrol-20260321/)*
+- [x] **Track: Gryphon Patrol**
+*Link: [./conductor/archive/gryphon-patrol-20260321/](./conductor/archive/gryphon-patrol-20260321/)*
 *Description: Defender-style multi-directional scrolling sentence game with mini-map tracking*
 *Priority: Medium*
 *Type: Feature*
-*Status: 🆕 NEW*
+*Status: ✅ COMPLETE*
+
+---
+
+- [x] **Track: Dungeon Liberator**
+*Link: [./conductor/archive/dungeon-liberator-20260321/](./conductor/archive/dungeon-liberator-20260321/)*
+*Description: Overhead snake-style trailing line sentence game with dungeon rescue theme*
+*Priority: High*
+*Type: Feature*
+*Status: ✅ COMPLETE*
 
 ---
 
@@ -171,6 +180,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Description: Subway Surfers style 3D endless runner*
 *Priority: Medium*
 *Type: Feature*
+*Link: [./conductor/tracks/griffin-riders-escape/](./conductor/tracks/griffin-riders-escape/)*
 
 ---
 
@@ -204,13 +214,6 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [ ] **Track: Paladin's Twin-Soul**
 *Description: Galaga-style capture and rescue vocabulary game*
-*Priority: Medium*
-*Type: Feature*
-
----
-
-- [ ] **Track: Gryphon Patrol**
-*Description: Defender-style multi-directional scrolling sentence game*
 *Priority: Medium*
 *Type: Feature*
 
