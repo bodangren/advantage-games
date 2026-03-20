@@ -58,16 +58,42 @@ This plan outlines the steps to audit and patch games developed after 'Spellweav
 - [x] Task: Audit 'The Abyssal Well' against checklist and identify bugs.
 - [x] Task: Fix identified bugs in 'The Abyssal Well' (UI, Logic, Gameplay).
 - [x] Task: Verify >80% coverage and architectural fidelity for 'The Abyssal Well'.
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Triage & Patch - Archived Games (Set 2)' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Triage & Patch - Archived Games (Set 2)' (Protocol in workflow.md)
+
+### Phase 3 Manual Verification — Bugs Found
+
+**Labyrinth of the Goblin King:**
+- API routes missing `export const dynamic = "force-static"` — 500 error on sentence fetch.
+- `vocabulary` undefined on start screen — ReferenceError (should use `sentences` prop).
+- Game canvas rendered but nothing moved — `startLabyrinthGoblinKing()` was imported but never called, so state stayed at `status: 'start'`.
+- Arrow keys scrolled the page instead of moving the player.
+- Movement required pixel-perfect alignment to turn corners — no corner-rounding.
+- Player stopped when keys released (not Pac-Man style continuous movement).
+- Goblins stuck bouncing in dead-ends (free-roaming collision, not tile-based pathing).
+- After clearing all words and eating all goblins, empty board with nothing to do.
+- Heroic aura powerup too long.
+
+**The Abyssal Well:**
+- Same API route `force-static` bug.
+- Same `vocabulary` undefined on start screen.
+
+### Phase 3 Bug Fixes
+
+- [x] Task: Fix missing `export const dynamic = "force-static"` on 4 API routes (labyrinth + abyssal sentences/complete). Fix both API route templates to prevent recurrence. 1bb4130
+- [x] Task: Fix `vocabulary` → `sentences` prop reference on start screens for both games. aa322fe
+- [x] Task: Fix Labyrinth — call `startLabyrinthGoblinKing()` to transition game to playing state. d580980
+- [x] Task: Fix Labyrinth — Pac-Man style movement (always moving, arrows change direction), corner-rounding snap, arrow key preventDefault. 61360fe
+- [x] Task: Fix Labyrinth — tile-based goblin AI at intersections, sentence cycling on word completion, goblin respawn on eaten, pass full sentences array. 475b1a5
+- [x] Task: Fix Labyrinth — goblin nudge past tile center to prevent stuck-at-center bug, respawn at far floor positions, reduce heroic aura to 6s. eee2278
 
 ## Phase 4: Triage & Patch - Active/Planned Games
 **Goal:** Audit and fix 'Archer's Revenge', 'Griffin Sky-Joust', and 'Realm Carver'.
 
-- [ ] Task: Audit 'Archer's Revenge' (Active Track) against checklist.
-- [ ] Task: Fix/Ensure fidelity for 'Archer's Revenge' features.
-- [ ] Task: Verify >80% coverage for 'Archer's Revenge'.
+- [x] Task: Audit 'Archer's Revenge' (Active Track) against checklist.
+- [x] Task: Fix/Ensure fidelity for 'Archer's Revenge' features (Shared screens, rAF loop, mobile UI).
+- [x] Task: Verify >80% coverage for 'Archer's Revenge'.
 - [ ] Task: (If started) Audit 'Griffin Sky-Joust' and 'Realm Carver' specs and early code.
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Triage & Patch - Active/Planned Games' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Triage & Patch - Active/Planned Games' (Protocol in workflow.md)
 
 ## Phase 5: Final Platform Verification
 **Goal:** Ensure all audited games work harmoniously on the platform.
