@@ -1,0 +1,3 @@
+Task: Create game-fidelity-checklist.md and coverage script
+Summary: Created conductor/notes/game-fidelity-checklist.md with 8 sections (File Structure, Architecture, Prop Contracts, Page Structure, API Routes, Mobile/UI, Tests, Game Registry). Coverage script at scripts/check-game-coverage.sh runs jest coverage for all 6 audit target games. Baseline coverage: 88% statements, 87% branches, 93% functions — all above 80% threshold.
+Files: conductor/notes/game-fidelity-checklist.md, scripts/check-game-coverage.sh
