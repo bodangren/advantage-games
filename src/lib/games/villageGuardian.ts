@@ -9,7 +9,7 @@ import {
   GAME_HEIGHT,
 } from './villageGuardianConfig'
 
-export type GameStatus = 'start' | 'playing' | 'victory' | 'defeat'
+export type GameStatus = 'start' | 'playing' | 'defeat'
 
 export type Position = {
   x: number
@@ -63,6 +63,8 @@ export type VillageGuardianState = {
   status: GameStatus
   difficulty: Difficulty
   opponentType: OpponentType
+  level: number
+  vocabulary: VocabularyItem[]
   knight: Knight
   villagers: Villager[]
   trail: TrailSegment[]
@@ -212,6 +214,8 @@ export function createVillageGuardianState(
     status: 'playing',
     difficulty,
     opponentType,
+    level: 1,
+    vocabulary,
     knight,
     villagers,
     trail: [],
@@ -249,7 +253,7 @@ export function tickVillageGuardian(
   newState = updateTrail(newState)
   newState = updateMonsters(newState, deltaMs)
   newState = checkCollisions(newState)
-  newState = checkVictoryCondition(newState)
+  newState = advanceLevelIfComplete(newState)
 
   if (newState.knight.lives <= 0) {
     newState.status = 'defeat'
@@ -551,7 +555,7 @@ function checkCollisions(state: VillageGuardianState): VillageGuardianState {
   }
 }
 
-function checkVictoryCondition(state: VillageGuardianState): VillageGuardianState {
+function advanceLevelIfComplete(state: VillageGuardianState): VillageGuardianState {
   const { knight, trail, sanctuary, words, status } = state
 
   if (status !== 'playing') return state
@@ -560,9 +564,41 @@ function checkVictoryCondition(state: VillageGuardianState): VillageGuardianStat
   const dy = knight.y - sanctuary.y
   const dist = Math.sqrt(dx * dx + dy * dy)
 
-  if (dist < VILLAGE_GUARDIAN_CONFIG.knightSize / 2 + sanctuary.radius) {
-    if (trail.length === words.length) {
-      return { ...state, status: 'victory' }
+  if (dist < VILLAGE_GUARDIAN_CONFIG.knightSize / 2 + sanctuary.radius && trail.length === words.length) {
+    const rng = Math.random
+    const nextLevel = state.level + 1
+    const diffConfig = getDifficultyConfig(state.difficulty)
+
+    // Pick a new sentence
+    const sentenceIndex = Math.floor(rng() * state.vocabulary.length)
+    const nextSentence = state.vocabulary[sentenceIndex]
+    const nextWords = nextSentence.term.split(' ')
+    const wordCount = Math.min(diffConfig.wordCount, nextWords.length)
+    const activeWords = nextWords.slice(0, wordCount)
+
+    // Spawn new villagers
+    const newVillagers = spawnVillagers(activeWords, nextSentence, rng)
+
+    // Add one more monster per level, capped at maxMonsters, with scaled speed
+    const speedScale = 1 + VILLAGE_GUARDIAN_CONFIG.monsterSpeedScalePerLevel * (nextLevel - 1)
+    const targetMonsterCount = Math.min(nextLevel, VILLAGE_GUARDIAN_CONFIG.maxMonsters)
+    const newMonsters: Monster[] = Array.from({ length: targetMonsterCount }, () => {
+      const m = spawnMonster(state.opponentType, rng)
+      return { ...m, speed: m.speed * speedScale }
+    })
+
+    return {
+      ...state,
+      level: nextLevel,
+      currentSentence: nextSentence,
+      words: activeWords,
+      villagers: newVillagers,
+      trail: [],
+      collectedWords: [],
+      targetIndex: 0,
+      monsters: newMonsters,
+      timer: diffConfig.timer,
+      maxTimer: diffConfig.timer,
     }
   }
 

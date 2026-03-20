@@ -97,7 +97,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
   }, 50)
 
   useEffect(() => {
-    if (gameState?.status === 'victory' || gameState?.status === 'defeat') {
+    if (gameState?.status === 'defeat') {
       if (gamePhase !== 'ended') {
         const accuracy = gameState.correctAnswers + gameState.wrongAnswers > 0
           ? gameState.correctAnswers / (gameState.correctAnswers + gameState.wrongAnswers)
@@ -436,6 +436,15 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   fill="white"
                   fontStyle="bold"
                 />
+
+                <Text
+                  x={GAME_WIDTH / 2 - 30}
+                  y={GAME_HEIGHT - 35}
+                  text={`Level ${gameState.level}`}
+                  fontSize={12}
+                  fill="#fbbf24"
+                  fontStyle="bold"
+                />
               </Group>
             </Layer>
           </Stage>
@@ -448,15 +457,15 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
 
       {gamePhase === 'ended' && gameState && results && (
         <GameEndScreen
-          status={gameState.status === 'victory' ? 'victory' : 'defeat'}
-          title={gameState.status === 'victory' ? 'Village Saved!' : 'Village Overrun!'}
-          subtitle={gameState.status === 'victory' ? 'You led the villagers to safety!' : 'The monsters were too strong...'}
+          status="defeat"
+          title="Village Overrun!"
+          subtitle={`The monsters were too strong... You reached level ${gameState.level}.`}
           score={gameState.correctAnswers * 10}
           xp={results.xp}
           accuracy={results.accuracy}
           customStats={[
+            { label: 'Levels Survived', value: gameState.level, icon: Users },
             { label: 'Villagers Saved', value: gameState.correctAnswers, icon: Users },
-            { label: 'Time Left', value: `${Math.ceil(gameState.timer / 1000)}s`, icon: Clock },
             { label: 'Lives Left', value: gameState.knight.lives, icon: Heart },
           ]}
           onRestart={() => {

@@ -23,6 +23,26 @@ This plan outlines the steps to audit and patch games developed after 'Spellweav
 - [x] Task: Verify >80% coverage and architectural fidelity for 'Village Guardian'. 4a87838
 - [~] Task: Conductor - User Manual Verification 'Phase 2: Triage & Patch - Archived Games (Set 1)' (Protocol in workflow.md)
 
+### Phase 2 Manual Verification — Bugs Found
+
+**Village Guardian:**
+- Game ends after one level (victory). Should continue until player dies with more/faster opponents each level (no victory state).
+
+**Shadow Gate Dungeon:**
+- Monster too fast and too aggressive — player can't escape.
+- Arrow keys stop responding for ~1 second (keyboard repeat delay bug).
+- Gameplay too similar to Village Guardian — needs significant differentiation.
+
+**Rune Forge Chamber:**
+- Touch/click targets too small or not responsive to mouse clicks.
+- Needs multi-level timer progression: level 1 timer doubles current value, each subsequent level reduces by 20%.
+
+### Phase 2 Bug Fixes
+
+- [~] Task: Fix Village Guardian — multi-level progression, remove victory state, add monsters per level.
+- [ ] Task: Fix Shadow Gate Dungeon — reduce creature speed, fix keyboard repeat delay, redesign creature AI as patrol/stealth (differentiated from Village Guardian and other dungeon games).
+- [ ] Task: Fix Rune Forge Chamber — fix click/tap targets, implement multi-level timer progression (level 1 = 2×timer, each level −20%).
+
 ## Phase 3: Triage & Patch - Archived Games (Set 2)
 **Goal:** Audit and fix 'Labyrinth of the Goblin King' and 'The Abyssal Well'.
 

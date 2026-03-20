@@ -210,8 +210,8 @@ describe('villager collision mechanics', () => {
   })
 })
 
-describe('victory condition', () => {
-  it('sets victory when knight reaches sanctuary with full trail', () => {
+describe('level progression (no victory state)', () => {
+  it('advances to level 2 when knight reaches sanctuary with full trail', () => {
     const state = createVillageGuardianState(mockVocabulary, { difficulty: 'easy' })
     const fullTrail = state.words.map((word, i) => ({
       id: `trail-${i}`,
@@ -220,7 +220,7 @@ describe('victory condition', () => {
       word,
       orderIndex: i,
     }))
-    const victoryState: VillageGuardianState = {
+    const completedState: VillageGuardianState = {
       ...state,
       knight: {
         ...state.knight,
@@ -230,16 +230,42 @@ describe('victory condition', () => {
       trail: fullTrail,
       targetIndex: state.words.length,
     }
-    const newState = tickVillageGuardian(victoryState, 50)
-    expect(newState.status).toBe('victory')
+    const newState = tickVillageGuardian(completedState, 50)
+    expect(newState.status).toBe('playing')
+    expect(newState.level).toBe(2)
+    expect(newState.trail).toHaveLength(0)
+    expect(newState.collectedWords).toHaveLength(0)
   })
 
-  it('does not set victory when trail is not full', () => {
+  it('adds an extra monster each level (up to max)', () => {
+    const state = createVillageGuardianState(mockVocabulary, { difficulty: 'easy' })
+    const fullTrail = state.words.map((word, i) => ({
+      id: `trail-${i}`,
+      x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
+      y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
+      word,
+      orderIndex: i,
+    }))
+    const completedState: VillageGuardianState = {
+      ...state,
+      knight: {
+        ...state.knight,
+        x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
+        y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
+      },
+      trail: fullTrail,
+      targetIndex: state.words.length,
+    }
+    const level2 = tickVillageGuardian(completedState, 50)
+    expect(level2.monsters.length).toBe(2)
+  })
+
+  it('does not advance level when trail is not full', () => {
     const state = createVillageGuardianState(mockVocabulary, { difficulty: 'easy' })
     const partialTrail = [
       { id: 'trail-0', x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x, y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y, word: state.words[0], orderIndex: 0 },
     ]
-    const nonVictoryState: VillageGuardianState = {
+    const nonCompleteState: VillageGuardianState = {
       ...state,
       knight: {
         ...state.knight,
@@ -248,8 +274,14 @@ describe('victory condition', () => {
       },
       trail: partialTrail,
     }
-    const newState = tickVillageGuardian(nonVictoryState, 50)
+    const newState = tickVillageGuardian(nonCompleteState, 50)
     expect(newState.status).toBe('playing')
+    expect(newState.level).toBe(1)
+  })
+
+  it('initializes with level 1', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    expect(state.level).toBe(1)
   })
 })
 

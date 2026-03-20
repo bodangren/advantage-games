@@ -55,6 +55,9 @@ export const VILLAGE_GUARDIAN_CONFIG = {
   sanctuaryRadius: 40,
   sanctuaryPosition: { x: 195, y: 620 },
 
+  maxMonsters: 4,
+  monsterSpeedScalePerLevel: 0.12,
+
   difficulties: {
     easy: { name: 'Scout Party', wordCount: 4, timer: 30000, monsterSpeed: 1.5 },
     normal: { name: 'War Band', wordCount: 6, timer: 25000, monsterSpeed: 2.5 },
