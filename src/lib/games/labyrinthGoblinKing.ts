@@ -61,6 +61,8 @@ export type LabyrinthGoblinKingState = {
   wordOrbs: WordOrb[]
   goblins: Goblin[]
   maze: Maze
+  allSentences: VocabularyItem[]
+  sentenceIndex: number
   currentSentence: VocabularyItem
   words: string[]
   collectedWords: string[]
@@ -129,8 +131,52 @@ function isWall(x: number, y: number, maze: Maze): boolean {
   return maze[row][col] === 'wall'
 }
 
+// --- Tile-based movement helpers ---
+
+function isNearTileCenter(x: number, y: number): boolean {
+  const tileSize = LABYRINTH_CONFIG.tileSize
+  const col = Math.round((x - tileSize / 2) / tileSize)
+  const row = Math.round((y - tileSize / 2) / tileSize)
+  const cx = col * tileSize + tileSize / 2
+  const cy = row * tileSize + tileSize / 2
+  return Math.abs(x - cx) < 3 && Math.abs(y - cy) < 3
+}
+
+function snapToTileCenter(x: number, y: number): Position {
+  const tileSize = LABYRINTH_CONFIG.tileSize
+  const col = Math.round((x - tileSize / 2) / tileSize)
+  const row = Math.round((y - tileSize / 2) / tileSize)
+  return {
+    x: col * tileSize + tileSize / 2,
+    y: row * tileSize + tileSize / 2,
+  }
+}
+
+function getAvailableDirections(x: number, y: number, maze: Maze, size: number): Direction[] {
+  const tileSize = LABYRINTH_CONFIG.tileSize
+  const snapped = snapToTileCenter(x, y)
+  const dirs: Direction[] = []
+  if (canMove(snapped.x, snapped.y - tileSize, maze, size)) dirs.push('up')
+  if (canMove(snapped.x, snapped.y + tileSize, maze, size)) dirs.push('down')
+  if (canMove(snapped.x - tileSize, snapped.y, maze, size)) dirs.push('left')
+  if (canMove(snapped.x + tileSize, snapped.y, maze, size)) dirs.push('right')
+  return dirs
+}
+
+function getEntrancePositions(): Position[] {
+  const tileSize = LABYRINTH_CONFIG.tileSize
+  const rows = LABYRINTH_CONFIG.mazeRows
+  const cols = LABYRINTH_CONFIG.mazeCols
+  return [
+    { x: tileSize / 2, y: tileSize * 1.5 },
+    { x: (cols - 1) * tileSize + tileSize / 2, y: (rows - 2) * tileSize + tileSize / 2 },
+  ]
+}
+
+// --- End tile-based helpers ---
+
 export function createLabyrinthGoblinKingState(
-  sentence: VocabularyItem,
+  sentences: VocabularyItem[],
   config: LabyrinthGoblinKingConfig = {}
 ): LabyrinthGoblinKingState {
   const rng = config.rng ?? Math.random
@@ -138,6 +184,7 @@ export function createLabyrinthGoblinKingState(
   const goblinType = config.goblinType ?? 'scout'
 
   const diffConfig = getDifficultyConfig(difficulty)
+  const sentence = sentences[0]
   const words = sentence.term.split(' ').filter(w => w.trim().length > 0)
 
   const maze = createMaze(LABYRINTH_CONFIG.mazeCols, LABYRINTH_CONFIG.mazeRows)
@@ -193,6 +240,8 @@ export function createLabyrinthGoblinKingState(
     wordOrbs,
     goblins,
     maze,
+    allSentences: sentences,
+    sentenceIndex: 0,
     currentSentence: sentence,
     words,
     collectedWords: [],
@@ -247,6 +296,122 @@ function distance(x1: number, y1: number, x2: number, y2: number): number {
   return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
 }
 
+function spawnWordOrbs(
+  sentence: VocabularyItem,
+  maze: Maze,
+  playerX: number,
+  playerY: number,
+  wordCount: number,
+): WordOrb[] {
+  const words = sentence.term.split(' ').filter(w => w.trim().length > 0)
+  const rng = Math.random
+  const floorPositions = getFloorPositions(maze, rng)
+  const tileSize = LABYRINTH_CONFIG.tileSize
+  const minDist = tileSize * 3
+
+  // Filter out positions too close to player
+  const safePositions = floorPositions.filter(
+    p => distance(p.x, p.y, playerX, playerY) > minDist
+  )
+  const positionsToUse = safePositions.length >= words.length ? safePositions : floorPositions
+
+  return words.slice(0, wordCount).map((word, index) => {
+    const pos = positionsToUse[index] ?? { x: GAME_WIDTH / 2, y: GAME_HEIGHT / 2 }
+    return {
+      id: generateId(),
+      x: pos.x,
+      y: pos.y,
+      word,
+      orderIndex: index,
+      collected: false,
+    }
+  })
+}
+
+function respawnGoblin(goblin: Goblin, playerX: number, playerY: number, fleeing: boolean): Goblin {
+  const entrances = getEntrancePositions()
+  // Pick entrance farthest from player
+  const best = entrances.reduce((a, b) =>
+    distance(a.x, a.y, playerX, playerY) > distance(b.x, b.y, playerX, playerY) ? a : b
+  )
+  return {
+    ...goblin,
+    x: best.x,
+    y: best.y,
+    direction: 'none',
+    eaten: false,
+    fleeing,
+  }
+}
+
+function moveGoblinTileBased(
+  goblin: Goblin,
+  maze: Maze,
+  playerX: number,
+  playerY: number,
+  dt: number,
+  rng: () => number,
+): Goblin {
+  const newGoblin = { ...goblin }
+  const speed = goblin.speed * dt
+
+  // Move in current direction
+  if (goblin.direction !== 'none') {
+    const newPos = moveInDirection(goblin.x, goblin.y, goblin.direction, speed)
+    if (canMove(newPos.x, newPos.y, maze, LABYRINTH_CONFIG.goblinSize)) {
+      newGoblin.x = newPos.x
+      newGoblin.y = newPos.y
+    }
+  }
+
+  // At tile centers, decide next direction
+  if (isNearTileCenter(newGoblin.x, newGoblin.y)) {
+    const available = getAvailableDirections(newGoblin.x, newGoblin.y, maze, LABYRINTH_CONFIG.goblinSize)
+    if (available.length === 0) return newGoblin
+
+    const snapped = snapToTileCenter(newGoblin.x, newGoblin.y)
+    newGoblin.x = snapped.x
+    newGoblin.y = snapped.y
+    const tileSize = LABYRINTH_CONFIG.tileSize
+
+    if (newGoblin.fleeing) {
+      // Flee: pick direction that moves away from player
+      let bestDir = available[0]
+      let bestDist = -1
+      for (const dir of available) {
+        const tx = snapped.x + (dir === 'right' ? tileSize : dir === 'left' ? -tileSize : 0)
+        const ty = snapped.y + (dir === 'down' ? tileSize : dir === 'up' ? -tileSize : 0)
+        const d = distance(tx, ty, playerX, playerY)
+        if (d > bestDist) { bestDist = d; bestDir = dir }
+      }
+      newGoblin.direction = bestDir
+    } else if (goblin.type !== 'scout' && distance(goblin.x, goblin.y, playerX, playerY) < LABYRINTH_CONFIG.chaseRange) {
+      // Chase: pick direction toward player
+      let bestDir = available[0]
+      let bestDist = Infinity
+      for (const dir of available) {
+        const tx = snapped.x + (dir === 'right' ? tileSize : dir === 'left' ? -tileSize : 0)
+        const ty = snapped.y + (dir === 'down' ? tileSize : dir === 'up' ? -tileSize : 0)
+        const d = distance(tx, ty, playerX, playerY)
+        if (d < bestDist) { bestDist = d; bestDir = dir }
+      }
+      newGoblin.direction = bestDir
+    } else {
+      // Patrol: random, prefer non-reverse
+      const nonReverse = available.filter(d => d !== getOppositeDirection(goblin.direction))
+      const choices = nonReverse.length > 0 ? nonReverse : available
+      newGoblin.direction = choices[Math.floor(rng() * choices.length)]
+    }
+  }
+
+  // Initialize direction if 'none'
+  if (newGoblin.direction === 'none') {
+    newGoblin.direction = getRandomDirection(rng)
+  }
+
+  return newGoblin
+}
+
 export function tickLabyrinthGoblinKing(
   state: LabyrinthGoblinKingState,
   input: LabyrinthInput,
@@ -267,6 +432,7 @@ export function tickLabyrinthGoblinKing(
     newState.player.heroicAuraTimer = Math.max(0, state.player.heroicAuraTimer - deltaTimeMs)
     if (newState.player.heroicAuraTimer <= 0) {
       newState.player.heroicAura = false
+      newState.goblins = state.goblins.map(g => ({ ...g, fleeing: false }))
     }
   }
 
@@ -321,12 +487,12 @@ export function tickLabyrinthGoblinKing(
       newState.player.x = newPos.x
       newState.player.y = newPos.y
     }
-    // If blocked, just stop against the wall (don't change direction)
   }
 
+  // --- Word orb collection ---
   newState.wordOrbs = state.wordOrbs.map(orb => {
     if (orb.collected) return orb
-    const dist = distance(state.player.x, state.player.y, orb.x, orb.y)
+    const dist = distance(newState.player.x, newState.player.y, orb.x, orb.y)
     if (dist < (LABYRINTH_CONFIG.playerSize + LABYRINTH_CONFIG.orbSize) / 2) {
       return { ...orb, collected: true }
     }
@@ -342,10 +508,24 @@ export function tickLabyrinthGoblinKing(
       newState.collectedWords = [...state.collectedWords, justCollectedOrb.word]
       newState.targetIndex = state.targetIndex + 1
 
+      // All words in this sentence collected → heroic aura + next sentence
       if (newState.targetIndex >= newState.wordOrbs.length) {
         newState.player.heroicAura = true
         newState.player.heroicAuraTimer = LABYRINTH_CONFIG.heroicAuraDuration
-        newState.goblins = newState.goblins.map(g => ({ ...g, fleeing: true }))
+        newState.goblins = (newState.goblins ?? state.goblins).map(g => ({ ...g, fleeing: true }))
+
+        // Advance to next sentence and spawn new word orbs
+        const nextIndex = (state.sentenceIndex + 1) % state.allSentences.length
+        const nextSentence = state.allSentences[nextIndex]
+        const diffConfig = getDifficultyConfig(state.difficulty)
+        newState.sentenceIndex = nextIndex
+        newState.currentSentence = nextSentence
+        newState.words = nextSentence.term.split(' ').filter(w => w.trim().length > 0)
+        newState.wordOrbs = spawnWordOrbs(
+          nextSentence, state.maze, newState.player.x, newState.player.y, diffConfig.wordCount
+        )
+        newState.collectedWords = []
+        newState.targetIndex = 0
       }
     } else {
       newState.wrongAnswers = state.wrongAnswers + 1
@@ -374,54 +554,24 @@ export function tickLabyrinthGoblinKing(
     return newState
   }
 
-  newState.goblins = state.goblins.map(goblin => {
-    if (goblin.eaten) return goblin
+  // --- Goblin movement (tile-based) ---
+  newState.goblins = (newState.goblins ?? state.goblins).map(goblin => {
+    if (goblin.eaten) {
+      // Respawn eaten goblins at an entrance
+      return respawnGoblin(goblin, newState.player.x, newState.player.y, newState.player.heroicAura)
+    }
 
-    const newGoblin = { ...goblin }
+    const newGoblin = moveGoblinTileBased(
+      goblin, state.maze, newState.player.x, newState.player.y, dt, rng
+    )
 
+    // Update fleeing state based on heroic aura
     if (newState.player.heroicAura) {
       newGoblin.fleeing = true
     }
 
-    const speed = goblin.speed * dt
-
-    if (newGoblin.fleeing && newState.player.heroicAura) {
-      const dx = goblin.x - state.player.x
-      const dy = goblin.y - state.player.y
-      const dist = Math.sqrt(dx * dx + dy * dy) || 1
-      const fleeX = goblin.x + (dx / dist) * speed
-      const fleeY = goblin.y + (dy / dist) * speed
-      if (canMove(fleeX, fleeY, state.maze, LABYRINTH_CONFIG.goblinSize)) {
-        newGoblin.x = fleeX
-        newGoblin.y = fleeY
-      }
-    } else {
-      const dist = distance(state.player.x, state.player.y, goblin.x, goblin.y)
-      if (dist < LABYRINTH_CONFIG.chaseRange && goblin.type !== 'scout') {
-        const dx = state.player.x - goblin.x
-        const dy = state.player.y - goblin.y
-        const d = Math.sqrt(dx * dx + dy * dy) || 1
-        const chaseX = goblin.x + (dx / d) * speed
-        const chaseY = goblin.y + (dy / d) * speed
-        if (canMove(chaseX, chaseY, state.maze, LABYRINTH_CONFIG.goblinSize)) {
-          newGoblin.x = chaseX
-          newGoblin.y = chaseY
-        }
-      } else {
-        if (Math.random() < 0.02 || goblin.direction === 'none') {
-          newGoblin.direction = getRandomDirection(rng)
-        }
-        const newPos = moveInDirection(goblin.x, goblin.y, newGoblin.direction, speed)
-        if (canMove(newPos.x, newPos.y, state.maze, LABYRINTH_CONFIG.goblinSize)) {
-          newGoblin.x = newPos.x
-          newGoblin.y = newPos.y
-        } else {
-          newGoblin.direction = getOppositeDirection(goblin.direction)
-        }
-      }
-    }
-
-    const collisionDist = distance(state.player.x, state.player.y, newGoblin.x, newGoblin.y)
+    // Collision with player
+    const collisionDist = distance(newState.player.x, newState.player.y, newGoblin.x, newGoblin.y)
     if (collisionDist < (LABYRINTH_CONFIG.playerSize + LABYRINTH_CONFIG.goblinSize) / 2) {
       if (newState.player.heroicAura) {
         newGoblin.eaten = true

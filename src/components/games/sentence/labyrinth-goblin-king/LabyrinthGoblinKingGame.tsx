@@ -46,7 +46,7 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
 
   const resetGame = useCallback(() => {
     if (sentences.length > 0) {
-      setGameState(createLabyrinthGoblinKingState(sentences[0], {
+      setGameState(createLabyrinthGoblinKingState(sentences, {
         difficulty: selectedDifficulty,
         goblinType: selectedGoblinType,
       }))
