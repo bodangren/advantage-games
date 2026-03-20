@@ -5,23 +5,23 @@ This plan outlines the steps to build "Labyrinth of the Goblin King" using **Rea
 ## Phase 1: Setup & Infrastructure
 **Assets Required:** None (can start immediately)
 
-- [ ] Task: Create configuration file `src/lib/games/labyrinthGoblinKingConfig.ts` with all balance values
-- [ ] Task: Define game state types in `src/lib/games/labyrinthGoblinKing.ts`
-- [ ] Task: Create `src/app/[locale]/(student)/student/games/sentence/labyrinth-goblin-king/` route structure
-- [ ] Task: Create `LabyrinthGoblinKingGame` container component with React-Konva Stage
-- [ ] Task: Conductor - Mark Phase 1 complete
+- [x] Task: Create configuration file `src/lib/games/labyrinthGoblinKingConfig.ts` with all balance values
+- [x] Task: Define game state types in `src/lib/games/labyrinthGoblinKing.ts`
+- [x] Task: Create `src/app/[locale]/(student)/student/games/sentence/labyrinth-goblin-king/` route structure
+- [x] Task: Create `LabyrinthGoblinKingGame` container component with React-Konva Stage
+- [x] Task: Conductor - Mark Phase 1 complete
 
 ## Phase 2: Core Game Logic
 **Assets Required:** None (logic only)
 
-- [ ] Task: Implement `createLabyrinthGoblinKingState()` initialization function
-- [ ] Task: Implement maze data structure and tile collision
-- [ ] Task: Implement player movement and DPad input handling
-- [ ] Task: Implement word orb placement and collection
-- [ ] Task: Implement goblin AI (patrol, chase, flee states)
-- [ ] Task: Implement heroic aura power-up mechanic
-- [ ] Task: Implement win/lose condition detection
-- [ ] Task: Conductor - Mark Phase 2 complete
+- [x] Task: Implement `createLabyrinthGoblinKingState()` initialization function
+- [x] Task: Implement maze data structure and tile collision
+- [x] Task: Implement player movement and DPad input handling
+- [x] Task: Implement word orb placement and collection
+- [x] Task: Implement goblin AI (patrol, chase, flee states)
+- [x] Task: Implement heroic aura power-up mechanic
+- [x] Task: Implement win/lose condition detection
+- [x] Task: Conductor - Mark Phase 2 complete
 
 ## Phase 3: Rendering
 **Assets Required:**
