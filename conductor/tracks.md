@@ -200,3 +200,11 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Description: Mappy-style vertical platformer with door mechanics*
 *Priority: Medium*
 *Type: Feature*
+
+---
+
+- [ ] **Track: Archer's Revenge - Space Invaders Vocabulary Game**
+*Link: [./conductor/tracks/archers-revenge-20260318/](./conductor/tracks/archers-revenge-20260318/)*
+*Description: Space Invaders-style vocabulary game where players shoot enemies matching the target word. Only shield-down enemies can be destroyed; wrong targets shoot back.*
+*Priority: Medium*
+*Type: Feature*
