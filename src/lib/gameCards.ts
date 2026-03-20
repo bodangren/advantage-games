@@ -130,4 +130,12 @@ export const gameCards: GameCard[] = [
     href: '/en/student/games/sentence/labyrinth-goblin-king',
     status: 'playable',
   },
+  {
+    id: 'abyssal-well',
+    title: 'The Abyssal Well',
+    description: 'Defend the rim! Rotate and fire at enemies climbing from the depths carrying word orbs in correct order!',
+    cover: withBasePath('/games/cover/rune-match-cover.png'),
+    href: '/en/student/games/sentence/abyssal-well',
+    status: 'playable',
+  },
 ]

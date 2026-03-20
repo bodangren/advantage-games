@@ -116,10 +116,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: The Abyssal Well**
+- [~] **Track: The Abyssal Well**
+*Link: [./conductor/tracks/abyssal-well-20260320/](./conductor/tracks/abyssal-well-20260320/)*
 *Description: Tempest-style 3D tube shooter sentence game*
-*Priority: Medium*
+*Priority: High*
 *Type: Feature*
+*Status: 🔄 IN PROGRESS*
 
 ---
 
