@@ -17,7 +17,7 @@ import { useInterval } from '@/hooks/useInterval'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
-import { Castle, BookOpen, AlertTriangle, Heart, Clock } from 'lucide-react'
+import { Castle, BookOpen, AlertTriangle, Heart, Clock, Eye } from 'lucide-react'
 
 export type ShadowGateDungeonGameResult = {
   xp: number
@@ -36,6 +36,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal')
   const [selectedCreature, setSelectedCreature] = useState<CreatureType>('orc-hunter')
   const hasReportedRef = useRef(false)
+  const pressedKeysRef = useRef<Set<string>>(new Set())
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -130,28 +131,35 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
   }, [gameState, gamePhase])
 
   useEffect(() => {
+    const computeVelocity = () => {
+      const keys = pressedKeysRef.current
+      let dx = 0, dy = 0
+      if (keys.has('ArrowLeft') || keys.has('a') || keys.has('A')) dx = -1
+      if (keys.has('ArrowRight') || keys.has('d') || keys.has('D')) dx = 1
+      if (keys.has('ArrowUp') || keys.has('w') || keys.has('W')) dy = -1
+      if (keys.has('ArrowDown') || keys.has('s') || keys.has('S')) dy = 1
+      handleDPadInput({ dx, dy })
+    }
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (gamePhase !== 'playing') return
-      let dx = 0, dy = 0
-      if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') dx = -1
-      else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') dx = 1
-      else if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') dy = -1
-      else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') dy = 1
-      if (dx !== 0 || dy !== 0) {
-        handleDPadInput({ dx, dy })
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'A', 'd', 'D', 'w', 'W', 's', 'S'].includes(e.key)) {
+        e.preventDefault()
+        pressedKeysRef.current.add(e.key)
+        computeVelocity()
       }
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (gamePhase !== 'playing') return
-      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'A', 'd', 'D', 'w', 'W', 's', 'S'].includes(e.key)) {
-        handleDPadInput({ dx: 0, dy: 0 })
-      }
+      pressedKeysRef.current.delete(e.key)
+      computeVelocity()
     }
 
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     return () => {
+      pressedKeysRef.current.clear()
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
@@ -169,10 +177,10 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
           vocabulary={vocabulary}
           instructions={[
             { step: 1, text: 'Collect word crystals in the correct order to unlock the exit gate.', icon: BookOpen },
-            { step: 2, text: 'The translation is shown on the gate - find the words to form the sentence!', icon: BookOpen },
+            { step: 2, text: 'The creature patrols a circular path — stay outside its detection ring to avoid being chased.', icon: Eye },
             { step: 3, text: 'Avoid the shadow creature! Wrong words and collisions drain your health.', icon: AlertTriangle },
           ]}
-          proTip="Use the DPad to navigate. The target crystal glows gold - collect it first!"
+          proTip="The creature turns RED when it spots you. Grab crystals while it patrols away!"
           controls={[
             { label: 'Move', keys: 'Arrow Keys / WASD', color: 'bg-purple-500' },
             { label: 'DPad', keys: 'Touch & Drag', color: 'bg-indigo-500' },
@@ -303,17 +311,30 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                   )
                 })}
 
+                {/* Sight radius indicator — shows detection zone */}
+                <Circle
+                  x={gameState.creature.position.x}
+                  y={gameState.creature.position.y}
+                  radius={SHADOW_GATE_DUNGEON_CONFIG.sightRadius}
+                  fill={gameState.creature.mode === 'chase' ? 'rgba(239,68,68,0.08)' : 'rgba(147,51,234,0.06)'}
+                  stroke={gameState.creature.mode === 'chase' ? 'rgba(239,68,68,0.4)' : 'rgba(147,51,234,0.2)'}
+                  strokeWidth={1}
+                  dash={[6, 4]}
+                />
                 <Group x={gameState.creature.position.x} y={gameState.creature.position.y}>
                   <Circle
                     x={0}
                     y={0}
                     radius={SHADOW_GATE_DUNGEON_CONFIG.creatureRadius}
-                    fill="rgba(74, 0, 128, 0.9)"
-                    stroke="#9333ea"
+                    fill={gameState.creature.mode === 'chase' ? 'rgba(220, 38, 38, 0.95)' : 'rgba(74, 0, 128, 0.9)'}
+                    stroke={gameState.creature.mode === 'chase' ? '#ef4444' : '#9333ea'}
                     strokeWidth={3}
                   />
-                  <Circle x={-8} y={-5} radius={4} fill="#ff0000" />
-                  <Circle x={8} y={-5} radius={4} fill="#ff0000" />
+                  <Circle x={-8} y={-5} radius={4} fill={gameState.creature.mode === 'chase' ? '#ffff00' : '#ff0000'} />
+                  <Circle x={8} y={-5} radius={4} fill={gameState.creature.mode === 'chase' ? '#ffff00' : '#ff0000'} />
+                  {gameState.creature.mode === 'chase' && (
+                    <Text x={-14} y={-36} text="!" fontSize={20} fill="#ef4444" fontStyle="bold" />
+                  )}
                 </Group>
 
                 <Group x={gameState.player.position.x} y={gameState.player.position.y}>
@@ -380,6 +401,16 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                   text={`Time: ${Math.floor(gameState.gameTime / 1000)}s`}
                   fontSize={12}
                   fill="white"
+                />
+
+                {/* Stealth status */}
+                <Text
+                  x={10}
+                  y={GAME_HEIGHT - 95}
+                  text={gameState.creature.mode === 'chase' ? '⚠ DETECTED!' : '👁 Undetected'}
+                  fontSize={13}
+                  fill={gameState.creature.mode === 'chase' ? '#ef4444' : '#a5b4fc'}
+                  fontStyle="bold"
                 />
               </Group>
             </Layer>

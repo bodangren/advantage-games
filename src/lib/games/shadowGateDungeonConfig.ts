@@ -26,12 +26,26 @@ export const SHADOW_GATE_DUNGEON_CONFIG = {
   crystalRadius: 25,
   crystalSpawnMargin: 50,
 
+  // Patrol speeds (px/s) — creature moves along patrol path
+  creaturePatrolSpeeds: {
+    'goblin-scout': 35,
+    'orc-hunter': 50,
+    'shadow-dragon': 70,
+  },
+  // Chase speeds (px/s) — creature speeds up when chasing player
   creatureSpeeds: {
-    'goblin-scout': 60,
-    'orc-hunter': 90,
-    'shadow-dragon': 120,
+    'goblin-scout': 55,
+    'orc-hunter': 75,
+    'shadow-dragon': 100,
   },
   creatureRadius: 25,
+
+  // Stealth / patrol mechanics
+  sightRadius: 130,        // player must stay beyond this to avoid detection
+  chaseDuration: 2500,     // ms creature chases before returning to patrol
+  patrolRadius: 130,       // radius of circular patrol path
+  patrolCenterX: 195,      // center of patrol circle (game center X)
+  patrolCenterY: 350,      // center of patrol circle (game center Y)
 
   wrongWordDamage: 20,
   creatureCollisionDamage: 25,
@@ -58,4 +72,8 @@ export function getDifficultyConfig(difficulty: ShadowGateDungeonDifficulty): Di
 
 export function getCreatureSpeed(creatureType: CreatureType): number {
   return SHADOW_GATE_DUNGEON_CONFIG.creatureSpeeds[creatureType] ?? SHADOW_GATE_DUNGEON_CONFIG.creatureSpeeds['orc-hunter']
+}
+
+export function getCreaturePatrolSpeed(creatureType: CreatureType): number {
+  return SHADOW_GATE_DUNGEON_CONFIG.creaturePatrolSpeeds[creatureType] ?? SHADOW_GATE_DUNGEON_CONFIG.creaturePatrolSpeeds['orc-hunter']
 }

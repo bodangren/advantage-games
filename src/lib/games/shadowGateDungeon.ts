@@ -1,7 +1,7 @@
 import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
 import type { CreatureType } from './shadowGateDungeonConfig'
-import { SHADOW_GATE_DUNGEON_CONFIG, getDifficultyConfig, getCreatureSpeed, GAME_WIDTH, GAME_HEIGHT } from './shadowGateDungeonConfig'
+import { SHADOW_GATE_DUNGEON_CONFIG, getDifficultyConfig, getCreatureSpeed, getCreaturePatrolSpeed, GAME_WIDTH, GAME_HEIGHT } from './shadowGateDungeonConfig'
 
 export type GameStatus = 'start' | 'playing' | 'victory' | 'defeat'
 
@@ -18,10 +18,15 @@ export type WordCrystal = {
   collected: boolean
 }
 
+export type CreatureMode = 'patrol' | 'chase'
+
 export type ShadowCreature = {
   position: Position
   velocity: Position
   type: CreatureType
+  mode: CreatureMode
+  chaseTimer: number
+  patrolAngle: number
 }
 
 export type ExitGate = {
@@ -96,6 +101,9 @@ export function createShadowGateDungeonState(
     position: { x: GAME_WIDTH / 2, y: 100 },
     velocity: { x: 0, y: 0 },
     type: creatureType,
+    mode: 'patrol',
+    chaseTimer: 0,
+    patrolAngle: 0,
   }
 
   const gate: ExitGate = {
@@ -212,37 +220,62 @@ export function tickShadowGateDungeon(
   }
 
   const playerPos = newState.player.position
-  const creatureSpeedPerMs = creatureSpeed / 1000
-  const dx = playerPos.x - state.creature.position.x
-  const dy = playerPos.y - state.creature.position.y
-  const distance = Math.sqrt(dx * dx + dy * dy)
+  const creatureChaseSpeed = creatureSpeed / 1000
+  const creaturePatrolSpeed = getCreaturePatrolSpeed(state.creatureType) / 1000
 
-  if (distance > 0) {
-    const vx = (dx / distance) * creatureSpeedPerMs
-    const vy = (dy / distance) * creatureSpeedPerMs
+  const dxToPlayer = playerPos.x - state.creature.position.x
+  const dyToPlayer = playerPos.y - state.creature.position.y
+  const distToPlayer = Math.sqrt(dxToPlayer * dxToPlayer + dyToPlayer * dyToPlayer)
 
-    newState.creature = {
-      ...state.creature,
-      position: {
-        x: Math.max(
-          SHADOW_GATE_DUNGEON_CONFIG.creatureRadius,
-          Math.min(
-            GAME_WIDTH - SHADOW_GATE_DUNGEON_CONFIG.creatureRadius,
-            state.creature.position.x + vx * deltaMs
-          )
-        ),
-        y: Math.max(
-          SHADOW_GATE_DUNGEON_CONFIG.creatureRadius,
-          Math.min(
-            GAME_HEIGHT - SHADOW_GATE_DUNGEON_CONFIG.creatureRadius,
-            state.creature.position.y + vy * deltaMs
-          )
-        ),
-      },
-      velocity: { x: vx, y: vy },
+  // Determine mode: enter chase if player within sight radius
+  let creatureMode = state.creature.mode
+  let chaseTimer = state.creature.chaseTimer
+
+  if (distToPlayer < SHADOW_GATE_DUNGEON_CONFIG.sightRadius) {
+    creatureMode = 'chase'
+    chaseTimer = SHADOW_GATE_DUNGEON_CONFIG.chaseDuration
+  } else if (creatureMode === 'chase') {
+    chaseTimer -= deltaMs
+    if (chaseTimer <= 0) {
+      creatureMode = 'patrol'
+      chaseTimer = 0
     }
+  }
+
+  let newCreatureX = state.creature.position.x
+  let newCreatureY = state.creature.position.y
+  let newVelocity = state.creature.velocity
+  let newPatrolAngle = state.creature.patrolAngle
+
+  if (creatureMode === 'chase' && distToPlayer > 0) {
+    // Chase: move directly toward player
+    const vx = (dxToPlayer / distToPlayer) * creatureChaseSpeed
+    const vy = (dyToPlayer / distToPlayer) * creatureChaseSpeed
+    newCreatureX = state.creature.position.x + vx * deltaMs
+    newCreatureY = state.creature.position.y + vy * deltaMs
+    newVelocity = { x: vx, y: vy }
   } else {
-    newState.creature = state.creature
+    // Patrol: circle around the dungeon center
+    const patrolRadiansPerMs = creaturePatrolSpeed / SHADOW_GATE_DUNGEON_CONFIG.patrolRadius
+    newPatrolAngle = state.creature.patrolAngle + patrolRadiansPerMs * deltaMs
+    newCreatureX = SHADOW_GATE_DUNGEON_CONFIG.patrolCenterX + Math.cos(newPatrolAngle) * SHADOW_GATE_DUNGEON_CONFIG.patrolRadius
+    newCreatureY = SHADOW_GATE_DUNGEON_CONFIG.patrolCenterY + Math.sin(newPatrolAngle) * SHADOW_GATE_DUNGEON_CONFIG.patrolRadius
+    newVelocity = {
+      x: -Math.sin(newPatrolAngle) * creaturePatrolSpeed,
+      y: Math.cos(newPatrolAngle) * creaturePatrolSpeed,
+    }
+  }
+
+  newState.creature = {
+    ...state.creature,
+    position: {
+      x: Math.max(SHADOW_GATE_DUNGEON_CONFIG.creatureRadius, Math.min(GAME_WIDTH - SHADOW_GATE_DUNGEON_CONFIG.creatureRadius, newCreatureX)),
+      y: Math.max(SHADOW_GATE_DUNGEON_CONFIG.creatureRadius, Math.min(GAME_HEIGHT - SHADOW_GATE_DUNGEON_CONFIG.creatureRadius, newCreatureY)),
+    },
+    velocity: newVelocity,
+    mode: creatureMode,
+    chaseTimer,
+    patrolAngle: newPatrolAngle,
   }
 
   if (!newState.player.invincible) {

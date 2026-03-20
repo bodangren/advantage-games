@@ -122,11 +122,55 @@ describe('shadowGateDungeon', () => {
       expect(newState.player.position.y).toBeLessThanOrEqual(GAME_HEIGHT - SHADOW_GATE_DUNGEON_CONFIG.playerRadius)
     })
 
-    it('should move creature toward player', () => {
+    it('should move creature toward player when within sight range', () => {
       const state = createShadowGateDungeonState(mockVocabulary)
-      const initialCreatureY = state.creature.position.y
-      const newState = tickShadowGateDungeon(state, 1000)
-      expect(newState.creature.position.y).toBeGreaterThan(initialCreatureY)
+      // Place creature near player (within sightRadius) so it chases
+      const nearPlayerState = {
+        ...state,
+        creature: {
+          ...state.creature,
+          position: { x: state.player.position.x, y: state.player.position.y - 80 },
+          mode: 'chase' as const,
+          chaseTimer: 3000,
+          patrolAngle: 0,
+        },
+      }
+      const newState = tickShadowGateDungeon(nearPlayerState, 1000)
+      expect(newState.creature.position.y).toBeGreaterThan(nearPlayerState.creature.position.y)
+    })
+
+    it('creature enters chase mode when player is within sight radius', () => {
+      const state = createShadowGateDungeonState(mockVocabulary)
+      const closeSightState = {
+        ...state,
+        creature: {
+          ...state.creature,
+          position: { x: state.player.position.x + 50, y: state.player.position.y + 50 },
+          mode: 'patrol' as const,
+          chaseTimer: 0,
+          patrolAngle: 0,
+        },
+      }
+      const newState = tickShadowGateDungeon(closeSightState, 50)
+      expect(newState.creature.mode).toBe('chase')
+    })
+
+    it('creature patrols when player is far away', () => {
+      const state = createShadowGateDungeonState(mockVocabulary)
+      // Player is far from default patrol center
+      const farPlayerState = {
+        ...state,
+        player: { ...state.player, position: { x: 10, y: 10 } },
+        creature: {
+          ...state.creature,
+          position: { x: GAME_WIDTH / 2 + 200, y: GAME_HEIGHT / 2 },
+          mode: 'patrol' as const,
+          chaseTimer: 0,
+          patrolAngle: 0,
+        },
+      }
+      const newState = tickShadowGateDungeon(farPlayerState, 50)
+      expect(newState.creature.mode).toBe('patrol')
     })
 
     it('should detect player-creature collision and deal damage', () => {
