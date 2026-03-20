@@ -106,6 +106,13 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Type: Feature*
 *Status: ✅ COMPLETE*
 
+- [x] **Track: Paladin's Twin-Soul**
+*Link: [./conductor/archive/paladins-twin-soul-20260321/](./conductor/archive/paladins-twin-soul-20260321/)*
+*Description: Galaga-style capture and rescue vocabulary game with high-stakes rescue mechanic*
+*Priority: Medium*
+*Type: Feature*
+*Status: ✅ COMPLETE*
+
 ---
 
 - [x] **Track: Labyrinth of the Goblin King**
@@ -144,19 +151,19 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Realm Carver**
-*Link: [./conductor/tracks/realm-carver-20260320/](./conductor/tracks/realm-carver-20260320/)*
+- [x] **Track: Realm Carver**
+*Link: [./conductor/archive/realm-carver-20260320/](./conductor/archive/realm-carver-20260320/)*
 *Description: Qix-style territory claiming sentence game with magical cartographer theme*
 *Priority: Medium*
 *Type: Feature*
-*Status: 🆕 NEW*
+*Status: ✅ COMPLETE*
 
----
-
-- [ ] **Track: Labyrinth of the Goblin King**
-*Description: Pac-Man style dungeon maze runner*
+- [~] **Track: Gryphon Patrol**
+*Link: [./conductor/tracks/gryphon-patrol-20260321/](./conductor/tracks/gryphon-patrol-20260321/)*
+*Description: Defender-style multi-directional scrolling sentence game with mini-map tracking*
 *Priority: Medium*
 *Type: Feature*
+*Status: 🆕 NEW*
 
 ---
 

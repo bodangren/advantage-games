@@ -162,4 +162,20 @@ export const gameCards: GameCard[] = [
     href: '/en/student/games/sentence/griffin-sky-joust',
     status: 'playable',
   },
+  {
+    id: 'realm-carver',
+    title: 'Realm Carver',
+    description: 'Carve a path through the wild magic! Claim territory and capture words in the correct order!',
+    cover: withBasePath('/games/cover/rune-match-cover.png'),
+    href: '/en/student/games/sentence/realm-carver',
+    status: 'playable',
+  },
+  {
+    id: 'paladins-twin-soul',
+    title: "Paladin's Twin-Soul",
+    description: 'Defend the realm and rescue your twin soul! Match the magic to double your power!',
+    cover: withBasePath('/games/cover/wizard-vs-zombie-cover.png'),
+    href: '/en/student/games/vocabulary/paladins-twin-soul',
+    status: 'playable',
+  },
 ]
