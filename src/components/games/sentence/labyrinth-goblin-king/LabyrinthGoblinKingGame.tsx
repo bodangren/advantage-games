@@ -176,7 +176,7 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
         <GameStartScreen
           gameTitle="Labyrinth of the Goblin King"
           gameSubtitle="Navigate the Maze"
-          vocabulary={vocabulary}
+          vocabulary={sentences}
           instructions={[
             { step: 1, text: 'Navigate the maze and collect word orbs in the correct order.', icon: BookOpen },
             { step: 2, text: 'The translation is shown at the top - find the words!', icon: Target },

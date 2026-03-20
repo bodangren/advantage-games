@@ -209,7 +209,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
         <GameStartScreen
           gameTitle="The Abyssal Well"
           gameSubtitle="Defend the Rim"
-          vocabulary={vocabulary}
+          vocabulary={sentences}
           instructions={[
             { step: 1, text: 'Enemies climb up from the well carrying word orbs.', icon: BookOpen },
             { step: 2, text: 'Shoot the enemies in the correct sentence order!', icon: Target },
