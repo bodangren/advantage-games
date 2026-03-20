@@ -532,3 +532,57 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks.md
  - [ ] **Track: The Abyssal Well**
 
 [0m
+[0m$ [0mgit add . && git commit -m "conductor: complete and archive reading-advantage-migration, dragon-rider-reskin, village-guardian tracks"
+[master f98c023] conductor: complete and archive reading-advantage-migration, dragon-rider-reskin, village-guardian tracks
+ 12 files changed, 331 insertions(+), 26 deletions(-)
+ rename conductor/{tracks => archive}/dragon-rider-reskin-20260131/metadata.json (82%)
+ rename conductor/{tracks => archive}/dragon-rider-reskin-20260131/plan.md (100%)
+ rename conductor/{tracks => archive}/dragon-rider-reskin-20260131/spec.md (100%)
+ rename conductor/{tracks => archive}/reading-advantage-migration-20260317/index.md (100%)
+ rename conductor/{tracks => archive}/reading-advantage-migration-20260317/metadata.json (64%)
+ rename conductor/{tracks => archive}/reading-advantage-migration-20260317/plan.md (96%)
+ rename conductor/{tracks => archive}/reading-advantage-migration-20260317/spec.md (100%)
+ rename conductor/{tracks => archive}/village-guardian-20260320/metadata.json (72%)
+ rename conductor/{tracks => archive}/village-guardian-20260320/plan.md (100%)
+ rename conductor/{tracks => archive}/village-guardian-20260320/spec.md (100%)
+[0m
+All tracks archived. Now I'll plan a new game. Let me check the sentence-game-concepts for the next unimplemented concept.
+[0m→ [0mRead conductor/notes/sentence-game-concepts.md
+Next unimplemented game: **Labyrinth of the Goblin King** (Pac-Man style). Let me create the track.
+[0m
+[0m$ [0mmkdir -p conductor/tracks/labyrinth-goblin-king-20260320
+[0m
+[0m← [0mWrite conductor/tracks/labyrinth-goblin-king-20260320/metadata.json
+Wrote file successfully.
+[0m
+[0m← [0mWrite conductor/tracks/labyrinth-goblin-king-20260320/spec.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite conductor/tracks/labyrinth-goblin-king-20260320/plan.md
+Wrote file successfully.
+[0m
+[0m← [0mEdit conductor/tracks.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks.md
+@@ -106,8 +106,17 @@
+ *Status: ✅ COMPLETE*
+ 
+ ---
+ 
++- [~] **Track: Labyrinth of the Goblin King**
++*Link: [./conductor/tracks/labyrinth-goblin-king-20260320/](./conductor/tracks/labyrinth-goblin-king-20260320/)*
++*Description: Pac-Man style dungeon maze runner sentence game with word collection, goblin guards, and heroic aura power-up mechanic*
++*Priority: High*
++*Type: Feature*
++*Status: 🔄 IN PROGRESS*
++
++---
++
+ - [ ] **Track: The Abyssal Well**
+ *Description: Tempest-style 3D tube shooter sentence game*
+ *Priority: Medium*
+ *Type: Feature*
+
+[0m

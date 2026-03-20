@@ -107,6 +107,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [~] **Track: Labyrinth of the Goblin King**
+*Link: [./conductor/tracks/labyrinth-goblin-king-20260320/](./conductor/tracks/labyrinth-goblin-king-20260320/)*
+*Description: Pac-Man style dungeon maze runner sentence game with word collection, goblin guards, and heroic aura power-up mechanic*
+*Priority: High*
+*Type: Feature*
+*Status: 🔄 IN PROGRESS*
+
+---
+
 - [ ] **Track: The Abyssal Well**
 *Description: Tempest-style 3D tube shooter sentence game*
 *Priority: Medium*
