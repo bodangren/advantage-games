@@ -5,9 +5,9 @@ This plan outlines the steps to audit and patch games developed after 'Spellweav
 ## Phase 1: Fidelity Checklist & Prep
 **Goal:** Establish the criteria for the audit and set up the triage tools.
 
-- [ ] Task: Create `conductor/notes/game-fidelity-checklist.md` based on `vocab-game-builder` skill requirements.
-- [ ] Task: Create a script/command to check test coverage across all game-specific directories.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Fidelity Checklist & Prep' (Protocol in workflow.md)
+- [x] Task: Create `conductor/notes/game-fidelity-checklist.md` based on `vocab-game-builder` skill requirements. 5d6745b
+- [x] Task: Create a script/command to check test coverage across all game-specific directories. 5d6745b
+- [~] Task: Conductor - User Manual Verification 'Phase 1: Fidelity Checklist & Prep' (Protocol in workflow.md)
 
 ## Phase 2: Triage & Patch - Archived Games (Set 1)
 **Goal:** Audit and fix 'Shadow Gate Dungeon', 'Rune Forge Chamber', and 'Village Guardian'.
