@@ -118,7 +118,7 @@ export const gameCards: GameCard[] = [
     id: 'village-guardian',
     title: 'Village Guardian',
     description: 'Defend the village! Rescue villagers in correct order and lead them to safety!',
-    cover: withBasePath('/games/cover/rune-match-cover.png'),
+    cover: withBasePath('/games/cover/castle-defense-cover.png'),
     href: '/en/student/games/sentence/village-guardian',
     status: 'playable',
   },
