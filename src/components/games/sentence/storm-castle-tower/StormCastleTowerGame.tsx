@@ -16,7 +16,7 @@ import { STORM_CASTLE_TOWER_CONFIG } from '@/lib/games/stormCastleTowerConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
 import type { GuardType } from '@/lib/games/stormCastleTowerConfig'
-import { useInterval } from '@/hooks/useInterval'
+// rAF-based game loop — no useInterval needed
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { Shield, BookOpen, AlertTriangle, Heart, Target, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react'
@@ -39,6 +39,8 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
   const [selectedGuard, setSelectedGuard] = useState<GuardType>('alert-sentry')
   const hasReportedRef = useRef(false)
   const lastHazardRef = useRef(0)
+  const lastFrameRef = useRef<number>(0)
+  const rafRef = useRef<number>(0)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -90,22 +92,34 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
     }
   }, [])
 
-  useInterval(() => {
-    if (gameState && gameState.phase === 'playing' && gamePhase === 'playing') {
+  useEffect(() => {
+    if (gamePhase !== 'playing') return
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
+      lastFrameRef.current = timestamp
+      const clampedDelta = Math.min(delta, 50)
       setGameState(prevState => {
         if (!prevState || prevState.phase !== 'playing') return prevState
-        
-        let nextState = advanceStormCastleTowerTime(prevState, 50)
-        
+
+        let nextState = advanceStormCastleTowerTime(prevState, clampedDelta)
+
         if (nextState.gameTime - lastHazardRef.current > STORM_CASTLE_TOWER_CONFIG.hazards.oilInterval) {
           nextState = spawnHazard(nextState)
           lastHazardRef.current = nextState.gameTime
         }
-        
+
         return nextState
       })
+      rafRef.current = requestAnimationFrame(loop)
     }
-  }, 50)
+
+    rafRef.current = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(rafRef.current)
+      lastFrameRef.current = 0
+    }
+  }, [gamePhase])
 
   useEffect(() => {
     if (gameState?.phase === 'victory' || gameState?.phase === 'defeat') {

@@ -14,7 +14,7 @@ import { GAME_WIDTH, GAME_HEIGHT, LABYRINTH_CONFIG } from '@/lib/games/labyrinth
 import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
 import type { GoblinType } from '@/lib/games/labyrinthGoblinKingConfig'
-import { useInterval } from '@/hooks/useInterval'
+// rAF-based game loop — no useInterval needed
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
@@ -38,6 +38,8 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
   const [selectedGoblinType, setSelectedGoblinType] = useState<GoblinType>('scout')
   const hasReportedRef = useRef(false)
   const inputRef = useRef<LabyrinthInput>({ dx: 0, dy: 0 })
+  const lastFrameRef = useRef<number>(0)
+  const rafRef = useRef<number>(0)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -88,14 +90,26 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
     }
   }, [])
 
-  useInterval(() => {
-    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
+  useEffect(() => {
+    if (gamePhase !== 'playing') return
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
+      lastFrameRef.current = timestamp
+      const clampedDelta = Math.min(delta, 50)
       setGameState(prevState => {
         if (!prevState || prevState.status !== 'playing') return prevState
-        return tickLabyrinthGoblinKing(prevState, inputRef.current, 16.67)
+        return tickLabyrinthGoblinKing(prevState, inputRef.current, clampedDelta)
       })
+      rafRef.current = requestAnimationFrame(loop)
     }
-  }, 16.67)
+
+    rafRef.current = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(rafRef.current)
+      lastFrameRef.current = 0
+    }
+  }, [gamePhase])
 
   useEffect(() => {
     if (gameState?.status === 'victory' || gameState?.status === 'defeat') {

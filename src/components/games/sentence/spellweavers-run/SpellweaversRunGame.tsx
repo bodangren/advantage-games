@@ -11,7 +11,7 @@ import {
 } from '@/lib/games/spellweaversRun'
 import { GAME_WIDTH, GAME_HEIGHT, SPELLWEAVERS_RUN_CONFIG } from '@/lib/games/spellweaversRunConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
-import { useInterval } from '@/hooks/useInterval'
+// rAF-based game loop — no useInterval needed
 import { calculateXP } from '@/lib/xp'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
@@ -35,6 +35,8 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
   const [results, setResults] = useState<SpellweaversRunGameResult | null>(null)
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal')
   const hasReportedRef = useRef(false)
+  const lastFrameRef = useRef<number>(0)
+  const rafRef = useRef<number>(0)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -89,14 +91,26 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
     }
   }, [])
 
-  useInterval(() => {
-    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
+  useEffect(() => {
+    if (gamePhase !== 'playing') return
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
+      lastFrameRef.current = timestamp
+      const clampedDelta = Math.min(delta, 50)
       setGameState(prevState => {
         if (!prevState || prevState.status !== 'playing') return prevState
-        return tickSpellweaversRun(prevState, vocabulary, 50)
+        return tickSpellweaversRun(prevState, vocabulary, clampedDelta)
       })
+      rafRef.current = requestAnimationFrame(loop)
     }
-  }, 50)
+
+    rafRef.current = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(rafRef.current)
+      lastFrameRef.current = 0
+    }
+  }, [gamePhase, vocabulary])
 
   useEffect(() => {
     if (gameState?.status === 'victory' || gameState?.status === 'defeat') {

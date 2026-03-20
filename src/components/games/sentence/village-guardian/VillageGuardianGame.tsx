@@ -13,7 +13,7 @@ import { GAME_WIDTH, GAME_HEIGHT, VILLAGE_GUARDIAN_CONFIG } from '@/lib/games/vi
 import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
 import type { OpponentType } from '@/lib/games/villageGuardianConfig'
-import { useInterval } from '@/hooks/useInterval'
+// rAF-based game loop — no useInterval needed
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
@@ -37,6 +37,8 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
   const [selectedOpponent, setSelectedOpponent] = useState<OpponentType>('bandits')
   const hasReportedRef = useRef(false)
   const inputRef = useRef<InputState>({ dx: 0, dy: 0 })
+  const lastFrameRef = useRef<number>(0)
+  const rafRef = useRef<number>(0)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
@@ -87,14 +89,26 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
     }
   }, [])
 
-  useInterval(() => {
-    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
+  useEffect(() => {
+    if (gamePhase !== 'playing') return
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
+      lastFrameRef.current = timestamp
+      const clampedDelta = Math.min(delta, 50)
       setGameState(prevState => {
         if (!prevState || prevState.status !== 'playing') return prevState
-        return tickVillageGuardian(prevState, 50, inputRef.current)
+        return tickVillageGuardian(prevState, clampedDelta, inputRef.current)
       })
+      rafRef.current = requestAnimationFrame(loop)
     }
-  }, 50)
+
+    rafRef.current = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(rafRef.current)
+      lastFrameRef.current = 0
+    }
+  }, [gamePhase])
 
   useEffect(() => {
     if (gameState?.status === 'defeat') {
