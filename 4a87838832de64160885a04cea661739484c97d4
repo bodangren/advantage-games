@@ -1,0 +1,4 @@
+Task: Fix Village Guardian bugs
+Summary: Fixed wrongAnswers scoring bug where correct villager pickups were incorrectly counted as wrong answers, corrupting accuracy and XP. Moved wrongAnswers += 1 inside else branch in checkCollisions(). Added 18 new tests covering: correct/wrong villager collection, victory condition, monster-trail collision, monster-knight collision, trail following, monster chasing, and villager hiding behavior.
+Files changed: src/lib/games/villageGuardian.ts, src/lib/games/__tests__/villageGuardian.test.ts
+Coverage: 71% → 96.44% statements, 64.58% → 91.35% branch
