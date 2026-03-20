@@ -1,5 +1,7 @@
 # Autonomous Execution
 
+> **Reference**: @AGENTS.md — Worktree rules, naming conventions, and game development patterns
+
 ## Skills
 
 Load: `conductor`, `vocab-game-builder`
@@ -32,6 +34,21 @@ These override the standard conductor/vocab-game-builder workflows:
 - Skip discovery phase questions (use judgment based on existing games)
 - Auto-commit after passing tests + >80% coverage
 - Do NOT auto-push (per AGENTS.md)
+
+## Conductor Documentation Sync
+
+After completing each phase or track, ALWAYS update conductor docs:
+
+1. **After each phase completion**: Update `plan.md` to mark phase complete
+2. **After track completion**:
+   - Set `status: "completed"` in `metadata.json`
+   - Add `completed_at` timestamp
+   - Move track folder from `conductor/tracks/` to `conductor/archive/`
+   - Update `conductor/tracks.md` to mark track as `[x]` and update link to archive path
+3. **When creating a new track**:
+   - Add entry to `conductor/tracks.md` with `[~]` marker and correct link
+
+These updates are part of "done" — a phase/track is not complete until conductor docs reflect the current state.
 
 ## New Game Planning
 

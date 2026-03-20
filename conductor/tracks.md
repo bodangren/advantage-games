@@ -66,3 +66,39 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Description: Import games from reading-advantage with vocabulary/sentence directory structure, mock API routes, i18n stubs, and session stubs for minimal integration friction*
 *Priority: High*
 *Type: Chore*
+
+---
+
+- [x] **Track: Spellweaver's Run**
+*Link: [./conductor/archive/spellweavers-run-20260319/](./conductor/archive/spellweavers-run-20260319/)*
+*Description: Enchanted forest runner sentence game with word collection*
+*Priority: High*
+*Type: Feature*
+*Status: ✅ COMPLETE*
+
+---
+
+- [x] **Track: Shadow Gate Dungeon**
+*Link: [./conductor/archive/shadow-gate-dungeon-20260320/](./conductor/archive/shadow-gate-dungeon-20260320/)*
+*Description: Dark fantasy dungeon escape sentence game with word crystal collection while evading shadow creatures*
+*Priority: High*
+*Type: Feature*
+*Status: ✅ COMPLETE*
+
+---
+
+- [x] **Track: Rune Forge Chamber**
+*Link: [./conductor/archive/rune-forge-chamber-20260320/](./conductor/archive/rune-forge-chamber-20260320/)*
+*Description: Magical rune crafting sentence game*
+*Priority: High*
+*Type: Feature*
+*Status: ✅ COMPLETE*
+
+---
+
+- [~] **Track: Village Guardian**
+*Link: [./conductor/tracks/village-guardian-20260320/](./conductor/tracks/village-guardian-20260320/)*
+*Description: Snake-style village defense sentence game with word collection, trailing line mechanics, and monster AI*
+*Priority: High*
+*Type: Feature*
+*Status: 🔄 IN PROGRESS*
