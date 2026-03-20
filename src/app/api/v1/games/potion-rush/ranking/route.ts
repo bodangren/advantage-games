@@ -1,14 +1,6 @@
-import { NextResponse } from "next/server";
-
+import { createRankingRoute } from "@/lib/games/api";
 export const dynamic = "force-static";
 
-export async function GET() {
-  return NextResponse.json({
-    rankings: {
-      easy: [],
-      normal: [],
-      hard: [],
-      extreme: [],
-    },
-  });
-}
+const { GET } = createRankingRoute();
+
+export { GET };

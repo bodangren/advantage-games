@@ -277,6 +277,105 @@ Before starting, ensure:
 
 ---
 
+## Phase 7: Template & API Route Modernization
+
+### Task 7.1: Create unified mock API route utilities
+- [x] Sub-task: Create `src/lib/games/api/types.ts` with shared types
+- [x] Sub-task: Create `src/lib/games/api/vocabularyRoute.ts` - factory for vocabulary routes
+- [x] Sub-task: Create `src/lib/games/api/sentencesRoute.ts` - factory for sentence routes
+- [x] Sub-task: Create `src/lib/games/api/completeRoute.ts` - factory for completion routes
+- [x] Sub-task: Create `src/lib/games/api/rankingRoute.ts` - factory for ranking routes
+- [x] Sub-task: Create `src/lib/games/api/index.ts` barrel export
+- [x] Sub-task: Write tests for `src/lib/games/api/*.test.ts`
+- [x] Sub-task: Run tests: `CI=true npm test src/lib/games/api/`
+- [x] **Commit**: "feat: add unified mock API route factories"
+
+### Task 7.2: Update game templates for new directory structure
+- [x] Sub-task: Create `src/templates/game/` restructure with game type support:
+  - `vocabulary/page.tsx.template` - for vocabulary games
+  - `sentence/page.tsx.template` - for sentence games
+- [x] Sub-task: Update page templates to use `[locale]/(student)/student/games/{type}/{game}/` paths
+- [x] Sub-task: Update page templates to fetch from `/api/v1/games/{game}/vocabulary` or `/sentences`
+- [x] Sub-task: Update `GameNameGame.tsx.template` imports:
+  - `@/components/games/game/GameStartScreen`
+  - `@/components/games/game/GameEndScreen`
+  - `@/components/games/game/InputController`
+  - `@/lib/games/{gameName}`
+- [x] Sub-task: Update `gameName.ts.template` to import from `@/lib/games/xp`
+- [x] Sub-task: Update `README.md` with new structure and game type selection
+- [x] Sub-task: Create `src/templates/game/api/` directory:
+  - `vocabulary/route.ts.template` - uses `createVocabularyRoute()`
+  - `sentences/route.ts.template` - uses `createSentencesRoute()`
+  - `complete/route.ts.template` - uses `createCompleteRoute()`
+  - `ranking/route.ts.template` - uses `createRankingRoute()` (optional)
+- [x] Sub-task: Add `TEMPLATE-GUIDE.md` with step-by-step new game creation (covered in README.md)
+- [x] **Commit**: "feat: update game templates for reading-advantage structure" (already done)
+
+### Task 7.3: Update vocab-game skill documentation
+- [x] Sub-task: Update SKILL.md directory structure section:
+  - `src/app/[locale]/(student)/student/games/{type}/{game}/page.tsx`
+  - `src/components/games/{type}/{game}/GameNameGame.tsx`
+  - `src/lib/games/{gameName}.ts`
+  - `src/app/api/v1/games/{game}/vocabulary|sentences/route.ts`
+  - `src/app/api/v1/games/{game}/complete/route.ts`
+- [x] Sub-task: Add game type selection guide (vocabulary vs sentence)
+- [x] Sub-task: Update Quick Start with new template paths
+- [x] Sub-task: Add API route creation using factories:
+  ```typescript
+  import { createVocabularyRoute } from '@/lib/games/api'
+  export const { GET } = createVocabularyRoute(SAMPLE_VOCABULARY)
+  ```
+- [x] Sub-task: Add i18n hook usage:
+  ```typescript
+  import { useScopedI18n, useCurrentLocale } from '@/locales/client'
+  const t = useScopedI18n('games.gameName')
+  const locale = useCurrentLocale()
+  ```
+- [x] Sub-task: Add session hook usage:
+  ```typescript
+  import { useSession } from '@/hooks/useSession'
+  const { data: { user } } = useSession()
+  ```
+- [x] Sub-task: Update asset paths: `public/games/{type}/{game}/`
+- [x] Sub-task: Update shared component imports to `@/components/games/game/`
+- [x] **Commit**: "docs: update vocab-game skill for reading-advantage compatibility"
+
+### Task 7.4: Create reading-advantage integration guide
+- [x] Sub-task: Create `docs/reading-advantage-integration.md`
+- [x] Sub-task: Add "Export Checklist" section:
+  - Copy page, components, lib files
+  - Create controller in `server/controllers/{game}-controller.ts`
+  - Add ActivityType and GameType to Prisma enum
+  - Create API routes using `next-connect` EdgeRouter
+- [x] Sub-task: Add "Controller Implementation" section:
+  - `getVocabulary()` - query `userWordRecord`, return `{ vocabulary: [{ term, translation }] }`
+  - `getSentences()` - query `userSentenceRecord`, return `{ sentences: [{ term, translation }] }`
+  - `completeGame()` - create `userActivity`, `xPLog`, update `gameRanking`
+  - `getRanking()` - query `gameRanking` grouped by difficulty
+- [x] Sub-task: Add "API Response Formats" section with exact schemas from reading-advantage
+- [x] Sub-task: Add "i18n Key Conventions" section:
+  - Game UI: `games.{gameName}.{key}`
+  - Shared: `games.shared.{key}`
+- [x] Sub-task: Add "Session Data Requirements" section:
+  - `req.session.user.id` - required for all game endpoints
+  - `req.session.user.xp` - updated after complete
+- [x] Sub-task: Add "Troubleshooting" section with common issues
+- [x] Sub-task: Add "Example Migration" section using dragon-flight as reference
+- [x] **Commit**: "docs: add reading-advantage integration guide" (already done)
+
+### Task 7.5: Refactor existing API routes to use utilities
+- [x] Sub-task: Refactor vocabulary game routes to use `vocabularyRoute` factory
+- [x] Sub-task: Refactor sentence game routes to use `sentencesRoute` factory
+- [x] Sub-task: Refactor complete routes to use `completeRoute` factory
+- [x] Sub-task: Refactor ranking routes to use `rankingRoute` factory
+- [x] Sub-task: Run tests: `CI=true npm test`
+- [x] Sub-task: Run build: `CI=true npm run build`
+- [x] **Commit**: "refactor: migrate API routes to unified factories" (already done)
+
+- [ ] Task: Conductor - User Manual Verification 'Phase 7: Template & API Route Modernization' (Protocol in workflow.md)
+
+---
+
 ## Summary
 
 **Track Goals:**
@@ -286,6 +385,7 @@ Before starting, ensure:
 4. Import 9 games from reading-advantage
 5. Port dungeon-liberator to new structure
 6. Remove old flat-structure code
+7. Modernize templates and API routes for seamless two-way sync
 
 **Task Counts:**
 - Phase 1: 4 tasks (Infrastructure)
@@ -294,7 +394,8 @@ Before starting, ensure:
 - Phase 4: 2 tasks (Sentence Games)
 - Phase 5: 4 tasks (Port dungeon-liberator)
 - Phase 6: 5 tasks (Cleanup)
-- **Total: 24 tasks**
+- Phase 7: 5 tasks (Template & API Modernization)
+- **Total: 29 tasks**
 
 **Quality Gates:**
 - All tests pass after each task

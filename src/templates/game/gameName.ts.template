@@ -1,5 +1,5 @@
 import type { VocabularyItem } from '@/store/useGameStore'
-import { calculateXP } from './xp'
+import { calculateXP } from '@/lib/games/xp'
 
 export type GameRound = {
   term: string

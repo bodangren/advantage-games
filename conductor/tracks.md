@@ -125,10 +125,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Storm the Castle Tower**
-*Description: Crazy Climber-style wall scaling sentence game*
+- [~] **Track: Storm the Castle Tower**
+*Link: [./conductor/tracks/storm-castle-tower-20260320/](./conductor/tracks/storm-castle-tower-20260320/)*
+*Description: Crazy Climber-style wall scaling sentence game with word collection*
 *Priority: Medium*
 *Type: Feature*
+*Status: 🔄 IN PROGRESS*
 
 ---
 
@@ -211,5 +213,13 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 - [ ] **Track: The Haunted Library**
 *Description: Mappy-style vertical platformer with door mechanics*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Archer's Revenge - Space Invaders Vocabulary Game**
+*Link: [./conductor/tracks/archers-revenge-20260318/](./conductor/tracks/archers-revenge-20260318/)*
+*Description: Space Invaders-style vocabulary game where players shoot enemies matching the target word. Only shield-down enemies can be destroyed; wrong targets shoot back.*
 *Priority: Medium*
 *Type: Feature*

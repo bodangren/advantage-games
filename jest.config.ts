@@ -14,6 +14,7 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    '^next/server$': '<rootDir>/src/__mocks__/next/server.ts',
   },
   transformIgnorePatterns: [
     'node_modules/(?!(konva|react-konva)/)'

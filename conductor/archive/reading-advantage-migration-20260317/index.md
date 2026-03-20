@@ -11,8 +11,8 @@ Import all games from the reading-advantage repository, restructuring advantage-
 
 ## Status
 
-**Current Phase:** Not started
-**Next Task:** Phase 1, Task 1.1 - Create directory structure
+**Current Phase:** Phase 6 (Cleanup)
+**Next Task:** Phase 6, Task 6.5 - Final verification, then Phase 7
 
 ## Key Decisions
 
@@ -20,3 +20,5 @@ Import all games from the reading-advantage repository, restructuring advantage-
 2. **Mock API routes** - Create `/api/v1/games/{game}/vocabulary` routes for same interface
 3. **i18n stubs** - Add `useScopedI18n` and `useCurrentLocale` hooks
 4. **Session stub** - Add `useSession` hook returning mock authenticated user
+5. **Unified API factories** - Create reusable route factories for easy game scaffolding
+6. **Template modernization** - Update templates to match current directory structure

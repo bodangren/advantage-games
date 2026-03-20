@@ -184,7 +184,7 @@ Use this template structure:
 
 ## Asset Placement
 
-All assets go in: `/public/games/[game-name]/`
+All assets go in: `/public/games/{type}/[game-name]/`
 
 | Filename | Description |
 |----------|-------------|
@@ -209,6 +209,55 @@ Revise based on feedback before proceeding.
 
 ---
 
+## Templates
+
+Use the templates in `src/templates/game/` to scaffold new games:
+
+| Template | Output | Purpose |
+|----------|--------|---------|
+| `vocabulary/page.tsx.template` | Page with vocabulary API fetch | Vocabulary games |
+| `sentence/page.tsx.template` | Page with sentences API fetch | Sentence games |
+| `GameNameGame.tsx.template` | Main Konva component | Both types |
+| `gameName.ts.template` | Game logic | Both types |
+| `api/vocabulary-route.ts.template` | Vocabulary mock API | Vocabulary games |
+| `api/sentences-route.ts.template` | Sentences mock API | Sentence games |
+| `api/complete-route.ts.template` | Completion API | Both types |
+
+### Quick Start
+
+```bash
+# Set variables
+GAME_NAME="my-game"
+GAME_CLASS="MyGame"
+GAME_TYPE="vocabulary"  # or "sentence"
+
+# Create directories
+mkdir -p src/app/\[locale\]/\(student\)/student/games/${GAME_TYPE}/${GAME_NAME}
+mkdir -p src/components/games/${GAME_TYPE}/${GAME_NAME}
+mkdir -p src/app/api/v1/games/${GAME_NAME}/vocabulary  # or sentences
+mkdir -p public/games/${GAME_TYPE}/${GAME_NAME}
+
+# Copy templates
+cp src/templates/game/${GAME_TYPE}/page.tsx.template \
+   src/app/\[locale\]/\(student\)/student/games/${GAME_TYPE}/${GAME_NAME}/page.tsx
+
+cp src/templates/game/GameNameGame.tsx.template \
+   src/components/games/${GAME_TYPE}/${GAME_NAME}/${GAME_CLASS}Game.tsx
+
+cp src/templates/game/gameName.ts.template \
+   src/lib/games/${GAME_NAME}.ts
+
+cp src/templates/game/api/vocabulary-route.ts.template \
+   src/app/api/v1/games/${GAME_NAME}/vocabulary/route.ts
+
+cp src/templates/game/api/complete-route.ts.template \
+   src/app/api/v1/games/${GAME_NAME}/complete/route.ts
+```
+
+See `src/templates/game/README.md` for full documentation.
+
+---
+
 ### Phase 3: Planning
 
 Generate plan.md with adaptive phases based on game complexity.
@@ -225,10 +274,12 @@ This plan outlines the steps to build "[Game Name]" using **React-Konva (Canvas)
 ## Phase 1: Setup & Infrastructure
 **Assets Required:** None (can start immediately)
 
-- [ ] Task: Create configuration file `src/lib/[gameName]Config.ts` with all balance values.
-- [ ] Task: Define game state types in `src/lib/[gameName].ts`.
-- [ ] Task: Create `src/app/games/[game-name]` route and page structure.
-- [ ] Task: Create `[GameName]Game` container component with React-Konva Stage.
+- [ ] Task: Create configuration file `src/lib/games/[gameName]Config.ts` with all balance values.
+- [ ] Task: Define game state types in `src/lib/games/[gameName].ts`.
+- [ ] Task: Create `src/app/[locale]/(student)/student/games/{type}/[game-name]` route and page structure.
+- [ ] Task: Create `[GameName]Game` container component at `src/components/games/{type}/[game-name]/[GameName]Game.tsx`.
+- [ ] Task: Create mock API routes using factories in `src/app/api/v1/games/[game-name]/`.
+- [ ] Task: Add translations to `src/locales/en.ts`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1'
 
 ## Phase 2: Core Game Logic
@@ -242,8 +293,8 @@ This plan outlines the steps to build "[Game Name]" using **React-Konva (Canvas)
 
 ## Phase 3: Rendering
 **Assets Required:** [List specific assets needed]
-- [ ] /public/games/[game-name]/[asset1].png
-- [ ] /public/games/[game-name]/[asset2].png
+- [ ] /public/games/{type}/[game-name]/[asset1].png
+- [ ] /public/games/{type}/[game-name]/[asset2].png
 
 - [ ] Task: Implement asset preloading.
 - [ ] Task: Render [game elements] with Konva.
@@ -269,8 +320,8 @@ This plan outlines the steps to build "[Game Name]" using **React-Konva (Canvas)
 ## Phase 6: Game States
 **Assets Required:** [Victory/defeat screens if any]
 
-- [ ] Task: Implement start/title screen.
-- [ ] Task: Implement victory state and XP display.
+- [ ] Task: Implement start/title screen using GameStartScreen.
+- [ ] Task: Implement victory state and XP display using GameEndScreen.
 - [ ] Task: Implement defeat state.
 - [ ] Task: Implement pause functionality (if applicable).
 - [ ] Task: Conductor - User Manual Verification 'Phase 6'
@@ -281,7 +332,7 @@ This plan outlines the steps to build "[Game Name]" using **React-Konva (Canvas)
 - [ ] Task: Add visual feedback and juice.
 - [ ] Task: Implement sound effects (useSound hook).
 - [ ] Task: Balance tuning based on playtesting.
-- [ ] Task: Register game in gameCards.ts.
+- [ ] Task: Register game in gameCards.ts with correct type (vocabulary/sentence).
 - [ ] Task: Conductor - User Manual Verification 'Phase 7'
 
 ---
@@ -294,6 +345,8 @@ This plan outlines the steps to build "[Game Name]" using **React-Konva (Canvas)
 - Use pure state object with tick function for game logic.
 - Mobile-first: test on 390×844 viewport.
 - All text minimum 16px, touch targets minimum 44×44px.
+- Use API route factories from `@/lib/games/api`.
+- Import shared screens from `@/components/games/game/`.
 ```
 
 #### Phase Adaptation Guidelines
@@ -396,7 +449,7 @@ Example:
 ```
 ## Manual Verification Plan - Phase 3: Rendering
 
-1. Open game at http://localhost:3000/games/[game-name]
+1. Open game at http://localhost:3000/en/student/games/{type}/[game-name]
 2. Verify viewport is portrait-oriented (390×844 reference)
 3. Verify [game elements] render correctly
 4. Verify sprite animations play smoothly
@@ -446,7 +499,8 @@ Add entry to `/src/lib/gameCards.ts`:
   id: '[game-name]',
   title: '[Game Name]',
   description: '[Short description from spec]',
-  href: '/games/[game-name]',
+  type: 'vocabulary', // or 'sentence'
+  href: '/[locale]/(student)/student/games/vocabulary/[game-name]',
   imageSrc: withBasePath('/games/cover/[game-name]-cover.png'),
   status: 'playable' as const,
 }
@@ -475,7 +529,7 @@ Update metadata.json status to "completed".
 ```
 🎮 [Game Name] is complete!
 
-- Game URL: /games/[game-name]
+- Game URL: /[locale]/(student)/student/games/{type}/[game-name]
 - Track archived: /conductor/archive/[game-name]-YYYYMMDD
 - Registry updated: src/lib/gameCards.ts
 
@@ -515,6 +569,57 @@ Continue with the standard TDD workflow from current position.
 
 ---
 
+## Directory Structure
+
+All games follow the reading-advantage-compatible structure:
+
+```
+src/
+├── app/[locale]/(student)/student/games/
+│   ├── vocabulary/                    # Word-based games
+│   │   └── [game-name]/
+│   │       └── page.tsx               # Page wrapper with API fetch
+│   └── sentence/                      # Phrase-based games
+│       └── [game-name]/
+│           └── page.tsx
+├── components/games/
+│   ├── game/                          # Shared components
+│   │   ├── GameStartScreen.tsx
+│   │   └── GameEndScreen.tsx
+│   ├── vocabulary/[game-name]/
+│   │   └── [GameName]Game.tsx         # Main Konva game component
+│   └── sentence/[game-name]/
+│       └── [GameName]Game.tsx
+├── lib/games/
+│   ├── api/                           # API route factories
+│   │   ├── vocabularyRoute.ts
+│   │   ├── sentencesRoute.ts
+│   │   └── completeRoute.ts
+│   ├── [gameName].ts                  # Game logic (pure functions)
+│   └── sampleVocabulary.ts            # Mock data for dev
+├── app/api/v1/games/[game-name]/
+│   ├── vocabulary/route.ts            # GET vocabulary (vocabulary games)
+│   ├── sentences/route.ts             # GET sentences (sentence games)
+│   ├── complete/route.ts              # POST game completion
+│   └── ranking/route.ts               # GET rankings (optional)
+├── hooks/
+│   ├── useSession.ts                  # Session stub (returns mock user)
+│   └── useDirectionalInput.ts
+├── locales/
+│   ├── en.ts                          # UI strings
+│   └── client.ts                      # i18n hooks
+└── templates/game/                    # Game scaffolding templates
+    ├── vocabulary/page.tsx.template
+    ├── sentence/page.tsx.template
+    └── api/
+        ├── vocabulary-route.ts.template
+        └── complete-route.ts.template
+
+public/games/
+├── vocabulary/[game-name]/            # Vocabulary game assets
+└── sentence/[game-name]/              # Sentence game assets
+```
+
 ## Technical Constraints
 
 These are non-negotiable for all games:
@@ -532,7 +637,61 @@ These are non-negotiable for all games:
 | **Text size** | Minimum 16px |
 | **Game loop** | `useInterval` hook |
 | **Assets** | PNG with transparency, sprite sheets |
-| **Asset location** | `/public/games/[game-name]/` |
+| **Asset location** | `/public/games/{type}/[game-name]/` |
+
+## API Route Patterns
+
+Use the unified factory functions for mock API routes:
+
+```typescript
+// vocabulary/route.ts
+import { createVocabularyRoute } from '@/lib/games/api'
+import { SAMPLE_VOCABULARY } from '@/lib/games/sampleVocabulary'
+
+export const dynamic = "force-static"
+const { GET } = createVocabularyRoute(SAMPLE_VOCABULARY)
+export { GET }
+
+// sentences/route.ts (for sentence games)
+import { createSentencesRoute } from '@/lib/games/api'
+import { SAMPLE_SENTENCES } from '@/lib/games/sampleSentences'
+
+export const dynamic = "force-static"
+const { GET } = createSentencesRoute(SAMPLE_SENTENCES)
+export { GET }
+
+// complete/route.ts
+import { createCompleteRoute } from '@/lib/games/api'
+
+export const dynamic = "force-static"
+const { POST } = createCompleteRoute()
+export { POST }
+```
+
+## i18n & Session Hooks
+
+```typescript
+// In page.tsx
+import { useScopedI18n, useCurrentLocale } from '@/locales/client'
+import { useSession } from '@/hooks/useSession'
+
+export default function GamePage() {
+  const t = useScopedI18n('games.gameName')
+  const locale = useCurrentLocale()
+  const { data: { user } } = useSession()
+  
+  // t('title'), t('description'), t('loading')
+  // locale for API fetches
+}
+```
+
+## Shared Component Imports
+
+```typescript
+import { GameEndScreen } from '@/components/games/game/GameEndScreen'
+import { GameStartScreen } from '@/components/games/game/GameStartScreen'
+import { DPad } from '@/components/ui/DPad'
+```
 
 ---
 
@@ -542,12 +701,13 @@ When building games, reference these existing implementations:
 
 | Pattern | Reference File |
 |---------|----------------|
-| Pure state management | `src/lib/dragonFlight.ts` |
-| Konva game component | `src/components/dragon-flight/DragonFlightGame.tsx` |
-| Asset preloading | `src/components/wizard-vs-zombie/WizardZombieGame.tsx` |
-| Game page structure | `src/app/games/dragon-flight/page.tsx` |
-| Config pattern | `src/lib/runeMatchConfig.ts` |
-| Test patterns | `src/lib/__tests__/` |
+| Pure state management | `src/lib/games/dragonFlight.ts` |
+| Konva game component | `src/components/games/vocabulary/dragon-flight/DragonFlightGame.tsx` |
+| Asset preloading | `src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx` |
+| Game page structure | `src/app/[locale]/(student)/student/games/vocabulary/dragon-flight/page.tsx` |
+| Sentence game page | `src/app/[locale]/(student)/student/games/sentence/castle-defense/page.tsx` |
+| API route factory | `src/lib/games/api/vocabularyRoute.ts` |
+| Test patterns | `src/lib/games/__tests__/` |
 | Game registry | `src/lib/gameCards.ts` |
 
 ---

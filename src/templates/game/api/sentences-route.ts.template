@@ -1,0 +1,4 @@
+import { createSentencesRoute } from '@/lib/games/api'
+import { SAMPLE_SENTENCES } from '@/lib/games/sampleSentences'
+
+export const { GET } = createSentencesRoute(SAMPLE_SENTENCES)
