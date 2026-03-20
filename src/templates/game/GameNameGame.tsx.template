@@ -7,7 +7,7 @@ import { withBasePath } from '@/lib/games/basePath'
 import { createGameState, advanceTime, getGameResults } from '@/lib/games/gameName'
 import type { GameState, GameResults, GameRound } from '@/lib/games/gameName'
 import type { VocabularyItem } from '@/store/useGameStore'
-import { useInterval } from '@/hooks/useInterval'
+// rAF-based game loop — no useInterval needed for action games
 import { useSound } from '@/hooks/useSound'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
@@ -56,7 +56,7 @@ const ASSETS = {
 }
 
 const DEFAULT_STAGE: StageSize = { width: 960, height: 540 }
-const TICK_MS = 50
+const TICK_MS = 16 // rAF target ~60fps
 const PLAYER_SPEED = 4
 const PLAYER_ANIM_MS = 120
 const ENEMY_SPAWN_MS = 2000
@@ -237,9 +237,26 @@ export function GameNameGame({
     return buildLayout(stageSize, playerGrid)
   }, [stageSize, playerGrid])
 
-  useInterval(() => {
-    setState((prev) => advanceTime(prev, TICK_MS))
-  }, state.status === 'running' && phase === 'playing' ? TICK_MS : null)
+  const lastFrameRef2 = useRef<number>(0)
+  const rafRef2 = useRef<number>(0)
+
+  useEffect(() => {
+    if (state.status !== 'running' || phase !== 'playing') return
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef2.current ? timestamp - lastFrameRef2.current : 16
+      lastFrameRef2.current = timestamp
+      const clampedDelta = Math.min(delta, 50)
+      setState((prev) => advanceTime(prev, clampedDelta))
+      rafRef2.current = requestAnimationFrame(loop)
+    }
+
+    rafRef2.current = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(rafRef2.current)
+      lastFrameRef2.current = 0
+    }
+  }, [state.status, phase])
 
   useInterval(() => {
     setPlayerFrame((prev) => (prev + 1) % 3)

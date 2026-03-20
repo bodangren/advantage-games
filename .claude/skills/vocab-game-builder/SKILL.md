@@ -347,6 +347,35 @@ This plan outlines the steps to build "[Game Name]" using **React-Konva (Canvas)
 - All text minimum 16px, touch targets minimum 44×44px.
 - Use API route factories from `@/lib/games/api`.
 - Import shared screens from `@/components/games/game/`.
+- **Game loop**: Action/real-time games MUST use `requestAnimationFrame` with delta-time (not `useInterval`). Use this pattern:
+
+```tsx
+const lastFrameRef = useRef<number>(0)
+const rafRef = useRef<number>(0)
+
+useEffect(() => {
+  if (gamePhase !== 'playing') return
+
+  const loop = (timestamp: number) => {
+    const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
+    lastFrameRef.current = timestamp
+    const clampedDelta = Math.min(delta, 50) // cap to prevent physics jumps on tab-switch
+    setGameState(prevState => {
+      if (!prevState || prevState.status !== 'playing') return prevState
+      return tickGameName(prevState, clampedDelta)
+    })
+    rafRef.current = requestAnimationFrame(loop)
+  }
+
+  rafRef.current = requestAnimationFrame(loop)
+  return () => {
+    cancelAnimationFrame(rafRef.current)
+    lastFrameRef.current = 0
+  }
+}, [gamePhase])
+```
+
+Only use `useInterval` for turn-based or timer-only games (e.g., Rune Forge Chamber countdown).
 ```
 
 #### Phase Adaptation Guidelines
@@ -635,7 +664,7 @@ These are non-negotiable for all games:
 | **Coverage** | >80% for new code |
 | **Touch targets** | Minimum 44×44px |
 | **Text size** | Minimum 16px |
-| **Game loop** | `useInterval` hook |
+| **Game loop** | `requestAnimationFrame` with delta-time (action games), `useInterval` (turn-based/timer-only games) |
 | **Assets** | PNG with transparency, sprite sheets |
 | **Asset location** | `/public/games/{type}/[game-name]/` |
 
