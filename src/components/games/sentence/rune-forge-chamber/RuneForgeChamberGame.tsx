@@ -134,6 +134,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
     if (!gameState || gamePhase !== 'playing') return
 
     const stage = e.target.getStage()
+    if (!stage) return
     const clickPos = stage.getPointerPosition()
     if (!clickPos) return
 
