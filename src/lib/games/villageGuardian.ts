@@ -448,7 +448,6 @@ function checkCollisions(state: VillageGuardianState): VillageGuardianState {
 
   if (collidedVillager) {
     const { index, villager } = collidedVillager
-    wrongAnswers += 1
 
     if (villager.orderIndex === targetIndex) {
       villagers = villagers.map((v, i) => (i === index ? { ...v, collected: true } : v))
@@ -467,6 +466,7 @@ function checkCollisions(state: VillageGuardianState): VillageGuardianState {
         },
       ]
     } else {
+      wrongAnswers += 1
       villagers = villagers.map((v, i) =>
         i === index ? { ...v, hiding: true, hideTimer: 2000 } : v
       )

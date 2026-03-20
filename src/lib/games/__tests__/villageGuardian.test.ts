@@ -2,6 +2,7 @@ import {
   createVillageGuardianState,
   tickVillageGuardian,
   calculateXP,
+  type VillageGuardianState,
 } from '../villageGuardian'
 import {
   VILLAGE_GUARDIAN_CONFIG,
@@ -150,6 +151,236 @@ describe('tickVillageGuardian', () => {
     expect(newState.knight.invulnerabilityTime).toBe(400)
   })
 })
+describe('villager collision mechanics', () => {
+  it('collecting correct villager increments correctAnswers only, not wrongAnswers', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const targetVillager = state.villagers.find((v) => v.orderIndex === 0)!
+    const stateWithKnightOnVillager: VillageGuardianState = {
+      ...state,
+      knight: { ...state.knight, x: targetVillager.x, y: targetVillager.y },
+      // Keep monster far away so it doesn't scatter the just-collected trail in the same tick
+      monsters: [{ ...state.monsters[0], x: -500, y: -500 }],
+    }
+    const newState = tickVillageGuardian(stateWithKnightOnVillager, 50)
+    expect(newState.correctAnswers).toBe(1)
+    expect(newState.wrongAnswers).toBe(0)
+    expect(newState.targetIndex).toBe(1)
+    const collected = newState.villagers.find((v) => v.orderIndex === 0)!
+    expect(collected.collected).toBe(true)
+  })
+
+  it('collecting correct villager adds it to trail and collectedWords', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const targetVillager = state.villagers.find((v) => v.orderIndex === 0)!
+    const stateWithKnightOnVillager: VillageGuardianState = {
+      ...state,
+      knight: { ...state.knight, x: targetVillager.x, y: targetVillager.y },
+    }
+    const newState = tickVillageGuardian(stateWithKnightOnVillager, 50)
+    expect(newState.trail).toHaveLength(1)
+    expect(newState.collectedWords).toContain(targetVillager.word)
+  })
+
+  it('touching wrong-order villager increments wrongAnswers and hides villager', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const wrongVillager = state.villagers.find((v) => v.orderIndex !== 0)
+    if (!wrongVillager) return
+    const stateWithKnightOnWrong: VillageGuardianState = {
+      ...state,
+      knight: { ...state.knight, x: wrongVillager.x, y: wrongVillager.y },
+    }
+    const newState = tickVillageGuardian(stateWithKnightOnWrong, 50)
+    expect(newState.wrongAnswers).toBe(1)
+    expect(newState.correctAnswers).toBe(0)
+    const after = newState.villagers.find((v) => v.id === wrongVillager.id)!
+    expect(after.hiding).toBe(true)
+  })
+
+  it('touching wrong villager applies time penalty', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const wrongVillager = state.villagers.find((v) => v.orderIndex !== 0)
+    if (!wrongVillager) return
+    const stateWithKnightOnWrong: VillageGuardianState = {
+      ...state,
+      knight: { ...state.knight, x: wrongVillager.x, y: wrongVillager.y },
+    }
+    const newState = tickVillageGuardian(stateWithKnightOnWrong, 50)
+    // Timer penalty increases timer (wrong word time penalty is subtracted from countdown)
+    expect(newState.timer).toBeGreaterThan(state.timer - 50)
+  })
+})
+
+describe('victory condition', () => {
+  it('sets victory when knight reaches sanctuary with full trail', () => {
+    const state = createVillageGuardianState(mockVocabulary, { difficulty: 'easy' })
+    const fullTrail = state.words.map((word, i) => ({
+      id: `trail-${i}`,
+      x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
+      y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
+      word,
+      orderIndex: i,
+    }))
+    const victoryState: VillageGuardianState = {
+      ...state,
+      knight: {
+        ...state.knight,
+        x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
+        y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
+      },
+      trail: fullTrail,
+      targetIndex: state.words.length,
+    }
+    const newState = tickVillageGuardian(victoryState, 50)
+    expect(newState.status).toBe('victory')
+  })
+
+  it('does not set victory when trail is not full', () => {
+    const state = createVillageGuardianState(mockVocabulary, { difficulty: 'easy' })
+    const partialTrail = [
+      { id: 'trail-0', x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x, y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y, word: state.words[0], orderIndex: 0 },
+    ]
+    const nonVictoryState: VillageGuardianState = {
+      ...state,
+      knight: {
+        ...state.knight,
+        x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
+        y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
+      },
+      trail: partialTrail,
+    }
+    const newState = tickVillageGuardian(nonVictoryState, 50)
+    expect(newState.status).toBe('playing')
+  })
+})
+
+describe('monster collision', () => {
+  it('knight loses a life when monster hits and trail is empty', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const stateWithMonsterOnKnight: VillageGuardianState = {
+      ...state,
+      trail: [],
+      knight: { ...state.knight, x: 195, y: 350, invulnerabilityTime: 0 },
+      monsters: [{ ...state.monsters[0], x: 195, y: 350 }],
+    }
+    const newState = tickVillageGuardian(stateWithMonsterOnKnight, 50)
+    expect(newState.knight.lives).toBe(state.knight.lives - 1)
+  })
+
+  it('monster hitting trail scatters villagers and resets trail', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    // Place knight and trail segment at the same location so updateTrail doesn't move segment away
+    const knightX = state.knight.x
+    const knightY = state.knight.y
+    const trail = [
+      { id: 'seg-0', x: knightX, y: knightY, word: state.words[0], orderIndex: 0 },
+    ]
+    const villagers = state.villagers.map((v) =>
+      v.orderIndex === 0 ? { ...v, collected: true } : v
+    )
+    const stateWithMonsterOnTrail: VillageGuardianState = {
+      ...state,
+      trail,
+      villagers,
+      monsters: [{ ...state.monsters[0], x: knightX, y: knightY }],
+    }
+    const newState = tickVillageGuardian(stateWithMonsterOnTrail, 50)
+    expect(newState.trail).toHaveLength(0)
+    const scattered = newState.villagers.find((v) => v.orderIndex === 0)!
+    expect(scattered.collected).toBe(false)
+  })
+
+  it('knight gets invulnerability after monster scatters trail', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const knightX = state.knight.x
+    const knightY = state.knight.y
+    const trail = [
+      { id: 'seg-0', x: knightX, y: knightY, word: state.words[0], orderIndex: 0 },
+    ]
+    const stateWithMonsterOnTrail: VillageGuardianState = {
+      ...state,
+      trail,
+      monsters: [{ ...state.monsters[0], x: knightX, y: knightY }],
+    }
+    const newState = tickVillageGuardian(stateWithMonsterOnTrail, 50)
+    expect(newState.knight.invulnerabilityTime).toBeGreaterThan(0)
+  })
+})
+
+describe('trail following', () => {
+  it('trail segment moves toward knight position', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const trailState: VillageGuardianState = {
+      ...state,
+      trail: [{ id: 'seg-0', x: 100, y: 100, word: state.words[0], orderIndex: 0 }],
+      knight: { ...state.knight, x: 200, y: 100 },
+    }
+    const newState = tickVillageGuardian(trailState, 50)
+    expect(newState.trail[0].x).toBeGreaterThan(100)
+  })
+})
+
+describe('monster movement', () => {
+  it('goblin monsters chase the knight', () => {
+    const state = createVillageGuardianState(mockVocabulary, { opponentType: 'goblins' })
+    const stateWithPositions: VillageGuardianState = {
+      ...state,
+      knight: { ...state.knight, x: 390, y: 350 },
+      monsters: [{ ...state.monsters[0], x: 0, y: 350, velocityX: 0, velocityY: 1 }],
+    }
+    const newState = tickVillageGuardian(stateWithPositions, 100)
+    expect(newState.monsters[0].x).toBeGreaterThan(0)
+  })
+
+  it('dragon monsters chase the knight more aggressively', () => {
+    const state = createVillageGuardianState(mockVocabulary, { opponentType: 'dragons' })
+    const stateWithPositions: VillageGuardianState = {
+      ...state,
+      knight: { ...state.knight, x: 390, y: 350 },
+      monsters: [{ ...state.monsters[0], x: 0, y: 350, velocityX: 0, velocityY: 1 }],
+    }
+    const newState = tickVillageGuardian(stateWithPositions, 100)
+    expect(newState.monsters[0].x).toBeGreaterThan(0)
+  })
+
+  it('bandit monsters bounce off walls', () => {
+    const state = createVillageGuardianState(mockVocabulary, { opponentType: 'bandits' })
+    const stateAtWall: VillageGuardianState = {
+      ...state,
+      monsters: [{ ...state.monsters[0], x: 5, y: 350, velocityX: -1, velocityY: 0 }],
+    }
+    const newState = tickVillageGuardian(stateAtWall, 100)
+    expect(newState.monsters[0].velocityX).toBeGreaterThanOrEqual(0)
+  })
+})
+
+describe('hiding villager behavior', () => {
+  it('hiding villager timer decrements each tick', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const villagerWithHide = state.villagers.map((v, i) =>
+      i === 0 ? { ...v, hiding: true, hideTimer: 1000 } : v
+    )
+    const hidingState: VillageGuardianState = {
+      ...state,
+      villagers: villagerWithHide,
+    }
+    const newState = tickVillageGuardian(hidingState, 100)
+    expect(newState.villagers[0].hideTimer).toBe(900)
+  })
+
+  it('hiding villager becomes visible again when timer expires', () => {
+    const state = createVillageGuardianState(mockVocabulary)
+    const villagerWithHide = state.villagers.map((v, i) =>
+      i === 0 ? { ...v, hiding: true, hideTimer: 50 } : v
+    )
+    const hidingState: VillageGuardianState = {
+      ...state,
+      villagers: villagerWithHide,
+    }
+    const newState = tickVillageGuardian(hidingState, 100)
+    expect(newState.villagers[0].hiding).toBe(false)
+  })
+})
+
 describe('calculateXP', () => {
   it('calculates base XP from correct answers', () => {
     const state = createVillageGuardianState(mockVocabulary)
