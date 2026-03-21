@@ -667,6 +667,91 @@ These are non-negotiable for all games:
 | **Game loop** | `requestAnimationFrame` with delta-time (action games), `useInterval` (turn-based/timer-only games) |
 | **Assets** | PNG with transparency, sprite sheets |
 | **Asset location** | `/public/games/{type}/[game-name]/` |
+| **Fullscreen** | All games use `useGameFullscreen` hook during gameplay |
+
+## Fullscreen Mode (Required for All Games)
+
+All Konva games MUST enter fullscreen when gameplay starts and exit on game end. This eliminates browser chrome, page headers, and allows the player to rotate to landscape for more space.
+
+```typescript
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+
+// In the game component:
+const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+
+// Enter on game start:
+onStart={() => { resetGame(); setGamePhase('playing'); enterFullscreen() }}
+
+// Exit on game end:
+setGamePhase('ended'); exitFullscreen()
+
+// The containerRef goes on the outermost div:
+<div ref={containerRef} className="... fullscreen:h-screen fullscreen:rounded-none">
+```
+
+**Reference:** `src/hooks/useGameFullscreen.ts`
+
+## Scrolling Viewport / Camera System
+
+Games with a world larger than the mobile screen (e.g., 800x600) MUST use a scrolling camera that follows the player instead of shrinking the entire world to fit. Shrink-to-fit makes text unreadable and sprites too small on mobile.
+
+### When to use a camera
+- **Camera required:** World dimensions > 500px in either axis AND player moves freely in the world (e.g., dungeon-liberator 800x600, wizard-vs-zombie 800x600)
+- **Fit-to-screen OK:** World designed for mobile viewport (390x844) OR the player needs to see the entire board at once (e.g., potion-rush sushi-chef style)
+
+### Camera pattern
+
+```typescript
+// State
+const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 })
+
+// In game loop — update camera each tick:
+const scaleY = dimensions.height / GAME_HEIGHT
+const scale = Math.max(scaleY, 0.8) // never smaller than 0.8x
+
+let camX = dimensions.width / 2 - player.x * scale
+let camY = dimensions.height / 2 - player.y * scale
+
+// Clamp to world bounds
+const minX = dimensions.width - GAME_WIDTH * scale
+const minY = dimensions.height - GAME_HEIGHT * scale
+if (minX > 0) camX = (dimensions.width - GAME_WIDTH * scale) / 2
+else camX = Math.max(minX, Math.min(0, camX))
+if (minY > 0) camY = (dimensions.height - GAME_HEIGHT * scale) / 2
+else camY = Math.max(minY, Math.min(0, camY))
+
+setCamera({ x: camX, y: camY, scale })
+
+// Apply to Konva Layer (NOT Stage):
+<Layer scaleX={camera.scale} scaleY={camera.scale} x={camera.x} y={camera.y}>
+```
+
+### Off-screen indicators (required with camera)
+
+When using a camera, entities can be off-screen. Add arrow indicators pointing to important off-screen items (words, targets, prisoners, orbs).
+
+```typescript
+import { calculateIndicators } from '@/lib/games/[gameName]Indicators'
+
+// Calculate each frame:
+const indicators = calculateIndicators(entities, camera, dimensions)
+
+// Render as HTML overlays (not Konva — they stay fixed on screen):
+{indicators.map((ind) => (
+  <div key={ind.id} className="absolute z-10 pointer-events-none"
+    style={{ left: ind.x, top: ind.y,
+      transform: `translate(-50%, -50%) rotate(${ind.rotation}deg)` }}>
+    <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px]
+      border-r-transparent border-b-[15px] border-b-amber-400 animate-pulse" />
+  </div>
+))}
+```
+
+**Reference implementations:**
+- Camera: `src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx`
+- Camera: `src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx`
+- Indicators: `src/lib/games/wizardZombieIndicators.ts`
+- Indicators: `src/lib/games/dungeonLiberatorIndicators.ts`
 
 ## API Route Patterns
 
@@ -738,6 +823,9 @@ When building games, reference these existing implementations:
 | API route factory | `src/lib/games/api/vocabularyRoute.ts` |
 | Test patterns | `src/lib/games/__tests__/` |
 | Game registry | `src/lib/gameCards.ts` |
+| Fullscreen hook | `src/hooks/useGameFullscreen.ts` |
+| Scrolling camera | `src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx` |
+| Off-screen indicators | `src/lib/games/wizardZombieIndicators.ts`, `src/lib/games/dungeonLiberatorIndicators.ts` |
 
 ---
 

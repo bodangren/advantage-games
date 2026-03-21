@@ -1,268 +1,562 @@
-"use client";
+'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Stage, Layer, Rect, Text, Group, Circle } from 'react-konva';
-import { DUNGEON_LIBERATOR_CONFIG } from '@/lib/games/dungeonLiberatorConfig';
-import { 
-  createInitialDungeonLiberatorState, 
-  tickDungeonLiberator, 
-  handleDungeonLiberatorInput,
-  spawnDungeonLiberatorPrisoners,
-  spawnDungeonLiberatorMonsters,
-  getFollowerPositions,
-  GameState 
-} from '@/lib/games/dungeonLiberator';
-import { VocabularyItem } from '@/store/useGameStore';
-import { useDirectionalInput } from '@/hooks/useDirectionalInput';
-import { GameStartScreen } from '@/components/games/game/GameStartScreen';
-import { GameEndScreen } from '@/components/games/game/GameEndScreen';
-import { Shield, Users, Ghost, Portal } from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { Stage, Layer, Text, Group, Rect, Circle, Line, Ring, Image as KonvaImage } from 'react-konva'
+import {
+  createDungeonLiberatorState,
+  advanceDungeonLiberatorTime,
+  advanceToNextLevel,
+  GAME_WIDTH,
+  GAME_HEIGHT,
+  PLAYER_RADIUS,
+  PRISONER_RADIUS,
+  MONSTER_RADIUS,
+  PORTAL_RADIUS,
+  type DungeonLiberatorState,
+} from '@/lib/games/dungeonLiberator'
+import { calculateIndicators } from '@/lib/games/dungeonLiberatorIndicators'
+import type { VocabularyItem } from '@/store/useGameStore'
+import { useInterval } from '@/hooks/useInterval'
+import { useDirectionalInput } from '@/hooks/useDirectionalInput'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { VirtualDPad } from '@/components/ui/VirtualDPad'
+import { calculateXP } from '@/lib/xp'
+import { GameEndScreen } from '@/components/games/game/GameEndScreen'
+import { GameStartScreen } from '@/components/games/game/GameStartScreen'
+import { Shield, Sword, Users, AlertTriangle } from 'lucide-react'
+import { withBasePath } from '@/lib/basePath'
 
-export interface DungeonLiberatorGameProps {
-  vocabList: VocabularyItem[];
-  difficulty: string;
-  onComplete: (results: { xp: number; accuracy: number; difficulty: string; score: number }) => void;
+const SPRITE_SIZE = {
+  player: 48,
+  prisoner: 40,
+  slime: 48,
 }
 
-const DungeonLiberatorGame: React.FC<DungeonLiberatorGameProps> = ({ vocabList, difficulty, onComplete }) => {
-  const [gameState, setGameState] = useState<GameState>(() => 
-    createInitialDungeonLiberatorState(vocabList[0]?.sentence?.split(' ') || [])
-  );
-  
-  const [dimensions, setDimensions] = useState({ width: 390, height: 844 });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lastTickTime = useRef<number>(Date.now());
-  const { input } = useDirectionalInput();
+function loadSprite(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.src = withBasePath(src)
+    img.onload = () => resolve(img)
+    img.onerror = reject
+  })
+}
 
+export type DungeonLiberatorGameResult = {
+  xp: number
+  accuracy: number
+}
+
+interface DungeonLiberatorGameProps {
+  vocabulary: VocabularyItem[]
+  onComplete: (results: DungeonLiberatorGameResult) => void
+}
+
+export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberatorGameProps) {
+  const { input, setVirtualInput } = useDirectionalInput()
+  const [gameState, setGameState] = useState<DungeonLiberatorState | null>(null)
+  const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
+  const [results, setResults] = useState<DungeonLiberatorGameResult | null>(null)
+  const hasReportedRef = useRef(false)
+
+  const [assets, setAssets] = useState<{
+    background: HTMLImageElement
+    player: HTMLImageElement
+    prisoner: HTMLImageElement
+    slime: HTMLImageElement
+  } | null>(null)
+  const [animFrame, setAnimFrame] = useState(0)
+
+  // Camera state (scrolling viewport)
+  const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 })
+
+  // Fullscreen
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  // Calculate off-screen indicators
+  const indicators =
+    gameState && dimensions.width > 0
+      ? calculateIndicators(gameState.prisoners, camera, dimensions)
+      : []
+
+  // Asset loading
   useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.clientWidth,
-          height: containerRef.current.clientHeight
-        });
-      }
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const update = useCallback(() => {
-    if (gameState.status !== 'playing') return;
-
-    const now = Date.now();
-    const deltaTime = (now - lastTickTime.current) / 1000;
-    lastTickTime.current = now;
-
-    setGameState((prev) => {
-      let next = tickDungeonLiberator(prev, deltaTime);
-      if (input.dx !== 0 || input.dy !== 0) {
-        next = handleDungeonLiberatorInput(next, { dx: input.dx, dy: input.dy }, deltaTime);
-      }
-      return next;
-    });
-  }, [gameState.status, input]);
-
-  useEffect(() => {
-    const interval = setInterval(update, 1000 / 60);
-    return () => clearInterval(interval);
-  }, [update]);
-
-  useEffect(() => {
-    if (gameState.status === 'won' || gameState.status === 'lost') {
-      onComplete({
-        xp: gameState.xp,
-        accuracy: gameState.collectedWords.length / gameState.sentence.length,
-        difficulty,
-        score: gameState.score
-      });
+    const load = async () => {
+      const [background, player, prisoner, slime] = await Promise.all([
+        loadSprite('/games/dungeon-liberator/background.png'),
+        loadSprite('/games/dungeon-liberator/player-sheet.png'),
+        loadSprite('/games/dungeon-liberator/prisoner-sheet.png'),
+        loadSprite('/games/dungeon-liberator/slime-sheet.png'),
+      ])
+      setAssets({ background, player, prisoner, slime })
     }
-  }, [gameState.status, gameState.xp, gameState.score, gameState.collectedWords.length, gameState.sentence.length, difficulty, onComplete]);
+    load()
+  }, [])
 
-  const handleStart = () => {
-    const initialState = createInitialDungeonLiberatorState(vocabList[0]?.sentence?.split(' ') || []);
-    let withAssets = spawnDungeonLiberatorPrisoners(initialState);
-    withAssets = spawnDungeonLiberatorMonsters(withAssets);
-    setGameState({ ...withAssets, status: 'playing' });
-    lastTickTime.current = Date.now();
-  };
+  // Animation frames
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      const interval = setInterval(() => {
+        setAnimFrame(f => (f + 1) % 3)
+      }, 200)
+      return () => clearInterval(interval)
+    }
+  }, [gamePhase])
 
-  const scale = Math.min(dimensions.width / 390, dimensions.height / 844);
-  const followerPositions = getFollowerPositions(gameState);
+  const resetGame = useCallback(() => {
+    if (vocabulary.length > 0) {
+      setGameState(createDungeonLiberatorState(vocabulary))
+      setResults(null)
+      setTotalXP(0)
+      setTotalCorrect(0)
+      setTotalAttempts(0)
+      hasReportedRef.current = false
+    }
+  }, [vocabulary])
 
-  if (gameState.status === 'start') {
+  useEffect(() => {
+    if (vocabulary.length > 0 && gamePhase === 'start') {
+      resetGame()
+    }
+  }, [vocabulary, gamePhase, resetGame])
+
+  // Dimension tracking
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const updateDimensions = () => {
+      if (!containerRef.current) return
+      const { width, height } = containerRef.current.getBoundingClientRect()
+      if (width > 0 && height > 0) setDimensions({ width, height })
+    }
+
+    const observer = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          setDimensions({ width: entry.contentRect.width, height: entry.contentRect.height })
+        }
+      }
+    })
+
+    observer.observe(containerRef.current)
+    const interval = setInterval(updateDimensions, 200)
+    const timeout = setTimeout(() => clearInterval(interval), 2000)
+    updateDimensions()
+
+    return () => {
+      observer.disconnect()
+      clearInterval(interval)
+      clearTimeout(timeout)
+    }
+  }, [containerRef])
+
+  const [totalXP, setTotalXP] = useState(0)
+  const [totalCorrect, setTotalCorrect] = useState(0)
+  const [totalAttempts, setTotalAttempts] = useState(0)
+
+  // Game loop with camera update
+  useInterval(() => {
+    if (gameState && gameState.phase === 'playing' && gamePhase === 'playing') {
+      const nextState = advanceDungeonLiberatorTime(gameState, 50, { dx: input.dx, dy: input.dy })
+
+      if (nextState.phase === 'victory') {
+        const levelCorrect = nextState.correctWords
+        const levelAttempts = nextState.totalAttempts
+        const levelXP = calculateXP(levelCorrect, levelCorrect, levelAttempts)
+
+        setTotalXP(prev => prev + levelXP)
+        setTotalCorrect(prev => prev + levelCorrect)
+        setTotalAttempts(prev => prev + levelAttempts)
+
+        const nextLevelState = advanceToNextLevel(nextState, vocabulary)
+        setGameState(nextLevelState)
+      } else if (nextState.phase === 'defeat') {
+        const levelCorrect = nextState.correctWords
+        const levelAttempts = nextState.totalAttempts
+
+        setTotalCorrect(prev => prev + levelCorrect)
+        setTotalAttempts(prev => prev + levelAttempts)
+
+        const finalAccuracy = (totalCorrect + levelCorrect) > 0
+          ? (totalCorrect + levelCorrect) / (totalAttempts + levelAttempts)
+          : 0
+        const finalResults = { xp: totalXP, accuracy: finalAccuracy }
+        setResults(finalResults)
+        if (!hasReportedRef.current) {
+          onComplete(finalResults)
+          hasReportedRef.current = true
+        }
+        setGamePhase('ended')
+        exitFullscreen()
+      } else {
+        setGameState(nextState)
+      }
+
+      // Update camera — follow player, clamp to world bounds
+      if (dimensions.width > 0 && dimensions.height > 0) {
+        const scaleY = dimensions.height / GAME_HEIGHT
+        const scale = Math.max(scaleY, 0.8)
+
+        let camX = dimensions.width / 2 - nextState.player.x * scale
+        let camY = dimensions.height / 2 - nextState.player.y * scale
+
+        const minX = dimensions.width - GAME_WIDTH * scale
+        const minY = dimensions.height - GAME_HEIGHT * scale
+
+        if (minX > 0) camX = (dimensions.width - GAME_WIDTH * scale) / 2
+        else camX = Math.max(minX, Math.min(0, camX))
+
+        if (minY > 0) camY = (dimensions.height - GAME_HEIGHT * scale) / 2
+        else camY = Math.max(minY, Math.min(0, camY))
+
+        setCamera({ x: camX, y: camY, scale })
+      }
+    }
+  }, gameState?.phase === 'playing' && gamePhase === 'playing' ? 50 : null)
+
+  if (gamePhase === 'start') {
     return (
-      <GameStartScreen
-        gameTitle="Dungeon Liberator"
-        gameSubtitle="Rescue the prisoners and lead them to freedom!"
-        icon={Shield}
-        vocabulary={vocabList}
-        instructions={[
-          { step: 1, text: "Move the Knight using WASD or Arrows" },
-          { step: 2, text: "Collect prisoners in the correct sentence order" },
-          { step: 3, text: "Avoid monsters and lead your followers to the exit" }
-        ]}
-        controls={[
-          { label: "Move", keys: "WASD / Arrows", color: "bg-blue-500" }
-        ]}
-        startButtonText="START MISSION"
-        onStart={handleStart}
-      />
-    );
+      <div
+        ref={containerRef}
+        className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto"
+      >
+        <GameStartScreen
+          gameTitle="Dungeon Liberator"
+          gameSubtitle="Rescue the Prisoners"
+          vocabulary={vocabulary}
+          instructions={[
+            { step: 1, text: 'Collect prisoners in the correct word order to build your rescue party.', icon: Users },
+            { step: 2, text: 'Wrong prisoner? They panic and flee. Monster hits your trail? The tail gets cut off!', icon: AlertTriangle },
+            { step: 3, text: 'Guide everyone to the exit portal to complete the sentence and escape!', icon: Shield },
+          ]}
+          proTip="Read the Thai translation at the top to figure out which word comes next. Monsters get faster each level!"
+          controls={[
+            { label: 'Move', keys: 'Arrows / WASD', color: 'bg-amber-500' },
+          ]}
+          startButtonText="Enter the Dungeon"
+          icon={Sword}
+          onStart={() => {
+            resetGame()
+            setGamePhase('playing')
+            enterFullscreen()
+          }}
+        />
+      </div>
+    )
   }
 
   return (
-    <div ref={containerRef} className="w-full h-full relative overflow-hidden bg-slate-950">
-      <Stage width={dimensions.width} height={dimensions.height} scaleX={scale} scaleY={scale}>
-        <Layer>
-          {/* Floor */}
-          <Rect 
-            width={390} height={844} 
-            fill={DUNGEON_LIBERATOR_CONFIG.colors.floor} 
-          />
+    <div
+      ref={containerRef}
+      style={{ minHeight: '400px' }}
+      className="relative h-[75vh] w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none md:aspect-video md:h-auto fullscreen:h-screen fullscreen:rounded-none"
+    >
+      {gamePhase === 'playing' && gameState && (
+        <>
+          {/* HUD — Lives, Rescued, Level */}
+          <div className="absolute top-4 left-4 z-10 flex flex-col gap-1 text-white font-bold text-lg pointer-events-none drop-shadow-md">
+            <div className="flex items-center gap-2">
+              Lives: {Array(gameState.player.maxLives).fill(0).map((_, i) => (
+                <span key={i} className={i < gameState.player.lives ? "text-red-400" : "text-white/30"}>❤️</span>
+              ))}
+            </div>
+            <div className="text-sm text-amber-400">
+              Rescued: {gameState.trail.length} / {gameState.words.length}
+            </div>
+            <div className="text-sm text-purple-400">
+              Level: {gameState.level}
+            </div>
+          </div>
 
-          {/* Prisoners (Uncollected) */}
-          {gameState.prisoners.map(p => !p.isCollected && p.isActive && (
-            <Group key={p.id} x={p.x} y={p.y}>
-              <Circle
-                radius={p.size / 2}
-                fill={DUNGEON_LIBERATOR_CONFIG.colors.prisoner}
-                stroke="white"
-                strokeWidth={1}
-              />
-              <Text 
-                text={p.word}
-                x={-50} y={p.size / 2 + 5}
-                width={100} align="center"
-                fill="white" fontSize={14} fontStyle="bold"
-              />
-            </Group>
+          {/* Sentence progress bar */}
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-black/70 px-6 py-3 rounded-xl border border-white/20 backdrop-blur-sm pointer-events-none max-w-[90%]">
+            <div className="text-white/70 text-xs mb-1 text-center">{gameState.sentence.translation}</div>
+            <div className="flex flex-wrap gap-2 justify-center min-h-[28px]">
+              {gameState.trail.map((segment) => (
+                <span
+                  key={segment.id}
+                  className="px-2 py-1 rounded text-sm font-bold bg-emerald-500/30 text-emerald-300"
+                >
+                  {segment.word}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* Off-screen prisoner indicators */}
+          {indicators.map((ind) => (
+            <div
+              key={`ind-${ind.prisoner.id}`}
+              className="absolute z-10 flex items-center justify-center pointer-events-none"
+              style={{
+                left: ind.x,
+                top: ind.y,
+                transform: `translate(-50%, -50%) rotate(${ind.rotation}deg)`,
+              }}
+            >
+              <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[15px] border-b-amber-400 animate-pulse" />
+            </div>
+          ))}
+          {/* Labels for off-screen indicators */}
+          {indicators.map((ind) => (
+            <div
+              key={`label-${ind.prisoner.id}`}
+              className="absolute z-10 pointer-events-none text-xs font-bold text-white bg-black/60 px-2 py-1 rounded whitespace-nowrap shadow-lg border border-white/10"
+              style={{
+                left: ind.x,
+                top: ind.y,
+                transform: `translate(-50%, -50%) translate(${Math.cos((ind.rotation * Math.PI) / 180) * -35}px, ${Math.sin((ind.rotation * Math.PI) / 180) * -35}px)`,
+              }}
+            >
+              {ind.prisoner.word}
+            </div>
           ))}
 
-          {/* Followers (Rescued line) */}
-          {followerPositions.map((pos, i) => (
-            <Group key={`follower-${i}`} x={pos.x} y={pos.y}>
-              <Circle
-                radius={DUNGEON_LIBERATOR_CONFIG.prisoner.size / 2}
-                fill={DUNGEON_LIBERATOR_CONFIG.colors.correct}
-                opacity={0.8}
-              />
-              <Text 
-                text={gameState.collectedWords[i]}
-                x={-50} y={-DUNGEON_LIBERATOR_CONFIG.prisoner.size / 2 - 15}
-                width={100} align="center"
-                fill="#2ecc71" fontSize={12} fontStyle="bold"
-              />
-            </Group>
-          ))}
+          {/* Virtual D-Pad */}
+          <div className="absolute bottom-8 right-8 z-20">
+            <VirtualDPad onInput={setVirtualInput} />
+          </div>
 
-          {/* Monsters */}
-          {gameState.monsters.map(m => m.isActive && (
-            <Group key={m.id} x={m.x} y={m.y}>
-              <Circle
-                radius={m.size / 2}
-                fill={DUNGEON_LIBERATOR_CONFIG.colors.monster}
-                shadowBlur={10}
-                shadowColor="red"
-              />
-              <Ghost size={m.size} color="white" />
-            </Group>
-          ))}
+          {/* Canvas with camera transform */}
+          <Stage width={dimensions.width} height={dimensions.height}>
+            <Layer
+              scaleX={camera.scale}
+              scaleY={camera.scale}
+              x={camera.x}
+              y={camera.y}
+            >
+              {assets ? (
+                <KonvaImage
+                  image={assets.background}
+                  x={0}
+                  y={0}
+                  width={GAME_WIDTH}
+                  height={GAME_HEIGHT}
+                />
+              ) : (
+                <Rect x={0} y={0} width={GAME_WIDTH} height={GAME_HEIGHT} fill="#1a1a2e" />
+              )}
 
-          {/* Exit Portal */}
-          {gameState.exitPortal?.isActive && (
-            <Group x={gameState.exitPortal.x} y={gameState.exitPortal.y}>
-              <Circle
-                radius={30}
-                fillRadialGradientStartPoint={{ x: 0, y: 0 }}
-                fillRadialGradientStartRadius={0}
-                fillRadialGradientEndPoint={{ x: 0, y: 0 }}
-                fillRadialGradientEndRadius={30}
-                fillRadialGradientColorStops={[0, '#9b59b6', 1, '#2c3e50']}
-                shadowBlur={20}
-                shadowColor="#9b59b6"
-              />
-              <Text 
-                text="EXIT"
-                x={-20} y={-10}
-                fill="white" fontSize={14} fontStyle="bold"
-              />
-            </Group>
-          )}
+              {gameState.portal && (
+                <Group x={gameState.portal.x} y={gameState.portal.y}>
+                  <Ring
+                    innerRadius={PORTAL_RADIUS - 10}
+                    outerRadius={PORTAL_RADIUS + 10}
+                    fill="#8b5cf6"
+                    opacity={0.2}
+                  />
+                  <Circle
+                    radius={PORTAL_RADIUS}
+                    fill="#4c1d95"
+                    stroke="#8b5cf6"
+                    strokeWidth={3}
+                    opacity={0.2}
+                  />
+                  <Text
+                    text="EXIT"
+                    fontSize={12}
+                    fill="white"
+                    fontStyle="bold"
+                    offsetX={12}
+                    offsetY={6}
+                  />
+                </Group>
+              )}
 
-          {/* Player */}
-          <Group 
-            x={gameState.player.x} 
-            y={gameState.player.y}
-            opacity={gameState.player.invulnerableTime > 0 ? 0.5 : 1}
-          >
-            <Circle
-              radius={gameState.player.size / 2}
-              fill={DUNGEON_LIBERATOR_CONFIG.colors.player}
-              stroke="white"
-              strokeWidth={2}
-            />
-            <Shield size={gameState.player.size * 0.6} color="white" />
-          </Group>
+              {gameState.prisoners
+                .filter((p) => !p.collected)
+                .map((prisoner) => {
+                  const isWrong = prisoner.fleeing
+                  return (
+                    <Group key={prisoner.id} x={prisoner.x} y={prisoner.y}>
+                      {assets ? (
+                        <KonvaImage
+                          image={assets.prisoner}
+                          x={-SPRITE_SIZE.prisoner / 2}
+                          y={-SPRITE_SIZE.prisoner / 2}
+                          width={SPRITE_SIZE.prisoner}
+                          height={SPRITE_SIZE.prisoner}
+                          crop={{
+                            x: isWrong ? 0 : animFrame * (assets.prisoner.width / 3),
+                            y: isWrong ? assets.prisoner.height / 3 : 0,
+                            width: assets.prisoner.width / 3,
+                            height: assets.prisoner.height / 3,
+                          }}
+                          opacity={isWrong ? 0.5 : 1}
+                        />
+                      ) : (
+                        <Circle
+                          radius={PRISONER_RADIUS}
+                          fill={isWrong ? '#ef4444' : '#64748b'}
+                          stroke="#ffffff"
+                          strokeWidth={1}
+                          opacity={isWrong ? 0.5 : 1}
+                        />
+                      )}
+                      <Text
+                        text={prisoner.word}
+                        fontSize={10}
+                        fill="white"
+                        fontStyle="bold"
+                        offsetX={prisoner.word.length * 2.5}
+                        offsetY={4}
+                        y={SPRITE_SIZE.prisoner / 2 + 4}
+                      />
+                    </Group>
+                  )
+                })}
 
-          {/* HUD Overlay */}
-          <Group y={20} x={10}>
-            <Rect width={370} height={80} fill="rgba(0,0,0,0.6)" cornerRadius={10} />
-            <Text 
-              text={gameState.sentence.join(' ')}
-              x={10} y={10} width={350} align="center"
-              fontSize={16} fill="white" opacity={0.5}
-            />
-            <Text 
-              text={gameState.collectedWords.join(' ')}
-              x={10} y={40} width={350} align="center"
-              fontSize={20} fill="#2ecc71" fontStyle="bold"
-            />
-          </Group>
+              {gameState.trail.map((segment, i) => {
+                const prevX = i === 0 ? gameState.player.x : gameState.trail[i - 1].x
+                const prevY = i === 0 ? gameState.player.y : gameState.trail[i - 1].y
 
-          {/* HP Bar */}
-          <Group x={10} y={110}>
-            {[...Array(gameState.player.maxHp)].map((_, i) => (
-              <Circle 
-                key={i}
-                x={i * 25 + 10}
-                y={10}
-                radius={8}
-                fill={i < gameState.player.hp ? "#e74c3c" : "#2d3748"}
-              />
-            ))}
-          </Group>
-        </Layer>
-      </Stage>
+                const ropePoints: number[] = []
+                const ropeSegments = 3
+                for (let j = 0; j <= ropeSegments; j++) {
+                  const t = j / ropeSegments
+                  ropePoints.push(
+                    prevX + (segment.x - prevX) * t,
+                    prevY + (segment.y - prevY) * t
+                  )
+                }
 
-      {gameState.status === 'won' && (
-        <GameEndScreen
-          status="victory"
-          title="Freedom!"
-          subtitle="All prisoners rescued and safely escaped."
-          score={gameState.score}
-          xp={gameState.xp}
-          accuracy={1}
-          onRestart={handleStart}
-          onExit={() => {}}
-        />
+                return (
+                  <Group key={segment.id}>
+                    <Line
+                      points={ropePoints}
+                      stroke="#8b5a2b"
+                      strokeWidth={4}
+                      opacity={0.8}
+                      lineCap="round"
+                      lineJoin="round"
+                    />
+                    <Line
+                      points={ropePoints}
+                      stroke="#d4a574"
+                      strokeWidth={2}
+                      opacity={0.6}
+                      lineCap="round"
+                      lineJoin="round"
+                    />
+                    {assets ? (
+                      <KonvaImage
+                        image={assets.prisoner}
+                        x={segment.x - SPRITE_SIZE.prisoner / 2}
+                        y={segment.y - SPRITE_SIZE.prisoner / 2}
+                        width={SPRITE_SIZE.prisoner}
+                        height={SPRITE_SIZE.prisoner}
+                        crop={{
+                          x: 0,
+                          y: 0,
+                          width: assets.prisoner.width / 3,
+                          height: assets.prisoner.height / 3,
+                        }}
+                      />
+                    ) : (
+                      <Circle
+                        x={segment.x}
+                        y={segment.y}
+                        radius={12}
+                        fill="#22c55e"
+                        stroke="#86efac"
+                        strokeWidth={2}
+                      />
+                    )}
+                    <Text
+                      text={segment.word}
+                      fontSize={8}
+                      fill="white"
+                      fontStyle="bold"
+                      offsetX={segment.word.length * 2}
+                      offsetY={3}
+                      x={segment.x}
+                      y={segment.y + SPRITE_SIZE.prisoner / 2 + 4}
+                    />
+                  </Group>
+                )})}
+
+              {gameState.player && (
+                <Group x={gameState.player.x} y={gameState.player.y}>
+                  {assets ? (
+                    <KonvaImage
+                      image={assets.player}
+                      x={-SPRITE_SIZE.player / 2}
+                      y={-SPRITE_SIZE.player / 2}
+                      width={SPRITE_SIZE.player}
+                      height={SPRITE_SIZE.player}
+                      crop={{
+                        x: animFrame * (assets.player.width / 3),
+                        y: 0,
+                        width: assets.player.width / 3,
+                        height: assets.player.height / 3,
+                      }}
+                      opacity={gameState.player.invulnerabilityTime > 0 ? 0.5 : 1}
+                    />
+                  ) : (
+                    <Circle
+                      radius={PLAYER_RADIUS}
+                      fill={gameState.player.invulnerabilityTime > 0 ? '#60a5fa' : '#3b82f6'}
+                      stroke="#93c5fd"
+                      strokeWidth={3}
+                    />
+                  )}
+                </Group>
+              )}
+
+              {gameState.monsters.map((monster) => (
+                <Group key={monster.id} x={monster.x} y={monster.y}>
+                  {assets ? (
+                    <KonvaImage
+                      image={assets.slime}
+                      x={-SPRITE_SIZE.slime / 2}
+                      y={-SPRITE_SIZE.slime / 2}
+                      width={SPRITE_SIZE.slime}
+                      height={SPRITE_SIZE.slime}
+                      crop={{
+                        x: animFrame * (assets.slime.width / 3),
+                        y: 0,
+                        width: assets.slime.width / 3,
+                        height: assets.slime.height / 3,
+                      }}
+                    />
+                  ) : (
+                    <Circle
+                      radius={MONSTER_RADIUS}
+                      fill="#dc2626"
+                      stroke="#fca5a5"
+                      strokeWidth={2}
+                    />
+                  )}
+                </Group>
+              ))}
+            </Layer>
+          </Stage>
+        </>
       )}
 
-      {gameState.status === 'lost' && (
+      {gamePhase === 'ended' && gameState && results && (
         <GameEndScreen
           status="defeat"
-          title="Captured!"
-          subtitle="The monsters were too strong this time."
-          score={gameState.score}
-          xp={gameState.xp}
-          accuracy={gameState.collectedWords.length / gameState.sentence.length}
-          onRestart={handleStart}
-          onExit={() => {}}
+          title="Overwhelmed!"
+          subtitle="The dungeon claimed another hero..."
+          score={totalCorrect * 10}
+          xp={results.xp}
+          accuracy={results.accuracy}
+          customStats={[
+            { label: 'Words Rescued', value: totalCorrect, icon: Users },
+            { label: 'Level Reached', value: gameState.level },
+          ]}
+          onRestart={() => {
+            resetGame()
+            setGamePhase('start')
+          }}
+          onExit={() => {
+            exitFullscreen()
+            window.location.href = '/'
+          }}
         />
       )}
     </div>
-  );
-};
-
-export default DungeonLiberatorGame;
+  )
+}
