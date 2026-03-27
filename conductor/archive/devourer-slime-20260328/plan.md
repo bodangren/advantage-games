@@ -2,7 +2,7 @@
 
 Hole.io style arena growth game. Start small, eat words in the correct order to grow.
 
-## Phase 1: Foundation & Scaffolding [x]
+## Phase 1: Foundation ## Phase 1: Foundation & Scaffolding [x] Scaffolding [x] [checkpoint: d8d158a]
 - [x] Update `conductor/tracks.md` to reflect track is `in_progress`
 - [x] Create directory structure:
   - `src/app/[locale]/(student)/student/games/sentence/devourer-slime/`
@@ -13,7 +13,7 @@ Hole.io style arena growth game. Start small, eat words in the correct order to 
   - Component, Logic, Page, API routes
 - [x] Add translations to `src/locales/en.ts`
 
-## Phase 2: Core Game Logic (TDD) [x]
+## Phase 2: Core Game Logic (TDD) [x] [checkpoint: d8d158a]
 - [x] Define types: `SlimeState`, `Slime`, `WordOrb`, `KnightEnemy`
 - [x] Implement `createSlimeState(sentences, config)`
 - [x] Implement Slime movement and bounds
@@ -23,7 +23,7 @@ Hole.io style arena growth game. Start small, eat words in the correct order to 
 - [x] Write unit tests: `src/lib/games/devourerSlime.test.ts`
 - [x] **Verification:** Tests pass with >80% coverage
 
-## Phase 3: Canvas Implementation & Visuals [x]
+## Phase 3: Canvas Implementation & Visuals [x] [checkpoint: d8d158a]
 - [x] Implement `DevourerSlimeGame` component using `React-Konva`
 - [x] Render forest arena with slime trail
 - [x] Implement Slime rendering (Wobbly shape, scaling)
@@ -31,14 +31,14 @@ Hole.io style arena growth game. Start small, eat words in the correct order to 
 - [x] Implement HUD: translation display, sentence progress, size/XP meter
 - [x] **Verification:** Manual check of movement and growth mechanics
 
-## Phase 4: Educational Mechanics & Polish [x]
+## Phase 4: Educational Mechanics & Polish [x] [checkpoint: d8d158a]
 - [x] Implement sentence loading and word distribution
 - [x] Add feedback for correct/incorrect selections (audio/visual)
 - [x] Implement difficulty levels (enemy count, word density)
 - [x] Integrate shared `GameStartScreen` and `GameEndScreen`
 - [x] **Verification:** Complete 3 full game sessions on different difficulties
 
-## Phase 5: Final Integration & Cleanup [x]
+## Phase 5: Final Integration & Cleanup [x] [checkpoint: d8d158a]
 - [x] Register game in `src/lib/gameCards.ts`
 - [x] Final build check: `npm run build`
 - [x] Conductor sync: Mark track completed and move to archive
