@@ -75,6 +75,14 @@ export const gameCards: GameCard[] = [
     status: 'playable',
   },
   {
+    id: 'alchemists-synthesis',
+    title: "Alchemist's Synthesis",
+    description: 'Master the art of alchemy by matching and merging vocabulary to synthesize powerful spells!',
+    cover: withBasePath('/games/cover/cover-alchemists-synthesis.png'),
+    href: '/en/student/games/vocabulary/alchemists-synthesis',
+    status: 'playable',
+  },
+  {
     id: 'potion-rush',
     title: 'Potion Rush',
     description: 'Manage a busy potion shop! Brew orders by collecting the correct ingredients from the conveyor belt.',
@@ -184,6 +192,22 @@ export const gameCards: GameCard[] = [
     description: 'Fly through the magical gates in the correct order to complete the sentence!',
     cover: withBasePath('/games/cover/cover-griffin-riders-escape.png'),
     href: '/en/student/games/sentence/griffin-riders-escape',
-    status: 'coming-soon',
+    status: 'playable',
+  },
+  {
+    id: 'astral-mage',
+    title: 'Astral Mage',
+    description: 'Navigate the magical void and shoot word crystals in the correct order to complete sentences!',
+    cover: withBasePath('/games/cover/cover-alchemists-synthesis.png'),
+    href: '/en/student/games/sentence/astral-mage',
+    status: 'playable',
+  },
+  {
+    id: 'devourer-slime',
+    title: 'Devourer Slime',
+    description: 'Start small in a forest arena and eat words in the correct order to grow big enough to devour enemy knights!',
+    cover: withBasePath('/games/cover/cover-devourer-slime.png'),
+    href: '/en/student/games/sentence/devourer-slime',
+    status: 'playable',
   },
 ]

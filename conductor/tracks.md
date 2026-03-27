@@ -176,46 +176,45 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Griffin Rider's Escape**
+- [x] **Track: Griffin Rider's Escape**
 *Description: Subway Surfers style 3D endless runner*
 *Priority: Medium*
 *Type: Feature*
-*Link: [./conductor/tracks/griffin-riders-escape/](./conductor/tracks/griffin-riders-escape/)*
+*Link: [./conductor/archive/griffin-riders-escape-20260327/](./conductor/archive/griffin-riders-escape-20260327/)*
+*Status: ✅ COMPLETE*
 
 ---
 
-- [ ] **Track: Alchemist's Synthesis**
-*Description: 2048-style grid-based element merging*
+- [x] **Track: Alchemist's Synthesis**
+*Description: Grid-based matching and merging vocabulary game with boss battle mechanics.*
 *Priority: Medium*
 *Type: Feature*
+*Link: [./conductor/archive/alchemists-synthesis-20260327/](./conductor/archive/alchemists-synthesis-20260327/)*
 
 ---
 
-- [ ] **Track: Astral Mage**
-*Description: Asteroids-style zero-friction overhead space shooter*
+- [x] **Track: Astral Mage**
+*Description: Asteroids-style zero-friction overhead space shooter sentence game.*
 *Priority: Medium*
 *Type: Feature*
+*Link: [./conductor/archive/astral-mage-20260328/](./conductor/archive/astral-mage-20260328/)*
 
 ---
 
-- [ ] **Track: Devourer Slime**
-*Description: Hole.io style arena growth game*
+- [x] **Track: Devourer Slime**
+*Description: Hole.io style arena growth game. Start small, eat words in the correct order to grow big enough to devour enemies!*
 *Priority: Medium*
 *Type: Feature*
+*Link: [./conductor/archive/devourer-slime-20260328/](./conductor/archive/devourer-slime-20260328/)*
+*Status: ✅ COMPLETE*
 
 ---
 
-- [ ] **Track: Babel's Architect**
-*Description: Tower Bloxx style precision tower stacking*
+- [~] **Track: Babel's Architect**
+*Description: Tower Bloxx style precision tower stacking sentence game with dwarven builder theme.*
 *Priority: Medium*
 *Type: Feature*
-
----
-
-- [ ] **Track: Paladin's Twin-Soul**
-*Description: Galaga-style capture and rescue vocabulary game*
-*Priority: Medium*
-*Type: Feature*
+*Link: [./conductor/tracks/babel-architect/](./conductor/tracks/babel-architect/)*
 
 ---
 
@@ -245,3 +244,4 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [x] **Track: Game Triage and Fidelity Audit (Post-Spellweaver's Run)**
 *Link: [./conductor/archive/game-triage-fidelity-20260320/](./conductor/archive/game-triage-fidelity-20260320/)*
 *Status: ✅ COMPLETE*
+\n*Status: ✅ COMPLETE*
