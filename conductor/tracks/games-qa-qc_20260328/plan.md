@@ -32,15 +32,15 @@
     - [x] Check for TypeScript `any` usage and fix
     - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
 - Note: `npm run build` is still blocked by pre-existing lint errors in unrelated files outside the archers-revenge slice.
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/vocabulary/archers-revenge.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Game component renders after vocabulary loads
-    - [ ] Test: Basic game interaction (start game)
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/archers-revenge/
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/vocabulary/archers-revenge.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Game component renders after vocabulary loads
+    - [x] Test: Basic game interaction (start game)
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/archers-revenge/
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: archers-revenge' (Protocol in workflow.md)
 
 ## Phase 2: dragon-flight (Vocabulary Game)

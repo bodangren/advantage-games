@@ -7,7 +7,7 @@ export const ARCHERS_REVENGE_GAME_PATH =
 export const ARCHERS_REVENGE_SCREENSHOT_DIR = "public/games/archers-revenge";
 
 export const ARCHERS_REVENGE_SCREENSHOT_FILE =
-  "archers-revenge-start-screen.png";
+  "archers-revenge-gameplay.png";
 
 export const ARCHERS_REVENGE_SAMPLE_VOCABULARY: VocabularyItem[] =
   SAMPLE_VOCABULARY;

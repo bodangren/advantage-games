@@ -1,19 +1,17 @@
 import { expect, test } from "@playwright/test";
 
-import {
-  ARCHERS_REVENGE_SAMPLE_VOCABULARY,
-} from "./fixtures/gameFixtures";
-import {
-  captureArchersRevengeScreenshot,
-} from "./helpers/screenshotHelpers";
+import { ARCHERS_REVENGE_SAMPLE_VOCABULARY } from "../../fixtures/gameFixtures";
+import { captureArchersRevengeScreenshot } from "../../helpers/screenshotHelpers";
 import {
   expectArchersRevengeStartScreen,
   getArchersRevengeUrl,
   mockArchersRevengeApis,
-} from "./helpers/gameHelpers";
+} from "../../helpers/gameHelpers";
 
-test.describe("game template", () => {
-  test("loads archers-revenge with the shared sample vocabulary", async ({ page }) => {
+test.describe("archers-revenge", () => {
+  test("loads archers-revenge with the shared sample vocabulary and captures gameplay", async ({
+    page,
+  }) => {
     await mockArchersRevengeApis(page);
 
     await page.goto(getArchersRevengeUrl(), { waitUntil: "domcontentloaded" });
@@ -27,6 +25,8 @@ test.describe("game template", () => {
     await expect(page.locator("canvas")).toBeVisible();
 
     const screenshotPath = await captureArchersRevengeScreenshot(page);
-    expect(screenshotPath).toContain("/public/games/archers-revenge/");
+    expect(screenshotPath).toContain(
+      "/public/games/archers-revenge/archers-revenge-gameplay.png"
+    );
   });
 });
