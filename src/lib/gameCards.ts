@@ -210,4 +210,28 @@ export const gameCards: GameCard[] = [
     href: '/en/student/games/sentence/devourer-slime',
     status: 'playable',
   },
+  {
+    id: 'babel-architect',
+    title: "Babel's Architect",
+    description: 'Stack stone blocks in the correct sentence order to build the tallest legendary tower!',
+    cover: withBasePath('/games/cover/cover-storm-the-castle-tower.png'),
+    href: '/en/student/games/sentence/babel-architect',
+    status: 'playable',
+  },
+  {
+    id: 'sorcerer-ziggurat',
+    title: "The Sorcerer's Ziggurat",
+    description: 'Jump through an isometric pyramid of cubes to complete ancient rituals in the correct sentence order!',
+    cover: withBasePath('/games/cover/cover-rune-forge-chamber.png'),
+    href: '/en/student/games/sentence/sorcerer-ziggurat',
+    status: 'playable',
+  },
+  {
+    id: 'haunted-library',
+    title: 'The Haunted Library',
+    description: 'Navigate the multi-story library and open magical doors in the correct sentence order!',
+    cover: withBasePath('/games/cover/enchanted-library-cover.png'),
+    href: '/en/student/games/sentence/haunted-library',
+    status: 'playable',
+  },
 ]

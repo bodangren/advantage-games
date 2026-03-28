@@ -210,25 +210,31 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Babel's Architect**
+- [x] **Track: Babel's Architect**
 *Description: Tower Bloxx style precision tower stacking sentence game with dwarven builder theme.*
 *Priority: Medium*
 *Type: Feature*
-*Link: [./conductor/tracks/babel-architect/](./conductor/tracks/babel-architect/)*
+*Link: [./conductor/archive/babel-architect-20260328/](./conductor/archive/babel-architect-20260328/)*
+*Status: ✅ COMPLETE*
 
 ---
 
-- [ ] **Track: The Sorcerer's Ziggurat**
-*Description: Q*bert-style isometric jumping puzzle*
+- [x] **Track: The Sorcerer's Ziggurat**
+*Description: Q*bert-style isometric jumping puzzle sentence game with wizard theme.*
 *Priority: Medium*
 *Type: Feature*
+*Link: [./conductor/archive/sorcerer-ziggurat-20260328/](./conductor/archive/sorcerer-ziggurat-20260328/)*
+*Status: ✅ COMPLETE*
 
 ---
 
-- [ ] **Track: The Haunted Library**
+- [x] **Track: The Haunted Library**
 *Description: Mappy-style vertical platformer with door mechanics*
 *Priority: Medium*
 *Type: Feature*
+*Link: [./conductor/archive/the-haunted-library-20260328/](./conductor/archive/the-haunted-library-20260328/)*
+*Status: ✅ COMPLETE*
+
 
 ---
 
