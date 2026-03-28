@@ -2,21 +2,23 @@
 
 ## Phase 0: Playwright Setup and Infrastructure
 
-- [ ] Task: Install Playwright and dependencies
-    - [ ] Install @playwright/test package
-    - [ ] Install Playwright browsers (chromium)
-    - [ ] Add Playwright scripts to package.json
-    - [ ] Create playwright.config.ts with mobile-first viewport (390×844)
-- [ ] Task: Create shared test utilities
-    - [ ] Create tests/e2e/fixtures/gameFixtures.ts with mock vocabulary/sentence data
-    - [ ] Create tests/e2e/helpers/gameHelpers.ts with common game interactions
-    - [ ] Create tests/e2e/helpers/screenshotHelpers.ts for screenshot capture
-- [ ] Task: Create base game test template
-    - [ ] Create tests/e2e/gameTemplate.spec.ts with reusable test patterns
-- [ ] Task: Verify Playwright setup
-    - [ ] Run test template toconfirm Playwright works
-    - [ ] Verify screenshot directory creation works
-- [ ] Task: Conductor - User Manual Verification 'Phase 0: Playwright Setup and Infrastructure' (Protocol in workflow.md)
+- [x] Task: Install Playwright and dependencies
+    - [x] Install @playwright/test package
+    - [x] Install Playwright browsers (chromium)
+    - [x] Add Playwright scripts to package.json
+    - [x] Create playwright.config.ts with mobile-first viewport (390×844)
+- [x] Task: Create shared test utilities
+    - [x] Create tests/e2e/fixtures/gameFixtures.ts with mock vocabulary/sentence data
+    - [x] Create tests/e2e/helpers/gameHelpers.ts with common game interactions
+    - [x] Create tests/e2e/helpers/screenshotHelpers.ts for screenshot capture
+- [x] Task: Create base game test template
+    - [x] Create tests/e2e/gameTemplate.spec.ts with reusable test patterns
+- [x] Task: Verify Playwright setup
+    - [x] Run test template to confirm Playwright works
+    - [x] Verify screenshot directory creation works
+- [x] Task: Conductor - User Manual Verification 'Phase 0: Playwright Setup and Infrastructure' (Protocol in workflow.md)
+
+- Note: the phase-0 smoke template validates `archers-revenge` as the canonical single-game target and writes a screenshot to `public/games/archers-revenge/`.
 
 ## Phase 1: archers-revenge (Vocabulary Game)
 
