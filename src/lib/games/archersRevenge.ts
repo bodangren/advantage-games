@@ -198,9 +198,9 @@ export const tickArchersRevenge = (
 
   const dtSec = dt / 1000;
   const settings = getDifficultySettings(state.difficulty);
-  const { enemySpacing, enemySize } = ARCHERS_REVENGE_CONFIG.layout;
+  const { enemySize } = ARCHERS_REVENGE_CONFIG.layout;
 
-  let nextState = { ...state, gameTime: state.gameTime + dt };
+  const nextState = { ...state, gameTime: state.gameTime + dt };
 
   // 1. Update Target Change Timer
   nextState.targetChangeTimer -= dt;
@@ -222,7 +222,7 @@ export const tickArchersRevenge = (
 
   // 2. Move Enemies
   let moveX = settings.enemySpeed * dtSec * state.formationDirection;
-  let moveY = settings.descendSpeed * dtSec;
+  const moveY = settings.descendSpeed * dtSec;
   
   const minX = Math.min(...nextState.enemies.map(e => e.x)) - enemySize.width / 2;
   const maxX = Math.max(...nextState.enemies.map(e => e.x)) + enemySize.width / 2;

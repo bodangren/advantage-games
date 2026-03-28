@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { KonvaEventObject } from "konva/lib/Node";
 import { Stage, Layer, Rect, Text, Circle, Group } from "react-konva";
 import {
   createArchersRevengeState,
@@ -120,7 +121,7 @@ export function ArchersRevengeGame({
     return Math.min(dimensions.width / GAME_WIDTH, dimensions.height / GAME_HEIGHT);
   }, [dimensions]);
 
-  const handleStageClick = useCallback((e: any) => {
+  const handleStageClick = useCallback((e: KonvaEventObject<MouseEvent | TouchEvent | Event>) => {
     if (gamePhase !== "playing") return;
     const stage = e.target.getStage();
     const pointerPosition = stage.getPointerPosition();

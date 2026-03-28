@@ -63,7 +63,7 @@ describe("archersRevenge", () => {
     });
 
     it("should change direction when hitting screen edge", () => {
-      let state = createArchersRevengeState(mockVocabulary);
+      const state = createArchersRevengeState(mockVocabulary);
       // Force enemies to the edge
       state.enemies = state.enemies.map(e => ({ ...e, x: GAME_WIDTH - 15 }));
       state.formationDirection = 1;
@@ -73,7 +73,7 @@ describe("archersRevenge", () => {
     });
 
     it("should handle collisions with correct enemy", () => {
-      let state = createArchersRevengeState(mockVocabulary);
+      const state = createArchersRevengeState(mockVocabulary);
       const targetEnemy = state.enemies.find(e => !e.shieldUp)!;
       
       // Place an arrow right on the target enemy
@@ -87,7 +87,7 @@ describe("archersRevenge", () => {
     });
 
     it("should retaliate when hitting a shielded enemy", () => {
-      let state = createArchersRevengeState(mockVocabulary);
+      const state = createArchersRevengeState(mockVocabulary);
       const shieldedEnemy = state.enemies.find(e => e.shieldUp)!;
       
       state.arrows = [{ id: "test-arrow", x: shieldedEnemy.x, y: shieldedEnemy.y, vy: -400 }];
@@ -100,7 +100,7 @@ describe("archersRevenge", () => {
     });
 
     it("should decrease HP when player hit by enemy projectile", () => {
-      let state = createArchersRevengeState(mockVocabulary);
+      const state = createArchersRevengeState(mockVocabulary);
       state.playerX = 100;
       state.enemyProjectiles = [{ id: "p1", x: 100, y: ARCHERS_REVENGE_CONFIG.layout.playerY, vy: 200 }];
       
@@ -109,7 +109,7 @@ describe("archersRevenge", () => {
     });
 
     it("should end game when HP reaches 0", () => {
-      let state = createArchersRevengeState(mockVocabulary);
+      const state = createArchersRevengeState(mockVocabulary);
       state.hp = 1;
       state.playerX = 100;
       state.enemyProjectiles = [{ id: "p1", x: 100, y: ARCHERS_REVENGE_CONFIG.layout.playerY, vy: 200 }];
@@ -119,13 +119,14 @@ describe("archersRevenge", () => {
     });
 
     it("should change target after interval", () => {
-      let state = createArchersRevengeState(mockVocabulary);
+      const state = createArchersRevengeState(mockVocabulary);
       // Fast forward time
-      const nextState = tickArchersRevenge(state, 11000); 
+      const nextState = tickArchersRevenge(state, 11000);
+      expect(nextState.targetChangeTimer).toBe(7000);
     });
 
     it("should progress to next wave when all enemies are destroyed", () => {
-      let state = createArchersRevengeState(mockVocabulary);
+      const state = createArchersRevengeState(mockVocabulary);
       const targetEnemy = state.enemies.find(e => !e.shieldUp)!;
       
       // Force only one enemy to exist

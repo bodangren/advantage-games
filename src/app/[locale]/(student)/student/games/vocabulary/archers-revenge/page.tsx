@@ -20,9 +20,6 @@ export default function ArchersRevengePage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [xpEarned, setXpEarned] = useState<number | null>(null);
-  const [results, setResults] = useState<ArchersRevengeResults | null>(null);
-  const [gameKey, setGameKey] = useState(0);
   const hasFetchedRef = useRef(false);
 
   useEffect(() => {
@@ -59,18 +56,11 @@ export default function ArchersRevengePage() {
     };
 
     fetchVocabulary();
-  }, []);
-
-  const handleRestart = useCallback(() => {
-    setXpEarned(null);
-    setResults(null);
-    setGameKey((prev) => prev + 1);
-  }, []);
+  }, [setVocabulary, t]);
 
   const handleComplete = useCallback(
     async (gameResults: ArchersRevengeResults) => {
       setLastResult(gameResults.xp, gameResults.accuracy);
-      setResults(gameResults);
 
       try {
         const response = await fetch("/api/v1/games/archers-revenge/complete", {
@@ -91,7 +81,6 @@ export default function ArchersRevengePage() {
         const data = await response.json();
 
         if (response.ok) {
-          setXpEarned(data.xpEarned);
           console.log("Game completed! XP earned:", data.xpEarned);
         } else {
           console.error("Failed to save game results:", data.message);
@@ -148,10 +137,8 @@ export default function ArchersRevengePage() {
         <Card className="overflow-hidden border-2">
           <CardContent className="p-0">
             <ArchersRevengeGame
-              key={gameKey}
               vocabulary={vocabulary}
               onComplete={handleComplete}
-              onRestart={handleRestart}
             />
           </CardContent>
         </Card>
