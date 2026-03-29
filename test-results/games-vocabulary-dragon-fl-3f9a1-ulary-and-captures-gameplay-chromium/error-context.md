@@ -1,0 +1,82 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - link "Back to Games" [ref=e3] [cursor=pointer]:
+      - /url: /student/games/
+      - img
+      - text: Back to Games
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - heading "Dragon Flight" [level=1] [ref=e6]
+        - paragraph [ref=e7]: Choose the correct gate to grow your dragon flight before the Skeleton King arrives.
+      - img [ref=e8]
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - generic [ref=e17]: Dragon Flight
+        - generic [ref=e18]:
+          - generic [ref=e19]:
+            - heading "Flight Briefing" [level=2] [ref=e20]
+            - paragraph [ref=e21]: Review the vocabulary, then tap Start Game to launch your dragon flight.
+          - generic [ref=e22]:
+            - button "Leaderboard" [ref=e23]:
+              - img [ref=e24]
+            - generic [ref=e30]: Ready
+      - generic [ref=e32]:
+        - generic [ref=e41]:
+          - heading "The Gate Run Begins Soon" [level=3] [ref=e42]
+          - paragraph [ref=e43]: Choose the correct translation to grow your dragon flight.
+        - generic [ref=e44]:
+          - generic [ref=e45]: Vocabulary Preview
+          - generic [ref=e47]:
+            - generic [ref=e48]:
+              - generic [ref=e49]: สวัสดี
+              - generic [ref=e50]: Hello
+            - generic [ref=e51]:
+              - generic [ref=e52]: ขอบคุณ
+              - generic [ref=e53]: Thank you
+            - generic [ref=e54]:
+              - generic [ref=e55]: ใช่
+              - generic [ref=e56]: "Yes"
+            - generic [ref=e57]:
+              - generic [ref=e58]: ไม่ใช่
+              - generic [ref=e59]: "No"
+            - generic [ref=e60]:
+              - generic [ref=e61]: สบายดีไหม
+              - generic [ref=e62]: How are you
+            - generic [ref=e63]:
+              - generic [ref=e64]: แมว
+              - generic [ref=e65]: Cat
+            - generic [ref=e66]:
+              - generic [ref=e67]: หมา
+              - generic [ref=e68]: Dog
+            - generic [ref=e69]:
+              - generic [ref=e70]: น้ำ
+              - generic [ref=e71]: Water
+            - generic [ref=e72]: +17 more words
+      - generic [ref=e74]:
+        - generic [ref=e76]:
+          - generic [ref=e77]:
+            - generic [ref=e78]: Difficulty
+            - button "Easy" [ref=e79]
+            - button "Normal" [ref=e80]
+            - button "Hard" [ref=e81]
+            - button "Extreme" [ref=e82]
+          - generic [ref=e84]: 1m • Standard
+        - button "Start Game" [active] [ref=e87]:
+          - text: Start Game
+          - img [ref=e88]
+  - generic [ref=e94] [cursor=pointer]:
+    - button "Open Next.js Dev Tools" [ref=e95]:
+      - img [ref=e96]
+    - generic [ref=e99]:
+      - button "Open issues overlay" [ref=e100]:
+        - generic [ref=e101]:
+          - generic [ref=e102]: "0"
+          - generic [ref=e103]: "1"
+        - generic [ref=e104]: Issue
+      - button "Collapse issues badge" [ref=e105]:
+        - img [ref=e106]
+  - alert [ref=e108]
+```

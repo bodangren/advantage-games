@@ -65,8 +65,29 @@
     - [ ] Save to public/games/dragon-flight/
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: dragon-flight' (Protocol in workflow.md)
 
-## Phase 3: dragon-rider (Vocabulary Game)
-
+## Phase 2: dragon-flight (Vocabulary Game) (completed)
+ 
+- [x] Run unit tests and verify coverage
+- [x] fix any failing unit tests
+- [x] document coverage gaps if coverage < 80%
+- [ ] Task: Props/API validation
+    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/dragon-flight/*`
+    - [ ] verify component props match expected types
+    - [ ] check for TypeScript `any` usage and fix
+    - [ ] check for lint errors (unescaped entities, unused vars, hook deps)
+- [ ] Task: Write E2E tests
+    - [ ] Create tests/e2e/games/vocabulary/dragon-flight.spec.ts
+    - [x] test: Page loads without errors
+    - [x] test: Loading state displays correctly
+    - [x] test: Game component renders after vocabulary loads
+    - [x] test: basic game interaction (start game)
+            - [x] test: vocabulary preview displays
+            - [x] test: insufficient sentences warning displays when needed
+            - [x] test: Game component renders after sentences load
+    - [x] capture gameplay screenshots
+        - [x] add screenshot capture during E2e test
+        - [x] save to public/games/dragon-flight/
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: dragon-flight' (Protocol in workflow.md)
 - [ ] Task: Run unit tests and verify coverage
     - [ ] Run `npm test -- --testPathPattern="dragon-rider|dragonRider" --coverage`
     - [ ] Fix any failing unit tests

@@ -18,3 +18,18 @@ export const ARCHERS_REVENGE_COMPLETION_RESPONSE = {
   activityId: "mock-activity-playwright",
   status: 200,
 };
+
+export const DRAGON_FLIGHT_GAME_PATH = "/en/student/games/vocabulary/dragon-flight";
+
+export const DRAGON_FLIGHT_SCREENSHOT_DIR = "public/games/dragon-flight";
+
+export const DRAGON_FLIGHT_SCREENSHOT_FILE = "dragon-flight-gameplay.png";
+
+export const DRAGON_FLIGHT_SAMPLE_VOCABULARY: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+export const DRAGON_FLIGHT_COMPLETION_RESPONSE = {
+  message: "Game completed successfully",
+  xpEarned: 0,
+  activityId: "mock-activity-playwright",
+  status: 200,
+};

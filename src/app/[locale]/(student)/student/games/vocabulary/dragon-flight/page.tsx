@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, Loader2, AlertCircle, Flame } from "lucide-react";
 import { DragonFlightGame } from "@/components/games/vocabulary/dragon-flight/DragonFlightGame";
 import type { DragonFlightResults } from "@/lib/games/dragonFlight";
@@ -22,10 +22,13 @@ export default function DragonFlightPage() {
   const [error, setError] = useState<string | null>(null);
   const [xpEarned, setXpEarned] = useState<number | null>(null);
   const [results, setResults] = useState<DragonFlightResults | null>(null);
-  const [gameKey, setGameKey] = useState(0); // Key to force component remount
+  const [gameKey, setGameKey] = useState(0);
+  const hasFetchedRef = useRef(false);
 
-  // Fetch vocabulary from API on mount
   useEffect(() => {
+    if (hasFetchedRef.current) return;
+    hasFetchedRef.current = true;
+
     const fetchVocabulary = async () => {
       try {
         setIsLoading(true);
@@ -41,7 +44,7 @@ export default function DragonFlightPage() {
         if (data.vocabulary && data.vocabulary.length >= 10) {
           setVocabulary(data.vocabulary);
         } else {
-          setError(data.message || t("notEnoughWords", { count: "10" }));
+          setError(data.message || "Not enough words available");
         }
       } catch (err) {
         console.error("Error fetching vocabulary:", err);
@@ -54,7 +57,7 @@ export default function DragonFlightPage() {
     };
 
     fetchVocabulary();
-  }, [setVocabulary, gameKey, t]); // Re-fetch when gameKey changes
+  }, [setVocabulary]);
 
   const handleRestart = useCallback(() => {
     setXpEarned(null);

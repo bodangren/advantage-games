@@ -3,6 +3,8 @@ import { expect, type Page } from "@playwright/test";
 import {
   ARCHERS_REVENGE_GAME_PATH,
   ARCHERS_REVENGE_SAMPLE_VOCABULARY,
+  DRAGON_FLIGHT_GAME_PATH,
+  DRAGON_FLIGHT_SAMPLE_VOCABULARY,
 } from "../fixtures/gameFixtures";
 
 type ApiResponse = {
@@ -56,4 +58,46 @@ export async function expectArchersRevengeStartScreen(page: Page) {
 
 export function getArchersRevengeUrl() {
   return ARCHERS_REVENGE_GAME_PATH;
+}
+
+export async function mockDragonFlightApis(
+  page: Page,
+  vocabulary = DRAGON_FLIGHT_SAMPLE_VOCABULARY
+) {
+  await page.route("/api/v1/games/dragon-flight/vocabulary", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Vocabulary retrieved successfully",
+      vocabulary,
+    };
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(response),
+    });
+  });
+
+  await page.route("/api/v1/games/dragon-flight/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(response),
+    });
+  });
+}
+
+export async function expectDragonFlightStartScreen(page: Page) {
+  await expect(page.getByRole("button", { name: /start game/i })).toBeVisible({ timeout: 15000 });
+}
+
+export function getDragonFlightUrl() {
+  return DRAGON_FLIGHT_GAME_PATH;
 }
