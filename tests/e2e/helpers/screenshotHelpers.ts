@@ -18,6 +18,8 @@ import {
   PALADINS_TWIN_SOUL_SCREENSHOT_FILE,
   RPG_BATTLE_SCREENSHOT_DIR,
   RPG_BATTLE_SCREENSHOT_FILE,
+  RUNE_MATCH_SCREENSHOT_DIR,
+  RUNE_MATCH_SCREENSHOT_FILE,
 } from "../fixtures/gameFixtures";
 
 export async function captureArchersRevengeScreenshot(page: Page) {
@@ -103,6 +105,19 @@ export async function captureRPGBattleScreenshot(page: Page) {
   await fs.mkdir(screenshotDir, { recursive: true });
 
   const screenshotPath = path.join(screenshotDir, RPG_BATTLE_SCREENSHOT_FILE);
+  await page.screenshot({
+    path: screenshotPath,
+    fullPage: true,
+  });
+
+  return screenshotPath;
+}
+
+export async function captureRuneMatchScreenshot(page: Page) {
+  const screenshotDir = path.join(process.cwd(), RUNE_MATCH_SCREENSHOT_DIR);
+  await fs.mkdir(screenshotDir, { recursive: true });
+
+  const screenshotPath = path.join(screenshotDir, RUNE_MATCH_SCREENSHOT_FILE);
   await page.screenshot({
     path: screenshotPath,
     fullPage: true,

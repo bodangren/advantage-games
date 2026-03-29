@@ -15,6 +15,8 @@ import {
   PALADINS_TWIN_SOUL_SAMPLE_VOCABULARY,
   RPG_BATTLE_GAME_PATH,
   RPG_BATTLE_SAMPLE_VOCABULARY,
+  RUNE_MATCH_GAME_PATH,
+  RUNE_MATCH_SAMPLE_VOCABULARY,
 } from "../fixtures/gameFixtures";
 
 type ApiResponse = {
@@ -328,4 +330,46 @@ export async function expectRPGBattleStartScreen(page: Page) {
 
 export function getRPGBattleUrl() {
   return RPG_BATTLE_GAME_PATH;
+}
+
+export async function mockRuneMatchApis(
+  page: Page,
+  vocabulary = RUNE_MATCH_SAMPLE_VOCABULARY
+) {
+  await page.route("/api/v1/games/rune-match/vocabulary", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Vocabulary retrieved successfully",
+      vocabulary,
+    };
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(response),
+    });
+  });
+
+  await page.route("/api/v1/games/rune-match/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(response),
+    });
+  });
+}
+
+export async function expectRuneMatchStartScreen(page: Page) {
+  await expect(page.getByText(/Rune Match/i)).toBeVisible({ timeout: 15000 });
+}
+
+export function getRuneMatchUrl() {
+  return RUNE_MATCH_GAME_PATH;
 }

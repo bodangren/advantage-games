@@ -108,3 +108,18 @@ export const RPG_BATTLE_COMPLETION_RESPONSE = {
   activityId: "mock-activity-playwright",
   status: 200,
 };
+
+export const RUNE_MATCH_GAME_PATH = "/en/student/games/vocabulary/rune-match";
+
+export const RUNE_MATCH_SCREENSHOT_DIR = "public/games/rune-match";
+
+export const RUNE_MATCH_SCREENSHOT_FILE = "rune-match-gameplay.png";
+
+export const RUNE_MATCH_SAMPLE_VOCABULARY: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+export const RUNE_MATCH_COMPLETION_RESPONSE = {
+  message: "Game completed successfully",
+  xpEarned: 0,
+  activityId: "mock-activity-playwright",
+  status: 200,
+};
