@@ -13,6 +13,8 @@ import {
   MAGIC_DEFENSE_SAMPLE_VOCABULARY,
   PALADINS_TWIN_SOUL_GAME_PATH,
   PALADINS_TWIN_SOUL_SAMPLE_VOCABULARY,
+  RPG_BATTLE_GAME_PATH,
+  RPG_BATTLE_SAMPLE_VOCABULARY,
 } from "../fixtures/gameFixtures";
 
 type ApiResponse = {
@@ -284,4 +286,46 @@ export async function expectPaladinsTwinSoulStartScreen(page: Page) {
 
 export function getPaladinsTwinSoulUrl() {
   return PALADINS_TWIN_SOUL_GAME_PATH;
+}
+
+export async function mockRPGBattleApis(
+  page: Page,
+  vocabulary = RPG_BATTLE_SAMPLE_VOCABULARY
+) {
+  await page.route("/api/v1/games/rpg-battle/vocabulary", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Vocabulary retrieved successfully",
+      vocabulary,
+    };
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(response),
+    });
+  });
+
+  await page.route("/api/v1/games/rpg-battle/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(response),
+    });
+  });
+}
+
+export async function expectRPGBattleStartScreen(page: Page) {
+  await expect(page.getByText(/RPG Battle/i)).toBeVisible({ timeout: 15000 });
+}
+
+export function getRPGBattleUrl() {
+  return RPG_BATTLE_GAME_PATH;
 }

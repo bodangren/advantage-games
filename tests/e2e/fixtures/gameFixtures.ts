@@ -93,3 +93,18 @@ export const PALADINS_TWIN_SOUL_COMPLETION_RESPONSE = {
   activityId: "mock-activity-playwright",
   status: 200,
 };
+
+export const RPG_BATTLE_GAME_PATH = "/en/student/games/vocabulary/rpg-battle";
+
+export const RPG_BATTLE_SCREENSHOT_DIR = "public/games/rpg-battle";
+
+export const RPG_BATTLE_SCREENSHOT_FILE = "rpg-battle-gameplay.png";
+
+export const RPG_BATTLE_SAMPLE_VOCABULARY: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+export const RPG_BATTLE_COMPLETION_RESPONSE = {
+  message: "Game completed successfully",
+  xpEarned: 0,
+  activityId: "mock-activity-playwright",
+  status: 200,
+};
