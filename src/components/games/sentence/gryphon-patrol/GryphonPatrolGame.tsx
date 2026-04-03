@@ -25,7 +25,7 @@ export interface GryphonPatrolGameProps {
 
 const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, difficulty, onComplete }) => {
   const [gameState, setGameState] = useState<GameState>(() => 
-    createInitialGryphonPatrolState(vocabList[0]?.sentence?.split(' ') || [])
+    createInitialGryphonPatrolState(vocabList[0]?.term?.split(' ') || [])
   );
   
   const [dimensions, setDimensions] = useState({ width: 390, height: 844 });
@@ -84,7 +84,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
   }, [gameState.status, gameState.xp, gameState.score, difficulty, onComplete]);
 
   const handleStart = () => {
-    const initialState = createInitialGryphonPatrolState(vocabList[0]?.sentence?.split(' ') || []);
+    const initialState = createInitialGryphonPatrolState(vocabList[0]?.term?.split(' ') || []);
     const withEnemies = spawnGryphonPatrolEnemies(initialState);
     setGameState({ ...withEnemies, status: 'playing' });
     lastTickTime.current = Date.now();

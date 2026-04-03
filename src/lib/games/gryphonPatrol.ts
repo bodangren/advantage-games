@@ -187,7 +187,7 @@ export const tickGryphonPatrol = (state: GameState, deltaTime: number): GameStat
   // Update Player Status
   let nextHp = player.hp;
   let nextInvulnerableTime = Math.max(0, player.invulnerableTime - deltaTime);
-  let nextStatus = state.status;
+  let nextStatus: GameState['status'] = state.status;
 
   // Projectile/Enemy collision logic
   let finalState = {

@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import Link from "next/link";
+import type { SlimeState } from "@/lib/games/devourerSlime";
 
 const DevourerSlimeGame = dynamic(
   () =>
@@ -68,13 +69,12 @@ export default function DevourerSlimePage() {
   }, [locale]);
 
   const handleComplete = useCallback(
-    async (results: { 
-      xp: number; 
-      accuracy: number; 
-      correctAnswers: number; 
-      totalAttempts: number 
-    }) => {
-      setLastResult(results.xp, results.accuracy);
+    async (state: SlimeState) => {
+      const xp = state.score;
+      const accuracy = state.totalAttempts > 0
+        ? Math.round((state.correctAnswers / state.totalAttempts) * 100)
+        : 0;
+      setLastResult(xp, accuracy);
 
       try {
         await fetch("/api/v1/games/devourer-slime/complete", {
@@ -83,10 +83,10 @@ export default function DevourerSlimePage() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            xpEarned: results.xp,
-            accuracy: results.accuracy,
-            correctAnswers: results.correctAnswers,
-            totalAttempts: results.totalAttempts,
+            xpEarned: xp,
+            accuracy,
+            correctAnswers: state.correctAnswers,
+            totalAttempts: state.totalAttempts,
           }),
         });
       } catch (e) {
@@ -99,7 +99,7 @@ export default function DevourerSlimePage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col bg-background text-slate-100">
-        <Header />
+        <Header heading="Devourer Slime" />
         <main className="flex flex-1 items-center justify-center p-4">
           <div className="text-center space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-emerald-400 mx-auto" />
@@ -115,7 +115,7 @@ export default function DevourerSlimePage() {
   if (warningStatus.type) {
     return (
       <div className="flex min-h-screen flex-col bg-background">
-        <Header />
+        <Header heading="Devourer Slime" />
         <main className="flex flex-1 items-center justify-center p-4">
           <Card className="w-full max-w-md border-2 border-emerald-500/50 bg-emerald-950/30 backdrop-blur-sm">
             <CardContent className="pt-8 pb-8 text-center space-y-6">
@@ -148,7 +148,7 @@ export default function DevourerSlimePage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
-      <Header />
+      <Header heading="Devourer Slime" />
       <main className="flex-1 p-4 flex items-center justify-center max-w-4xl mx-auto w-full">
         <DevourerSlimeGame
           sentences={sentences}

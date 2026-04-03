@@ -123,3 +123,63 @@ export const RUNE_MATCH_COMPLETION_RESPONSE = {
   activityId: "mock-activity-playwright",
   status: 200,
 };
+
+// WIZARD_VS_ZOMBIE
+export const WIZARD_VS_ZOMBIE_GAME_PATH = "/en/student/games/vocabulary/wizard-vs-zombie";
+export const WIZARD_VS_ZOMBIE_SCREENSHOT_DIR = "public/games/wizard-vs-zombie";
+export const WIZARD_VS_ZOMBIE_SCREENSHOT_FILE = "wizard-vs-zombie-gameplay.png";
+export const WIZARD_VS_ZOMBIE_SAMPLE_VOCABULARY: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// ABYSSAL_WELL (Sentence Game)
+export const ABYSSAL_WELL_GAME_PATH = "/en/student/games/sentence/abyssal-well";
+export const ABYSSAL_WELL_SCREENSHOT_DIR = "public/games/abyssal-well";
+export const ABYSSAL_WELL_SCREENSHOT_FILE = "abyssal-well-gameplay.png";
+export const ABYSSAL_WELL_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// CASTLE_DEFENSE (Sentence Game)
+export const CASTLE_DEFENSE_GAME_PATH = "/en/student/games/sentence/castle-defense";
+export const CASTLE_DEFENSE_SCREENSHOT_DIR = "public/games/castle-defense";
+export const CASTLE_DEFENSE_SCREENSHOT_FILE = "castle-defense-gameplay.png";
+export const CASTLE_DEFENSE_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// DEVOURER_SLIME (Sentence Game)
+export const DEVOURER_SLIME_GAME_PATH = "/en/student/games/sentence/devourer-slime";
+export const DEVOURER_SLIME_SCREENSHOT_DIR = "public/games/devourer-slime";
+export const DEVOURER_SLIME_SCREENSHOT_FILE = "devourer-slime-gameplay.png";
+export const DEVOURER_SLIME_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// DUNGEON_LIBERATOR (Sentence Game)
+export const DUNGEON_LIBERATOR_GAME_PATH = "/en/student/games/sentence/dungeon-liberator";
+export const DUNGEON_LIBERATOR_SCREENSHOT_DIR = "public/games/dungeon-liberator";
+export const DUNGEON_LIBERATOR_SCREENSHOT_FILE = "dungeon-liberator-gameplay.png";
+export const DUNGEON_LIBERATOR_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// GRIFFIN_RIDERS_ESCAPE (Sentence Game)
+export const GRIFFIN_RIDERS_ESCAPE_GAME_PATH = "/en/student/games/sentence/griffin-riders-escape";
+export const GRIFFIN_RIDERS_ESCAPE_SCREENSHOT_DIR = "public/games/griffin-riders-escape";
+export const GRIFFIN_RIDERS_ESCAPE_SCREENSHOT_FILE = "griffin-riders-escape-gameplay.png";
+export const GRIFFIN_RIDERS_ESCAPE_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// GRIFFIN_SKY_JOUST (Sentence Game)
+export const GRIFFIN_SKY_JOUST_GAME_PATH = "/en/student/games/sentence/griffin-sky-joust";
+export const GRIFFIN_SKY_JOUST_SCREENSHOT_DIR = "public/games/griffin-sky-joust";
+export const GRIFFIN_SKY_JOUST_SCREENSHOT_FILE = "griffin-sky-joust-gameplay.png";
+export const GRIFFIN_SKY_JOUST_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// GRYPHON_PATROL (Sentence Game)
+export const GRYPHON_PATROL_GAME_PATH = "/en/student/games/sentence/gryphon-patrol";
+export const GRYPHON_PATROL_SCREENSHOT_DIR = "public/games/gryphon-patrol";
+export const GRYPHON_PATROL_SCREENSHOT_FILE = "gryphon-patrol-gameplay.png";
+export const GRYPHON_PATROL_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// HAUNTED_LIBRARY (Sentence Game)
+export const HAUNTED_LIBRARY_GAME_PATH = "/en/student/games/sentence/haunted-library";
+export const HAUNTED_LIBRARY_SCREENSHOT_DIR = "public/games/haunted-library";
+export const HAUNTED_LIBRARY_SCREENSHOT_FILE = "haunted-library-gameplay.png";
+export const HAUNTED_LIBRARY_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// LABYRINTH_GOBLIN_KING (Sentence Game)
+export const LABYRINTH_GOBLIN_KING_GAME_PATH = "/en/student/games/sentence/labyrinth-goblin-king";
+export const LABYRINTH_GOBLIN_KING_SCREENSHOT_DIR = "public/games/labyrinth-goblin-king";
+export const LABYRINTH_GOBLIN_KING_SCREENSHOT_FILE = "labyrinth-goblin-king-gameplay.png";
+export const LABYRINTH_GOBLIN_KING_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;

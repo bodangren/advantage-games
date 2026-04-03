@@ -64,12 +64,7 @@ export default function RealmCarverPage({
 
   const handleComplete = useCallback(async (results: { xp: number; accuracy: number }) => {
     // Update local store
-    setLastResult({
-      gameId: "realm-carver",
-      xp: results.xp,
-      accuracy: results.accuracy,
-      completedAt: new Date().toISOString(),
-    });
+    setLastResult(results.xp, results.accuracy);
 
     // Save to API
     try {

@@ -99,7 +99,7 @@ export default function HauntedLibraryPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen flex-col bg-background text-slate-100">
-        <Header />
+        <Header heading="Haunted Library" />
         <main className="flex flex-1 items-center justify-center p-4">
           <div className="text-center space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto" />
@@ -115,7 +115,7 @@ export default function HauntedLibraryPage() {
   if (warningStatus.type) {
     return (
       <div className="flex min-h-screen flex-col bg-background">
-        <Header />
+        <Header heading="Haunted Library" />
         <main className="flex flex-1 items-center justify-center p-4">
           <Card className="w-full max-w-md border-2 border-blue-500/50 bg-blue-950/30 backdrop-blur-sm">
             <CardContent className="pt-8 pb-8 text-center space-y-6">
@@ -148,7 +148,7 @@ export default function HauntedLibraryPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-950">
-      <Header />
+      <Header heading="Haunted Library" />
       <main className="flex-1 p-4 flex items-center justify-center max-w-4xl mx-auto w-full">
         <HauntedLibraryGame
           sentences={sentences}

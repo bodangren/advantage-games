@@ -104,7 +104,7 @@ export const gameCards: GameCard[] = [
     description: 'Collect word orbs in the correct order to form sentences in this enchanted forest runner!',
     cover: withBasePath('/games/cover/cover-spellweavers-run.png'),
     href: '/en/student/games/sentence/spellweavers-run',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'shadow-gate-dungeon',
@@ -112,7 +112,7 @@ export const gameCards: GameCard[] = [
     description: 'Collect word crystals and escape the shadow creature in this dark dungeon survival game!',
     cover: withBasePath('/games/cover/cover-shadow-gate-dungeon.png'),
     href: '/en/student/games/sentence/shadow-gate-dungeon',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'rune-forge-chamber',
@@ -120,7 +120,7 @@ export const gameCards: GameCard[] = [
     description: 'Tap word circles in the correct order to forge magical runes before the forge cools!',
     cover: withBasePath('/games/cover/cover-rune-forge-chamber.png'),
     href: '/en/student/games/sentence/rune-forge-chamber',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'village-guardian',
@@ -128,7 +128,7 @@ export const gameCards: GameCard[] = [
     description: 'Defend the village! Rescue villagers in correct order and lead them to safety!',
     cover: withBasePath('/games/cover/cover-village-guardian.png'),
     href: '/en/student/games/sentence/village-guardian',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'labyrinth-goblin-king',
@@ -136,7 +136,7 @@ export const gameCards: GameCard[] = [
     description: 'Navigate the maze! Collect word orbs in order and become a Paladin to defeat the goblins!',
     cover: withBasePath('/games/cover/cover-labyrinth-of-the-goblin-king.png'),
     href: '/en/student/games/sentence/labyrinth-goblin-king',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'abyssal-well',
@@ -144,7 +144,7 @@ export const gameCards: GameCard[] = [
     description: 'Defend the rim! Rotate and fire at enemies climbing from the depths carrying word orbs in correct order!',
     cover: withBasePath('/games/cover/cover-the-abyssal-well.png'),
     href: '/en/student/games/sentence/abyssal-well',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'archers-revenge',
@@ -152,7 +152,7 @@ export const gameCards: GameCard[] = [
     description: "Shoot enemies matching the target translation. Don't hit shielded enemies!",
     cover: withBasePath('/games/cover/cover-archers-revenge.png'),
     href: '/en/student/games/vocabulary/archers-revenge',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'storm-castle-tower',
@@ -160,7 +160,7 @@ export const gameCards: GameCard[] = [
     description: 'Scale the castle walls! Collect words in the correct order while dodging boiling oil and falling rocks!',
     cover: withBasePath('/games/cover/cover-storm-the-castle-tower.png'),
     href: '/en/student/games/sentence/storm-castle-tower',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'griffin-sky-joust',
@@ -168,7 +168,7 @@ export const gameCards: GameCard[] = [
     description: 'Take to the skies! Strike down enemy knights from above in the correct word order!',
     cover: withBasePath('/games/cover/cover-griffin-sky-joust.png'),
     href: '/en/student/games/sentence/griffin-sky-joust',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'realm-carver',
@@ -176,7 +176,7 @@ export const gameCards: GameCard[] = [
     description: 'Carve a path through the wild magic! Claim territory and capture words in the correct order!',
     cover: withBasePath('/games/cover/cover-realm-carver.png'),
     href: '/en/student/games/sentence/realm-carver',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'paladins-twin-soul',
@@ -184,7 +184,7 @@ export const gameCards: GameCard[] = [
     description: 'Defend the realm and rescue your twin soul! Match the magic to double your power!',
     cover: withBasePath('/games/cover/cover-paladins-twin-soul.png'),
     href: '/en/student/games/vocabulary/paladins-twin-soul',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'griffin-riders-escape',

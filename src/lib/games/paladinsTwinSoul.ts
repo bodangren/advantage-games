@@ -145,7 +145,7 @@ export function tickPaladinsTwinSoul(
   let nextIsCaptured = state.player.isCaptured;
   let nextScore = state.score;
   let nextPlayerHp = state.player.hp;
-  let nextStatus = state.status;
+  let nextStatus: PaladinsTwinSoulState['status'] = state.status;
 
   // Auto-fire
   if (!nextIsCaptured && currentTime - nextLastFireTime >= PALADINS_TWIN_SOUL_CONFIG.player.fireRate) {

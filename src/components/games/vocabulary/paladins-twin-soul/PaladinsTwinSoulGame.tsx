@@ -33,13 +33,13 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
   const rafRef = useRef<number>(0);
   const hasReportedRef = useRef(false);
 
-  const { velocity: keyboardVelocity } = useDirectionalInput();
+  const { input: keyboardInput } = useDirectionalInput();
   const { playSound } = useSound();
 
   const velocity = useMemo(() => ({
-    x: dpadVelocity.x || keyboardVelocity.x,
-    y: dpadVelocity.y || keyboardVelocity.y,
-  }), [dpadVelocity, keyboardVelocity]);
+    x: dpadVelocity.x || keyboardInput.dx,
+    y: dpadVelocity.y || keyboardInput.dy,
+  }), [dpadVelocity, keyboardInput]);
 
   const startGame = useCallback(() => {
     try {
@@ -307,7 +307,7 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
 
       {gamePhase === "ended" && gameState && (
         <GameEndScreen
-          status={gameState.status}
+          status={gameState.status as "victory" | "defeat" | "complete"}
           title={gameState.status === "victory" ? "Defense Successful!" : "Realm Overrun!"}
           subtitle={gameState.status === "victory" ? "The gargoyles have been repelled." : "The twin souls have been lost."}
           score={gameState.score}

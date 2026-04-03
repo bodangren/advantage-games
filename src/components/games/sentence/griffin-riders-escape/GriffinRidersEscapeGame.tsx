@@ -58,7 +58,6 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
     if (vocabulary.length > 0) {
       setGameState(createGriffinRidersEscapeState(vocabulary, { difficulty: selectedDifficulty }))
       setPlayerVisualX(GAME_WIDTH / 2)
-      setPlayerFrame(0)
     }
   }, [vocabulary, selectedDifficulty])
 

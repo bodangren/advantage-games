@@ -149,7 +149,7 @@ export function moveSlime(state: SlimeState, dx: number, dy: number, dt: number)
 export function tickSlime(state: SlimeState, dt: number, rng: () => number = Math.random): SlimeState {
   if (state.phase !== 'playing') return state
 
-  let nextState = { ...state, gameTime: state.gameTime + dt, lastEvent: undefined }
+  let nextState: SlimeState = { ...state, gameTime: state.gameTime + dt, lastEvent: undefined }
 
   // 1. Move Enemies
   nextState.enemies = nextState.enemies.map(enemy => {

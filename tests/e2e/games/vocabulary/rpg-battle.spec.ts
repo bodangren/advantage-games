@@ -14,12 +14,17 @@ test.describe("rpg-battle", () => {
   }) => {
     await mockRPGBattleApis(page);
 
-    await page.goto(getRPGBattleUrl(), { waitUntil: "domcontentloaded" });
+    await page.goto(getRPGBattleUrl(), { waitUntil: "networkidle" });
 
     await expectRPGBattleStartScreen(page);
+
+    // Click on vocabulary tab to see vocabulary
+    await page.getByRole("button", { name: /vocabulary/i }).click();
     await expect(page.getByText(RPG_BATTLE_SAMPLE_VOCABULARY[0].term)).toBeVisible();
     await expect(page.getByText(RPG_BATTLE_SAMPLE_VOCABULARY[0].translation)).toBeVisible();
 
+    // Go back to briefing tab and start battle
+    await page.getByRole("button", { name: /briefing/i }).click();
     await page.getByRole("button", { name: /start battle/i }).click();
 
     await expect(page.locator("canvas")).toBeVisible();

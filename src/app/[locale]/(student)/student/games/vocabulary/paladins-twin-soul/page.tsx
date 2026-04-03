@@ -56,12 +56,7 @@ export default function PaladinsTwinSoulPage({
   }, [locale]);
 
   const handleComplete = useCallback(async (results: { xp: number; accuracy: number }) => {
-    setLastResult({
-      gameId: "paladins-twin-soul",
-      xp: results.xp,
-      accuracy: results.accuracy,
-      completedAt: new Date().toISOString(),
-    });
+    setLastResult(results.xp, results.accuracy);
 
     try {
       await fetch("/api/v1/games/paladins-twin-soul/complete", {

@@ -1,7 +1,5 @@
-import { act, render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import RpgBattlePage from "./page";
-import { useRPGBattleStore } from "@/store/useRPGBattleStore";
-import { withBasePath } from "@/lib/games/basePath";
 import React from "react";
 
 // Mock the game store
@@ -61,7 +59,7 @@ jest.mock("@/store/useRPGBattleStore", () => {
   return {
     ...actual,
     useRPGBattleStore: Object.assign(
-      (selector?: any) => (selector ? selector(mockState) : mockState),
+      (selector?: (state: typeof mockState) => unknown) => (selector ? selector(mockState) : mockState),
       {
         getState: () => ({
           ...mockState,

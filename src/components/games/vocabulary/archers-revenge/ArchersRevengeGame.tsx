@@ -124,7 +124,7 @@ export function ArchersRevengeGame({
   const handleStageClick = useCallback((e: KonvaEventObject<MouseEvent | TouchEvent | Event>) => {
     if (gamePhase !== "playing") return;
     const stage = e.target.getStage();
-    const pointerPosition = stage.getPointerPosition();
+    const pointerPosition = stage?.getPointerPosition();
     if (pointerPosition) {
       const x = pointerPosition.x / scale;
       setGameState(prev => prev ? fireArrow(prev, x) : null);

@@ -65,7 +65,7 @@ export function createLibraryState(sentences: VocabularyItem[], config: LibraryC
   const ghostCount = config.difficulty === 'easy' ? 2 : config.difficulty === 'medium' ? 3 : 5
   const trapDoorCount = config.difficulty === 'easy' ? 1 : config.difficulty === 'medium' ? 3 : 5
 
-  const floors = []
+  const floors: { y: number; height: number }[] = []
   for (let i = 0; i < floorCount; i++) {
     floors.push({ y: GAME_HEIGHT - 100 - FLOOR_HEIGHT * i, height: 20 })
   }

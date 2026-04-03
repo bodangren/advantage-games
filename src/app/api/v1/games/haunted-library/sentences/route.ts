@@ -1,3 +1,4 @@
+export const dynamic = "force-static";
 import { NextResponse } from "next/server";
 import { VocabularyItem } from "@/store/useGameStore";
 import fs from "fs";

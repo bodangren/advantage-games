@@ -1,14 +1,32 @@
 import { expect, type Page } from "@playwright/test";
 
 import {
+  ABYSSAL_WELL_GAME_PATH,
+  ABYSSAL_WELL_SAMPLE_SENTENCES,
   ARCHERS_REVENGE_GAME_PATH,
   ARCHERS_REVENGE_SAMPLE_VOCABULARY,
+  CASTLE_DEFENSE_GAME_PATH,
+  CASTLE_DEFENSE_SAMPLE_SENTENCES,
+  DEVOURER_SLIME_GAME_PATH,
+  DEVOURER_SLIME_SAMPLE_SENTENCES,
   DRAGON_FLIGHT_GAME_PATH,
   DRAGON_FLIGHT_SAMPLE_VOCABULARY,
   DRAGON_RIDER_GAME_PATH,
   DRAGON_RIDER_SAMPLE_VOCABULARY,
+  DUNGEON_LIBERATOR_GAME_PATH,
+  DUNGEON_LIBERATOR_SAMPLE_SENTENCES,
   ENCHANTED_LIBRARY_GAME_PATH,
   ENCHANTED_LIBRARY_SAMPLE_VOCABULARY,
+  GRIFFIN_RIDERS_ESCAPE_GAME_PATH,
+  GRIFFIN_RIDERS_ESCAPE_SAMPLE_SENTENCES,
+  GRIFFIN_SKY_JOUST_GAME_PATH,
+  GRIFFIN_SKY_JOUST_SAMPLE_SENTENCES,
+  GRYPHON_PATROL_GAME_PATH,
+  GRYPHON_PATROL_SAMPLE_SENTENCES,
+  HAUNTED_LIBRARY_GAME_PATH,
+  HAUNTED_LIBRARY_SAMPLE_SENTENCES,
+  LABYRINTH_GOBLIN_KING_GAME_PATH,
+  LABYRINTH_GOBLIN_KING_SAMPLE_SENTENCES,
   MAGIC_DEFENSE_GAME_PATH,
   MAGIC_DEFENSE_SAMPLE_VOCABULARY,
   PALADINS_TWIN_SOUL_GAME_PATH,
@@ -17,6 +35,8 @@ import {
   RPG_BATTLE_SAMPLE_VOCABULARY,
   RUNE_MATCH_GAME_PATH,
   RUNE_MATCH_SAMPLE_VOCABULARY,
+  WIZARD_VS_ZOMBIE_GAME_PATH,
+  WIZARD_VS_ZOMBIE_SAMPLE_VOCABULARY,
 } from "../fixtures/gameFixtures";
 
 type ApiResponse = {
@@ -322,6 +342,14 @@ export async function mockRPGBattleApis(
       body: JSON.stringify(response),
     });
   });
+
+  await page.route("/api/v1/games/rpg-battle/ranking", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ rankings: { goblin: [], orc: [], dragon: [], demon: [] } }),
+    });
+  });
 }
 
 export async function expectRPGBattleStartScreen(page: Page) {
@@ -372,4 +400,311 @@ export async function expectRuneMatchStartScreen(page: Page) {
 
 export function getRuneMatchUrl() {
   return RUNE_MATCH_GAME_PATH;
+}
+
+// WIZARD_VS_ZOMBIE
+export async function mockWizardVsZombieApis(
+  page: Page,
+  vocabulary = WIZARD_VS_ZOMBIE_SAMPLE_VOCABULARY
+) {
+  await page.route("/api/v1/games/wizard-vs-zombie/vocabulary", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Vocabulary retrieved successfully",
+      vocabulary,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/wizard-vs-zombie/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectWizardVsZombieStartScreen(page: Page) {
+  await expect(page.getByText(/Wizard/i)).toBeVisible({ timeout: 15000 });
+}
+export function getWizardVsZombieUrl() {
+  return WIZARD_VS_ZOMBIE_GAME_PATH;
+}
+
+// ABYSSAL_WELL (Sentence Game)
+export async function mockAbyssalWellApis(
+  page: Page,
+  sentences = ABYSSAL_WELL_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/abyssal-well/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/abyssal-well/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectAbyssalWellStartScreen(page: Page) {
+  await expect(page.getByText(/Abyssal/i)).toBeVisible({ timeout: 15000 });
+}
+export function getAbyssalWellUrl() {
+  return ABYSSAL_WELL_GAME_PATH;
+}
+
+// CASTLE_DEFENSE (Sentence Game)
+export async function mockCastleDefenseApis(
+  page: Page,
+  sentences = CASTLE_DEFENSE_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/castle-defense/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/castle-defense/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectCastleDefenseStartScreen(page: Page) {
+  await expect(page.getByText(/Castle/i)).toBeVisible({ timeout: 15000 });
+}
+export function getCastleDefenseUrl() {
+  return CASTLE_DEFENSE_GAME_PATH;
+}
+
+// DEVOURER_SLIME (Sentence Game)
+export async function mockDevourerSlimeApis(
+  page: Page,
+  sentences = DEVOURER_SLIME_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/devourer-slime/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/devourer-slime/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectDevourerSlimeStartScreen(page: Page) {
+  await expect(page.getByText(/Devourer|Slime/i)).toBeVisible({ timeout: 15000 });
+}
+export function getDevourerSlimeUrl() {
+  return DEVOURER_SLIME_GAME_PATH;
+}
+
+// DUNGEON_LIBERATOR (Sentence Game)
+export async function mockDungeonLiberatorApis(
+  page: Page,
+  sentences = DUNGEON_LIBERATOR_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/dungeon-liberator/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/dungeon-liberator/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectDungeonLiberatorStartScreen(page: Page) {
+  await expect(page.getByText(/Dungeon|Liberator/i)).toBeVisible({ timeout: 15000 });
+}
+export function getDungeonLiberatorUrl() {
+  return DUNGEON_LIBERATOR_GAME_PATH;
+}
+
+// GRIFFIN_RIDERS_ESCAPE (Sentence Game)
+export async function mockGriffinRidersEscapeApis(
+  page: Page,
+  sentences = GRIFFIN_RIDERS_ESCAPE_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/griffin-riders-escape/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/griffin-riders-escape/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectGriffinRidersEscapeStartScreen(page: Page) {
+  await expect(page.getByText(/Griffin|Rider/i)).toBeVisible({ timeout: 15000 });
+}
+export function getGriffinRidersEscapeUrl() {
+  return GRIFFIN_RIDERS_ESCAPE_GAME_PATH;
+}
+
+// GRIFFIN_SKY_JOUST (Sentence Game)
+export async function mockGriffinSkyJoustApis(
+  page: Page,
+  sentences = GRIFFIN_SKY_JOUST_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/griffin-sky-joust/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/griffin-sky-joust/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectGriffinSkyJoustStartScreen(page: Page) {
+  await expect(page.getByText(/Griffin|Joust/i)).toBeVisible({ timeout: 15000 });
+}
+export function getGriffinSkyJoustUrl() {
+  return GRIFFIN_SKY_JOUST_GAME_PATH;
+}
+
+// GRYPHON_PATROL (Sentence Game)
+export async function mockGryphonPatrolApis(
+  page: Page,
+  sentences = GRYPHON_PATROL_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/gryphon-patrol/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/gryphon-patrol/ranking", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ rankings: { easy: [], normal: [], hard: [], extreme: [] } }),
+    });
+  });
+  await page.route("/api/v1/games/gryphon-patrol/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectGryphonPatrolStartScreen(page: Page) {
+  await expect(page.getByText(/Gryphon|Patrol/i)).toBeVisible({ timeout: 15000 });
+}
+export function getGryphonPatrolUrl() {
+  return GRYPHON_PATROL_GAME_PATH;
+}
+
+// HAUNTED_LIBRARY (Sentence Game)
+export async function mockHauntedLibraryApis(
+  page: Page,
+  sentences = HAUNTED_LIBRARY_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/haunted-library/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/haunted-library/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectHauntedLibraryStartScreen(page: Page) {
+  await expect(page.getByText(/Haunted|Library/i)).toBeVisible({ timeout: 15000 });
+}
+export function getHauntedLibraryUrl() {
+  return HAUNTED_LIBRARY_GAME_PATH;
+}
+
+// LABYRINTH_GOBLIN_KING (Sentence Game)
+export async function mockLabyrinthGoblinKingApis(
+  page: Page,
+  sentences = LABYRINTH_GOBLIN_KING_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/labyrinth-goblin-king/sentences**", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Sentences retrieved successfully",
+      vocabulary: sentences,
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/labyrinth-goblin-king/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectLabyrinthGoblinKingStartScreen(page: Page) {
+  await expect(page.getByText(/Labyrinth|Goblin/i)).toBeVisible({ timeout: 15000 });
+}
+export function getLabyrinthGoblinKingUrl() {
+  return LABYRINTH_GOBLIN_KING_GAME_PATH;
 }

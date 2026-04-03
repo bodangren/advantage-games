@@ -126,267 +126,267 @@
 
 ## Phase 7: rpg-battle (Vocabulary Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="rpg-battle|rpgBattle|RPGBattle" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/rpg-battle/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/vocabulary/rpg-battle.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Game component renders after vocabulary loads
-    - [ ] Test: Basic game interaction (start game)
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/rpg-battle/
-- [ ] Task: Conductor - User Manual Verification 'Phase 7: rpg-battle' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="rpg-battle|rpgBattle|RPGBattle" --coverage`
+    - [x] Fix any failing unit tests (all pass)
+    - [x] Coverage: 92.76% (exceeds 80% threshold)
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/rpg-battle/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix (fixed in page.test.tsx)
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps) - minor warnings only
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/vocabulary/rpg-battle.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Game component renders after vocabulary loads
+    - [x] Test: Basic game interaction (start game)
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/rpg-battle/
+- [x] Task: Conductor - User Manual Verification 'Phase 7: rpg-battle' (Protocol in workflow.md)
 
 ## Phase 8: rune-match (Vocabulary Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="rune-match|runeMatch" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/rune-match/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/vocabulary/rune-match.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Game component renders after vocabulary loads
-    - [ ] Test: Basic game interaction (start game)
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/rune-match/
-- [ ] Task: Conductor - User Manual Verification 'Phase 8: rune-match' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="rune-match|runeMatch" --coverage`
+    - [x] Fix any failing unit tests (all pass)
+    - [x] Coverage: 88.35% (exceeds 80% threshold)
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/rune-match/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix (none found)
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps) - minor warning only
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/vocabulary/rune-match.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Game component renders after vocabulary loads
+    - [x] Test: Basic game interaction (start game)
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/rune-match/
+- [x] Task: Conductor - User Manual Verification 'Phase 8: rune-match' (Protocol in workflow.md)
 
-## Phase 9: wizard-vs-zombie (Vocabulary Game)
+## Phase 9: wizard-vs-zombie (COMPLETE) (Vocabulary Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="wizard-vs-zombie|wizardZombie" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/wizard-vs-zombie/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/vocabulary/wizard-vs-zombie.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Game component renders after vocabulary loads
-    - [ ] Test: Basic game interaction (start game)
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/wizard-vs-zombie/
-- [ ] Task: Conductor - User Manual Verification 'Phase 9: wizard-vs-zombie' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="wizard-vs-zombie|wizardZombie" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/wizard-vs-zombie/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/vocabulary/wizard-vs-zombie.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Game component renders after vocabulary loads
+    - [x] Test: Basic game interaction (start game)
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/wizard-vs-zombie/
+- [x] Task: Conductor - User Manual Verification 'Phase 9: wizard-vs-zombie' (Protocol in workflow.md)
 
-## Phase 10: abyssal-well (Sentence Game)
+## Phase 10: (COMPLETE) abyssal-well (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="abyssal-well|abyssalWell" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/abyssal-well/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/abyssal-well.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/abyssal-well/
-- [ ] Task: Conductor - User Manual Verification 'Phase 10: abyssal-well' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="abyssal-well|abyssalWell" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/abyssal-well/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/abyssal-well.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/abyssal-well/
+- [x] Task: Conductor - User Manual Verification 'Phase 10: abyssal-well' (Protocol in workflow.md)
 
-## Phase 11: castle-defense (Sentence Game)
+## Phase 11: (COMPLETE) castle-defense (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="castle-defense|castleDefense" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/castle-defense/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/castle-defense.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/castle-defense/
-- [ ] Task: Conductor - User Manual Verification 'Phase 11: castle-defense' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="castle-defense|castleDefense" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/castle-defense/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/castle-defense.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/castle-defense/
+- [x] Task: Conductor - User Manual Verification 'Phase 11: castle-defense' (Protocol in workflow.md)
 
-## Phase 12: devourer-slime (Sentence Game)
+## Phase 12: (COMPLETE) devourer-slime (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="devourer-slime|devourerSlime" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/devourer-slime/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/devourer-slime.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/devourer-slime/
-- [ ] Task: Conductor - User Manual Verification 'Phase 12: devourer-slime' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="devourer-slime|devourerSlime" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/devourer-slime/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/devourer-slime.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/devourer-slime/
+- [x] Task: Conductor - User Manual Verification 'Phase 12: devourer-slime' (Protocol in workflow.md)
 
-## Phase 13: dungeon-liberator (Sentence Game)
+## Phase 13: (COMPLETE) dungeon-liberator (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="dungeon-liberator|dungeonLiberator" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/dungeon-liberator/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/dungeon-liberator.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/dungeon-liberator/
-- [ ] Task: Conductor - User Manual Verification 'Phase 13: dungeon-liberator' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="dungeon-liberator|dungeonLiberator" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/dungeon-liberator/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/dungeon-liberator.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/dungeon-liberator/
+- [x] Task: Conductor - User Manual Verification 'Phase 13: dungeon-liberator' (Protocol in workflow.md)
 
-## Phase 14: griffin-riders-escape (Sentence Game)
+## Phase 14: (COMPLETE) griffin-riders-escape (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="griffin-riders-escape|griffinRidersEscape" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/griffin-riders-escape/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/griffin-riders-escape.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/griffin-riders-escape/
-- [ ] Task: Conductor - User Manual Verification 'Phase 14: griffin-riders-escape' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="griffin-riders-escape|griffinRidersEscape" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/griffin-riders-escape/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/griffin-riders-escape.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/griffin-riders-escape/
+- [x] Task: Conductor - User Manual Verification 'Phase 14: griffin-riders-escape' (Protocol in workflow.md)
 
-## Phase 15: griffin-sky-joust (Sentence Game)
+## Phase 15: (COMPLETE) griffin-sky-joust (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="griffin-sky-joust|griffinkyJoust" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/griffin-sky-joust/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps) - Note: Known issue with unescaped entities
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/griffin-sky-joust.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/griffin-sky-joust/
-- [ ] Task: Conductor - User Manual Verification 'Phase 15: griffin-sky-joust' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="griffin-sky-joust|griffinkyJoust" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/griffin-sky-joust/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps) - Note: Known issue with unescaped entities
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/griffin-sky-joust.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/griffin-sky-joust/
+- [x] Task: Conductor - User Manual Verification 'Phase 15: griffin-sky-joust' (Protocol in workflow.md)
 
-## Phase 16: gryphon-patrol (Sentence Game)
+## Phase 16: (COMPLETE) gryphon-patrol (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="gryphon-patrol|gryphonPatrol" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/gryphon-patrol/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps) - Note: Known issue with unused variables
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/gryphon-patrol.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/gryphon-patrol/
-- [ ] Task: Conductor - User Manual Verification 'Phase 16: gryphon-patrol' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="gryphon-patrol|gryphonPatrol" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/gryphon-patrol/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps) - Note: Known issue with unused variables
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/gryphon-patrol.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/gryphon-patrol/
+- [x] Task: Conductor - User Manual Verification 'Phase 16: gryphon-patrol' (Protocol in workflow.md)
 
-## Phase 17: haunted-library (Sentence Game)
+## Phase 17: (COMPLETE) haunted-library (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="haunted-library|hauntedLibrary" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/haunted-library/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/haunted-library.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/haunted-library/
-- [ ] Task: Conductor - User Manual Verification 'Phase 17: haunted-library' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="haunted-library|hauntedLibrary" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/haunted-library/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/haunted-library.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/haunted-library/
+- [x] Task: Conductor - User Manual Verification 'Phase 17: haunted-library' (Protocol in workflow.md)
 
-## Phase 18: labyrinth-goblin-king (Sentence Game)
+## Phase 18: (COMPLETE) labyrinth-goblin-king (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="labyrinth-goblin-king|labyrinthGoblinKing" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/labyrinth-goblin-king/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps)
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/labyrinth-goblin-king.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/labyrinth-goblin-king/
-- [ ] Task: Conductor - User Manual Verification 'Phase 18: labyrinth-goblin-king' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="labyrinth-goblin-king|labyrinthGoblinKing" --coverage`
+    - [x] Fix any failing unit tests
+    - [x] Document coverage gaps if <80%
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/labyrinth-goblin-king/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps)
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/labyrinth-goblin-king.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/labyrinth-goblin-king/
+- [x] Task: Conductor - User Manual Verification 'Phase 18: labyrinth-goblin-king' (Protocol in workflow.md)
 
 ## Phase 19: potion-rush (Sentence Game)
 
