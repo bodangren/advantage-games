@@ -1,67 +1,13 @@
-# Autonomous Execution
-
-> **Reference**: @AGENTS.md — Worktree rules, naming conventions, and game development patterns
-
-## Skills
-
-Load: `conductor`, `vocab-game-builder`
-
-## Mode
-
-AUTONOMOUS = true
-
-## Critical: Work in Base Repo
-
-Always work in `/home/daniel-bo/Desktop/advantage-games` directly. Do NOT:
-- Check for or switch to git worktrees
-- Create new worktrees
-- Edit files outside the base repo
-
-Worktrees exist but are for interactive/manual development only. In cron mode, external directory access is auto-rejected.
-
-## Logic
-
-1. Check `/conductor/tracks/` for in-progress tracks (status: `in_progress` or `active`)
-2. If found → Resume with vocab-game-builder workflow
-3. If none → Plan a new game track for an RPG-themed adaptation of a popular mini game, similar in scope and theme to existing games in the repo
-
-## Autonomous Mode Overrides
-
-These override the standard conductor/vocab-game-builder workflows:
-
-- Skip all "await user confirmation" steps
-- Skip manual verification plans (trust passing tests)
-- Skip discovery phase questions (use judgment based on existing games)
-- Auto-commit after passing tests + >80% coverage
-- Do NOT auto-push (per AGENTS.md)
-
-## Conductor Documentation Sync
-
-After completing each phase or track, ALWAYS update conductor docs:
-
-1. **After each phase completion**: Update `plan.md` to mark phase complete
-2. **After track completion**:
-   - Set `status: "completed"` in `metadata.json`
-   - Add `completed_at` timestamp
-   - Move track folder from `conductor/tracks/` to `conductor/archive/`
-   - Update `conductor/tracks.md` to mark track as `[x]` and update link to archive path
-3. **When creating a new track**:
-   - Add entry to `conductor/tracks.md` with `[~]` marker and correct link
-
-These updates are part of "done" — a phase/track is not complete until conductor docs reflect the current state.
-
-## New Game Planning
-
-When creating a new game autonomously:
-
-1. Review `conductor/notes/sentence-game-concepts.md` for planned concepts
-2. Pick the next unimplemented concept in recommended order
-3. Generate spec.md and plan.md following vocab-game-builder templates
-4. Proceed directly to implementation
-
-## Constraints
-
-- All shell commands MUST use non-interactive flags (e.g., `--yes`, `CI=true`)
-- Never commit if tests fail
-- Never commit if build fails
-- Work in the base repo (NOT worktrees) - worktrees require interactive permission prompts that auto-reject in cron mode
+/conductor
+Step 1: Load Context. Read `conductor/current_directive.md`, `conductor/tech-debt.md`, `conductor/lessons-learned.md`, `conductor/tracks.md`.
+Step 2: Resume or Plan.
+- If the workspace is not clean, commit changes with a note, then continue.
+- If there is an `[~] In Progress` phase, finish it, then start a new phase.
+- If no incomplete phases, define exactly ONE new track serving `current_directive.md`. Create track artifacts.
+Step 3: Implement a SINGLE PHASE autonomously with TDD (Red-Green-Refactor). Use `tauri` and `rust-best-practices` skills for all implementation.
+- For each task: attach git notes per conductor protocol, merge changes, and push.
+Step 4: Verify. Run full test suite, run build, correct any build errors.
+Step 5: Finalize.
+- Update `tech-debt.md` and `lessons-learned.md` (keep ≤50 lines).
+- Commit and push phase checkpoint.
+CRITICAL: All shell commands MUST use non-interactive flags (--yes, --no-interactive, etc.). Unattended run only.
