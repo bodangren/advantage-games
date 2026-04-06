@@ -9,8 +9,9 @@
 
 ### Medium Priority
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
-- griffin-rider, realm-carver: TypeScript `any` usage in tests
+- griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)
 - gryphon-patrol, potion-rush: Unused variables
+- realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested)
 
 ### Known Issues (from lessons-learned)
 - Callback naming inconsistency: `onComplete` vs `onEnd` across games

@@ -33,10 +33,22 @@ import {
   PALADINS_TWIN_SOUL_SAMPLE_VOCABULARY,
   POTION_RUSH_GAME_PATH,
   POTION_RUSH_SAMPLE_SENTENCES,
+  REALM_CARVER_GAME_PATH,
+  REALM_CARVER_SAMPLE_SENTENCES,
+  RUNE_FORGE_CHAMBER_GAME_PATH,
+  RUNE_FORGE_CHAMBER_SAMPLE_SENTENCES,
   RPG_BATTLE_GAME_PATH,
   RPG_BATTLE_SAMPLE_VOCABULARY,
   RUNE_MATCH_GAME_PATH,
   RUNE_MATCH_SAMPLE_VOCABULARY,
+  SHADOW_GATE_DUNGEON_GAME_PATH,
+  SHADOW_GATE_DUNGEON_SAMPLE_SENTENCES,
+  SPELLWEAVERS_RUN_GAME_PATH,
+  SPELLWEAVERS_RUN_SAMPLE_SENTENCES,
+  STORM_CASTLE_TOWER_GAME_PATH,
+  STORM_CASTLE_TOWER_SAMPLE_SENTENCES,
+  VILLAGE_GUARDIAN_GAME_PATH,
+  VILLAGE_GUARDIAN_SAMPLE_SENTENCES,
   WIZARD_VS_ZOMBIE_GAME_PATH,
   WIZARD_VS_ZOMBIE_SAMPLE_VOCABULARY,
 } from "../fixtures/gameFixtures";
@@ -749,4 +761,184 @@ export async function expectPotionRushStartScreen(page: Page) {
 }
 export function getPotionRushUrl() {
   return POTION_RUSH_GAME_PATH;
+}
+
+// REALM_CARVER (Sentence Game)
+export async function mockRealmCarverApis(
+  page: Page,
+  sentences = REALM_CARVER_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/realm-carver/sentences**", async (route) => {
+    const response = {
+      status: 200,
+      sentences: [{ text: "The cat sat on the mat", id: "1" }],
+      message: "Sentences retrieved successfully",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/realm-carver/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectRealmCarverStartScreen(page: Page) {
+  await expect(page.getByRole("heading", { name: /realm carver/i }).first()).toBeVisible({ timeout: 15000 });
+}
+export function getRealmCarverUrl() {
+  return REALM_CARVER_GAME_PATH;
+}
+
+// RUNE_FORGE_CHAMBER (Sentence Game)
+export async function mockRuneForgeChamberApis(
+  page: Page,
+  sentences = RUNE_FORGE_CHAMBER_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/rune-forge-chamber/sentences**", async (route) => {
+    const response = {
+      status: 200,
+      sentences: sentences,
+      message: "Sentences retrieved successfully",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/rune-forge-chamber/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectRuneForgeChamberStartScreen(page: Page) {
+  await expect(page.getByRole("heading", { name: /rune forge chamber/i }).first()).toBeVisible({ timeout: 15000 });
+}
+export function getRuneForgeChamberUrl() {
+  return RUNE_FORGE_CHAMBER_GAME_PATH;
+}
+
+// SHADOW_GATE_DUNGEON (Sentence Game)
+export async function mockShadowGateDungeonApis(
+  page: Page,
+  sentences = SHADOW_GATE_DUNGEON_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/shadow-gate-dungeon/sentences**", async (route) => {
+    const response = {
+      status: 200,
+      sentences: sentences,
+      message: "Sentences retrieved successfully",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/shadow-gate-dungeon/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectShadowGateDungeonStartScreen(page: Page) {
+  await expect(page.getByRole("heading", { name: /shadow gate dungeon/i }).first()).toBeVisible({ timeout: 15000 });
+}
+export function getShadowGateDungeonUrl() {
+  return SHADOW_GATE_DUNGEON_GAME_PATH;
+}
+
+// SPELLWEAVERS_RUN (Sentence Game)
+export async function mockSpellweaversRunApis(
+  page: Page,
+  sentences = SPELLWEAVERS_RUN_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/spellweavers-run/sentences**", async (route) => {
+    const response = {
+      status: 200,
+      sentences: sentences,
+      message: "Sentences retrieved successfully",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/spellweavers-run/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectSpellweaversRunStartScreen(page: Page) {
+  await expect(page.getByRole("heading", { name: /spellweaver/i }).first()).toBeVisible({ timeout: 15000 });
+}
+export function getSpellweaversRunUrl() {
+  return SPELLWEAVERS_RUN_GAME_PATH;
+}
+
+// STORM_CASTLE_TOWER (Sentence Game)
+export async function mockStormCastleTowerApis(
+  page: Page,
+  sentences = STORM_CASTLE_TOWER_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/storm-castle-tower/sentences**", async (route) => {
+    const response = {
+      status: 200,
+      sentences: sentences,
+      message: "Sentences retrieved successfully",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/storm-castle-tower/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectStormCastleTowerStartScreen(page: Page) {
+  await expect(page.getByRole("heading", { name: /storm the castle tower/i }).first()).toBeVisible({ timeout: 15000 });
+}
+export function getStormCastleTowerUrl() {
+  return STORM_CASTLE_TOWER_GAME_PATH;
+}
+
+// VILLAGE_GUARDIAN (Sentence Game)
+export async function mockVillageGuardianApis(
+  page: Page,
+  sentences = VILLAGE_GUARDIAN_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/village-guardian/sentences**", async (route) => {
+    const response = {
+      status: 200,
+      sentences: sentences,
+      message: "Sentences retrieved successfully",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+  await page.route("/api/v1/games/village-guardian/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectVillageGuardianStartScreen(page: Page) {
+  await expect(page.getByRole("heading", { name: /village guardian/i }).first()).toBeVisible({ timeout: 15000 });
+}
+export function getVillageGuardianUrl() {
+  return VILLAGE_GUARDIAN_GAME_PATH;
 }

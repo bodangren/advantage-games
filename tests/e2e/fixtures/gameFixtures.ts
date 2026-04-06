@@ -189,3 +189,39 @@ export const POTION_RUSH_GAME_PATH = "/en/student/games/sentence/potion-rush";
 export const POTION_RUSH_SCREENSHOT_DIR = "public/games/potion-rush";
 export const POTION_RUSH_SCREENSHOT_FILE = "potion-rush-gameplay.png";
 export const POTION_RUSH_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// REALM_CARVER (Sentence Game)
+export const REALM_CARVER_GAME_PATH = "/en/student/games/sentence/realm-carver";
+export const REALM_CARVER_SCREENSHOT_DIR = "public/games/realm-carver";
+export const REALM_CARVER_SCREENSHOT_FILE = "realm-carver-gameplay.png";
+export const REALM_CARVER_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// RUNE_FORGE_CHAMBER (Sentence Game)
+export const RUNE_FORGE_CHAMBER_GAME_PATH = "/en/student/games/sentence/rune-forge-chamber";
+export const RUNE_FORGE_CHAMBER_SCREENSHOT_DIR = "public/games/rune-forge-chamber";
+export const RUNE_FORGE_CHAMBER_SCREENSHOT_FILE = "rune-forge-chamber-gameplay.png";
+export const RUNE_FORGE_CHAMBER_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// SHADOW_GATE_DUNGEON (Sentence Game)
+export const SHADOW_GATE_DUNGEON_GAME_PATH = "/en/student/games/sentence/shadow-gate-dungeon";
+export const SHADOW_GATE_DUNGEON_SCREENSHOT_DIR = "public/games/shadow-gate-dungeon";
+export const SHADOW_GATE_DUNGEON_SCREENSHOT_FILE = "shadow-gate-dungeon-gameplay.png";
+export const SHADOW_GATE_DUNGEON_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// SPELLWEAVERS_RUN (Sentence Game)
+export const SPELLWEAVERS_RUN_GAME_PATH = "/en/student/games/sentence/spellweavers-run";
+export const SPELLWEAVERS_RUN_SCREENSHOT_DIR = "public/games/spellweavers-run";
+export const SPELLWEAVERS_RUN_SCREENSHOT_FILE = "spellweavers-run-gameplay.png";
+export const SPELLWEAVERS_RUN_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// STORM_CASTLE_TOWER (Sentence Game)
+export const STORM_CASTLE_TOWER_GAME_PATH = "/en/student/games/sentence/storm-castle-tower";
+export const STORM_CASTLE_TOWER_SCREENSHOT_DIR = "public/games/storm-castle-tower";
+export const STORM_CASTLE_TOWER_SCREENSHOT_FILE = "storm-castle-tower-gameplay.png";
+export const STORM_CASTLE_TOWER_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// VILLAGE_GUARDIAN (Sentence Game)
+export const VILLAGE_GUARDIAN_GAME_PATH = "/en/student/games/sentence/village-guardian";
+export const VILLAGE_GUARDIAN_SCREENSHOT_DIR = "public/games/village-guardian";
+export const VILLAGE_GUARDIAN_SCREENSHOT_FILE = "village-guardian-gameplay.png";
+export const VILLAGE_GUARDIAN_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;

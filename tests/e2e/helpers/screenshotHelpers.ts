@@ -36,10 +36,22 @@ import {
   PALADINS_TWIN_SOUL_SCREENSHOT_FILE,
   POTION_RUSH_SCREENSHOT_DIR,
   POTION_RUSH_SCREENSHOT_FILE,
+  REALM_CARVER_SCREENSHOT_DIR,
+  REALM_CARVER_SCREENSHOT_FILE,
+  RUNE_FORGE_CHAMBER_SCREENSHOT_DIR,
+  RUNE_FORGE_CHAMBER_SCREENSHOT_FILE,
   RPG_BATTLE_SCREENSHOT_DIR,
   RPG_BATTLE_SCREENSHOT_FILE,
   RUNE_MATCH_SCREENSHOT_DIR,
   RUNE_MATCH_SCREENSHOT_FILE,
+  SHADOW_GATE_DUNGEON_SCREENSHOT_DIR,
+  SHADOW_GATE_DUNGEON_SCREENSHOT_FILE,
+  SPELLWEAVERS_RUN_SCREENSHOT_DIR,
+  SPELLWEAVERS_RUN_SCREENSHOT_FILE,
+  STORM_CASTLE_TOWER_SCREENSHOT_DIR,
+  STORM_CASTLE_TOWER_SCREENSHOT_FILE,
+  VILLAGE_GUARDIAN_SCREENSHOT_DIR,
+  VILLAGE_GUARDIAN_SCREENSHOT_FILE,
   WIZARD_VS_ZOMBIE_SCREENSHOT_DIR,
   WIZARD_VS_ZOMBIE_SCREENSHOT_FILE,
 } from "../fixtures/gameFixtures";
@@ -232,6 +244,54 @@ export async function capturePotionRushScreenshot(page: Page) {
   const screenshotDir = path.join(process.cwd(), POTION_RUSH_SCREENSHOT_DIR);
   await fs.mkdir(screenshotDir, { recursive: true });
   const screenshotPath = path.join(screenshotDir, POTION_RUSH_SCREENSHOT_FILE);
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  return screenshotPath;
+}
+
+export async function captureRealmCarverScreenshot(page: Page) {
+  const screenshotDir = path.join(process.cwd(), REALM_CARVER_SCREENSHOT_DIR);
+  await fs.mkdir(screenshotDir, { recursive: true });
+  const screenshotPath = path.join(screenshotDir, REALM_CARVER_SCREENSHOT_FILE);
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  return screenshotPath;
+}
+
+export async function captureRuneForgeChamberScreenshot(page: Page) {
+  const screenshotDir = path.join(process.cwd(), RUNE_FORGE_CHAMBER_SCREENSHOT_DIR);
+  await fs.mkdir(screenshotDir, { recursive: true });
+  const screenshotPath = path.join(screenshotDir, RUNE_FORGE_CHAMBER_SCREENSHOT_FILE);
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  return screenshotPath;
+}
+
+export async function captureShadowGateDungeonScreenshot(page: Page) {
+  const screenshotDir = path.join(process.cwd(), SHADOW_GATE_DUNGEON_SCREENSHOT_DIR);
+  await fs.mkdir(screenshotDir, { recursive: true });
+  const screenshotPath = path.join(screenshotDir, SHADOW_GATE_DUNGEON_SCREENSHOT_FILE);
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  return screenshotPath;
+}
+
+export async function captureSpellweaversRunScreenshot(page: Page) {
+  const screenshotDir = path.join(process.cwd(), SPELLWEAVERS_RUN_SCREENSHOT_DIR);
+  await fs.mkdir(screenshotDir, { recursive: true });
+  const screenshotPath = path.join(screenshotDir, SPELLWEAVERS_RUN_SCREENSHOT_FILE);
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  return screenshotPath;
+}
+
+export async function captureStormCastleTowerScreenshot(page: Page) {
+  const screenshotDir = path.join(process.cwd(), STORM_CASTLE_TOWER_SCREENSHOT_DIR);
+  await fs.mkdir(screenshotDir, { recursive: true });
+  const screenshotPath = path.join(screenshotDir, STORM_CASTLE_TOWER_SCREENSHOT_FILE);
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  return screenshotPath;
+}
+
+export async function captureVillageGuardianScreenshot(page: Page) {
+  const screenshotDir = path.join(process.cwd(), VILLAGE_GUARDIAN_SCREENSHOT_DIR);
+  await fs.mkdir(screenshotDir, { recursive: true });
+  const screenshotPath = path.join(screenshotDir, VILLAGE_GUARDIAN_SCREENSHOT_FILE);
   await page.screenshot({ path: screenshotPath, fullPage: true });
   return screenshotPath;
 }
