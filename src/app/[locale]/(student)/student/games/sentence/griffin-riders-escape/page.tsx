@@ -1,8 +1,13 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { GriffinRidersEscapeGame } from '@/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame'
+import dynamic from 'next/dynamic'
 import type { VocabularyItem } from '@/store/useGameStore'
+
+const GriffinRidersEscapeGame = dynamic(
+  () => import('@/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame').then(mod => mod.GriffinRidersEscapeGame),
+  { ssr: false },
+)
 
 export default function GriffinRidersEscapePage() {
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([])

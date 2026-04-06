@@ -239,23 +239,6 @@ export function tickRealmCarver(state: RealmCarverState, delta: number): RealmCa
       my = monster.y + mvy * monsterSpeed * seconds;
     }
 
-    // Check for collision with trail
-    const finalGmx = Math.round(mx);
-    const finalGmy = Math.round(my);
-    if (nextGrid[finalGmy]?.[finalGmx] === "trail") {
-      nextPlayerHp -= 1;
-      nextStatus = nextPlayerHp <= 0 ? "defeat" : "playing";
-      // Clear trail and reset player on hit
-      if (nextStatus === "playing") {
-        nextX = 0; nextY = 0;
-        for (let y = 0; y < GRID_SIZE; y++) {
-          for (let x = 0; x < GRID_SIZE; x++) {
-            if (nextGrid[y][x] === "trail") nextGrid[y][x] = "wild";
-          }
-        }
-      }
-    }
-
     return { ...monster, x: mx, y: my, vx: mvx, vy: mvy };
   });
 

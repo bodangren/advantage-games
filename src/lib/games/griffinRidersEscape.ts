@@ -125,8 +125,12 @@ export function spawnWave(
     const lanes: Lane[] = ['left', 'center', 'right']
     lanes.forEach(lane => {
       if (lane !== correctLane) {
-        // Pick a random word from the sentence that is NOT the target word
-        const decoyIndex = Math.floor(rng() * state.words.length)
+        let decoyIndex = Math.floor(rng() * state.words.length)
+        let retries = 0
+        while (decoyIndex === state.targetIndex && retries < 10) {
+          decoyIndex = Math.floor(rng() * state.words.length)
+          retries++
+        }
         newObjects.push({
           id: generateId(),
           z: 100,

@@ -1,0 +1,39 @@
+[0m
+> build · minimax-m2.7
+[0m
+[0m→ [0mRead conductor/autonomous_prompt.md
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/daniel-bo/Desktop/advantage-games/conductor/current_directive.md
+[0m→ [0mRead conductor/tracks.md
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+[0m→ [0mRead conductor/lessons-learned.md
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/games-qa-qc_20260328/SPEC.md
+
+Did you mean one of these?
+/home/daniel-bo/Desktop/advantage-games/conductor/tracks/games-qa-qc_20260328/spec.md
+[0m
+[0m$ [0mgit status --short
+M src/app/[locale]/(student)/student/games/sentence/griffin-riders-escape/page.tsx
+ M src/app/api/v1/games/griffin-riders-escape/complete/route.ts
+ M src/app/api/v1/games/griffin-riders-escape/sentences/route.ts
+ M src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+ M src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.test.tsx
+ M src/lib/games/griffinRidersEscape.ts
+ M src/lib/games/realmCarver.ts
+?? conductor/current-directive.md
+?? conductor/output.log
+?? conductor/review-output.log
+?? src/app/api/v1/games/devourer-slime/
+?? src/lib/games/__tests__/gameDataArrays.test.ts
+[0m
+[0m→ [0mRead conductor/tracks/games-qa-qc_20260328/spec.md
+[0m✱ [0mGlob "conductor/tracks/games-qa-qc_20260328/**/*"[90m 4 matches[0m
+[0m→ [0mRead conductor/tracks/games-qa-qc_20260328/plan.md
+[0m→ [0mRead conductor/tracks/games-qa-qc_20260328/index.md
+**Step 1: Load Context** - Complete.
+
+**Step 2: Resume or Plan**
+
+The workspace is not clean. Per protocol, I need to commit changes first. The next incomplete phase is **Phase 19: potion-rush**.

@@ -68,6 +68,7 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
   // Game Loop
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
+  const lerpRafRef = useRef<number>(0)
 
   useEffect(() => {
     if (gamePhase !== 'playing' || !gameState) return
@@ -106,7 +107,7 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
       cancelAnimationFrame(rafRef.current)
       lastFrameRef.current = 0
     }
-  }, [gamePhase, gameState, vocabulary, playSound])
+  }, [gamePhase, vocabulary, playSound])
 
   // Player movement animation (Lerp)
   useEffect(() => {
@@ -117,11 +118,11 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
     
     const animLoop = () => {
       setPlayerVisualX(prev => prev + (targetX - prev) * lerpSpeed)
-      rafRef.current = requestAnimationFrame(animLoop)
+      lerpRafRef.current = requestAnimationFrame(animLoop)
     }
     
-    const rafId = requestAnimationFrame(animLoop)
-    return () => cancelAnimationFrame(rafId)
+    lerpRafRef.current = requestAnimationFrame(animLoop)
+    return () => cancelAnimationFrame(lerpRafRef.current)
   }, [gamePhase, gameState])
 
   // Input Handling
@@ -133,7 +134,7 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
       if (input.dx > 0) setGameState(prev => prev ? switchLane(prev, 'right') : null)
     }
     lastInputDx.current = input.dx
-  }, [input.dx, gamePhase, gameState])
+  }, [input.dx, gamePhase])
 
   // Result Handling
   useEffect(() => {

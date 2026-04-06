@@ -5,7 +5,11 @@ import React from "react";
 
 // Mock hooks
 jest.mock("@/hooks/useDirectionalInput", () => ({
-  useDirectionalInput: jest.fn(() => ({ velocity: { x: 0, y: 0 } })),
+  useDirectionalInput: jest.fn(() => ({
+    input: { dx: 0, dy: 0 },
+    consumeCast: jest.fn(),
+    setVirtualInput: jest.fn(),
+  })),
 }));
 
 jest.mock("@/hooks/useSound", () => ({

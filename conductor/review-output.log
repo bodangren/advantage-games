@@ -1,0 +1,1071 @@
+[0m
+> build · glm-5.1
+[0m
+[0m$ [0mgit log --oneline --since="24 hours ago" --all
+333f779 docs: brainstorm new game ideas and update conductor workflow
+[0m
+[0m$ [0mgit status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	conductor/current-directive.md
+	conductor/output.log
+	conductor/review-output.log
+	src/lib/games/__tests__/gameDataArrays.test.ts
+
+nothing added to commit but untracked files present (use "git add" to track)
+[0m
+[0m$ [0mgit diff HEAD~20 --stat 2>/dev/null || git diff HEAD~5 --stat
+.claude/skills/vocab-game-builder/SKILL.md         |  88 +++
+ .../devourer-slime/metadata.json                   |  11 +
+ .../devourer-slime-20260328/devourer-slime/plan.md |  44 ++
+ .../archive/devourer-slime-20260328/metadata.json  |  11 +
+ conductor/archive/devourer-slime-20260328/plan.md  |  44 ++
+ conductor/archive/devourer-slime-20260328/spec.md  |  52 ++
+ .../dungeon-liberator-20260321/metadata.json       |   8 +
+ .../archive/dungeon-liberator-20260321/plan.md     |  55 ++
+ .../archive/dungeon-liberator-20260321/spec.md     |  79 +++
+ .../archive/gryphon-patrol-20260321/metadata.json  |   8 +
+ conductor/archive/gryphon-patrol-20260321/plan.md  |  56 ++
+ conductor/archive/gryphon-patrol-20260321/spec.md  |  78 +++
+ .../paladins-twin-soul-20260321/metadata.json      |   8 +
+ .../archive/paladins-twin-soul-20260321/plan.md    |  56 ++
+ .../archive/paladins-twin-soul-20260321/spec.md    |  83 +++
+ .../realm-carver-20260320/metadata.json            |   3 +-
+ conductor/archive/realm-carver-20260320/plan.md    |  59 ++
+ .../realm-carver-20260320/spec.md                  |   0
+ .../squires-gauntlet-20260328/metadata.json        |   9 +
+ .../archive/squires-gauntlet-20260328/plan.md      |  45 ++
+ .../archive/squires-gauntlet-20260328/spec.md      |  52 ++
+ .../the-haunted-library-20260328/metadata.json     |  12 +
+ .../archive/the-haunted-library-20260328/plan.md   |  49 ++
+ .../archive/the-haunted-library-20260328/spec.md   |  52 ++
+ conductor/autonomous_prompt.md                     |  80 +--
+ conductor/gemini-cron.log                          | 142 +----
+ conductor/lessons-learned.md                       |  25 +
+ conductor/notes/sentence-game-concepts.md          | 267 +-------
+ conductor/notes/vocabulary-game-concepts.md        | 348 ++++++++++
+ conductor/tracks.md                                |  83 ++-
+ .../tracks/dungeon-liberator-sentences-bug/plan.md |  14 +
+ .../tracks/dungeon-liberator-sentences-bug/spec.md |  35 +
+ conductor/tracks/games-qa-qc_20260328/index.md     |  42 ++
+ .../tracks/games-qa-qc_20260328/metadata.json      |  11 +
+ conductor/tracks/games-qa-qc_20260328/plan.md      | 565 ++++++++++++++++
+ conductor/tracks/games-qa-qc_20260328/spec.md      | 110 ++++
+ .../tracks/griffin-riders-escape/metadata.json     |  10 +
+ conductor/tracks/griffin-riders-escape/plan.md     |  56 ++
+ conductor/tracks/griffin-riders-escape/spec.md     | 114 ++++
+ conductor/tracks/realm-carver-20260320/plan.md     |  59 --
+ eslint.config.mjs                                  |   7 +
+ jest.config.ts                                     |   4 +
+ package-lock.json                                  | 124 ++++
+ package.json                                       |   4 +-
+ playwright.config.ts                               |  33 +
+ .../archers-revenge/archers-revenge-gameplay.png   | Bin 0 -> 43864 bytes
+ .../archers-revenge-start-screen.png               | Bin 0 -> 44262 bytes
+ public/games/cover/cover-alchemists-synthesis.png  | Bin 0 -> 953139 bytes
+ public/games/cover/cover-archers-revenge.png       | Bin 0 -> 2097357 bytes
+ public/games/cover/cover-astral-mage.png           | Bin 0 -> 1091403 bytes
+ public/games/cover/cover-babel-architect.png       | Bin 0 -> 977186 bytes
+ public/games/cover/cover-devourer-slime.png        | Bin 0 -> 799789 bytes
+ public/games/cover/cover-dragon-rider.png          | Bin 0 -> 987021 bytes
+ public/games/cover/cover-griffin-sky-joust.png     | Bin 0 -> 2086330 bytes
+ public/games/cover/cover-gryphon-patrol.png        | Bin 0 -> 919082 bytes
+ public/games/cover/cover-haunted-library.png       | Bin 0 -> 971089 bytes
+ .../cover/cover-labyrinth-of-the-goblin-king.png   | Bin 0 -> 2041397 bytes
+ public/games/cover/cover-paladins-twin-soul.png    | Bin 0 -> 2108333 bytes
+ public/games/cover/cover-realm-carver.png          | Bin 0 -> 2332423 bytes
+ public/games/cover/cover-rune-forge-chamber.png    | Bin 0 -> 2114798 bytes
+ public/games/cover/cover-shadow-gate-dungeon.png   | Bin 0 -> 2121041 bytes
+ public/games/cover/cover-sorcerers-ziggurat.png    | Bin 0 -> 1023182 bytes
+ public/games/cover/cover-spellweavers-run.png      | Bin 0 -> 2190493 bytes
+ .../games/cover/cover-storm-the-castle-tower.png   | Bin 0 -> 2052107 bytes
+ public/games/cover/cover-the-abyssal-well.png      | Bin 0 -> 2081486 bytes
+ public/games/cover/cover-village-guardian.png      | Bin 0 -> 2211463 bytes
+ .../games/dragon-rider/dragon-rider-gameplay.png   | Bin 0 -> 500192 bytes
+ .../sentence/griffin-riders-escape/background.png  | Bin 0 -> 1778692 bytes
+ .../games/sentence/griffin-riders-escape/gate.png  |   0
+ .../sentence/griffin-riders-escape/obstacle.png    |   0
+ .../griffin-riders-escape/player-3x3-sheet.png     | Bin 0 -> 912954 bytes
+ .../vocabulary/dragon-flight/projectile-boss.png   | Bin 0 -> 163 bytes
+ .../dragon-flight/projectile-fireball.png          | Bin 0 -> 163 bytes
+ remotion.config.ts                                 |   4 +
+ scripts/record-gameplay-video.mjs                  | 131 ++++
+ .../student/games/sentence/devourer-slime/page.tsx | 160 +++++
+ .../games/sentence/griffin-riders-escape/page.tsx  |  57 ++
+ .../student/games/sentence/gryphon-patrol/page.tsx | 365 +++++++++++
+ .../games/sentence/haunted-library/page.tsx        | 160 +++++
+ .../student/games/sentence/realm-carver/page.tsx   | 140 ++++
+ .../games/vocabulary/archers-revenge/page.tsx      |  15 +-
+ .../games/vocabulary/dragon-flight/page.tsx        |  13 +-
+ .../games/vocabulary/paladins-twin-soul/page.tsx   | 131 ++++
+ .../games/vocabulary/rpg-battle/page.test.tsx      | 191 ++++--
+ .../games/archers-revenge/complete/route.test.ts   |  35 +
+ .../games/archers-revenge/vocabulary/route.test.ts |  18 +
+ .../v1/games/dungeon-liberator/ranking/route.ts    |   6 +
+ .../v1/games/dungeon-liberator/sentences/route.ts  |  11 +-
+ .../games/griffin-riders-escape/complete/route.ts  |   8 +
+ .../games/griffin-riders-escape/sentences/route.ts |  25 +
+ .../v1/games/griffin-sky-joust/sentences/route.ts  |  13 +-
+ .../api/v1/games/gryphon-patrol/complete/route.ts  |   6 +
+ .../api/v1/games/gryphon-patrol/ranking/route.ts   |   6 +
+ .../api/v1/games/gryphon-patrol/sentences/route.ts |  11 +
+ .../api/v1/games/haunted-library/complete/route.ts |  15 +
+ .../v1/games/haunted-library/sentences/route.ts    |  40 ++
+ .../v1/games/paladins-twin-soul/complete/route.ts  |   7 +
+ .../games/paladins-twin-soul/vocabulary/route.ts   |   8 +
+ .../api/v1/games/realm-carver/complete/route.ts    |  10 +
+ .../api/v1/games/realm-carver/sentences/route.ts   |  10 +
+ .../v1/games/storm-castle-tower/sentences/route.ts |  15 +-
+ .../sentence/devourer-slime/DevourerSlimeGame.tsx  | 289 +++++++++
+ .../dungeon-liberator/DungeonLiberatorGame.tsx     | 121 +++-
+ .../GriffinRidersEscapeGame.tsx                    | 312 +++++++++
+ .../sentence/gryphon-patrol/GryphonPatrolGame.tsx  | 325 ++++++++++
+ .../haunted-library/HauntedLibraryGame.tsx         | 278 ++++++++
+ .../sentence/realm-carver/RealmCarverGame.test.tsx |  35 +
+ .../sentence/realm-carver/RealmCarverGame.tsx      | 334 ++++++++++
+ .../games/sentence/realm-carver/index.ts           |   1 +
+ .../archers-revenge/ArchersRevengeGame.tsx         |   5 +-
+ .../PaladinsTwinSoulGame.test.tsx                  |  51 ++
+ .../paladins-twin-soul/PaladinsTwinSoulGame.tsx    | 327 ++++++++++
+ .../games/vocabulary/paladins-twin-soul/index.ts   |   1 +
+ src/hooks/useGameFullscreen.ts                     |  55 ++
+ src/lib/gameCards.ts                               | 100 ++-
+ src/lib/games/__tests__/realmCarver.test.ts        | 145 +++++
+ src/lib/games/__tests__/realmCarverConfig.test.ts  |  28 +
+ src/lib/games/archersRevenge.test.ts               |  17 +-
+ src/lib/games/archersRevenge.ts                    |   6 +-
+ src/lib/games/devourerSlime.test.ts                | 100 +++
+ src/lib/games/devourerSlime.ts                     | 287 +++++++++
+ src/lib/games/dungeonLiberator.ts                  |   6 +-
+ src/lib/games/dungeonLiberatorIndicators.ts        |  63 ++
+ src/lib/games/griffinRidersEscape.test.ts          | 159 +++++
+ src/lib/games/griffinRidersEscape.ts               | 233 +++++++
+ src/lib/games/griffinRidersEscapeConfig.ts         |  36 ++
+ src/lib/games/gryphonPatrol.test.ts                | 227 +++++++
+ src/lib/games/gryphonPatrol.ts                     | 285 +++++++++
+ src/lib/games/gryphonPatrolConfig.ts               |  35 +
+ src/lib/games/hauntedLibrary.test.ts               | 191 ++++++
+ src/lib/games/hauntedLibrary.ts                    | 339 ++++++++++
+ src/lib/games/paladinsTwinSoul.test.ts             | 197 ++++++
+ src/lib/games/paladinsTwinSoul.ts                  | 270 ++++++++
+ src/lib/games/paladinsTwinSoulConfig.test.ts       |  20 +
+ src/lib/games/paladinsTwinSoulConfig.ts            |  38 ++
+ src/lib/games/realmCarver.ts                       | 295 +++++++++
+ src/lib/games/realmCarverConfig.test.ts            |  22 +
+ src/lib/games/realmCarverConfig.ts                 |  35 +
+ src/locales/en.ts                                  |   5 +
+ src/remotion/Root.tsx                              |  19 +
+ .../compositions/WizardZombieGameRenderer.tsx      | 206 ++++++
+ src/remotion/compositions/WizardZombiePromo.tsx    | 279 ++++++++
+ src/remotion/index.ts                              |   4 +
+ src/remotion/test-index.tsx                        |  15 +
+ tests/e2e/fixtures/gameFixtures.ts                 | 185 ++++++
+ tests/e2e/games/sentence/abyssal-well.spec.ts      |  30 +
+ tests/e2e/games/sentence/castle-defense.spec.ts    |  30 +
+ tests/e2e/games/sentence/devourer-slime.spec.ts    |  30 +
+ tests/e2e/games/sentence/dungeon-liberator.spec.ts |  30 +
+ .../games/sentence/griffin-riders-escape.spec.ts   |  30 +
+ tests/e2e/games/sentence/griffin-sky-joust.spec.ts |  30 +
+ tests/e2e/games/sentence/gryphon-patrol.spec.ts    |  30 +
+ tests/e2e/games/sentence/haunted-library.spec.ts   |  30 +
+ .../games/sentence/labyrinth-goblin-king.spec.ts   |  30 +
+ tests/e2e/games/vocabulary/archers-revenge.spec.ts |  32 +
+ tests/e2e/games/vocabulary/dragon-flight.spec.ts   |  34 +
+ tests/e2e/games/vocabulary/dragon-rider.spec.ts    |  32 +
+ .../e2e/games/vocabulary/enchanted-library.spec.ts |  27 +
+ tests/e2e/games/vocabulary/magic-defense.spec.ts   |  27 +
+ .../games/vocabulary/paladins-twin-soul.spec.ts    |  30 +
+ tests/e2e/games/vocabulary/rpg-battle.spec.ts      |  37 ++
+ tests/e2e/games/vocabulary/rune-match.spec.ts      |  32 +
+ .../e2e/games/vocabulary/wizard-vs-zombie.spec.ts  |  30 +
+ tests/e2e/helpers/gameHelpers.ts                   | 710 +++++++++++++++++++++
+ tests/e2e/helpers/screenshotHelpers.ts             | 227 +++++++
+ tsconfig.json                                      |   2 +-
+ 166 files changed, 11462 insertions(+), 715 deletions(-)
+[0m
+[0m# [0mTodos
+[ ] Review and refactor game logic files (6 new games)
+[ ] Review and refactor game page components
+[ ] Review and refactor API routes
+[ ] Review E2E tests and helpers
+[ ] Review untracked files and game data arrays test
+[ ] Run lint and typecheck
+[ ] Run tests
+[ ] Update conductor docs
+[ ] Commit and push
+[0m
+[0m• [0mReview game logic files[90m Change-Quality-Reviewer Agent[0m
+[0m• [0mReview game page components[90m Change-Quality-Reviewer Agent[0m
+Let me start by launching parallel agents to review the codebase and run lint/typecheck/tests simultaneously.
+[0m
+[0m$ [0mnpx next lint 2>&1 | tail -50
+172:28  Warning: 'orbs' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+172:57  Warning: 'collectedWords' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+202:9  Warning: 'px' is never reassigned. Use 'const' instead.  prefer-const
+203:9  Warning: 'py' is never reassigned. Use 'const' instead.  prefer-const
+226:9  Warning: 'ex' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/lib/games/labyrinthGoblinKing.ts
+166:10  Warning: 'getEntrancePositions' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/paladinsTwinSoul.test.ts
+1:66  Warning: 'PaladinsTwinSoulState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/realmCarver.ts
+1:10  Warning: 'GAME_WIDTH' is defined but never used.  @typescript-eslint/no-unused-vars
+1:22  Warning: 'GAME_HEIGHT' is defined but never used.  @typescript-eslint/no-unused-vars
+172:7  Warning: 'nextWords' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/lib/games/runeForgeChamber.test.ts
+8:8  Warning: 'RuneForgeChamberState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/shadowGateDungeon.ts
+189:3  Warning: '_rng' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/spellweaversRunConfig.test.ts
+2:15  Warning: 'Difficulty' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/villageGuardian.ts
+158:9  Warning: 'angle' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/remotion/compositions/WizardZombieGameRenderer.tsx
+7:3  Warning: 'Rect' is defined but never used.  @typescript-eslint/no-unused-vars
+95:6  Warning: React Hook useMemo has missing dependencies: 'gameState', 'simulatedInput', and 'vocabulary'. Either include them or remove the dependency array.  react-hooks/exhaustive-deps
+105:9  Warning: 'fw' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+106:9  Warning: 'fh' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/remotion/compositions/WizardZombiePromo.tsx
+1:17  Warning: 'useMemo' is defined but never used.  @typescript-eslint/no-unused-vars
+1:26  Warning: 'useState' is defined but never used.  @typescript-eslint/no-unused-vars
+1:36  Warning: 'useEffect' is defined but never used.  @typescript-eslint/no-unused-vars
+3:15  Warning: 'VocabularyItem' is defined but never used.  @typescript-eslint/no-unused-vars
+3:31  Warning: 'Difficulty' is defined but never used.  @typescript-eslint/no-unused-vars
+26:10  Warning: 'getSimulatedInput' is defined but never used.  @typescript-eslint/no-unused-vars
+37:11  Warning: 'width' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+37:18  Warning: 'height' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+37:26  Warning: 'fps' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/remotion/test-index.tsx
+2:10  Warning: 'Composition' is defined but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+[0m
+[0m$ [0mnpx tsc --noEmit 2>&1 | tail -100
+[0m✓ [0mReview game page components[90m Change-Quality-Reviewer Agent[0m
+[0m✓ [0mReview game logic files[90m Change-Quality-Reviewer Agent[0m
+Now let me fix the critical and high-severity issues. Let me read the files that need fixing.
+[0m
+[0m# [0mTodos
+[x] Review and refactor game logic files (6 new games)
+[x] Review and refactor game page components
+[ ] Fix C1: Create missing Devourer Slime API routes
+[ ] Fix C2: PaladinsTwinSoul test mock mismatch
+[ ] Fix C3: Realm Carver double monster-trail damage
+[ ] Fix C4: Griffin Riders Escape static import (SSR crash)
+[ ] Fix H: Griffin Riders rafRef conflict + decoy gate + missing validation
+[ ] Fix H: Gryphon Patrol hardcoded accuracy
+[ ] Fix H: Haunted Library biased shuffle + force-static
+[ ] Fix lint warnings
+[ ] Run lint and typecheck
+[ ] Run tests
+[ ] Update conductor docs
+[ ] Commit and push
+[0m
+[0m• [0mFind existing API route patterns[90m Codebase-Scout Agent[0m
+Let me read all the files I need to fix in parallel:
+[0m→ [0mRead src/lib/games/realmCarver.ts
+[0m✗ [0mtask failed
+[91m[1mError: [0mProviderModelNotFoundError
+[0m→ [0mRead src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.test.tsx
+[0m→ [0mRead src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+[0m→ [0mRead src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+[0m• [0mFind API route helpers and patterns[90m Codebase-Scout Agent[0m
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/daniel-bo/Desktop/advantage-games/src/app/student/games/sentence/griffin-riders-escape/page.tsx
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/daniel-bo/Desktop/advantage-games/src/app/student/games/sentence/gryphon-patrol/page.tsx
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/daniel-bo/Desktop/advantage-games/src/app/student/games/sentence/devourer-slime/page.tsx
+[0m✗ [0mtask failed
+[91m[1mError: [0mProviderModelNotFoundError
+[0m✱ [0mGlob "src/app/**/student/games/sentence/griffin-riders-escape/page.tsx"[90m 1 match[0m
+[0m✱ [0mGlob "src/app/**/student/games/sentence/devourer-slime/page.tsx"[90m 1 match[0m
+[0m✱ [0mGlob "src/app/api/v1/games/*/sentences/route.ts"[90m 15 matches[0m
+[0m✱ [0mGlob "src/lib/games/api.ts"[90m 0 matches[0m
+[0m✱ [0mGlob "src/app/**/student/games/sentence/gryphon-patrol/page.tsx"[90m 1 match[0m
+[0m→ [0mRead src/app/api/v1/games/griffin-riders-escape/sentences/route.ts
+[0m→ [0mRead src/app/api/v1/games/griffin-riders-escape/complete/route.ts
+[0m→ [0mRead src/app/api/v1/games/haunted-library/sentences/route.ts
+[0m→ [0mRead src/app/api/v1/games/realm-carver/sentences/route.ts
+[0m→ [0mRead src/app/api/v1/games/haunted-library/complete/route.ts
+[0m→ [0mRead src/app/api/v1/games/gryphon-patrol/sentences/route.ts
+[0m→ [0mRead src/app/api/v1/games/realm-carver/complete/route.ts
+[0m→ [0mRead src/app/api/v1/games/gryphon-patrol/complete/route.ts
+Now let me read the shared API helper and remaining files:
+[0m→ [0mRead src/app/[locale]/(student)/student/games/sentence/realm-carver/page.tsx
+[0m→ [0mRead src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
+[0m→ [0mRead src/app/[locale]/(student)/student/games/vocabulary/paladins-twin-soul/page.tsx
+[0m→ [0mRead src/app/[locale]/(student)/student/games/sentence/griffin-riders-escape/page.tsx
+[0m→ [0mRead src/app/[locale]/(student)/student/games/sentence/devourer-slime/page.tsx
+[0m✱ [0mGlob "src/lib/games/api*.ts"[90m 0 matches[0m
+[0m→ [0mRead src/app/[locale]/(student)/student/games/vocabulary/archers-revenge/page.tsx
+[0m✱ [0mGlob "src/lib/games/sampleSentences*"[90m 1 match[0m
+[0m✱ [0mGrep "createSentencesRoute|createCompleteRoute|createRankingRoute"[90m 101 matches[0m
+[0m→ [0mRead src/lib/games/sampleSentences.ts
+[0m→ [0mRead src/lib/games/griffinRidersEscape.ts
+[0m→ [0mRead src/lib/games/api/sentencesRoute.ts
+[0m→ [0mRead src/lib/games/api/completeRoute.ts
+[0m→ [0mRead src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.tsx
+Now I have a complete picture. Let me fix all the critical and high-severity issues. I'll batch the edits:
+[0m
+[0m# [0mTodos
+[x] Review and refactor game logic files (6 new games)
+[x] Review and refactor game page components
+[ ] Fix C1: Create missing Devourer Slime API routes
+[ ] Fix C2: PaladinsTwinSoul test mock mismatch
+[ ] Fix C3: Realm Carver double monster-trail damage
+[ ] Fix C4: Griffin Riders Escape static import (SSR crash)
+[ ] Fix H: Griffin Riders rafRef conflict + decoy gate + missing validation
+[ ] Fix H: Gryphon Patrol hardcoded accuracy
+[ ] Fix H: Haunted Library biased shuffle + force-static
+[ ] Fix Realm Carver page data transformation + archers back link
+[ ] Fix lint warnings
+[ ] Run lint, typecheck, and tests
+[ ] Update conductor docs
+[ ] Commit and push
+[0m
+**Fix 1: Create missing Devourer Slime API routes**
+[0m$ [0mmkdir -p src/app/api/v1/games/devourer-slime/sentences src/app/api/v1/games/devourer-slime/complete
+[0m
+[0m← [0mWrite src/app/api/v1/games/devourer-slime/sentences/route.ts
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/devourerSlime.test.ts">
+ERROR [8:32] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [10:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [18:5] Cannot find name 'expect'.
+ERROR [19:5] Cannot find name 'expect'.
+ERROR [20:5] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'expect'.
+ERROR [24:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:5] Cannot find name 'expect'.
+ERROR [29:5] Cannot find name 'expect'.
+ERROR [32:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [40:5] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'expect'.
+ERROR [42:5] Cannot find name 'expect'.
+ERROR [43:5] Cannot find name 'expect'.
+ERROR [46:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [56:5] Cannot find name 'expect'.
+ERROR [57:5] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'expect'.
+ERROR [61:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 10 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/griffinRidersEscape.test.ts">
+ERROR [15:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [17:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [20:7] Cannot find name 'expect'.
+ERROR [21:7] Cannot find name 'expect'.
+ERROR [22:7] Cannot find name 'expect'.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:7] Cannot find name 'expect'.
+ERROR [31:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [32:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [36:7] Cannot find name 'expect'.
+ERROR [37:7] Cannot find name 'expect'.
+ERROR [40:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [45:7] Cannot find name 'expect'.
+ERROR [49:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [50:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [55:7] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 21 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.test.ts">
+ERROR [11:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [14:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'expect'.
+ERROR [19:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:5] Cannot find name 'expect'.
+ERROR [26:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [35:7] Cannot find name 'expect'.
+ERROR [36:7] Cannot find name 'expect'.
+ERROR [39:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [47:7] Cannot find name 'expect'.
+ERROR [50:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [58:7] Cannot find name 'expect'.
+ERROR [61:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [68:7] Cannot find name 'expect'.
+ERROR [73:7] Cannot find name 'expect'.
+ERROR [76:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [84:7] Cannot find name 'expect'.
+ERROR [85:7] Cannot find name 'expect'.
+ERROR [86:7] Cannot find name 'expect'.
+... and 30 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/hauntedLibrary.test.ts">
+ERROR [7:32] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [9:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [14:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'expect'.
+ERROR [17:5] Cannot find name 'expect'.
+ERROR [18:5] Cannot find name 'expect'.
+ERROR [19:5] Cannot find name 'expect'.
+ERROR [20:5] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'expect'.
+ERROR [25:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:5] Cannot find name 'expect'.
+ERROR [29:5] Cannot find name 'expect'.
+ERROR [30:5] Cannot find name 'expect'.
+ERROR [33:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [35:5] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'expect'.
+ERROR [39:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [46:5] Cannot find name 'expect'.
+ERROR [47:5] Cannot find name 'expect'.
+ERROR [50:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 31 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/paladinsTwinSoul.test.ts">
+ERROR [4:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [10:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [11:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [13:7] Cannot find name 'expect'.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [23:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [24:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [30:7] Cannot find name 'expect'.
+ERROR [35:7] Cannot find name 'expect'.
+ERROR [38:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [43:7] Cannot find name 'expect'.
+ERROR [47:7] Cannot find name 'expect'.
+ERROR [51:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [52:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [57:7] Cannot find name 'expect'.
+ERROR [61:7] Cannot find name 'expect'.
+ERROR [65:7] Cannot find name 'expect'.
+ERROR [68:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [74:7] Cannot find name 'expect'.
+... and 26 more
+</diagnostics>
+[0m
+[0m← [0mWrite src/app/api/v1/games/devourer-slime/complete/route.ts
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/devourerSlime.test.ts">
+ERROR [8:32] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [10:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [18:5] Cannot find name 'expect'.
+ERROR [19:5] Cannot find name 'expect'.
+ERROR [20:5] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'expect'.
+ERROR [24:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:5] Cannot find name 'expect'.
+ERROR [29:5] Cannot find name 'expect'.
+ERROR [32:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [40:5] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'expect'.
+ERROR [42:5] Cannot find name 'expect'.
+ERROR [43:5] Cannot find name 'expect'.
+ERROR [46:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [56:5] Cannot find name 'expect'.
+ERROR [57:5] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'expect'.
+ERROR [61:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 10 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/griffinRidersEscape.test.ts">
+ERROR [15:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [17:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [20:7] Cannot find name 'expect'.
+ERROR [21:7] Cannot find name 'expect'.
+ERROR [22:7] Cannot find name 'expect'.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:7] Cannot find name 'expect'.
+ERROR [31:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [32:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [36:7] Cannot find name 'expect'.
+ERROR [37:7] Cannot find name 'expect'.
+ERROR [40:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [45:7] Cannot find name 'expect'.
+ERROR [49:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [50:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [55:7] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 21 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.test.ts">
+ERROR [11:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [14:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'expect'.
+ERROR [19:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:5] Cannot find name 'expect'.
+ERROR [26:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [35:7] Cannot find name 'expect'.
+ERROR [36:7] Cannot find name 'expect'.
+ERROR [39:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [47:7] Cannot find name 'expect'.
+ERROR [50:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [58:7] Cannot find name 'expect'.
+ERROR [61:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [68:7] Cannot find name 'expect'.
+ERROR [73:7] Cannot find name 'expect'.
+ERROR [76:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [84:7] Cannot find name 'expect'.
+ERROR [85:7] Cannot find name 'expect'.
+ERROR [86:7] Cannot find name 'expect'.
+... and 30 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/hauntedLibrary.test.ts">
+ERROR [7:32] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [9:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [14:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'expect'.
+ERROR [17:5] Cannot find name 'expect'.
+ERROR [18:5] Cannot find name 'expect'.
+ERROR [19:5] Cannot find name 'expect'.
+ERROR [20:5] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'expect'.
+ERROR [25:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:5] Cannot find name 'expect'.
+ERROR [29:5] Cannot find name 'expect'.
+ERROR [30:5] Cannot find name 'expect'.
+ERROR [33:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [35:5] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'expect'.
+ERROR [39:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [46:5] Cannot find name 'expect'.
+ERROR [47:5] Cannot find name 'expect'.
+ERROR [50:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 31 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/paladinsTwinSoul.test.ts">
+ERROR [4:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [10:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [11:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [13:7] Cannot find name 'expect'.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [23:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [24:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [30:7] Cannot find name 'expect'.
+ERROR [35:7] Cannot find name 'expect'.
+ERROR [38:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [43:7] Cannot find name 'expect'.
+ERROR [47:7] Cannot find name 'expect'.
+ERROR [51:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [52:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [57:7] Cannot find name 'expect'.
+ERROR [61:7] Cannot find name 'expect'.
+ERROR [65:7] Cannot find name 'expect'.
+ERROR [68:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [74:7] Cannot find name 'expect'.
+... and 26 more
+</diagnostics>
+[0m
+Good, the LSP errors are just jest globals in test files - not real issues. Now let me fix all remaining critical/high issues:
+[0m# [0mTodos
+[x] Review and refactor game logic files (6 new games)
+[x] Review and refactor game page components
+[x] Fix C1: Create missing Devourer Slime API routes
+[ ] Fix C2: PaladinsTwinSoul test mock mismatch
+[ ] Fix C3: Realm Carver double monster-trail damage
+[ ] Fix C4: Griffin Riders Escape static import (SSR crash)
+[ ] Fix H: Griffin Riders rafRef conflict + decoy gate + missing validation
+[ ] Fix H: Gryphon Patrol hardcoded accuracy
+[ ] Fix H: Haunted Library biased shuffle + force-static
+[ ] Fix Realm Carver page data transformation + archers back link
+[ ] Fix lint warnings
+[ ] Run lint, typecheck, and tests
+[ ] Update conductor docs
+[ ] Commit and push
+[0m
+**Fix 2: PaladinsTwinSoul test mock mismatch**
+[0m← [0mEdit src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.test.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.test.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.test.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.test.tsx
+@@ -4,9 +4,13 @@
+ import React from "react";
+ 
+ // Mock hooks
+ jest.mock("@/hooks/useDirectionalInput", () => ({
+-  useDirectionalInput: jest.fn(() => ({ velocity: { x: 0, y: 0 } })),
++  useDirectionalInput: jest.fn(() => ({
++    input: { dx: 0, dy: 0 },
++    consumeCast: jest.fn(),
++    setVirtualInput: jest.fn(),
++  })),
+ }));
+ 
+ jest.mock("@/hooks/useSound", () => ({
+   useSound: jest.fn(() => ({ playSound: jest.fn() })),
+
+[0m
+Now let me fix the remaining issues in parallel:
+[0m← [0mEdit src/lib/games/realmCarver.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/realmCarver.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/realmCarver.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/realmCarver.ts
+@@ -238,25 +238,8 @@
+     mvy *= -1;
+     my = monster.y + mvy * monsterSpeed * seconds;
+   }
+ 
+-  // Check for collision with trail
+-  const finalGmx = Math.round(mx);
+-  const finalGmy = Math.round(my);
+-  if (nextGrid[finalGmy]?.[finalGmx] === "trail") {
+-    nextPlayerHp -= 1;
+-    nextStatus = nextPlayerHp <= 0 ? "defeat" : "playing";
+-    // Clear trail and reset player on hit
+-    if (nextStatus === "playing") {
+-      nextX = 0; nextY = 0;
+-      for (let y = 0; y < GRID_SIZE; y++) {
+-        for (let x = 0; x < GRID_SIZE; x++) {
+-          if (nextGrid[y][x] === "trail") nextGrid[y][x] = "wild";
+-        }
+-      }
+-    }
+-  }
+-
+   return { ...monster, x: mx, y: my, vx: mvx, vy: mvy };
+ });
+ 
+ // Check monster-trail collision
+
+[0m
+**Fix 4: Griffin Riders Escape - convert to dynamic import + fix rafRef conflict + fix decoy gate**
+[0m← [0mEdit src/app/[locale]/(student)/student/games/sentence/griffin-riders-escape/page.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/griffin-riders-escape/page.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/griffin-riders-escape/page.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/griffin-riders-escape/page.tsx
+@@ -1,10 +1,15 @@
+ 'use client'
+ 
+ import React, { useEffect, useState } from 'react'
+-import { GriffinRidersEscapeGame } from '@/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame'
++import dynamic from 'next/dynamic'
+ import type { VocabularyItem } from '@/store/useGameStore'
+ 
++const GriffinRidersEscapeGame = dynamic(
++  () => import('@/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame').then(mod => mod.GriffinRidersEscapeGame),
++  { ssr: false },
++)
++
+ export default function GriffinRidersEscapePage() {
+   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([])
+   const [isLoading, setIsLoading] = useState(true)
+ 
+
+[0m
+[0m→ [0mRead src/app/[locale]/(student)/student/games/sentence/griffin-riders-escape/page.tsx
+Good, the page is fixed. Now let me fix the game component issues and remaining routes:
+[0m
+[0m← [0mEdit src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+@@ -67,8 +67,9 @@
+ 
+ // Game Loop
+ const lastFrameRef = useRef<number>(0)
+ const rafRef = useRef<number>(0)
++const lerpRafRef = useRef<number>(0)
+ 
+ useEffect(() => {
+   if (gamePhase !== 'playing' || !gameState) return
+ 
+
+[0m
+Now fix the lerp animation to use its own ref:
+[0m← [0mEdit src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+@@ -117,13 +117,13 @@
+   const lerpSpeed = 0.2
+   
+   const animLoop = () => {
+     setPlayerVisualX(prev => prev + (targetX - prev) * lerpSpeed)
+-    rafRef.current = requestAnimationFrame(animLoop)
++    lerpRafRef.current = requestAnimationFrame(animLoop)
+   }
+   
+-  const rafId = requestAnimationFrame(animLoop)
+-  return () => cancelAnimationFrame(rafId)
++  lerpRafRef.current = requestAnimationFrame(animLoop)
++  return () => cancelAnimationFrame(lerpRafRef.current)
+ }, [gamePhase, gameState])
+ 
+ // Input Handling
+ useEffect(() => {
+
+[0m
+[0m→ [0mRead src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx[90m [offset=108, limit=25][0m
+[0m→ [0mRead src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx[90m [limit=10, offset=68][0m
+Good, the refs are separated. Now fix the Griffin Riders decoy gate bug (can show target word):
+[0m
+[0m← [0mEdit src/lib/games/griffinRidersEscape.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/griffinRidersEscape.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/griffinRidersEscape.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/griffinRidersEscape.ts
+@@ -124,10 +124,14 @@
+ // Decoy gates for other lanes
+ const lanes: Lane[] = ['left', 'center', 'right']
+ lanes.forEach(lane => {
+   if (lane !== correctLane) {
+-    // Pick a random word from the sentence that is NOT the target word
+-    const decoyIndex = Math.floor(rng() * state.words.length)
++    let decoyIndex = Math.floor(rng() * state.words.length)
++    let retries = 0
++    while (decoyIndex === state.targetIndex && retries < 10) {
++      decoyIndex = Math.floor(rng() * state.words.length)
++      retries++
++    }
+     newObjects.push({
+       id: generateId(),
+       z: 100,
+       lane,
+
+[0m
+[0m→ [0mRead src/lib/games/griffinRidersEscape.ts[90m [limit=20, offset=124][0m
+Good, the decoy gate fix is in place. Now fix the Griffin Riders game loop dependency array issue (gameState changes every frame):
+[0m
+[0m← [0mEdit src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+@@ -106,9 +106,9 @@
+   return () => {
+     cancelAnimationFrame(rafRef.current)
+     lastFrameRef.current = 0
+   }
+-}, [gamePhase, gameState, vocabulary, playSound])
++}, [gamePhase, vocabulary, playSound])
+ 
+ // Player movement animation (Lerp)
+ useEffect(() => {
+   if (gamePhase !== 'playing' || !gameState) return
+
+[0m
+[0m← [0mEdit src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx
+@@ -133,9 +133,9 @@
+     if (input.dx < 0) setGameState(prev => prev ? switchLane(prev, 'left') : null)
+     if (input.dx > 0) setGameState(prev => prev ? switchLane(prev, 'right') : null)
+   }
+   lastInputDx.current = input.dx
+-}, [input.dx, gamePhase, gameState])
++}, [input.dx, gamePhase])
+ 
+ // Result Handling
+ useEffect(() => {
+   if (gameState?.status === 'victory' || gameState?.status === 'defeat') {
+
+[0m
+Now use refs for frequently-changing state in the game loop:
+[0m→ [0mRead src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx[90m [limit=30, offset=68][0m
+Now let me fix the Griffin Riders complete route to use proper validation:
+[0m
+[0m← [0mWrite src/app/api/v1/games/griffin-riders-escape/complete/route.ts
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/devourerSlime.test.ts">
+ERROR [8:32] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [10:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [18:5] Cannot find name 'expect'.
+ERROR [19:5] Cannot find name 'expect'.
+ERROR [20:5] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'expect'.
+ERROR [24:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:5] Cannot find name 'expect'.
+ERROR [29:5] Cannot find name 'expect'.
+ERROR [32:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [40:5] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'expect'.
+ERROR [42:5] Cannot find name 'expect'.
+ERROR [43:5] Cannot find name 'expect'.
+ERROR [46:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [56:5] Cannot find name 'expect'.
+ERROR [57:5] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'expect'.
+ERROR [61:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 10 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/griffinRidersEscape.test.ts">
+ERROR [15:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [17:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [20:7] Cannot find name 'expect'.
+ERROR [21:7] Cannot find name 'expect'.
+ERROR [22:7] Cannot find name 'expect'.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:7] Cannot find name 'expect'.
+ERROR [31:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [32:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [36:7] Cannot find name 'expect'.
+ERROR [37:7] Cannot find name 'expect'.
+ERROR [40:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [45:7] Cannot find name 'expect'.
+ERROR [49:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [50:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [55:7] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 21 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.test.ts">
+ERROR [11:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [14:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'expect'.
+ERROR [19:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:5] Cannot find name 'expect'.
+ERROR [26:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [35:7] Cannot find name 'expect'.
+ERROR [36:7] Cannot find name 'expect'.
+ERROR [39:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [47:7] Cannot find name 'expect'.
+ERROR [50:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [58:7] Cannot find name 'expect'.
+ERROR [61:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [68:7] Cannot find name 'expect'.
+ERROR [73:7] Cannot find name 'expect'.
+ERROR [76:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [84:7] Cannot find name 'expect'.
+ERROR [85:7] Cannot find name 'expect'.
+ERROR [86:7] Cannot find name 'expect'.
+... and 30 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/hauntedLibrary.test.ts">
+ERROR [7:32] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [9:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [14:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'expect'.
+ERROR [17:5] Cannot find name 'expect'.
+ERROR [18:5] Cannot find name 'expect'.
+ERROR [19:5] Cannot find name 'expect'.
+ERROR [20:5] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'expect'.
+ERROR [25:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:5] Cannot find name 'expect'.
+ERROR [29:5] Cannot find name 'expect'.
+ERROR [30:5] Cannot find name 'expect'.
+ERROR [33:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [35:5] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'expect'.
+ERROR [39:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [46:5] Cannot find name 'expect'.
+ERROR [47:5] Cannot find name 'expect'.
+ERROR [50:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 31 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/paladinsTwinSoul.test.ts">
+ERROR [4:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [10:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [11:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [13:7] Cannot find name 'expect'.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [23:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [24:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [30:7] Cannot find name 'expect'.
+ERROR [35:7] Cannot find name 'expect'.
+ERROR [38:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [43:7] Cannot find name 'expect'.
+ERROR [47:7] Cannot find name 'expect'.
+ERROR [51:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [52:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [57:7] Cannot find name 'expect'.
+ERROR [61:7] Cannot find name 'expect'.
+ERROR [65:7] Cannot find name 'expect'.
+ERROR [68:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [74:7] Cannot find name 'expect'.
+... and 26 more
+</diagnostics>
+[0m
+Now let me fix the Griffin Riders sentences route to use the shared helper:
+[0m← [0mWrite src/app/api/v1/games/griffin-riders-escape/sentences/route.ts
+Wrote file successfully.
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/devourerSlime.test.ts">
+ERROR [8:32] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [10:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [18:5] Cannot find name 'expect'.
+ERROR [19:5] Cannot find name 'expect'.
+ERROR [20:5] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'expect'.
+ERROR [24:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:5] Cannot find name 'expect'.
+ERROR [29:5] Cannot find name 'expect'.
+ERROR [32:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [40:5] Cannot find name 'expect'.
+ERROR [41:5] Cannot find name 'expect'.
+ERROR [42:5] Cannot find name 'expect'.
+ERROR [43:5] Cannot find name 'expect'.
+ERROR [46:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [56:5] Cannot find name 'expect'.
+ERROR [57:5] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'expect'.
+ERROR [61:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 10 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/griffinRidersEscape.test.ts">
+ERROR [15:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [17:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [20:7] Cannot find name 'expect'.
+ERROR [21:7] Cannot find name 'expect'.
+ERROR [22:7] Cannot find name 'expect'.
+ERROR [23:7] Cannot find name 'expect'.
+ERROR [26:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:7] Cannot find name 'expect'.
+ERROR [31:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [32:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [36:7] Cannot find name 'expect'.
+ERROR [37:7] Cannot find name 'expect'.
+ERROR [40:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [45:7] Cannot find name 'expect'.
+ERROR [49:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [50:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [55:7] Cannot find name 'expect'.
+ERROR [58:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 21 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.test.ts">
+ERROR [11:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [14:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'expect'.
+ERROR [19:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [23:5] Cannot find name 'expect'.
+ERROR [26:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [27:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [35:7] Cannot find name 'expect'.
+ERROR [36:7] Cannot find name 'expect'.
+ERROR [39:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [47:7] Cannot find name 'expect'.
+ERROR [50:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [58:7] Cannot find name 'expect'.
+ERROR [61:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [68:7] Cannot find name 'expect'.
+ERROR [73:7] Cannot find name 'expect'.
+ERROR [76:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [84:7] Cannot find name 'expect'.
+ERROR [85:7] Cannot find name 'expect'.
+ERROR [86:7] Cannot find name 'expect'.
+... and 30 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/hauntedLibrary.test.ts">
+ERROR [7:32] Cannot find module '@/store/useGameStore' or its corresponding type declarations.
+ERROR [9:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [14:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [16:5] Cannot find name 'expect'.
+ERROR [17:5] Cannot find name 'expect'.
+ERROR [18:5] Cannot find name 'expect'.
+ERROR [19:5] Cannot find name 'expect'.
+ERROR [20:5] Cannot find name 'expect'.
+ERROR [21:5] Cannot find name 'expect'.
+ERROR [25:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [28:5] Cannot find name 'expect'.
+ERROR [29:5] Cannot find name 'expect'.
+ERROR [30:5] Cannot find name 'expect'.
+ERROR [33:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [35:5] Cannot find name 'expect'.
+ERROR [36:5] Cannot find name 'expect'.
+ERROR [39:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [46:5] Cannot find name 'expect'.
+ERROR [47:5] Cannot find name 'expect'.
+ERROR [50:3] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+... and 31 more
+</diagnostics>
+
+LSP errors detected in other files:
+<diagnostics file="/home/daniel-bo/Desktop/advantage-games/src/lib/games/paladinsTwinSoul.test.ts">
+ERROR [4:1] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [10:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [11:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [13:7] Cannot find name 'expect'.
+ERROR [16:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [19:7] Cannot find name 'expect'.
+ERROR [23:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [24:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [30:7] Cannot find name 'expect'.
+ERROR [35:7] Cannot find name 'expect'.
+ERROR [38:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [43:7] Cannot find name 'expect'.
+ERROR [47:7] Cannot find name 'expect'.
+ERROR [51:3] Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [52:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [57:7] Cannot find name 'expect'.
+ERROR [61:7] Cannot find name 'expect'.
+ERROR [65:7] Cannot find name 'expect'.
+ERROR [68:5] Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+ERROR [74:7] Cannot find name 'expect'.
+... and 26 more
+</diagnostics>
+[0m
