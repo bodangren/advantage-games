@@ -1,25 +1,18 @@
 # Lessons Learned
 
-## Track: Devourer Slime (2026-03-28)
+## Track: QA/QC Phase 19 - Potion Rush (2026-04-06)
 
 ### Successes
-- Core logic implemented with TDD, achieving 97% statement coverage.
-- Slime growth/shrink mechanics work smoothly with React-Konva canvas scaling.
-- Camera logic correctly centers on the player in a large (800x800) arena.
-- Successfully resolved a build issue where literal bracket-named directories (e.g., `\[locale\]`) were created due to shell command escaping errors.
+- Unit tests: 29 passed, 92.46% coverage exceeds 80% threshold.
+- Fixed unused import `PotionRushGameResult` in page.tsx.
+- E2E tests created and passing for both normal load and insufficient sentences warning.
 
-### Challenges & Deviations
-- **Routing Clash:** Initial `mkdir` command with literal brackets `\[locale\]` caused a Next.js normalized route error (`NormalizationError`). Manual cleanup of literal-named directories was required to fix the build.
-- **Component Interface:** Discrepancy between `DevourerSlimeGame` component's `onComplete` prop and the page's `onEnd` usage required a quick refactoring.
+### Challenges
+- Build errors from missing `export const dynamic = "force-static"` in griffin-riders-escape and devourer-slime API routes.
+- Potion-rush GameStartScreen uses "Start Brewing" button text, not generic "Start Game".
 
 ### Technical Debt Identified
-During the final build check (`npm run build`), several technical debt items were identified in existing games:
-- **Lint Errors (Unescaped Entities):** `&apos;` and similar characters in `griffin-sky-joust`, `storm-castle-tower`.
-- **Hook Dependencies:** Missing dependencies in `useEffect` and `useCallback` hooks across multiple game components (Dragon Flight, Magic Defense).
-- **TypeScript `any` Usage:** High usage of `any` type in page tests and some game logic files (Griffin Sky Joust, Realm Carver).
-- **Unused Variables:** Many game pages and components have unused imports or variables (Gryphon Patrol, Potion Rush).
+- Pre-existing: Missing `dynamic = "force-static"` exports in multiple API routes (griffin-riders-escape, devourer-slime).
 
 ### Future Improvements
-- Refactor existing games to use stricter TypeScript types and resolve linting warnings.
-- Standardize the `onComplete` vs `onEnd` callback names across all sentence/vocabulary games.
-- Implement more robust arena bounds and enemy patrol AI in `devourerSlime.ts`.
+- Fix remaining API routes missing `export const dynamic` for `output: export` compatibility.
