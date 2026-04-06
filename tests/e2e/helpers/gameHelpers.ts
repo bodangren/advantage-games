@@ -31,6 +31,8 @@ import {
   MAGIC_DEFENSE_SAMPLE_VOCABULARY,
   PALADINS_TWIN_SOUL_GAME_PATH,
   PALADINS_TWIN_SOUL_SAMPLE_VOCABULARY,
+  POTION_RUSH_GAME_PATH,
+  POTION_RUSH_SAMPLE_SENTENCES,
   RPG_BATTLE_GAME_PATH,
   RPG_BATTLE_SAMPLE_VOCABULARY,
   RUNE_MATCH_GAME_PATH,
@@ -707,4 +709,44 @@ export async function expectLabyrinthGoblinKingStartScreen(page: Page) {
 }
 export function getLabyrinthGoblinKingUrl() {
   return LABYRINTH_GOBLIN_KING_GAME_PATH;
+}
+
+// POTION_RUSH (Sentence Game)
+export async function mockPotionRushApis(
+  page: Page,
+  sentences = POTION_RUSH_SAMPLE_SENTENCES
+) {
+  await page.route("**/api/v1/games/potion-rush/sentences**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        sentences,
+        message: "Sentences retrieved successfully",
+        status: 200,
+      }),
+    });
+  });
+  await page.route("/api/v1/games/potion-rush/ranking", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ rankings: { easy: [], normal: [], hard: [], extreme: [] } }),
+    });
+  });
+  await page.route("/api/v1/games/potion-rush/complete", async (route) => {
+    const response: ApiResponse = {
+      status: 200,
+      message: "Game completed successfully",
+      xpEarned: 0,
+      activityId: "mock-activity-playwright",
+    };
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
+  });
+}
+export async function expectPotionRushStartScreen(page: Page) {
+  await expect(page.getByRole("heading", { name: /potion rush/i }).first()).toBeVisible({ timeout: 15000 });
+}
+export function getPotionRushUrl() {
+  return POTION_RUSH_GAME_PATH;
 }

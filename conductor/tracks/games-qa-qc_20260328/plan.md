@@ -388,27 +388,29 @@
     - [x] Save to public/games/labyrinth-goblin-king/
 - [x] Task: Conductor - User Manual Verification 'Phase 18: labyrinth-goblin-king' (Protocol in workflow.md)
 
-## Phase 19: potion-rush (Sentence Game)
+## Phase 19: (COMPLETE) potion-rush (Sentence Game)
 
-- [ ] Task: Run unit tests and verify coverage
-    - [ ] Run `npm test -- --testPathPattern="potion-rush|potionRush" --coverage`
-    - [ ] Fix any failing unit tests
-    - [ ] Document coverage gaps if <80%
-- [ ] Task: Props/API validation
-    - [ ] Verify page.tsx uses correct API routes `/api/v1/games/potion-rush/*`
-    - [ ] Verify component props match expected types
-    - [ ] Check for TypeScript `any` usage and fix
-    - [ ] Check for lint errors (unescaped entities, unused vars, hook deps) - Note: Known issue with unused variables
-- [ ] Task: Write E2E tests
-    - [ ] Create tests/e2e/games/sentence/potion-rush.spec.ts
-    - [ ] Test: Page loads without errors
-    - [ ] Test: Loading state displays correctly
-    - [ ] Test: Insufficient sentences warning displays when needed
-    - [ ] Test: Game component renders after sentences load
-- [ ] Task: Capture gameplay screenshots
-    - [ ] Add screenshot capture during E2E test
-    - [ ] Save to public/games/potion-rush/
-- [ ] Task: Conductor - User Manual Verification 'Phase 19: potion-rush' (Protocol in workflow.md)
+- [x] Task: Run unit tests and verify coverage
+    - [x] Run `npm test -- --testPathPattern="potion-rush|potionRush" --coverage`
+    - [x] Fix any failing unit tests (all pass)
+    - [x] Document coverage gaps if <80% (92.46% - exceeds threshold)
+- [x] Task: Props/API validation
+    - [x] Verify page.tsx uses correct API routes `/api/v1/games/potion-rush/*`
+    - [x] Verify component props match expected types
+    - [x] Check for TypeScript `any` usage and fix (none found)
+    - [x] Check for lint errors (unescaped entities, unused vars, hook deps) - Fixed unused import warning
+- [x] Task: Write E2E tests
+    - [x] Create tests/e2e/games/sentence/potion-rush.spec.ts
+    - [x] Test: Page loads without errors
+    - [x] Test: Loading state displays correctly
+    - [x] Test: Insufficient sentences warning displays when needed
+    - [x] Test: Game component renders after sentences load
+- [x] Task: Capture gameplay screenshots
+    - [x] Add screenshot capture during E2E test
+    - [x] Save to public/games/potion-rush/
+- [x] Task: Conductor - User Manual Verification 'Phase 19: potion-rush' (Protocol in workflow.md)
+
+Note: Fixed missing `export const dynamic = "force-static"` in griffin-riders-escape and devourer-slime API routes during build verification.
 
 ## Phase 20: realm-carver (Sentence Game)
 

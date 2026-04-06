@@ -183,3 +183,9 @@ export const LABYRINTH_GOBLIN_KING_GAME_PATH = "/en/student/games/sentence/labyr
 export const LABYRINTH_GOBLIN_KING_SCREENSHOT_DIR = "public/games/labyrinth-goblin-king";
 export const LABYRINTH_GOBLIN_KING_SCREENSHOT_FILE = "labyrinth-goblin-king-gameplay.png";
 export const LABYRINTH_GOBLIN_KING_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;
+
+// POTION_RUSH (Sentence Game)
+export const POTION_RUSH_GAME_PATH = "/en/student/games/sentence/potion-rush";
+export const POTION_RUSH_SCREENSHOT_DIR = "public/games/potion-rush";
+export const POTION_RUSH_SCREENSHOT_FILE = "potion-rush-gameplay.png";
+export const POTION_RUSH_SAMPLE_SENTENCES: VocabularyItem[] = SAMPLE_VOCABULARY;

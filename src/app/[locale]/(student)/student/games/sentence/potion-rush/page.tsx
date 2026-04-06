@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { PotionRushGameResult } from "@/components/games/sentence/potion-rush/PotionRushGame";
 import type { VocabularyItem } from "@/store/useGameStore";
 import { Button } from "@/components/ui/button";
 import {

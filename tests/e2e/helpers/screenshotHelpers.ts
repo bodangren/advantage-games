@@ -34,6 +34,8 @@ import {
   MAGIC_DEFENSE_SCREENSHOT_FILE,
   PALADINS_TWIN_SOUL_SCREENSHOT_DIR,
   PALADINS_TWIN_SOUL_SCREENSHOT_FILE,
+  POTION_RUSH_SCREENSHOT_DIR,
+  POTION_RUSH_SCREENSHOT_FILE,
   RPG_BATTLE_SCREENSHOT_DIR,
   RPG_BATTLE_SCREENSHOT_FILE,
   RUNE_MATCH_SCREENSHOT_DIR,
@@ -222,6 +224,14 @@ export async function captureLabyrinthGoblinKingScreenshot(page: Page) {
   const screenshotDir = path.join(process.cwd(), LABYRINTH_GOBLIN_KING_SCREENSHOT_DIR);
   await fs.mkdir(screenshotDir, { recursive: true });
   const screenshotPath = path.join(screenshotDir, LABYRINTH_GOBLIN_KING_SCREENSHOT_FILE);
+  await page.screenshot({ path: screenshotPath, fullPage: true });
+  return screenshotPath;
+}
+
+export async function capturePotionRushScreenshot(page: Page) {
+  const screenshotDir = path.join(process.cwd(), POTION_RUSH_SCREENSHOT_DIR);
+  await fs.mkdir(screenshotDir, { recursive: true });
+  const screenshotPath = path.join(screenshotDir, POTION_RUSH_SCREENSHOT_FILE);
   await page.screenshot({ path: screenshotPath, fullPage: true });
   return screenshotPath;
 }

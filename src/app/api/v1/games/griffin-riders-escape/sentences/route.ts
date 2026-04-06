@@ -1,5 +1,7 @@
 import { createSentencesRoute } from "@/lib/games/api";
 
+export const dynamic = "force-static";
+
 const { GET } = createSentencesRoute([
   { term: 'The knight rides the griffin', translation: 'อัศวินขี่กริฟฟิน' },
   { term: 'Sky is blue and wide', translation: 'ท้องฟ้าสีครามและกว้างใหญ่' },
