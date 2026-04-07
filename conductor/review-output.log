@@ -1,24 +1,18 @@
 [0m
 > build · glm-5.1
 [0m
-[0m✱ [0mGlob "**/conductor/review-prompt.md"[90m 1 match[0m
-[0m✱ [0mGlob "**/*review-prompt*"[90m 1 match[0m
 [0m→ [0mRead conductor/review-prompt.md
-Running the review process for the past 24 hours.
-[0m
-[0m# [0mTodos
-[ ] Gather recent changes (git log, diff, tracks, tech-debt)
-[ ] Review changed code files for correctness, style, tests, security, perf
-[ ] Run full test suite
-[ ] Run lint/typecheck
-[ ] Fix up to 5-7 lint/style issues
-[ ] Note architectural problems in tech-debt.md
-[ ] Commit fixes and report findings
-[0m
+I'll execute the review process now. Let me start by gathering the recent changes.
 [0m→ [0mRead conductor/tracks.md
 [0m→ [0mRead conductor/tech-debt.md
 [0m
 [0m$ [0mgit log --since="24 hours ago" --oneline
+fe910c8 Mark difficulty_curve_tuning track as complete
+4aa3dbe Update lessons-learned and tech-debt with difficulty curve tuning track
+12fcebb Phase 2: Add shared difficulty model with guardrails and tuning playbook
+3590b62 chore(review): fix 7 lint/style issues across game files
+d54c9e6 Phase 1: Create shared difficulty model and inventory matrix
+43618f6 Update conductor files - track documentation and logs
 0d90caa chore: update conductor output log
 86951d9 chore(conductor): update directive to awaiting status
 3b6d2b1 chore(conductor): finalize QA/QC track completion
@@ -26,13 +20,8 @@ Running the review process for the past 24 hours.
 92b9ac4 docs: update lessons learned from autonomous QA run
 97b1ca6 QA: Complete Phases 20-26 (realm-carver through village-guardian)
 d1c9562 docs: update lessons learned from Phase 19 potion-rush
-ad1f9dd QA/QC Phase 19: potion-rush complete - 92.46% coverage, E2E tests passing
-b7621bd WIP: QA/QC checkpoint - griffin-riders-escape API fixes, paladins-twin-soul test updates
 [0m
 [0m$ [0mgit diff --name-only HEAD~20 HEAD
-conductor/archive/squires-gauntlet-20260328/metadata.json
-conductor/archive/squires-gauntlet-20260328/plan.md
-conductor/archive/squires-gauntlet-20260328/spec.md
 conductor/autonomous_prompt.md
 conductor/current-directive.md
 conductor/current_directive.md
@@ -43,24 +32,12 @@ conductor/output.log
 conductor/review-output.log
 conductor/tech-debt.md
 conductor/tracks.md
-conductor/tracks/games-qa-qc_20260328/index.md
+conductor/tracks/difficulty_curve_tuning_20260407/difficulty_model.md
+conductor/tracks/difficulty_curve_tuning_20260407/plan.md
+conductor/tracks/difficulty_curve_tuning_20260407/tuning_playbook.md
 conductor/tracks/games-qa-qc_20260328/plan.md
-conductor/tracks/games-qa-qc_20260328/spec.md
 eslint.config.mjs
 jest.config.ts
-public/games/archers-revenge/archers-revenge-gameplay.png
-public/games/archers-revenge/archers-revenge-start-screen.png
-public/games/cover/cover-alchemists-synthesis.png
-public/games/cover/cover-astral-mage.png
-public/games/cover/cover-babel-architect.png
-public/games/cover/cover-devourer-slime.png
-public/games/cover/cover-dragon-rider.png
-public/games/cover/cover-griffin-riders-escape.png
-public/games/cover/cover-gryphon-patrol.png
-public/games/cover/cover-haunted-library.png
-public/games/cover/cover-sorcerers-ziggurat.png
-public/games/cover/griffin-riders-escape-cover.png
-public/games/dragon-rider/dragon-rider-gameplay.png
 public/games/potion-rush/potion-rush-gameplay.png
 public/games/realm-carver/realm-carver-gameplay.png
 public/games/rune-forge-chamber/rune-forge-chamber-gameplay.png
@@ -68,16 +45,11 @@ public/games/shadow-gate-dungeon/shadow-gate-dungeon-gameplay.png
 public/games/spellweavers-run/spellweavers-run-gameplay.png
 public/games/storm-castle-tower/storm-castle-tower-gameplay.png
 public/games/village-guardian/village-guardian-gameplay.png
-public/games/vocabulary/dragon-flight/projectile-boss.png
-public/games/vocabulary/dragon-flight/projectile-fireball.png
-remotion.config.ts
-scripts/record-gameplay-video.mjs
 src/app/[locale]/(student)/student/games/sentence/devourer-slime/page.tsx
 src/app/[locale]/(student)/student/games/sentence/griffin-riders-escape/page.tsx
 src/app/[locale]/(student)/student/games/sentence/haunted-library/page.tsx
 src/app/[locale]/(student)/student/games/sentence/potion-rush/page.tsx
 src/app/[locale]/(student)/student/games/sentence/realm-carver/page.tsx
-src/app/[locale]/(student)/student/games/vocabulary/dragon-flight/page.tsx
 src/app/[locale]/(student)/student/games/vocabulary/paladins-twin-soul/page.tsx
 src/app/[locale]/(student)/student/games/vocabulary/rpg-battle/page.test.tsx
 src/app/api/v1/games/devourer-slime/complete/route.ts
@@ -97,17 +69,17 @@ src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.tsx
 src/lib/gameCards.ts
 src/lib/games/__tests__/gameDataArrays.test.ts
 src/lib/games/devourerSlime.ts
+src/lib/games/difficulty.test.ts
+src/lib/games/difficulty.ts
 src/lib/games/griffinRidersEscape.ts
+src/lib/games/griffinSkyJoust.ts
 src/lib/games/gryphonPatrol.ts
 src/lib/games/hauntedLibrary.ts
 src/lib/games/paladinsTwinSoul.ts
 src/lib/games/realmCarver.ts
-src/remotion/Root.tsx
-src/remotion/compositions/WizardZombieGameRenderer.tsx
-src/remotion/compositions/WizardZombiePromo.tsx
-src/remotion/index.ts
-src/remotion/test-index.tsx
+src/lib/games/villageGuardian.ts
 test-results/.last-run.json
+test-results/dragon-flight-before-canvas.png
 tests/e2e/fixtures/gameFixtures.ts
 tests/e2e/games/sentence/abyssal-well.spec.ts
 tests/e2e/games/sentence/castle-defense.spec.ts
@@ -125,12 +97,6 @@ tests/e2e/games/sentence/shadow-gate-dungeon.spec.ts
 tests/e2e/games/sentence/spellweavers-run.spec.ts
 tests/e2e/games/sentence/storm-castle-tower.spec.ts
 tests/e2e/games/sentence/village-guardian.spec.ts
-tests/e2e/games/vocabulary/archers-revenge.spec.ts
-tests/e2e/games/vocabulary/dragon-flight.spec.ts
-tests/e2e/games/vocabulary/dragon-rider.spec.ts
-tests/e2e/games/vocabulary/enchanted-library.spec.ts
-tests/e2e/games/vocabulary/magic-defense.spec.ts
-tests/e2e/games/vocabulary/paladins-twin-soul.spec.ts
 tests/e2e/games/vocabulary/rpg-battle.spec.ts
 tests/e2e/games/vocabulary/rune-match.spec.ts
 tests/e2e/games/vocabulary/wizard-vs-zombie.spec.ts
@@ -138,3 +104,284 @@ tests/e2e/helpers/gameHelpers.ts
 tests/e2e/helpers/screenshotHelpers.ts
 tsconfig.json
 [0m
+[0m# [0mTodos
+[ ] Review changed code files for correctness, style, tests, security, performance
+[ ] Run full test suite
+[ ] Run lint and typecheck
+[ ] Fix up to 5-7 lint/style issues
+[ ] Report findings and update tech-debt.md if needed
+[0m
+[0m$ [0mgit diff HEAD~12 HEAD -- src/
+diff --git a/src/lib/games/difficulty.test.ts b/src/lib/games/difficulty.test.ts
+new file mode 100644
+index 0000000..9023193
+--- /dev/null
++++ b/src/lib/games/difficulty.test.ts
+@@ -0,0 +1,97 @@
++import { DIFFICULTY_GUARDRAILS, FALLBACK_DIFFICULTY_CONFIG } from './difficulty'
++
++describe('difficulty guardrails', () => {
++  describe('DIFFICULTY_GUARDRAILS', () => {
++    it('should have minimum HP of at least 1', () => {
++      expect(DIFFICULTY_GUARDRAILS.minHp).toBeGreaterThanOrEqual(1)
++    })
++
++    it('should have minimum lives of at least 1', () => {
++      expect(DIFFICULTY_GUARDRAILS.minLives).toBeGreaterThanOrEqual(1)
++    })
++
++    it('should have minimum spawn interval of at least 500ms', () => {
++      expect(DIFFICULTY_GUARDRAILS.minSpawnIntervalMs).toBeGreaterThanOrEqual(500)
++    })
++
++    it('should have minimum timer of at least 5000ms', () => {
++      expect(DIFFICULTY_GUARDRAILS.minTimerMs).toBeGreaterThanOrEqual(5000)
++    })
++
++    it('should have max enemy speed under 300 px/s', () => {
++      expect(DIFFICULTY_GUARDRAILS.maxEnemySpeedPxPerSec).toBeLessThanOrEqual(300)
++    })
++
++    it('should have max scroll speed under 200 px/s', () => {
++      expect(DIFFICULTY_GUARDRAILS.maxScrollSpeedPxPerSec).toBeLessThanOrEqual(200)
++    })
++
++    it('should have max word count of 10', () => {
++      expect(DIFFICULTY_GUARDRAILS.maxWordCount).toBeLessThanOrEqual(10)
++    })
++  })
++
++  describe('FALLBACK_DIFFICULTY_CONFIG', () => {
++    it('should have valid speed multiplier', () => {
++      expect(FALLBACK_DIFFICULTY_CONFIG.speed).toBeGreaterThan(0)
++      expect(FALLBACK_DIFFICULTY_CONFIG.speed).toBeLessThanOrEqual(2)
++    })
++
++    it('should have valid spawn rate multiplier', () => {
++      expect(FALLBACK_DIFFICULTY_CONFIG.spawnRate).toBeGreaterThan(0)
++      expect(FALLBACK_DIFFICULTY_CONFIG.spawnRate).toBeLessThanOrEqual(2)
++    })
++
++    it('should have reasonable word count', () => {
++      expect(FALLBACK_DIFFICULTY_CONFIG.wordCount).toBeGreaterThanOrEqual(1)
++      expect(FALLBACK_DIFFICULTY_CONFIG.wordCount).toBeLessThanOrEqual(20)
++    })
++
++    it('should have reasonable timer', () => {
++      expect(FALLBACK_DIFFICULTY_CONFIG.timer).toBeGreaterThanOrEqual(5000)
++      expect(FALLBACK_DIFFICULTY_CONFIG.timer).toBeLessThanOrEqual(60000)
++    })
++
++    it('should have reasonable initial HP', () => {
++      expect(FALLBACK_DIFFICULTY_CONFIG.initialHp).toBeGreaterThanOrEqual(1)
++      expect(FALLBACK_DIFFICULTY_CONFIG.initialHp).toBeLessThanOrEqual(10)
++    })
++  })
++})
++
++export function validateDifficultyConfig(config: {
++  speed?: number
++  spawnInterval?: number
++  wordCount?: number
++  timer?: number
++  initialHp?: number
++  initialLives?: number
++}): string[] {
++  const errors: string[] = []
++
++  if (config.speed !== undefined && config.speed > DIFFICULTY_GUARDRAILS.maxScrollSpeedPxPerSec) {
++    errors.push(`Speed ${config.speed} exceeds max ${DIFFICULTY_GUARDRAILS.maxScrollSpeedPxPerSec} px/s`)
++  }
++
++  if (config.spawnInterval !== undefined && config.spawnInterval < DIFFICULTY_GUARDRAILS.minSpawnIntervalMs) {
++    errors.push(`Spawn interval ${config.spawnInterval}ms is below minimum ${DIFFICULTY_GUARDRAILS.minSpawnIntervalMs}ms`)
++  }
++
++  if (config.wordCount !== undefined && config.wordCount > DIFFICULTY_GUARDRAILS.maxWordCount) {
++    errors.push(`Word count ${config.wordCount} exceeds max ${DIFFICULTY_GUARDRAILS.maxWordCount}`)
++  }
++
++  if (config.timer !== undefined && config.timer < DIFFICULTY_GUARDRAILS.minTimerMs) {
++    errors.push(`Timer ${config.timer}ms is below minimum ${DIFFICULTY_GUARDRAILS.minTimerMs}ms`)
++  }
++
++  if (config.initialHp !== undefined && config.initialHp < DIFFICULTY_GUARDRAILS.minHp) {
++    errors.push(`Initial HP ${config.initialHp} is below minimum ${DIFFICULTY_GUARDRAILS.minHp}`)
++  }
++
++  if (config.initialLives !== undefined && config.initialLives < DIFFICULTY_GUARDRAILS.minLives) {
++    errors.push(`Initial lives ${config.initialLives} is below minimum ${DIFFICULTY_GUARDRAILS.minLives}`)
++  }
++
++  return errors
++}
+diff --git a/src/lib/games/difficulty.ts b/src/lib/games/difficulty.ts
+new file mode 100644
+index 0000000..103627d
+--- /dev/null
++++ b/src/lib/games/difficulty.ts
+@@ -0,0 +1,71 @@
++import type { Difficulty } from '@/store/useGameStore'
++
++export type DifficultyTier = {
++  label: string
++  speedMultiplier: number
++  spawnRateMultiplier: number
++  wordCount: { min: number; max: number }
++  timerMultiplier: number
++  hpMultiplier: number
++  penaltyMultiplier: number
++}
++
++export const DIFFICULTY_TIERS: Record<Difficulty, DifficultyTier> = {
++  easy: {
++    label: 'Easy',
++    speedMultiplier: 0.6,
++    spawnRateMultiplier: 1.5,
++    wordCount: { min: 3, max: 5 },
++    timerMultiplier: 1.25,
++    hpMultiplier: 1.5,
++    penaltyMultiplier: 0.5,
++  },
++  normal: {
++    label: 'Normal',
++    speedMultiplier: 1.0,
++    spawnRateMultiplier: 1.0,
++    wordCount: { min: 5, max: 7 },
++    timerMultiplier: 1.0,
++    hpMultiplier: 1.0,
++    penaltyMultiplier: 1.0,
++  },
++  hard: {
++    label: 'Hard',
++    speedMultiplier: 1.3,
++    spawnRateMultiplier: 0.75,
++    wordCount: { min: 7, max: 9 },
++    timerMultiplier: 0.8,
++    hpMultiplier: 0.7,
++    penaltyMultiplier: 1.5,
++  },
++  extreme: {
++    label: 'Extreme',
++    speedMultiplier: 1.6,
++    spawnRateMultiplier: 0.5,
++    wordCount: { min: 9, max: 12 },
++    timerMultiplier: 0.65,
++    hpMultiplier: 0.4,
++    penaltyMultiplier: 2.0,
++  },
++}
++
++export const DIFFICULTY_ORDER: Difficulty[] = ['easy', 'normal', 'hard', 'extreme']
++
++export const FALLBACK_DIFFICULTY_CONFIG = {
++  speed: 1.0,
++  spawnRate: 1.0,
++  wordCount: 6,
++  timer: 15000,
++  initialHp: 3,
++  penalty: 10,
++}
++
++export const DIFFICULTY_GUARDRAILS = {
++  minHp: 1,
++  minLives: 1,
++  minSpawnIntervalMs: 500,
++  minTimerMs: 5000,
++  maxEnemySpeedPxPerSec: 300,
++  maxScrollSpeedPxPerSec: 200,
++  maxWordCount: 10,
++}
+diff --git a/src/lib/games/griffinSkyJoust.ts b/src/lib/games/griffinSkyJoust.ts
+index f4c8146..3e3d2e8 100644
+--- a/src/lib/games/griffinSkyJoust.ts
++++ b/src/lib/games/griffinSkyJoust.ts
+@@ -131,7 +131,8 @@ export function tickGriffinSkyJoust(
+   let nextState = { ...state, gameTime: nextTime };
+ 
+   // 1. Apply Physics to Player
+-  let { x, y, vx, vy, hp, invincibleUntil } = nextState.player;
++  const { vx } = nextState.player;
++  let { x, y, vy } = nextState.player;
+   
+   vy += settings.gravity * dtSec;
+   vy = Math.min(vy, settings.maxVY);
+@@ -180,7 +181,7 @@ function checkCollisions(state: GriffinSkyJoustState): GriffinSkyJoustState {
+   
+   if (isInvincible) return state;
+ 
+-  let nextState = { ...state };
++  const nextState = { ...state };
+   let hitEnemyId: string | null = null;
+ 
+   for (const enemy of enemies) {
+diff --git a/src/lib/games/gryphonPatrol.ts b/src/lib/games/gryphonPatrol.ts
+index fbd520e..e8cfe96 100644
+--- a/src/lib/games/gryphonPatrol.ts
++++ b/src/lib/games/gryphonPatrol.ts
+@@ -169,7 +169,7 @@ const checkCollision = (a: Entity, b: Entity): boolean => {
+ export const tickGryphonPatrol = (state: GameState, deltaTime: number): GameState => {
+   if (state.status !== 'playing') return state;
+ 
+-  const { player, enemies, orbs, projectiles, sentence, collectedWords } = state;
++  const { player, enemies, projectiles, sentence } = state;
+   const { mapWidth, gameWidth, gameHeight, physics } = GRYPHON_PATROL_CONFIG;
+ 
+   // Update Player Position
+@@ -199,8 +199,8 @@ export const tickGryphonPatrol = (state: GameState, deltaTime: number): GameStat
+   // Update Projectiles
+   const nextProjectiles = projectiles.map(proj => {
+     if (!proj.isActive) return proj;
+-    let px = (proj.x + proj.vx * deltaTime + mapWidth) % mapWidth;
+-    let py = proj.y + proj.vy * deltaTime;
++    const px = (proj.x + proj.vx * deltaTime + mapWidth) % mapWidth;
++    const py = proj.y + proj.vy * deltaTime;
+     
+     for (const enemy of enemies) {
+       if (enemy.isActive && checkCollision(proj, enemy)) {
+@@ -223,7 +223,7 @@ export const tickGryphonPatrol = (state: GameState, deltaTime: number): GameStat
+       }
+     }
+ 
+-    let ex = (enemy.x + enemy.vx * deltaTime + mapWidth) % mapWidth;
++    const ex = (enemy.x + enemy.vx * deltaTime + mapWidth) % mapWidth;
+     let ey = enemy.y + enemy.vy * deltaTime;
+     let evy = enemy.vy;
+     if (ey < 50 || ey > gameHeight - 50) {
+diff --git a/src/lib/games/realmCarver.ts b/src/lib/games/realmCarver.ts
+index 2a1fdd5..9d18312 100644
+--- a/src/lib/games/realmCarver.ts
++++ b/src/lib/games/realmCarver.ts
+@@ -1,4 +1,4 @@
+-import { GAME_WIDTH, GAME_HEIGHT, GRID_SIZE, REALM_CARVER_CONFIG } from "./realmCarverConfig";
++import { GRID_SIZE, REALM_CARVER_CONFIG } from "./realmCarverConfig";
+ 
+ export type Point = { x: number; y: number };
+ 
+@@ -169,7 +169,7 @@ export function tickRealmCarver(state: RealmCarverState, delta: number): RealmCa
+   let nextPlayerHp = state.player.hp;
+   let nextScore = state.score;
+   let nextTargetWordIndex = state.targetWordIndex;
+-  let nextWords = [...state.words];
++  const nextWords = [...state.words];
+ 
+   if (nextGridX !== currentGridX || nextGridY !== currentGridY) {
+     const nextCell = nextGrid[nextGridY][nextGridX];
+diff --git a/src/lib/games/villageGuardian.ts b/src/lib/games/villageGuardian.ts
+index 51a005c..ff01387 100644
+--- a/src/lib/games/villageGuardian.ts
++++ b/src/lib/games/villageGuardian.ts
+@@ -155,7 +155,6 @@ function spawnMonster(
+   rng: () => number
+ ): Monster {
+   const speed = getMonsterSpeed(opponentType)
+-  const angle = rng() * Math.PI * 2
+   const direction = rng() * Math.PI * 2
+ 
+   const spawnMargin = 50
+[0m
+Let me review the key code files changed and check for issues.
+[0m→ [0mRead src/lib/games/difficulty.ts
+[0m→ [0mRead src/lib/games/difficulty.test.ts
+[0m
+[0m$ [0mgit diff HEAD~12 HEAD -- src/components/ src/app/ src/lib/gameCards.ts
