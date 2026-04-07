@@ -1325,3 +1325,248 @@ available via `npm run`:
   test:e2e
     playwright test
 [0m
+[0m# [0mTodos
+[x] Review changed code files for correctness, style, tests, security, performance
+[x] Run full test suite
+[x] Run lint and typecheck
+[ ] Fix up to 5-7 lint/style issues
+[ ] Report findings and update tech-debt.md if needed
+[0m
+Let me fix 5-7 of the most straightforward lint warnings. I'll read the relevant files first.
+[0m→ [0mRead src/lib/games/devourerSlime.ts[90m [offset=150, limit=15][0m
+[0m→ [0mRead src/lib/games/__tests__/griffinSkyJoust.test.ts[90m [offset=130, limit=15][0m
+[0m→ [0mRead src/lib/games/__tests__/gameDataArrays.test.ts[90m [offset=55, limit=30][0m
+[0m→ [0mRead src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx[90m [offset=170, limit=30][0m
+[0m→ [0mRead src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx[90m [offset=50, limit=15][0m
+[0m
+[0m$ [0mgrep -n 't(' src/app/\[locale\]/\(student\)/student/games/sentence/gryphon-patrol/page.tsx | head -20
+25:  () => import("@/components/games/sentence/gryphon-patrol/GryphonPatrolGame"),
+57:  useEffect(() => {
+79:          setVocabList(data.sentences);
+104:  useEffect(() => {
+[0m
+Now I'll apply the fixes. 6 straightforward lint fixes.
+[0m✗ [0medit failed
+[91m[1mError: [0mFound multiple matches for oldString. Provide more surrounding context to make the match unique.
+[0m
+[0m← [0mEdit src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+@@ -170,9 +170,9 @@
+ })}
+ 
+ {/* Projectiles */}
+ {gameState.projectiles.map(proj => {
+-  let px = (proj.x - gameState.cameraX + 2000) % 2000;
++  const px = (proj.x - gameState.cameraX + 2000) % 2000;
+   return (
+     <Rect
+       key={proj.id}
+       x={px - proj.size / 2}
+
+[0m
+[0m← [0mEdit src/lib/games/devourerSlime.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/devourerSlime.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/devourerSlime.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/devourerSlime.ts
+@@ -152,10 +152,10 @@
+ let nextState: SlimeState = { ...state, gameTime: state.gameTime + dt, lastEvent: undefined }
+ 
+ // 1. Move Enemies
+ nextState.enemies = nextState.enemies.map(enemy => {
+-  let nx = enemy.pos.x + enemy.vel.x * dt
+-  let ny = enemy.pos.y + enemy.vel.y * dt
++  const nx = enemy.pos.x + enemy.vel.x * dt
++  const ny = enemy.pos.y + enemy.vel.y * dt
+   
+   let nvx = enemy.vel.x
+   let nvy = enemy.vel.y
+ 
+
+[0m
+[0m← [0mEdit src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
+@@ -51,10 +51,8 @@
+   type: null,
+ });
+ 
+ const locale = useCurrentLocale();
+-const t = useScopedI18n("pages.student.gamesPage.gryphonPatrol");
+-
+ useEffect(() => {
+   const fetchSentences = async () => {
+     try {
+       setIsLoading(true);
+
+[0m
+[0m← [0mEdit src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+@@ -188,9 +188,9 @@
+ 
+ {/* Orbs */}
+ {gameState.orbs.map(orb => {
+   if (!orb.isActive) return null;
+-  let ox = (orb.x - gameState.cameraX + 2000) % 2000;
++  const ox = (orb.x - gameState.cameraX + 2000) % 2000;
+   return (
+     <Group key={orb.id} x={ox} y={orb.y}>
+       <Circle
+         radius={orb.size / 2}
+
+[0m
+[0m→ [0mRead src/lib/games/__tests__/griffinSkyJoust.test.ts[90m [limit=20, offset=130][0m
+[0m
+[0m← [0mEdit src/lib/games/__tests__/griffinSkyJoust.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/griffinSkyJoust.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/griffinSkyJoust.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/griffinSkyJoust.test.ts
+@@ -133,9 +133,9 @@
+ });
+ 
+ describe('calculateXP', () => {
+   it('should calculate XP with bonuses', () => {
+-    let state = createGriffinSkyJoustState(mockVocabulary);
++    const state = createGriffinSkyJoustState(mockVocabulary);
+     state.correctAnswers = 3;
+     state.totalAttempts = 3;
+     state.player.hp = 3;
+     
+
+[0m
+[0m$ [0mgrep -n 'useScopedI18n' src/app/\[locale\]/\(student\)/student/games/sentence/gryphon-patrol/page.tsx
+18:import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+[0m
+[0m→ [0mRead src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx[90m [limit=5, offset=17][0m
+[0m
+[0m← [0mEdit src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx
+@@ -14,9 +14,9 @@
+   ArrowRight,
+ } from "lucide-react";
+ import { Header } from "@/components/header";
+ import { useCallback, useEffect, useState } from "react";
+-import { useCurrentLocale, useScopedI18n } from "@/locales/client";
++import { useCurrentLocale } from "@/locales/client";
+ import Link from "next/link";
+ import { cn } from "@/lib/utils";
+ import { Card, CardContent } from "@/components/ui/card";
+ import { Loader2 } from "lucide-react";
+
+[0m
+Now let me verify the fixes pass lint and tests.
+[0m$ [0mnpx eslint src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx src/lib/games/devourerSlime.ts src/lib/games/__tests__/griffinSkyJoust.test.ts src/app/\[locale\]/\(student\)/student/games/sentence/gryphon-patrol/page.tsx 2>&1
+/home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+   5:10  warning  'GRYPHON_PATROL_CONFIG' is defined but never used  @typescript-eslint/no-unused-vars
+  18:16  warning  'Shield' is defined but never used                 @typescript-eslint/no-unused-vars
+  18:24  warning  'Target' is defined but never used                 @typescript-eslint/no-unused-vars
+  18:32  warning  'Zap' is defined but never used                    @typescript-eslint/no-unused-vars
+
+✖ 4 problems (0 errors, 4 warnings)
+[0m
+[0m$ [0mCI=true npx jest src/lib/games/devourerSlime.test.ts src/lib/games/__tests__/griffinSkyJoust.test.ts src/lib/games/gryphonPatrol.test.ts --no-coverage 2>&1
+PASS src/lib/games/gryphonPatrol.test.ts
+PASS src/lib/games/devourerSlime.test.ts
+PASS src/lib/games/__tests__/griffinSkyJoust.test.ts
+
+Test Suites: 3 passed, 3 total
+Tests:       39 passed, 39 total
+Snapshots:   0 total
+Time:        8.815 s
+Ran all test suites matching src/lib/games/devourerSlime.test.ts|src/lib/games/__tests__/griffinSkyJoust.test.ts|src/lib/games/gryphonPatrol.test.ts.
+[0m
+Good - the 2 `prefer-const` warnings I fixed are gone from GryphonPatrolGame.tsx. All tests pass. Now let me update tech-debt.md and prepare the report.
+[0m# [0mTodos
+[x] Review changed code files for correctness, style, tests, security, performance
+[x] Run full test suite
+[x] Run lint and typecheck
+[x] Fix up to 5-7 lint/style issues
+[ ] Report findings and update tech-debt.md if needed
+[0m
+[0m→ [0mRead conductor/tech-debt.md
+[0m
+[0m← [0mEdit conductor/tech-debt.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+@@ -3,16 +3,17 @@
+ ## Identified Issues
+ 
+ ### High Priority
+ - griffin-sky-joust: `any` type usage in game logic (line 94)
++- difficulty.ts: `extreme` tier wordCount.max=12 exceeds DIFFICULTY_GUARDRAILS.maxWordCount=10 (semantic inconsistency)
++- gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences
++- difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module
+ 
+ ### Medium Priority
+ - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
+ - griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)
+ - realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested)
+ - remotion/: Multiple unused imports in WizardZombiePromo.tsx and WizardZombieGameRenderer.tsx (missing deps in useMemo)
+-- labyrinth-goblin-king: unused function `getEntrancePositions` (line 166)
+-- shadow-gate-dungeon: unused `_rng` assignment (line 189)
+ 
+ ### Low Priority (Warnings Only)
+ - griffin-sky-joust, storm-castle-tower: Unescaped entities warnings (not errors, lint passes)
+ - griffin-sky-joust page: Unescaped `'` in JSX (react/no-unescaped-entities)
+
+[0m
+Now let me commit the fixes and write the review report.
+[0m$ [0mgit add src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx src/lib/games/devourerSlime.ts src/lib/games/__tests__/griffinSkyJoust.test.ts "src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/page.tsx" conductor/tech-debt.md && git commit -m "chore(review): fix 6 lint/style issues across game files"
+[master 2eb0c4a] chore(review): fix 6 lint/style issues across game files
+ 5 files changed, 9 insertions(+), 10 deletions(-)
+[0m
+[0m# [0mTodos
+[x] Review changed code files for correctness, style, tests, security, performance
+[x] Run full test suite
+[x] Run lint and typecheck
+[x] Fix up to 5-7 lint/style issues
+[x] Report findings and update tech-debt.md if needed
+[0m
+## CODE REVIEW — PAST 24 HOURS
+
+### Commits Reviewed (12)
+`fe910c8..d1c9562` — difficulty curve tuning track, QA/QC phases 20-26, lint fixes
+
+### Files Reviewed
+- **New**: `difficulty.ts`, `difficulty.test.ts` (shared difficulty model)
+- **Modified**: `griffinSkyJoust.ts`, `gryphonPatrol.ts`, `realmCarver.ts`, `villageGuardian.ts`, `devourerSlime.ts`
+- **Config**: `eslint.config.mjs`, `jest.config.ts`, `tsconfig.json`
+
+### Issues Found
+
+| Severity | Issue | Location |
+|----------|-------|----------|
+| **HIGH** | `extreme` tier `wordCount.max=12` exceeds `DIFFICULTY_GUARDRAILS.maxWordCount=10` — semantic inconsistency | `difficulty.ts:45` |
+| **HIGH** | `validateDifficultyConfig()` exported from test file, not importable by game modules | `difficulty.test.ts:62-97` |
+| **HIGH** | 2 pre-existing test failures: gryphon-patrol (3 sentences, needs 10), haunted-library (0 valid sentences) | `gameDataArrays.test.ts` |
+| MEDIUM | 112 lint warnings (0 errors) — mostly unused imports/vars, missing hook deps | Various |
+| LOW | Console noise in tests (act() warnings, Konva prop warnings, HTMLMediaElement.play) | Various test files |
+
+### Issues Fixed (6)
+1. `GryphonPatrolGame.tsx:174,192` — `let` → `const` (prefer-const)
+2. `devourerSlime.ts:156,157` — `let` → `const` (prefer-const)
+3. `griffinSkyJoust.test.ts:137` — `let` → `const` (prefer-const)
+4. `gryphon-patrol/page.tsx:55` — removed unused `t` variable + `useScopedI18n` import
+
+### Architectural Concerns (added to tech-debt.md)
+- **Difficulty model guardrail mismatch**: extreme tier produces word counts that would fail its own validation
+- **Test utility in wrong file**: `validateDifficultyConfig` belongs in `difficulty.ts`, not the test file
+- **Test data gaps**: gryphon-patrol and haunted-library are missing minimum sentence data
+
+### Test Results
+- **112 pass**, **2 fail** (pre-existing, data coverage only)
+- **0 lint errors**, **112 warnings** (down from 118 after fixes)

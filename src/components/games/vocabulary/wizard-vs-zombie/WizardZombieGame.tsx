@@ -116,6 +116,7 @@ export function WizardZombieGame({
   // Juice State
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
   const [screenShake, setScreenShake] = useState(0);
+  const [screenShakeOffset, setScreenShakeOffset] = useState({ x: 0, y: 0 });
   const [damageFlash, setDamageFlash] = useState(0); // opacity
   const [shockwaveRing, setShockwaveRing] = useState(0); // scale/opacity
 
@@ -243,7 +244,15 @@ export function WizardZombieGame({
         }
 
         // Update Juice
-        if (screenShake > 0) setScreenShake((prev) => Math.max(0, prev - 1));
+        if (screenShake > 0) {
+          setScreenShake((prev) => Math.max(0, prev - 1));
+          setScreenShakeOffset({
+            x: (Math.random() - 0.5) * screenShake,
+            y: (Math.random() - 0.5) * screenShake,
+          });
+        } else if (screenShakeOffset.x !== 0 || screenShakeOffset.y !== 0) {
+          setScreenShakeOffset({ x: 0, y: 0 });
+        }
         if (damageFlash > 0) setDamageFlash((prev) => Math.max(0, prev - 0.05));
         if (shockwaveRing > 0)
           setShockwaveRing((prev) => Math.max(0, prev - 0.1));
@@ -675,8 +684,8 @@ export function WizardZombieGame({
             <Layer
               scaleX={camera.scale}
               scaleY={camera.scale}
-              x={camera.x + (Math.random() - 0.5) * screenShake}
-              y={camera.y + (Math.random() - 0.5) * screenShake}
+              x={camera.x + screenShakeOffset.x}
+              y={camera.y + screenShakeOffset.y}
             >
               {/* Floor Tiling - Using Rect for proper pattern repeat */}
               <Rect

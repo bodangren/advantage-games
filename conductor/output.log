@@ -237,3 +237,337 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/mobile_perf_hard
 [0m← [0mWrite conductor/tracks/mobile_perf_hardening_20260407/baseline.md
 Wrote file successfully.
 [0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && git add -A && git commit -m "Phase 1 complete: Mobile perf baseline captured, hotspots documented"
+[master cf3415c] Phase 1 complete: Mobile perf baseline captured, hotspots documented
+ 4 files changed, 1201 insertions(+), 6 deletions(-)
+ create mode 100644 conductor/tracks/mobile_perf_hardening_20260407/baseline.md
+[0m
+Now implementing Phase 2 - starting with VirtualDPad optimization.
+[0m← [0mEdit src/components/ui/VirtualDPad.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/ui/VirtualDPad.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/ui/VirtualDPad.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/ui/VirtualDPad.tsx
+@@ -1,77 +1,48 @@
+ 'use client'
+ 
+-import React, { useRef, useState } from 'react'
++import React, { useCallback, useRef, useState, memo } from 'react'
+ 
+ interface VirtualDPadProps {
+   onInput: (input: { dx: number; dy: number }) => void
+ }
+ 
+-export function VirtualDPad({ onInput }: VirtualDPadProps) {
++export const VirtualDPad = memo(function VirtualDPad({ onInput }: VirtualDPadProps) {
+   const [active, setActive] = useState(false)
+   const [thumbPos, setThumbPos] = useState({ x: 0, y: 0 })
+   const centerRef = useRef<{ x: number; y: number } | null>(null)
++  const inputCallbackRef = useRef(onInput)
++  inputCallbackRef.current = onInput
+ 
+-  const startInput = (clientX: number, clientY: number, target: HTMLElement) => {
+-    const rect = target.getBoundingClientRect()
+-    centerRef.current = {
+-      x: rect.left + rect.width / 2,
+-      y: rect.top + rect.height / 2,
+-    }
+-    setActive(true)
+-    updateInput(clientX, clientY)
+-  }
+-
+-  const handleTouchStart = (e: React.TouchEvent) => {
+-    startInput(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget as HTMLElement)
+-  }
+-
+-  const handleMouseDown = (e: React.MouseEvent) => {
+-    startInput(e.clientX, e.clientY, e.currentTarget as HTMLElement)
+-  }
+-
+-  const handleTouchMove = (e: React.TouchEvent) => {
+-    if (!active) return
+-    updateInput(e.touches[0].clientX, e.touches[0].clientY)
+-  }
+-
+-  const handleMouseMove = (e: React.MouseEvent) => {
+-    if (!active) return
+-    updateInput(e.clientX, e.clientY)
+-  }
+-
+-  const handleEnd = () => {
++  const handleEnd = useCallback(() => {
+     setActive(false)
+     centerRef.current = null
+     setThumbPos({ x: 0, y: 0 })
+-    onInput({ dx: 0, dy: 0 })
+-  }
++    inputCallbackRef.current({ dx: 0, dy: 0 })
++  }, [])
+ 
+-  const updateInput = (clientX: number, clientY: number) => {
++  const updateInput = useCallback((clientX: number, clientY: number) => {
+     if (!centerRef.current) return
+     const dxRaw = clientX - centerRef.current.x
+     const dyRaw = clientY - centerRef.current.y
+     
+     const distance = Math.sqrt(dxRaw * dxRaw + dyRaw * dyRaw)
+-    const maxRadius = 40 // Constraint for thumb movement
++    const maxRadius = 40
+ 
+     if (distance < 5) {
+         setThumbPos({ x: 0, y: 0 })
+-        onInput({ dx: 0, dy: 0 })
++        inputCallbackRef.current({ dx: 0, dy: 0 })
+         return
+     }
+ 
+-    // Normalize for logic
+     const angle = Math.atan2(dyRaw, dxRaw)
+     
+-    // Position thumb (clamped to circle)
+     const displayRadius = Math.min(distance, maxRadius)
+     setThumbPos({
+         x: Math.cos(angle) * displayRadius,
+         y: Math.sin(angle) * displayRadius
+     })
+ 
+-    // Logic input (snapped)
+     let dx = Math.cos(angle)
+     let dy = Math.sin(angle)
+     
+     if (Math.abs(dx) < 0.2) dx = 0
+@@ -80,11 +51,39 @@
+     if (dx < -0.8) dx = -1
+     if (dy > 0.8) dy = 1
+     if (dy < -0.8) dy = -1
+ 
+-    onInput({ dx, dy })
+-  }
++    inputCallbackRef.current({ dx, dy })
++  }, [])
+ 
++  const startInput = useCallback((clientX: number, clientY: number, target: HTMLElement) => {
++    const rect = target.getBoundingClientRect()
++    centerRef.current = {
++      x: rect.left + rect.width / 2,
++      y: rect.top + rect.height / 2,
++    }
++    setActive(true)
++    updateInput(clientX, clientY)
++  }, [updateInput])
++
++  const handleTouchStart = useCallback((e: React.TouchEvent) => {
++    startInput(e.touches[0].clientX, e.touches[0].clientY, e.currentTarget as HTMLElement)
++  }, [startInput])
++
++  const handleMouseDown = useCallback((e: React.MouseEvent) => {
++    startInput(e.clientX, e.clientY, e.currentTarget as HTMLElement)
++  }, [startInput])
++
++  const handleTouchMove = useCallback((e: React.TouchEvent) => {
++    if (!active) return
++    updateInput(e.touches[0].clientX, e.touches[0].clientY)
++  }, [active, updateInput])
++
++  const handleMouseMove = useCallback((e: React.MouseEvent) => {
++    if (!active) return
++    updateInput(e.clientX, e.clientY)
++  }, [active, updateInput])
++
+   return (
+     <div 
+         className="relative w-32 h-32 rounded-full bg-slate-900/70 border-2 border-white/30 ring-1 ring-white/20 touch-none select-none shadow-2xl backdrop-blur"
+         onTouchStart={handleTouchStart}
+@@ -95,12 +94,10 @@
+         onMouseUp={handleEnd}
+         onMouseLeave={handleEnd}
+         onContextMenu={(e) => e.preventDefault()}
+     >
+-        {/* Outer Ring Indicators */}
+         <div className="absolute inset-0 rounded-full border border-white/10 pointer-events-none" />
+         
+-        {/* Thumb Stick */}
+         <div 
+             className={`absolute top-1/2 left-1/2 w-12 h-12 -mt-6 -ml-6 rounded-full bg-white/30 border-2 border-white/50 shadow-xl pointer-events-none transition-transform duration-75 ${active ? 'scale-110 opacity-100' : 'scale-100 opacity-60'}`}
+             style={{ 
+                 transform: `translate(${thumbPos.x}px, ${thumbPos.y}px)` 
+@@ -108,12 +105,11 @@
+         >
+             <div className="absolute inset-0 m-2 rounded-full bg-white/20" />
+         </div>
+         
+-        {/* Directional Marks */}
+         <div className="absolute top-2 left-1/2 -ml-0.5 w-1 h-2 bg-white/20 rounded-full" />
+         <div className="absolute bottom-2 left-1/2 -ml-0.5 w-1 h-2 bg-white/20 rounded-full" />
+         <div className="absolute left-2 top-1/2 -mt-0.5 w-2 h-1 bg-white/20 rounded-full" />
+         <div className="absolute right-2 top-1/2 -mt-0.5 w-2 h-1 bg-white/20 rounded-full" />
+     </div>
+   )
+-}
++})
+
+[0m
+Now fixing the Math.random() issue in WizardZombieGame.
+[0m← [0mEdit src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+@@ -115,8 +115,9 @@
+ 
+ // Juice State
+ const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
+ const [screenShake, setScreenShake] = useState(0);
++const [screenShakeOffset, setScreenShakeOffset] = useState({ x: 0, y: 0 });
+ const [damageFlash, setDamageFlash] = useState(0); // opacity
+ const [shockwaveRing, setShockwaveRing] = useState(0); // scale/opacity
+ 
+ // Asset Loading
+
+[0m
+[0m← [0mEdit src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+@@ -243,9 +243,17 @@
+   }
+ }
+ 
+ // Update Juice
+-if (screenShake > 0) setScreenShake((prev) => Math.max(0, prev - 1));
++if (screenShake > 0) {
++  setScreenShake((prev) => Math.max(0, prev - 1));
++  setScreenShakeOffset({
++    x: (Math.random() - 0.5) * screenShake,
++    y: (Math.random() - 0.5) * screenShake,
++  });
++} else if (screenShakeOffset.x !== 0 || screenShakeOffset.y !== 0) {
++  setScreenShakeOffset({ x: 0, y: 0 });
++}
+ if (damageFlash > 0) setDamageFlash((prev) => Math.max(0, prev - 0.05));
+ if (shockwaveRing > 0)
+   setShockwaveRing((prev) => Math.max(0, prev - 0.1));
+ setFloatingTexts((prev) =>
+
+[0m
+[0m← [0mEdit src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.tsx
+@@ -683,10 +683,10 @@
+ >
+   <Layer
+     scaleX={camera.scale}
+     scaleY={camera.scale}
+-    x={camera.x + (Math.random() - 0.5) * screenShake}
+-    y={camera.y + (Math.random() - 0.5) * screenShake}
++    x={camera.x + screenShakeOffset.x}
++    y={camera.y + screenShakeOffset.y}
+   >
+     {/* Floor Tiling - Using Rect for proper pattern repeat */}
+     <Rect
+       x={0}
+
+[0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && npm test -- --testPathPattern="wizard" --passWithNoTests 2>&1 | head -50
+> vocabulary-games@0.1.0 test
+> jest --testPathPattern=wizard --passWithNoTests
+
+testPathPattern:
+
+  Option "testPathPattern" was replaced by "--testPathPatterns". "--testPathPatterns" is only available as a command-line option.
+  
+  Please update your configuration.
+
+  CLI Options Documentation:
+  https://jestjs.io/docs/cli
+[0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && npm test 2>&1 | tail -30
+<bash_metadata>
+bash tool terminated command after exceeding timeout 120000 ms
+</bash_metadata>
+[0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && npm run build 2>&1 | tail -50
+├ ○ /api/v1/games/dungeon-liberator/sentences                 262 B         103 kB
+├ ƒ /api/v1/games/enchanted-library/complete                  262 B         103 kB
+├ ○ /api/v1/games/enchanted-library/vocabulary                262 B         103 kB
+├ ƒ /api/v1/games/griffin-riders-escape/complete              262 B         103 kB
+├ ○ /api/v1/games/griffin-riders-escape/sentences             262 B         103 kB
+├ ƒ /api/v1/games/griffin-sky-joust/complete                  262 B         103 kB
+├ ○ /api/v1/games/griffin-sky-joust/sentences                 262 B         103 kB
+├ ƒ /api/v1/games/gryphon-patrol/complete                     262 B         103 kB
+├ ○ /api/v1/games/gryphon-patrol/ranking                      262 B         103 kB
+├ ○ /api/v1/games/gryphon-patrol/sentences                    262 B         103 kB
+├ ƒ /api/v1/games/haunted-library/complete                    262 B         103 kB
+├ ○ /api/v1/games/haunted-library/sentences                   262 B         103 kB
+├ ƒ /api/v1/games/labyrinth-goblin-king/complete              262 B         103 kB
+├ ○ /api/v1/games/labyrinth-goblin-king/sentences             262 B         103 kB
+├ ƒ /api/v1/games/magic-defense/complete                      262 B         103 kB
+├ ○ /api/v1/games/magic-defense/vocabulary                    262 B         103 kB
+├ ƒ /api/v1/games/paladins-twin-soul/complete                 262 B         103 kB
+├ ○ /api/v1/games/paladins-twin-soul/vocabulary               262 B         103 kB
+├ ƒ /api/v1/games/potion-rush/complete                        262 B         103 kB
+├ ○ /api/v1/games/potion-rush/ranking                         262 B         103 kB
+├ ○ /api/v1/games/potion-rush/sentences                       262 B         103 kB
+├ ƒ /api/v1/games/realm-carver/complete                       262 B         103 kB
+├ ○ /api/v1/games/realm-carver/sentences                      262 B         103 kB
+├ ƒ /api/v1/games/rpg-battle/complete                         262 B         103 kB
+├ ○ /api/v1/games/rpg-battle/vocabulary                       262 B         103 kB
+├ ƒ /api/v1/games/rune-forge-chamber/complete                 262 B         103 kB
+├ ○ /api/v1/games/rune-forge-chamber/sentences                262 B         103 kB
+├ ƒ /api/v1/games/rune-match/complete                         262 B         103 kB
+├ ○ /api/v1/games/rune-match/vocabulary                       262 B         103 kB
+├ ƒ /api/v1/games/shadow-gate-dungeon/complete                262 B         103 kB
+├ ○ /api/v1/games/shadow-gate-dungeon/sentences               262 B         103 kB
+├ ƒ /api/v1/games/spellweavers-run/complete                   262 B         103 kB
+├ ○ /api/v1/games/spellweavers-run/sentences                  262 B         103 kB
+├ ƒ /api/v1/games/storm-castle-tower/complete                 262 B         103 kB
+├ ○ /api/v1/games/storm-castle-tower/sentences                262 B         103 kB
+├ ƒ /api/v1/games/village-guardian/complete                   262 B         103 kB
+├ ○ /api/v1/games/village-guardian/sentences                  262 B         103 kB
+├ ƒ /api/v1/games/wizard-vs-zombie/complete                   262 B         103 kB
+├ ○ /api/v1/games/wizard-vs-zombie/vocabulary                 262 B         103 kB
+└ ○ /dev/game-screens                                       3.84 kB         151 kB
++ First Load JS shared by all                                103 kB
+  ├ chunks/1255-5d6ce65c18108441.js                         45.7 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js                     54.2 kB
+  └ other shared chunks (total)                             2.55 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+[0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && npm run lint 2>&1 | tail -30
+95:6  warning  React Hook useMemo has missing dependencies: 'gameState', 'simulatedInput', and 'vocabulary'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  105:9  warning  'fw' is assigned a value but never used                                                                                                           @typescript-eslint/no-unused-vars
+  106:9  warning  'fh' is assigned a value but never used                                                                                                           @typescript-eslint/no-unused-vars
+
+/home/daniel-bo/Desktop/advantage-games/src/remotion/compositions/WizardZombiePromo.tsx
+   1:17  warning  'useMemo' is defined but never used            @typescript-eslint/no-unused-vars
+   1:26  warning  'useState' is defined but never used           @typescript-eslint/no-unused-vars
+   1:36  warning  'useEffect' is defined but never used          @typescript-eslint/no-unused-vars
+   3:15  warning  'VocabularyItem' is defined but never used     @typescript-eslint/no-unused-vars
+   3:31  warning  'Difficulty' is defined but never used         @typescript-eslint/no-unused-vars
+  26:10  warning  'getSimulatedInput' is defined but never used  @typescript-eslint/no-unused-vars
+  37:11  warning  'width' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  37:18  warning  'height' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  37:26  warning  'fps' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+/home/daniel-bo/Desktop/advantage-games/src/remotion/test-index.tsx
+  2:10  warning  'Composition' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/daniel-bo/Desktop/advantage-games/tests/e2e/games/sentence/potion-rush.spec.ts
+  3:10  warning  'POTION_RUSH_SAMPLE_SENTENCES' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/daniel-bo/Desktop/advantage-games/tests/e2e/games/vocabulary/paladins-twin-soul.spec.ts
+  11:10  warning  'readFileSync' is defined but never used  @typescript-eslint/no-unused-vars
+
+/home/daniel-bo/Desktop/advantage-games/tests/e2e/helpers/gameHelpers.ts
+  769:3  warning  'sentences' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+✖ 112 problems (0 errors, 112 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+[0m
