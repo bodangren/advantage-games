@@ -259,3 +259,37 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Priority: High*
 *Type: Chore*
 *Status: ✅ COMPLETE*
+
+---
+
+## Upcoming Tracks
+
+- [ ] **Track: Unified Difficulty Curves and Spawn Tuning**
+*Link: [./conductor/tracks/difficulty_curve_tuning_20260407/](./conductor/tracks/difficulty_curve_tuning_20260407/)*
+*Description: Standardize difficulty progression across games with shared tuning baselines and telemetry checkpoints.*
+*Priority: High*
+*Type: Chore*
+
+---
+
+- [ ] **Track: Mobile Performance Hardening Pass**
+*Link: [./conductor/tracks/mobile_perf_hardening_20260407/](./conductor/tracks/mobile_perf_hardening_20260407/)*
+*Description: Eliminate frame drops on low-end mobile devices by reducing draw calls, allocations, and expensive effects.*
+*Priority: High*
+*Type: Chore*
+
+---
+
+- [ ] **Track: Shared Accessibility and Input Assist Layer**
+*Link: [./conductor/tracks/accessibility_input_assist_20260407/](./conductor/tracks/accessibility_input_assist_20260407/)*
+*Description: Add consistent text sizing, touch-target sizing, and optional assist modes across all active games.*
+*Priority: Medium*
+*Type: Feature*
+
+---
+
+- [ ] **Track: Live Content Rotation and Pack Management**
+*Link: [./conductor/tracks/content_rotation_pack_mgmt_20260407/](./conductor/tracks/content_rotation_pack_mgmt_20260407/)*
+*Description: Introduce a managed rotation plan for sentence/vocabulary packs to support weekly content refreshes.*
+*Priority: Medium*
+*Type: Feature*
