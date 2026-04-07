@@ -3,7 +3,7 @@
 ## Identified Issues
 
 ### High Priority
-- griffin-sky-joust: `any` type usage in game logic (line 94)
+- griffin-sky-joust: `any` type usage in game logic (line 94) - **RESOLVED 2026-04-08** (component `any` type at line 151 fixed)
 - difficulty.ts: `extreme` tier wordCount.max=12 exceeds DIFFICULTY_GUARDRAILS.maxWordCount=10 (semantic inconsistency)
 - gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences
 - difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module
