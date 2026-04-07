@@ -1,4 +1,4 @@
-import { GAME_WIDTH, GAME_HEIGHT, GRID_SIZE, REALM_CARVER_CONFIG } from "./realmCarverConfig";
+import { GRID_SIZE, REALM_CARVER_CONFIG } from "./realmCarverConfig";
 
 export type Point = { x: number; y: number };
 
@@ -169,7 +169,7 @@ export function tickRealmCarver(state: RealmCarverState, delta: number): RealmCa
   let nextPlayerHp = state.player.hp;
   let nextScore = state.score;
   let nextTargetWordIndex = state.targetWordIndex;
-  let nextWords = [...state.words];
+  const nextWords = [...state.words];
 
   if (nextGridX !== currentGridX || nextGridY !== currentGridY) {
     const nextCell = nextGrid[nextGridY][nextGridX];

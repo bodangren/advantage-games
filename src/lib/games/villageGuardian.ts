@@ -155,7 +155,6 @@ function spawnMonster(
   rng: () => number
 ): Monster {
   const speed = getMonsterSpeed(opponentType)
-  const angle = rng() * Math.PI * 2
   const direction = rng() * Math.PI * 2
 
   const spawnMargin = 50

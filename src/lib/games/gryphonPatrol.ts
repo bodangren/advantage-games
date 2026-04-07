@@ -169,7 +169,7 @@ const checkCollision = (a: Entity, b: Entity): boolean => {
 export const tickGryphonPatrol = (state: GameState, deltaTime: number): GameState => {
   if (state.status !== 'playing') return state;
 
-  const { player, enemies, orbs, projectiles, sentence, collectedWords } = state;
+  const { player, enemies, projectiles, sentence } = state;
   const { mapWidth, gameWidth, gameHeight, physics } = GRYPHON_PATROL_CONFIG;
 
   // Update Player Position
@@ -199,8 +199,8 @@ export const tickGryphonPatrol = (state: GameState, deltaTime: number): GameStat
   // Update Projectiles
   const nextProjectiles = projectiles.map(proj => {
     if (!proj.isActive) return proj;
-    let px = (proj.x + proj.vx * deltaTime + mapWidth) % mapWidth;
-    let py = proj.y + proj.vy * deltaTime;
+    const px = (proj.x + proj.vx * deltaTime + mapWidth) % mapWidth;
+    const py = proj.y + proj.vy * deltaTime;
     
     for (const enemy of enemies) {
       if (enemy.isActive && checkCollision(proj, enemy)) {
@@ -223,7 +223,7 @@ export const tickGryphonPatrol = (state: GameState, deltaTime: number): GameStat
       }
     }
 
-    let ex = (enemy.x + enemy.vx * deltaTime + mapWidth) % mapWidth;
+    const ex = (enemy.x + enemy.vx * deltaTime + mapWidth) % mapWidth;
     let ey = enemy.y + enemy.vy * deltaTime;
     let evy = enemy.vy;
     if (ey < 50 || ey > gameHeight - 50) {

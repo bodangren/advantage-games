@@ -131,7 +131,8 @@ export function tickGriffinSkyJoust(
   let nextState = { ...state, gameTime: nextTime };
 
   // 1. Apply Physics to Player
-  let { x, y, vx, vy, hp, invincibleUntil } = nextState.player;
+  const { vx } = nextState.player;
+  let { x, y, vy } = nextState.player;
   
   vy += settings.gravity * dtSec;
   vy = Math.min(vy, settings.maxVY);
@@ -180,7 +181,7 @@ function checkCollisions(state: GriffinSkyJoustState): GriffinSkyJoustState {
   
   if (isInvincible) return state;
 
-  let nextState = { ...state };
+  const nextState = { ...state };
   let hitEnemyId: string | null = null;
 
   for (const enemy of enemies) {
