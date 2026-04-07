@@ -421,3 +421,35 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
  - Created shared difficulty model with canonical types and guardrails
 
 [0m
+[0m$ [0mgit add -A && git commit -m "chore: update lessons-learned and tech-debt (minimax-m2.7)"
+[master 8e20a71] chore: update lessons-learned and tech-debt (minimax-m2.7)
+ 2 files changed, 49 insertions(+)
+[0m
+[0m$ [0mgit push
+To https://github.com/bodangren/advantage-games.git
+   0b8f0ca..8e20a71  master -> master
+[0m
+[0m← [0mEdit conductor/current_directive.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/current_directive.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/current_directive.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/current_directive.md
+@@ -1,11 +1,13 @@
+ # Current Directive
+ 
+ ## Status: AWAITING NEW DIRECTIVE
+ 
+-The Games QA/QC track is complete. All 26 games have been validated.
++## Completed This Session
++- Griffin Sky-Joust any Type Fix: COMPLETE - Fixed `any` type in handleFlap callback
+ 
+-## Completed Tracks
+-- Games QA/QC - E2E Testing and Validation: COMPLETE
++## Pending Tracks (from tracks.md)
++- Shared Accessibility and Input Assist Layer
++- Live Content Rotation and Pack Management
+ 
+ ## Next Steps
+ Awaiting new directive from user to create a new track.
+
+[0m
