@@ -74,3 +74,28 @@
 
 ### Future Improvements
 - Fix remaining API routes missing `export const dynamic` for `output: export` compatibility.
+
+---
+
+## Track: Mobile Performance Hardening Pass (2026-04-08)
+
+### Summary
+- Phase 1 complete: Baseline performance profile captured with hotspots identified
+- Phase 2 started: Key remediations implemented (VirtualDPad, WizardZombieGame, DungeonLiberatorGame)
+
+### Hotspots Identified
+- Math.random() in Layer render causing re-renders (WizardZombieGame)
+- VirtualDPad re-renders on touch move (missing memoization)
+- DOM-based indicators using left/top positioning (causing layout reflow)
+- Multiple setState calls in game loops
+
+### Remediations Applied
+- VirtualDPad: memo component, useCallback handlers, ref-based onInput callback
+- WizardZombieGame: Pre-computed screen shake offset (deterministic, not random per frame)
+- DungeonLiberatorGame: CSS transform-only positioning, useMemo for indicators
+
+### Key Learnings
+- CSS transform is compositor-only; left/top causes layout reflow
+- useMemo prevents recalculation of expensive derived state
+- memo() on frequently re-rendered components reduces unnecessary renders
+- Math.random() in render = re-render on every frame

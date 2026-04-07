@@ -27,3 +27,17 @@
 - paladins-twin-soul: Unit tests now passing (3 suites, 20 tests) - removed from high priority
 - griffin-sky-joust/ storm-castle-tower: &apos; warnings are lint warnings, not errors - cosmetic only
 - All other issues to be fixed when encountered during respective phases
+
+---
+
+## Mobile Performance Hardening Pass (2026-04-08)
+
+### Remediated Hotspots
+- VirtualDPad: Memoized component + useCallback handlers + ref-based onInput callback
+- WizardZombieGame: Eliminated Math.random() from Layer render (was causing re-renders every frame)
+- DungeonLiberatorGame: CSS transform-only positioning for indicators (no layout reflow), useMemo for indicators
+
+### Remaining Opportunities
+- Batch state updates in game loops across games
+- Add performance regression checks (smoke tests for FPS)
+- Profile memory allocation in game loops
