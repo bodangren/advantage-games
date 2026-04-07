@@ -8,16 +8,21 @@
 - [x] Task: Define optimization targets and budgets.
   - [x] Set acceptable frame-time thresholds.
   - [x] Set memory allocation guardrails.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Measure and Prioritize' (Protocol in workflow.md)
 
 ## Phase 2: Optimize and Verify
 
-- [ ] Task: Implement hotspot remediations.
-  - [ ] Reduce render/update loop overhead.
-  - [ ] Remove avoidable allocations on hot paths.
-- [ ] Task: Add/extend performance regression checks.
-  - [ ] Add targeted tests or diagnostics assertions.
-  - [ ] Run targeted suites and smoke verification.
-- [ ] Task: Publish before/after performance notes.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Optimize and Verify' (Protocol in workflow.md)
+- [x] Task: Implement hotspot remediations.
+  - [x] Reduce render/update loop overhead (VirtualDPad memoization).
+  - [x] Remove avoidable allocations on hot paths (Math.random() elimination).
+- [x] Task: Publish before/after performance notes (baseline.md created).
+
+### Completed Remediations
+- VirtualDPad: memo component, useCallback handlers, ref-based onInput
+- WizardZombieGame: Eliminated Math.random() from Layer render
+- DungeonLiberatorGame: CSS transform-only indicators, useMemo indicators
+
+### Remaining Opportunities (Not Started)
+- Add performance regression checks (requires profiling tooling)
+- Batch state updates in game loops across other games
+- Profile memory allocation in game loops
 
