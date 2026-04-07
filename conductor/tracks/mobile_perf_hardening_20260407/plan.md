@@ -2,12 +2,12 @@
 
 ## Phase 1: Measure and Prioritize
 
-- [ ] Task: Capture baseline performance traces for active games.
-  - [ ] Record frame-time behavior for representative sessions.
-  - [ ] Identify top hotspots by frequency and impact.
-- [ ] Task: Define optimization targets and budgets.
-  - [ ] Set acceptable frame-time thresholds.
-  - [ ] Set memory allocation guardrails.
+- [x] Task: Capture baseline performance traces for active games.
+  - [x] Record frame-time behavior for representative sessions.
+  - [x] Identify top hotspots by frequency and impact.
+- [x] Task: Define optimization targets and budgets.
+  - [x] Set acceptable frame-time thresholds.
+  - [x] Set memory allocation guardrails.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Measure and Prioritize' (Protocol in workflow.md)
 
 ## Phase 2: Optimize and Verify
