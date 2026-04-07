@@ -153,8 +153,8 @@ export function tickSlime(state: SlimeState, dt: number, rng: () => number = Mat
 
   // 1. Move Enemies
   nextState.enemies = nextState.enemies.map(enemy => {
-    let nx = enemy.pos.x + enemy.vel.x * dt
-    let ny = enemy.pos.y + enemy.vel.y * dt
+    const nx = enemy.pos.x + enemy.vel.x * dt
+    const ny = enemy.pos.y + enemy.vel.y * dt
     
     let nvx = enemy.vel.x
     let nvy = enemy.vel.y

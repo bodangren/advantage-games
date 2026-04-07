@@ -4,14 +4,15 @@
 
 ### High Priority
 - griffin-sky-joust: `any` type usage in game logic (line 94)
+- difficulty.ts: `extreme` tier wordCount.max=12 exceeds DIFFICULTY_GUARDRAILS.maxWordCount=10 (semantic inconsistency)
+- gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences
+- difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module
 
 ### Medium Priority
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
 - griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)
 - realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested)
 - remotion/: Multiple unused imports in WizardZombiePromo.tsx and WizardZombieGameRenderer.tsx (missing deps in useMemo)
-- labyrinth-goblin-king: unused function `getEntrancePositions` (line 166)
-- shadow-gate-dungeon: unused `_rng` assignment (line 189)
 
 ### Low Priority (Warnings Only)
 - griffin-sky-joust, storm-castle-tower: Unescaped entities warnings (not errors, lint passes)

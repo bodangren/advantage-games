@@ -171,7 +171,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
 
             {/* Projectiles */}
             {gameState.projectiles.map(proj => {
-              let px = (proj.x - gameState.cameraX + 2000) % 2000;
+              const px = (proj.x - gameState.cameraX + 2000) % 2000;
               return (
                 <Rect
                   key={proj.id}
@@ -189,7 +189,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
             {/* Orbs */}
             {gameState.orbs.map(orb => {
               if (!orb.isActive) return null;
-              let ox = (orb.x - gameState.cameraX + 2000) % 2000;
+              const ox = (orb.x - gameState.cameraX + 2000) % 2000;
               return (
                 <Group key={orb.id} x={ox} y={orb.y}>
                   <Circle

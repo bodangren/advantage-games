@@ -134,7 +134,7 @@ describe('griffinSkyJoust', () => {
 
   describe('calculateXP', () => {
     it('should calculate XP with bonuses', () => {
-      let state = createGriffinSkyJoustState(mockVocabulary);
+      const state = createGriffinSkyJoustState(mockVocabulary);
       state.correctAnswers = 3;
       state.totalAttempts = 3;
       state.player.hp = 3;

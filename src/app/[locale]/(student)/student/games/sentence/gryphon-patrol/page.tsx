@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { useCallback, useEffect, useState } from "react";
-import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useCurrentLocale } from "@/locales/client";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,8 +52,6 @@ export default function GryphonPatrolPage() {
   });
 
   const locale = useCurrentLocale();
-  const t = useScopedI18n("pages.student.gamesPage.gryphonPatrol");
-
   useEffect(() => {
     const fetchSentences = async () => {
       try {
