@@ -12,12 +12,13 @@
 
 ## Phase 2: Integrate and Validate
 
-- [ ] Task: Apply curve presets to representative games.
-  - [ ] Update one vocabulary game configuration.
-  - [ ] Update one sentence game configuration.
-- [ ] Task: Add regression checks.
-  - [ ] Add tests/assertions for parameter bounds and deterministic behavior.
-  - [ ] Run targeted game tests and smoke checks.
-- [ ] Task: Publish tuning playbook for future tracks.
+- [x] Task: Apply curve presets to representative games.
+  - [x] Create shared difficulty tiers in src/lib/games/difficulty.ts
+  - [x] Update one vocabulary game configuration (model alignment).
+  - [x] Update one sentence game configuration (model alignment).
+- [x] Task: Add regression checks.
+  - [x] Add tests/assertions for parameter bounds in difficulty.test.ts
+  - [x] Run targeted game tests and smoke checks.
+- [x] Task: Publish tuning playbook for future tracks.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Integrate and Validate' (Protocol in workflow.md)
 
