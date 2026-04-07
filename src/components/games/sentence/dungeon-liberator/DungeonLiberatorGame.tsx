@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Text, Group, Rect, Circle, Line, Ring, Image as KonvaImage } from 'react-konva'
 import {
   createDungeonLiberatorState,
@@ -75,10 +75,13 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   // Calculate off-screen indicators
-  const indicators =
-    gameState && dimensions.width > 0
-      ? calculateIndicators(gameState.prisoners, camera, dimensions)
-      : []
+  const indicators = useMemo(
+    () =>
+      gameState && dimensions.width > 0
+        ? calculateIndicators(gameState.prisoners, camera, dimensions)
+        : [],
+    [gameState, camera, dimensions]
+  )
 
   // Asset loading
   useEffect(() => {
@@ -284,29 +287,25 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
             </div>
           </div>
 
-          {/* Off-screen prisoner indicators */}
+          {/* Off-screen prisoner indicators - CSS transform only, no layout reflow */}
           {indicators.map((ind) => (
             <div
               key={`ind-${ind.prisoner.id}`}
               className="absolute z-10 flex items-center justify-center pointer-events-none"
               style={{
-                left: ind.x,
-                top: ind.y,
-                transform: `translate(-50%, -50%) rotate(${ind.rotation}deg)`,
+                transform: `translate(${ind.x}px, ${ind.y}px) translate(-50%, -50%) rotate(${ind.rotation}deg)`,
               }}
             >
               <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[15px] border-b-amber-400 animate-pulse" />
             </div>
           ))}
-          {/* Labels for off-screen indicators */}
+          {/* Labels for off-screen indicators - CSS transform only */}
           {indicators.map((ind) => (
             <div
               key={`label-${ind.prisoner.id}`}
               className="absolute z-10 pointer-events-none text-xs font-bold text-white bg-black/60 px-2 py-1 rounded whitespace-nowrap shadow-lg border border-white/10"
               style={{
-                left: ind.x,
-                top: ind.y,
-                transform: `translate(-50%, -50%) translate(${Math.cos((ind.rotation * Math.PI) / 180) * -35}px, ${Math.sin((ind.rotation * Math.PI) / 180) * -35}px)`,
+                transform: `translate(${ind.x}px, ${ind.y}px) translate(-50%, -50%) translate(${Math.cos((ind.rotation * Math.PI) / 180) * -35}px, ${Math.sin((ind.rotation * Math.PI) / 180) * -35}px)`,
               }}
             >
               {ind.prisoner.word}

@@ -571,3 +571,125 @@ bash tool terminated command after exceeding timeout 120000 ms
 ✖ 112 problems (0 errors, 112 warnings)
   0 errors and 1 warning potentially fixable with the `--fix` option.
 [0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && git add -A && git commit -m "perf: VirtualDPad memoization + Math.random() elimination in WizardZombieGame"
+[master b926559] perf: VirtualDPad memoization + Math.random() elimination in WizardZombieGame
+ 4 files changed, 632 insertions(+), 48 deletions(-)
+[0m
+Now let me optimize DungeonLiberatorGame - remove the DOM-based indicators and use CSS-only positioning.
+[0m→ [0mRead src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx[90m [offset=280, limit=50][0m
+[0m→ [0mRead src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx[90m [offset=158, limit=60][0m
+Let me fix the DOM-based indicators to use CSS transform instead of left/top for positioning to avoid layout reflows.
+[0m
+[0m← [0mEdit src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+@@ -283,31 +283,27 @@
+     ))}
+   </div>
+ </div>
+ 
+-{/* Off-screen prisoner indicators */}
++{/* Off-screen prisoner indicators - CSS transform only, no layout reflow */}
+ {indicators.map((ind) => (
+   <div
+     key={`ind-${ind.prisoner.id}`}
+     className="absolute z-10 flex items-center justify-center pointer-events-none"
+     style={{
+-      left: ind.x,
+-      top: ind.y,
+-      transform: `translate(-50%, -50%) rotate(${ind.rotation}deg)`,
++      transform: `translate(${ind.x}px, ${ind.y}px) translate(-50%, -50%) rotate(${ind.rotation}deg)`,
+     }}
+   >
+     <div className="w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-b-[15px] border-b-amber-400 animate-pulse" />
+   </div>
+ ))}
+-{/* Labels for off-screen indicators */}
++{/* Labels for off-screen indicators - CSS transform only */}
+ {indicators.map((ind) => (
+   <div
+     key={`label-${ind.prisoner.id}`}
+     className="absolute z-10 pointer-events-none text-xs font-bold text-white bg-black/60 px-2 py-1 rounded whitespace-nowrap shadow-lg border border-white/10"
+     style={{
+-      left: ind.x,
+-      top: ind.y,
+-      transform: `translate(-50%, -50%) translate(${Math.cos((ind.rotation * Math.PI) / 180) * -35}px, ${Math.sin((ind.rotation * Math.PI) / 180) * -35}px)`,
++      transform: `translate(${ind.x}px, ${ind.y}px) translate(-50%, -50%) translate(${Math.cos((ind.rotation * Math.PI) / 180) * -35}px, ${Math.sin((ind.rotation * Math.PI) / 180) * -35}px)`,
+     }}
+   >
+     {ind.prisoner.word}
+   </div>
+
+[0m
+[0m→ [0mRead src/lib/games/dungeonLiberatorIndicators.ts
+[0m→ [0mRead src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx[90m [offset=1, limit=10][0m
+[0m
+[0m← [0mEdit src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+@@ -1,7 +1,7 @@
+ 'use client'
+ 
+-import React, { useCallback, useEffect, useRef, useState } from 'react'
++import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+ import { Stage, Layer, Text, Group, Rect, Circle, Line, Ring, Image as KonvaImage } from 'react-konva'
+ import {
+   createDungeonLiberatorState,
+   advanceDungeonLiberatorTime,
+
+[0m
+[0m✱ [0mGrep "calculateIndicators"[90m in src/components/games/sentence/dungeon-liberator · 2 matches[0m
+[0m→ [0mRead src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx[90m [offset=75, limit=10][0m
+[0m
+[0m← [0mEdit src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+@@ -74,12 +74,15 @@
+ 
+ const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+ 
+ // Calculate off-screen indicators
+-const indicators =
+-  gameState && dimensions.width > 0
+-    ? calculateIndicators(gameState.prisoners, camera, dimensions)
+-    : []
++const indicators = useMemo(
++  () =>
++    gameState && dimensions.width > 0
++      ? calculateIndicators(gameState.prisoners, camera, dimensions)
++      : [],
++  [gameState, camera, dimensions]
++)
+ 
+ // Asset loading
+ useEffect(() => {
+   const load = async () => {
+
+[0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && npm run build 2>&1 | tail -20
+├ ○ /api/v1/games/shadow-gate-dungeon/sentences               262 B         103 kB
+├ ƒ /api/v1/games/spellweavers-run/complete                   262 B         103 kB
+├ ○ /api/v1/games/spellweavers-run/sentences                  262 B         103 kB
+├ ƒ /api/v1/games/storm-castle-tower/complete                 262 B         103 kB
+├ ○ /api/v1/games/storm-castle-tower/sentences                262 B         103 kB
+├ ƒ /api/v1/games/village-guardian/complete                   262 B         103 kB
+├ ○ /api/v1/games/village-guardian/sentences                  262 B         103 kB
+├ ƒ /api/v1/games/wizard-vs-zombie/complete                   262 B         103 kB
+├ ○ /api/v1/games/wizard-vs-zombie/vocabulary                 262 B         103 kB
+└ ○ /dev/game-screens                                       3.84 kB         151 kB
++ First Load JS shared by all                                103 kB
+  ├ chunks/1255-5d6ce65c18108441.js                         45.7 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js                     54.2 kB
+  └ other shared chunks (total)                             2.55 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+[0m
