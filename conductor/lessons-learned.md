@@ -1,5 +1,17 @@
 # Lessons Learned
 
+## Track: Griffin Sky-Joust any Type Fix (2026-04-08)
+
+### Summary
+- Fixed `any` type in handleFlap callback with proper KonvaEventObject<MouseEvent | TouchEvent> type
+- Added null check for stage in event handler
+
+### Key Learnings
+- Always add null checks when calling getStage() on Konva event targets
+- Import KonvaEventObject from 'konva/lib/Node'
+
+---
+
 ## Track: Unified Difficulty Curves and Spawn Tuning (2026-04-07)
 
 ### Summary

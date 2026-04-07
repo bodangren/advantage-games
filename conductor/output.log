@@ -384,3 +384,40 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
 
 [0m
 Now committing changes with model note:
+[0m$ [0mgit add -A && git commit -m "fix(griffin-sky-joust): replace any type with proper Konva event type (minimax-m2.7)"
+[master 0b8f0ca] fix(griffin-sky-joust): replace any type with proper Konva event type (minimax-m2.7)
+ 4 files changed, 149 insertions(+), 7 deletions(-)
+[0m
+[0m$ [0mgit push
+To https://github.com/bodangren/advantage-games.git
+   71060a4..0b8f0ca  master -> master
+[0m
+Updating lessons-learned:
+[0m→ [0mRead conductor/lessons-learned.md
+[0m
+[0m← [0mEdit conductor/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+@@ -1,6 +1,18 @@
+ # Lessons Learned
+ 
++## Track: Griffin Sky-Joust any Type Fix (2026-04-08)
++
++### Summary
++- Fixed `any` type in handleFlap callback with proper KonvaEventObject<MouseEvent | TouchEvent> type
++- Added null check for stage in event handler
++
++### Key Learnings
++- Always add null checks when calling getStage() on Konva event targets
++- Import KonvaEventObject from 'konva/lib/Node'
++
++---
++
+ ## Track: Unified Difficulty Curves and Spawn Tuning (2026-04-07)
+ 
+ ### Summary
+ - Created shared difficulty model with canonical types and guardrails
+
+[0m
