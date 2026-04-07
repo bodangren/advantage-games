@@ -1,5 +1,27 @@
 # Lessons Learned
 
+## Track: Unified Difficulty Curves and Spawn Tuning (2026-04-07)
+
+### Summary
+- Created shared difficulty model with canonical types and guardrails
+- Inventory matrix captured across 25+ vocabulary and sentence games
+- Published tuning playbook for future game development
+
+### Successes
+- Phase 1: Mapped difficulty knobs across all game types (speed, spawn, HP, timers)
+- Phase 2: Created reusable difficulty.ts module with guardrail validation
+- Published tuning_playbook.md for future tracks
+
+### Key Findings
+- Most games already follow easy/normal/hard/extreme pattern
+- Guardrails needed: minSpawnInterval 500ms, maxSpeed 200px/s, maxWordCount 10
+- Some games (devourerSlime) use non-standard difficulty levels (easy/medium/hard)
+
+### Technical Debt Resolved
+- None - this was new infrastructure work
+
+---
+
 ## Track: QA/QC COMPLETE (2026-04-07)
 
 ### Summary
