@@ -186,7 +186,6 @@ function spawnCrystals(
 export function tickShadowGateDungeon(
   state: ShadowGateDungeonState,
   deltaMs: number,
-  _rng: () => number = Math.random
 ): ShadowGateDungeonState {
   if (state.status !== 'playing') return state
 

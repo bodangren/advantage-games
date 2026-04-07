@@ -1,4 +1,4 @@
-import { createPaladinsTwinSoulState, tickPaladinsTwinSoul, type PaladinsTwinSoulState } from "./paladinsTwinSoul";
+import { createPaladinsTwinSoulState, tickPaladinsTwinSoul } from "./paladinsTwinSoul";
 import { GAME_WIDTH, PALADINS_TWIN_SOUL_CONFIG } from "./paladinsTwinSoulConfig";
 
 describe("paladinsTwinSoul logic", () => {

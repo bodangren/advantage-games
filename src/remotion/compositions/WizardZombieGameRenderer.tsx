@@ -4,7 +4,6 @@ import {
   Layer,
   Text,
   Group,
-  Rect,
   Image as KonvaImage,
 } from 'react-konva';
 import {

@@ -5,7 +5,6 @@ import {
   getCirclePosition,
   calculateXP,
   isPointInCircle,
-  type RuneForgeChamberState,
 } from './runeForgeChamber'
 import { RUNE_FORGE_CHAMBER_CONFIG } from './runeForgeChamberConfig'
 

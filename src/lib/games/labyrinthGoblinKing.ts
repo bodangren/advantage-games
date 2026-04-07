@@ -163,15 +163,7 @@ function getAvailableDirections(x: number, y: number, maze: Maze, size: number):
   return dirs
 }
 
-function getEntrancePositions(): Position[] {
-  const tileSize = LABYRINTH_CONFIG.tileSize
-  const rows = LABYRINTH_CONFIG.mazeRows
-  const cols = LABYRINTH_CONFIG.mazeCols
-  return [
-    { x: tileSize / 2, y: tileSize * 1.5 },
-    { x: (cols - 1) * tileSize + tileSize / 2, y: (rows - 2) * tileSize + tileSize / 2 },
-  ]
-}
+
 
 // --- End tile-based helpers ---
 

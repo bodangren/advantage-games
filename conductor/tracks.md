@@ -264,21 +264,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## Upcoming Tracks
 
-- [x] **Track: Unified Difficulty Curves and Spawn Tuning**
-*Link: [./conductor/tracks/difficulty_curve_tuning_20260407/](./conductor/tracks/difficulty_curve_tuning_20260407/)*
-*Description: Standardize difficulty progression across games with shared tuning baselines and telemetry checkpoints.*
-*Priority: High*
+- [x] **Track: Griffin Sky-Joust any Type Fix**
+*Link: [./conductor/tracks/griffin_sky_joust_any_type_fix_20260408/](./conductor/tracks/griffin_sky_joust_any_type_fix_20260408/)*
+*Description: Replace `any` type in handleFlap callback with proper Konva event type*
+*Priority: Medium*
 *Type: Chore*
-*Status: ✅ COMPLETE*
-
----
-
-- [x] **Track: Mobile Performance Hardening Pass**
-*Link: [./conductor/tracks/mobile_perf_hardening_20260407/](./conductor/tracks/mobile_perf_hardening_20260407/)*
-*Description: Eliminate frame drops on low-end mobile devices by reducing draw calls, allocations, and expensive effects.*
-*Priority: High*
-*Type: Chore*
-*Status: ✅ COMPLETE*
+*Status: In Progress*
 
 ---
 

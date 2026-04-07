@@ -1,5 +1,4 @@
 import { SPELLWEAVERS_RUN_CONFIG, getDifficultyConfig } from './spellweaversRunConfig'
-import type { Difficulty } from './spellweaversRunConfig'
 
 describe('spellweaversRunConfig', () => {
   describe('SPELLWEAVERS_RUN_CONFIG', () => {

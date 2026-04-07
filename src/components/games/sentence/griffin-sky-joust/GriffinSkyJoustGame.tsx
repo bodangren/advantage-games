@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Text, Group, Rect, Circle } from 'react-konva'
+import type { KonvaEventObject } from 'konva/lib/Node'
 import {
   createGriffinSkyJoustState,
   tickGriffinSkyJoust,
@@ -148,7 +149,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
     return Math.min(dimensions.width / GRIFFIN_SKY_JOUST_CONFIG.gameWidth, dimensions.height / GRIFFIN_SKY_JOUST_CONFIG.gameHeight)
   }, [dimensions])
 
-  const handleFlap = useCallback((e?: any) => {
+  const handleFlap = useCallback((e?: KonvaEventObject<MouseEvent | TouchEvent>) => {
     if (gamePhase !== 'playing') return
     
     playSound('bubbling') // Placeholder for flap sound
@@ -156,10 +157,12 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
     let dir: -1 | 0 | 1 = 0
     if (e && e.target && e.target.getStage) {
       const stage = e.target.getStage()
-      const pos = stage.getPointerPosition()
-      if (pos) {
-        const x = pos.x / scale
-        dir = x < GRIFFIN_SKY_JOUST_CONFIG.gameWidth / 2 ? -1 : 1
+      if (stage) {
+        const pos = stage.getPointerPosition()
+        if (pos) {
+          const x = pos.x / scale
+          dir = x < GRIFFIN_SKY_JOUST_CONFIG.gameWidth / 2 ? -1 : 1
+        }
       }
     }
 

@@ -9,6 +9,9 @@
 - difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module
 
 ### Medium Priority
+- gryphon-patrol/GryphonPatrolGame.tsx: Uses `<Bird>` (lucide-react SVG icon) as Konva child (line 220) — will not render in canvas context
+- gryphon-patrol/gryphonPatrol.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible)
+- Multiple games: Duplicate camera/ResizeObserver/dimension tracking code — should be extracted to shared hook (e.g., useGameCamera)
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
 - griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)
 - realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested)
