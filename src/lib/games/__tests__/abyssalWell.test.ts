@@ -4,10 +4,8 @@ import {
   fireProjectile,
   rotatePlayer,
   getLanePosition,
-  type AbyssalWellState,
   type Enemy,
   type Projectile,
-  type Player,
 } from '../abyssalWell'
 import { ABYSSAL_WELL_CONFIG } from '../abyssalWellConfig'
 

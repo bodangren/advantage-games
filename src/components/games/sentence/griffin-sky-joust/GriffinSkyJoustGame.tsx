@@ -16,7 +16,7 @@ import type { VocabularyItem, Difficulty } from '@/store/useGameStore'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { useSound } from '@/hooks/useSound'
-import { Bird, Shield, Target, Heart, Zap, Sword } from 'lucide-react'
+import { Bird, Shield, Sword } from 'lucide-react'
 
 export type GriffinSkyJoustGameResult = {
   xp: number
@@ -170,7 +170,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
       if (!prevState || prevState.status !== 'playing') return prevState
       return flap(prevState, dir)
     })
-  }, [gamePhase, scale])
+  }, [gamePhase, scale, playSound])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

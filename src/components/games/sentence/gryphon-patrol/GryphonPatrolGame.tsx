@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Stage, Layer, Rect, Text, Group, Circle, Line } from 'react-konva';
-import { GRYPHON_PATROL_CONFIG } from '@/lib/games/gryphonPatrolConfig';
-import { 
+import {
   createInitialGryphonPatrolState, 
   tickGryphonPatrol, 
   handleGryphonPatrolInput, 

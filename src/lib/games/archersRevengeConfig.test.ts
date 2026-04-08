@@ -2,7 +2,6 @@
 import {
   ARCHERS_REVENGE_CONFIG,
   getDifficultySettings,
-  type ArchersRevengeDifficultySettings,
 } from "./archersRevengeConfig";
 
 describe("archersRevengeConfig", () => {

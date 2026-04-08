@@ -14,6 +14,8 @@
 - villageGuardian.test.ts: Trail-following test was flaky due to monster spawning near trail via Math.random() — fixed by moving monster far away + adding invulnerability
 - Multiple games: Duplicate camera/ResizeObserver/dimension tracking code — should be extracted to shared hook (e.g., useGameCamera)
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
+- gryphon-patrol/GryphonPatrolGame.tsx: useEffect onComplete has missing deps (collectedWords.length, sentence.length) — potential stale closure
+- griffin-sky-joust/GriffinSkyJoustGame.tsx: `Math.random().toString(36).substr(2,9)` for enemy IDs in createEnemies (non-injectable RNG)
 - griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)
 - realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested)
 - remotion/WizardZombieGameRenderer.tsx: useMemo missing deps (eslint-disable added — intentional for Remotion frame-based state)

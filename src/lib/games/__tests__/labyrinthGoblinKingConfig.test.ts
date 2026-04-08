@@ -29,7 +29,7 @@ describe('labyrinthGoblinKingConfig', () => {
     expect(normal.wordCount).toBe(5)
     expect(normal.goblinCount).toBe(3)
 
-    const unknown = getDifficultyConfig('extreme' as any)
+    const unknown = getDifficultyConfig('extreme' as unknown as 'normal' | 'easy' | 'hard')
     expect(unknown.wordCount).toBe(7)
   })
 
