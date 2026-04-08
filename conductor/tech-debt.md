@@ -9,13 +9,14 @@
 - difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module
 
 ### Medium Priority
-- gryphon-patrol/GryphonPatrolGame.tsx: Uses `<Bird>` (lucide-react SVG icon) as Konva child (line 220) — will not render in canvas context
-- gryphon-patrol/gryphonPatrol.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible)
+- gryphon-patrol/GryphonPatrolGame.tsx: Replaced `<Bird>` lucide SVG with Konva Rect (was rendering SVG in canvas context)
+- gryphon-patrol/gryphonPatrolGame.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible)
+- villageGuardian.test.ts: Trail-following test was flaky due to monster spawning near trail via Math.random() — fixed by moving monster far away + adding invulnerability
 - Multiple games: Duplicate camera/ResizeObserver/dimension tracking code — should be extracted to shared hook (e.g., useGameCamera)
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
 - griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)
 - realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested)
-- remotion/: Multiple unused imports in WizardZombiePromo.tsx and WizardZombieGameRenderer.tsx (missing deps in useMemo)
+- remotion/WizardZombieGameRenderer.tsx: useMemo missing deps (eslint-disable added — intentional for Remotion frame-based state)
 
 ### Low Priority (Warnings Only)
 - griffin-sky-joust, storm-castle-tower: Unescaped entities warnings (not errors, lint passes)

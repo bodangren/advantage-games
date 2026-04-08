@@ -91,6 +91,7 @@ export const WizardZombieGameRenderer: React.FC<WizardZombieGameRendererProps> =
     }
     
     setGameState({ ...currentState } as WizardZombieState);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameStateFrame]);
   
   // Animation frames (0-2 for sprite animation)

@@ -15,7 +15,7 @@ import { VocabularyItem } from '@/store/useGameStore';
 import { useDirectionalInput } from '@/hooks/useDirectionalInput';
 import { GameStartScreen } from '@/components/games/game/GameStartScreen';
 import { GameEndScreen } from '@/components/games/game/GameEndScreen';
-import { Bird, Shield, Target, Zap } from 'lucide-react';
+import { Bird, Shield, Target } from 'lucide-react';
 
 export interface GryphonPatrolGameProps {
   vocabList: VocabularyItem[];
@@ -76,7 +76,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
     if (gameState.status === 'won' || gameState.status === 'lost') {
       onComplete({
         xp: gameState.xp,
-        accuracy: 1, // Simple for now
+        accuracy: gameState.collectedWords.length / gameState.sentence.length,
         difficulty,
         score: gameState.score
       });
@@ -101,9 +101,9 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
           icon={Bird}
           vocabulary={vocabList}
           instructions={[
-            { step: 1, text: "Fly using Arrow Keys or WASD" },
-            { step: 2, text: "Shoot using Space to reveal words from enemies" },
-            { step: 3, text: "Collect word orbs in the correct sentence order" }
+            { step: 1, text: "Fly using Arrow Keys or WASD", icon: Bird },
+            { step: 2, text: "Shoot using Space to reveal words from enemies", icon: Shield },
+            { step: 3, text: "Collect word orbs in the correct sentence order", icon: Target }
           ]}
           controls={[
             { label: "Move", keys: "WASD / Arrows", color: "bg-blue-500" },
@@ -217,10 +217,11 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
               y={gameState.player.y}
               opacity={gameState.player.invulnerableTime > 0 ? 0.5 : 1}
             >
-              <Bird 
-                size={gameState.player.size} 
-                color="#f1c40f" 
-                style={{ transform: `rotate(${gameState.player.vx * 0.1}deg)` }}
+              <Rect 
+                width={gameState.player.size}
+                height={gameState.player.size}
+                fill="#f1c40f"
+                cornerRadius={5}
               />
               <Rect 
                 x={-gameState.player.size / 2}
@@ -300,7 +301,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
           subtitle="You've successfully patrolled the skies and decoded the message."
           score={gameState.score}
           xp={gameState.xp}
-          accuracy={1}
+          accuracy={gameState.collectedWords.length / gameState.sentence.length}
           onRestart={handleStart}
           onExit={() => {}}
         />

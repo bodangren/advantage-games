@@ -355,7 +355,8 @@ describe('trail following', () => {
     const trailState: VillageGuardianState = {
       ...state,
       trail: [{ id: 'seg-0', x: 100, y: 100, word: state.words[0], orderIndex: 0 }],
-      knight: { ...state.knight, x: 200, y: 100 },
+      knight: { ...state.knight, x: 200, y: 100, invulnerabilityTime: 5000 },
+      monsters: [{ ...state.monsters[0], x: 0, y: 600 }],
     }
     const newState = tickVillageGuardian(trailState, 50)
     expect(newState.trail[0].x).toBeGreaterThan(100)
