@@ -19,7 +19,6 @@ import {
   Difficulty,
   GAME_HEIGHT,
   GAME_WIDTH,
-  InputState,
   WizardZombieState,
   advanceWizardZombieTime,
   createWizardZombieState,

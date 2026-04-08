@@ -1,40 +1,12 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React from 'react';
 import { AbsoluteFill, useCurrentFrame, useVideoConfig, Img, staticFile } from 'remotion';
-import type { VocabularyItem, Difficulty } from '@/store/useGameStore';
-
-// Simulated gameplay sequence
-const GESTURE_SEQUENCE = [
-  // Phase 1: Move right (frames 0-60)
-  { startFrame: 0, endFrame: 60, input: { dx: 1, dy: 0, cast: false } },
-  // Phase 2: Cast spell (frames 61-80)
-  { startFrame: 61, endFrame: 80, input: { dx: 0, dy: 0, cast: true } },
-  // Phase 3: Move down-left (frames 81-150)
-  { startFrame: 81, endFrame: 150, input: { dx: -1, dy: 1, cast: false } },
-  // Phase 4: Cast (frames 151-170)
-  { startFrame: 151, endFrame: 170, input: { dx: 0, dy: 0, cast: true } },
-  // Phase 5: Move up (frames 171-250)
-  { startFrame: 171, endFrame: 250, input: { dx: 0, dy: -1, cast: false } },
-  // Phase 6: Move right and cast (frames 251-300)
-  { startFrame: 251, endFrame: 280, input: { dx: 1, dy: 0, cast: true } },
-  // Phase 7: Escape (frames 281-350)
-  { startFrame: 281, endFrame: 350, input: { dx: 0, dy: -1, cast: false } },
-  // Phase 8: Final cast (frames 351-380)
-  { startFrame: 351, endFrame: 380, input: { dx: 0, dy: 0, cast: true } },
-];
 
 // Get simulated input for a given frame
-function getSimulatedInput(frame: number) {
-  for (const gesture of GESTURE_SEQUENCE) {
-    if (frame >= gesture.startFrame && frame <= gesture.endFrame) {
-      return gesture.input;
-    }
-  }
-  return { dx: 0, dy: 0, cast: false };
-}
+
 
 export const WizardZombiePromo: React.FC = () => {
   const frame = useCurrentFrame();
-  const { width, height, fps } = useVideoConfig();
+  useVideoConfig();
   
   // Video structure (at 30 fps):
   // 0-150 frames (5s): Start screen with game poster

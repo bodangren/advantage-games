@@ -101,8 +101,6 @@ export const WizardZombieGameRenderer: React.FC<WizardZombieGameRendererProps> =
   }
   
   const spriteSize = 64;
-  const fw = spriteSize;
-  const fh = spriteSize;
   
   return (
     <div style={{ width: GAME_WIDTH, height: GAME_HEIGHT, position: 'relative' }}>

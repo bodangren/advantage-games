@@ -1,4 +1,4 @@
-import { createRealmCarverState, tickRealmCarver, type RealmCarverState } from "../realmCarver";
+import { createRealmCarverState, tickRealmCarver } from "../realmCarver";
 import { GRID_SIZE } from "../realmCarverConfig";
 
 describe("realmCarver logic", () => {

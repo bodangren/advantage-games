@@ -1,4 +1,5 @@
 import type { VocabularyItem, Difficulty } from "@/store/useGameStore";
+import type { GriffinSkyJoustDifficultySettings } from './griffinSkyJoustConfig'
 import {
   GRIFFIN_SKY_JOUST_CONFIG,
   getDifficultySettings,
@@ -91,7 +92,7 @@ export function createGriffinSkyJoustState(
 
 function createEnemies(
   words: string[],
-  settings: any,
+  settings: GriffinSkyJoustDifficultySettings,
   rng: () => number
 ): EnemyKnight[] {
   return words.map((word, index) => {
