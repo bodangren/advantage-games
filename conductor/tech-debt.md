@@ -3,19 +3,19 @@
 ## Identified Issues
 
 ### High Priority
-- griffin-sky-joust: `any` type usage in game logic (line 94) - **RESOLVED 2026-04-08** (component `any` type at line 151 fixed)
 - difficulty.ts: `extreme` tier wordCount.max=12 exceeds DIFFICULTY_GUARDRAILS.maxWordCount=10 (semantic inconsistency)
 - gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences
 - difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module
 
 ### Medium Priority
+- griffin-sky-joust: `any` type usage in game logic (line 94) - **RESOLVED 2026-04-08**
+- griffin-sky-joust: `Math.random().toString(36).substr(2,9)` for enemy IDs in createEnemies - **RESOLVED 2026-04-08**
 - gryphon-patrol/GryphonPatrolGame.tsx: Replaced `<Bird>` lucide SVG with Konva Rect (was rendering SVG in canvas context)
 - gryphon-patrol/gryphonPatrolGame.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible)
 - villageGuardian.test.ts: Trail-following test was flaky due to monster spawning near trail via Math.random() — fixed by moving monster far away + adding invulnerability
 - Multiple games: Duplicate camera/ResizeObserver/dimension tracking code — should be extracted to shared hook (e.g., useGameCamera)
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
 - gryphon-patrol/GryphonPatrolGame.tsx: useEffect onComplete has missing deps (collectedWords.length, sentence.length) — potential stale closure
-- griffin-sky-joust/GriffinSkyJoustGame.tsx: `Math.random().toString(36).substr(2,9)` for enemy IDs in createEnemies (non-injectable RNG)
 - griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)
 - realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested)
 - remotion/WizardZombieGameRenderer.tsx: useMemo missing deps (eslint-disable added — intentional for Remotion frame-based state)
@@ -30,6 +30,7 @@
 - Some games use non-standard difficulty levels (e.g., devourerSlime uses easy/medium/hard)
 
 ## Resolution Plan
+- griffin-sky-joust: any type and Math.random() for enemy IDs resolved 2026-04-08
 - paladins-twin-soul: Unit tests now passing (3 suites, 20 tests) - removed from high priority
 - griffin-sky-joust/ storm-castle-tower: &apos; warnings are lint warnings, not errors - cosmetic only
 - All other issues to be fixed when encountered during respective phases
@@ -47,3 +48,12 @@
 - Batch state updates in game loops across games
 - Add performance regression checks (smoke tests for FPS)
 - Profile memory allocation in game loops
+
+---
+
+## XP Leaderboard (2026-04-09)
+
+### Completed
+- Phase 1: Storage layer - types (LeaderboardState, SessionRecord, GameHighScore) and useLeaderboard hook
+- Phase 2: /student/leaderboard page with cumulative XP, high scores table, session history, clear history
+- Phase 3: Session auto-recording in GameEndScreen - records session when game ends with XP > 0

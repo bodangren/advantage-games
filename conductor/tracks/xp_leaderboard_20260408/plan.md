@@ -28,8 +28,8 @@
 ## Phase 3: End-Screen Integration
 
 - [ ] Task: Wire `useLeaderboard.recordSession` into shared end-screen component.
-  - [ ] Call `recordSession` after XP animation completes.
-  - [ ] Add "View Leaderboard" link button on end screen.
+  - [x] Call `recordSession` after XP animation completes.
+  - [x] Add "View Leaderboard" link button on end screen.
 - [ ] Task: Regression-test two representative end screens.
   - [ ] Confirm existing XP award flow is unaffected.
   - [ ] Confirm session is written to localStorage.
