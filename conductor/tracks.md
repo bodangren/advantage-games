@@ -286,3 +286,27 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Description: Introduce a managed rotation plan for sentence/vocabulary packs to support weekly content refreshes.*
 *Priority: Medium*
 *Type: Feature*
+
+---
+
+- [ ] **Track: Difficulty Curve Tuning**
+*Link: [./conductor/tracks/difficulty_curve_tuning_20260407/](./conductor/tracks/difficulty_curve_tuning_20260407/)*
+*Description: Standardize difficulty progression and spawn tuning across active games.*
+*Priority: Medium*
+*Type: Chore*
+
+---
+
+- [ ] **Track: Mobile Performance Hardening**
+*Link: [./conductor/tracks/mobile_perf_hardening_20260407/](./conductor/tracks/mobile_perf_hardening_20260407/)*
+*Description: Harden mobile performance on low-end devices for active games.*
+*Priority: Medium*
+*Type: Chore*
+
+---
+
+- [ ] **Track: XP Leaderboard & Session History**
+*Link: [./conductor/tracks/xp_leaderboard_20260408/](./conductor/tracks/xp_leaderboard_20260408/)*
+*Description: Persistent localStorage leaderboard with per-game high scores, cumulative XP total, and 20-entry session history. End screens link to leaderboard after awarding XP.*
+*Priority: Medium*
+*Type: Feature*
