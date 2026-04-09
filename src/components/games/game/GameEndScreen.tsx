@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { RotateCcw, Shield, Swords, Target, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { useLeaderboard } from "@/hooks/useLeaderboard";
 
 export interface GameStat {
   label: React.ReactNode;
@@ -22,6 +24,9 @@ export interface GameEndScreenProps {
   title?: React.ReactNode;
   subtitle?: React.ReactNode;
   restartButtonText?: React.ReactNode;
+  showLeaderboardLink?: boolean;
+  gameId?: string;
+  gameName?: string;
 }
 
 const STATUS_STYLES: Record<
@@ -80,7 +85,11 @@ export function GameEndScreen({
   title,
   subtitle,
   restartButtonText = "Play Again",
+  showLeaderboardLink = false,
+  gameId,
+  gameName,
 }: GameEndScreenProps) {
+  const { recordSession } = useLeaderboard();
   const safeAccuracy = Number.isFinite(accuracy)
     ? Math.max(0, Math.min(accuracy, 1))
     : 0;
@@ -88,6 +97,12 @@ export function GameEndScreen({
   const statusStyle = STATUS_STYLES[status];
   const StatusIcon = statusStyle.icon;
   const extraStats = customStats?.slice(0, 2) ?? [];
+
+  useEffect(() => {
+    if (xp > 0 && gameId && gameName) {
+      recordSession(gameId, gameName, score, xp, safeAccuracy);
+    }
+  }, [xp, gameId, gameName, score, safeAccuracy, recordSession]);
 
   const statCards: GameStat[] = [
     { label: "Final Score", value: score, icon: Trophy },
@@ -165,6 +180,16 @@ export function GameEndScreen({
             </button>
           ) : null}
         </div>
+        {showLeaderboardLink && gameId && gameName ? (
+          <div className="mt-4 flex justify-center">
+            <Link
+              href="/student/leaderboard"
+              className="text-sm text-white/50 uppercase tracking-wider hover:text-white transition-colors"
+            >
+              View Leaderboard
+            </Link>
+          </div>
+        ) : null}
       </motion.div>
     </motion.div>
   );
