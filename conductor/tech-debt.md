@@ -57,3 +57,17 @@
 - Phase 1: Storage layer - types (LeaderboardState, SessionRecord, GameHighScore) and useLeaderboard hook
 - Phase 2: /student/leaderboard page with cumulative XP, high scores table, session history, clear history
 - Phase 3: Session auto-recording in GameEndScreen - records session when game ends with XP > 0
+
+---
+
+## Shared Accessibility and Input Assist Layer (2026-04-10)
+
+### Completed
+- Phase 1: Created shared accessibility settings module with localStorage persistence
+- Types: AccessibilitySettings (textSizeMultiplier, touchTargetMultiplier, assistMode, reduceMotion)
+- Hook: useAccessibilitySettings with getEffectiveTextSize(), getEffectiveTouchTarget(), updateSettings(), resetSettings()
+- Tests: 17 tests with 98% coverage
+
+### Integration Points
+- Games consume settings via useAccessibilitySettings hook
+- Settings persisted to localStorage under 'advantage-games-accessibility' key

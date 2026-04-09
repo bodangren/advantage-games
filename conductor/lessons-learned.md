@@ -1,5 +1,22 @@
 # Lessons Learned
 
+## Track: Shared Accessibility and Input Assist Layer (2026-04-10)
+
+### Summary
+- Created shared accessibility settings module with localStorage persistence
+- Settings: textSizeMultiplier (1.0-2.0), touchTargetMultiplier (1.0-2.0), assistMode, reduceMotion
+- Hook: useAccessibilitySettings provides getEffectiveTextSize(), getEffectiveTouchTarget()
+
+### Key Learnings
+- Deserialization should validate types explicitly (typeof checks) rather than casting to avoid TypeScript errors
+- Settings hook pattern follows existing useLeaderboard pattern for consistency
+- Effective size helpers (getEffectiveTextSize, getEffectiveTouchTarget) allow base values in components with runtime scaling
+
+### Technical Debt Resolved
+- None - this was new feature infrastructure
+
+---
+
 ## Track: XP Leaderboard & Session History (2026-04-09)
 
 ### Summary
