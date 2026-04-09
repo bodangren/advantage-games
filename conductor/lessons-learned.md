@@ -1,5 +1,23 @@
 # Lessons Learned
 
+## Track: XP Leaderboard & Session History (2026-04-09)
+
+### Summary
+- Implemented persistent localStorage leaderboard with per-game high scores, cumulative XP, and 20-entry session history
+- Created /student/leaderboard route with stats display and clear history
+- Integrated session recording into shared GameEndScreen component
+
+### Key Learnings
+- GameEndScreen useEffect auto-records sessions when xp > 0 and gameId/gameName provided - no per-game integration needed
+- Adding gameId/gameName props to GameEndScreen enables leaderboard tracking without modifying game logic
+- showLeaderboardLink prop controls optional "View Leaderboard" link display
+- 20-session cap uses .slice(0, MAX_SESSIONS) on prepend to keep most recent sessions
+
+### Technical Debt Resolved
+- None - this was new feature infrastructure
+
+---
+
 ## Track: Griffin Sky-Joust any Type Fix (2026-04-08)
 
 ### Summary
