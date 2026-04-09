@@ -1,0 +1,14 @@
+Task: Draft accessibility and assist setting schema + Build shared layer scaffolding
+
+Summary:
+- Created shared accessibility settings module with localStorage persistence
+- Settings include: textSizeMultiplier (1.0-2.0), touchTargetMultiplier (1.0-2.0), assistMode (boolean), reduceMotion (boolean)
+- Hook provides: settings state, updateSettings(), resetSettings(), getEffectiveTextSize(), getEffectiveTouchTarget()
+
+Files created:
+- src/types/accessibility.ts: Type definitions and serialization/deserialization
+- src/hooks/useAccessibilitySettings.ts: React hook for accessing/updating settings
+- src/hooks/useAccessibilitySettings.test.ts: 17 tests (98% coverage)
+
+Why:
+Enables consistent accessibility configuration across all games without per-game implementation.
