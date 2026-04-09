@@ -4,7 +4,7 @@
   "description": "Replace any type with proper Konva event type in handleFlap callback",
   "priority": "medium",
   "type": "chore",
-  "status": "in_progress",
+  "status": "completed",
   "created": "2026-04-08",
   "techDebt": true,
   "techDebtItem": "griffin-sky-joust: `any` type usage in game logic (line 94)"
