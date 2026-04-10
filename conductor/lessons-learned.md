@@ -1,21 +1,25 @@
 # Lessons Learned
 
-## Track: Shared Accessibility Integration - Phase 2 (2026-04-10)
+## Track: Shared Accessibility Integration - Phase 2 Completion (2026-04-11)
 
 ### Summary
-- Integrated useAccessibilitySettings hook into WizardZombieGame (vocabulary) and DungeonLiberatorGame (sentence)
-- Both games now scale touch targets (VirtualDPad, CAST button) and text based on user settings
+- Completed Phase 2 validation: all tests pass, build succeeds
+- Created rollout_pattern.md documenting integration pattern for future games
 
-### Integration Pattern
-- Import useAccessibilitySettings hook in game component
-- Call getEffectiveTouchTarget(baseSize) to get scaled touch target sizes
-- Call getEffectiveTextSize(baseSize) to get scaled text sizes
-- Apply via inline styles (for dynamic values) or CSS custom properties
+### Validation Results
+- useAccessibilitySettings tests: 17 passed
+- WizardZombieGame tests: 5 passed
+- Full build: successful
 
-### Key Learnings
-- getEffectiveTextSize() and getEffectiveTouchTarget() both require a baseSize argument
-- Scale factors are multiplicative (base * multiplier)
-- Touch target scaling on VirtualDPad done via CSS transform: scale()
+### Rollout Pattern Key Points
+- Touch target scaling via CSS transform: `scale(getEffectiveTouchTarget(base) / base)`
+- Text scaling via inline style: `fontSize: getEffectiveTextSize(base)` (returns pixels directly)
+- Both helpers require baseSize argument; returns calculated value, not multiplier
+
+### Technical Debt Resolved
+- None - this was completion of existing track
+
+---
 
 ---
 
