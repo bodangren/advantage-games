@@ -69,6 +69,11 @@
 - Hook: useAccessibilitySettings with getEffectiveTextSize(), getEffectiveTouchTarget(), updateSettings(), resetSettings()
 - Tests: 17 tests with 98% coverage
 
+### Phase 2 Integration Complete
+- WizardZombieGame (vocabulary): touchTargetMultiplier applied to CAST button and VirtualDPad; textSizeMultiplier applied to start screen text
+- DungeonLiberatorGame (sentence): touchTargetMultiplier applied to VirtualDPad via CSS transform scale()
+
 ### Integration Points
 - Games consume settings via useAccessibilitySettings hook
 - Settings persisted to localStorage under 'advantage-games-accessibility' key
+- Both getEffectiveTextSize() and getEffectiveTouchTarget() require baseSize argument
