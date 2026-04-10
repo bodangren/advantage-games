@@ -27,6 +27,7 @@ import type { VocabularyItem } from "@/store/useGameStore";
 import { useSound } from "@/hooks/useSound";
 import { useInterval } from "@/hooks/useInterval";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
+import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 import { VirtualDPad } from "@/components/ui/VirtualDPad";
 import { calculateIndicators } from "@/lib/games/wizardZombieIndicators";
 import { withBasePath } from "@/lib/games/basePath";
@@ -91,10 +92,15 @@ export function WizardZombieGame({
   const { playSound } = useSound();
   const { input, setVirtualInput, triggerCast, consumeCast } =
     useDirectionalInput();
+  const { getEffectiveTouchTarget, getEffectiveTextSize } =
+    useAccessibilitySettings();
   const [gameState, setGameState] = useState<WizardZombieState | null>(() =>
     createWizardZombieState(vocabulary, { difficulty }),
   );
   const [hasStarted, setHasStarted] = useState(false);
+
+  const touchTarget = getEffectiveTouchTarget(56); // base size for buttons
+  const textScale = getEffectiveTextSize(16); // base font size in pixels
 
   const [assets, setAssets] = useState<{
     player: HTMLImageElement;
@@ -369,10 +375,16 @@ export function WizardZombieGame({
           >
             <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8">
               <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold tracking-tight text-white">
+                <h2
+                  className="font-bold tracking-tight text-white"
+                  style={{ fontSize: `${textScale * 1.875}rem` }}
+                >
                   Arcane Defense
                 </h2>
-                <div className="px-4 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                <div
+                  className="px-4 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold uppercase tracking-wider"
+                  style={{ fontSize: `${textScale * 0.75}rem` }}
+                >
                   Ready to Cast
                 </div>
               </div>
@@ -663,7 +675,12 @@ export function WizardZombieGame({
             <button
               onClick={() => triggerCast()}
               disabled={gameState.player.shockwaveCharges === 0}
-              className={`w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 flex items-center justify-center font-bold text-xs sm:text-sm transition-all active:scale-95 ${
+              style={{
+                width: touchTarget,
+                height: touchTarget,
+                fontSize: `${textScale * 0.875}rem`,
+              }}
+              className={`rounded-full border-2 flex items-center justify-center font-bold transition-all active:scale-95 ${
                 gameState.player.shockwaveCharges > 0
                   ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]"
                   : "bg-slate-800 border-slate-700 text-slate-500 opacity-50"
@@ -671,7 +688,9 @@ export function WizardZombieGame({
             >
               CAST
             </button>
-            <VirtualDPad onInput={setVirtualInput} />
+            <div style={{ transform: `scale(${touchTarget / 128})`, transformOrigin: 'bottom right' }}>
+              <VirtualDPad onInput={setVirtualInput} />
+            </div>
           </div>
 
           {/* Canvas */}

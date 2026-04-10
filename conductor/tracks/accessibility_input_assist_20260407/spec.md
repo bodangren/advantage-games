@@ -18,8 +18,10 @@ Provide reusable accessibility and assistive-input options so games are easier t
 
 ## Acceptance Criteria
 
-- [ ] Shared settings surface exists and can be read by multiple games.
-- [ ] At least two active games consume the assist layer.
+- [x] Shared settings surface exists and can be read by multiple games.
+- [x] At least two active games consume the assist layer.
+  - [x] WizardZombieGame (vocabulary) - accessibility hook integrated, touch targets and text scaled
+  - [x] DungeonLiberatorGame (sentence) - accessibility hook integrated, touch targets scaled
 - [ ] Updated games retain existing gameplay completion flow.
 - [ ] Accessibility behavior is documented for future tracks.
 

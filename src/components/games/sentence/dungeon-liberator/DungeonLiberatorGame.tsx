@@ -19,6 +19,7 @@ import type { VocabularyItem } from '@/store/useGameStore'
 import { useInterval } from '@/hooks/useInterval'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
 import { calculateXP } from '@/lib/xp'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
@@ -53,6 +54,7 @@ interface DungeonLiberatorGameProps {
 
 export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberatorGameProps) {
   const { input, setVirtualInput } = useDirectionalInput()
+  const { getEffectiveTouchTarget, getEffectiveTextSize } = useAccessibilitySettings()
   const [gameState, setGameState] = useState<DungeonLiberatorState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<DungeonLiberatorGameResult | null>(null)
@@ -313,7 +315,10 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
           ))}
 
           {/* Virtual D-Pad */}
-          <div className="absolute bottom-8 right-8 z-20">
+          <div
+            className="absolute bottom-8 right-8 z-20"
+            style={{ transform: `scale(${getEffectiveTouchTarget(128) / 128})`, transformOrigin: 'bottom right' }}
+          >
             <VirtualDPad onInput={setVirtualInput} />
           </div>
 

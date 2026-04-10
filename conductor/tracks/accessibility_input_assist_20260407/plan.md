@@ -2,19 +2,19 @@
 
 ## Phase 1: Define Shared Contract
 
-- [ ] Task: Draft accessibility and assist setting schema.
-  - [ ] Define persisted setting keys and defaults.
-  - [ ] Define integration points in game entry flow.
-- [ ] Task: Build shared layer scaffolding.
-  - [ ] Add utility/hooks for reading settings.
-  - [ ] Add tests for default and override behavior.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Define Shared Contract' (Protocol in workflow.md)
+- [x] Task: Draft accessibility and assist setting schema.
+  - [x] Define persisted setting keys and defaults.
+  - [x] Define integration points in game entry flow.
+- [x] Task: Build shared layer scaffolding.
+  - [x] Add utility/hooks for reading settings.
+  - [x] Add tests for default and override behavior.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Define Shared Contract' (Protocol in workflow.md)
 
 ## Phase 2: Integrate Representative Games
 
-- [ ] Task: Apply assist layer to representative games.
-  - [ ] Integrate one vocabulary game.
-  - [ ] Integrate one sentence game.
+- [x] Task: Apply assist layer to representative games.
+  - [x] Integrate one vocabulary game (WizardZombieGame - touch targets + text scaling).
+  - [x] Integrate one sentence game (DungeonLiberatorGame - touch target scaling).
 - [ ] Task: Validate UX and gameplay compatibility.
   - [ ] Run targeted tests and manual interaction checks.
   - [ ] Confirm no regression in start/end flows.
