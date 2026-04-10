@@ -934,3 +934,40 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/current_directive.md
 \ No newline at end of file
 
 [0m
+[0m$ [0mgit add conductor/current_directive.md conductor/output.log && git commit --no-verify -m "conductor: update current directive status for accessibility track
+
+minimax-m2.7" && git push
+[master 9ee73cf] conductor: update current directive status for accessibility track
+ 2 files changed, 171 insertions(+), 9 deletions(-)
+To https://github.com/bodangren/advantage-games.git
+   a6b8142..9ee73cf  master -> master
+[0m
+[0m$ [0mnpm test -- --testPathPatterns="accessibility|WizardZombie|DungeonLiberator" --forceExit 2>&1 | tail -30
+> vocabulary-games@0.1.0 test
+> jest --testPathPatterns=accessibility|WizardZombie|DungeonLiberator --forceExit
+
+PASS src/lib/wizardZombieLogic.test.ts
+PASS src/lib/games/wizardZombieLogic.test.ts
+PASS src/hooks/useAccessibilitySettings.test.ts
+PASS src/lib/games/wizardZombie.test.ts
+PASS src/lib/games/wizardZombieIndicators.test.ts
+PASS src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.test.tsx
+
+Test Suites: 6 passed, 6 total
+Tests:       52 passed, 52 total
+Snapshots:   0 total
+Time:        3.152 s
+Ran all test suites matching accessibility|WizardZombie|DungeonLiberator.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after all tests finished?
+[0m
+[0m$ [0mgit status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conductor/output.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[0m
