@@ -29,19 +29,24 @@ export function deserializeAccessibilitySettings(
 ): AccessibilitySettings {
   try {
     const parsed = JSON.parse(json)
-    const validKeys: (keyof AccessibilitySettings)[] = [
-      'textSizeMultiplier',
-      'touchTargetMultiplier',
-      'assistMode',
-      'reduceMotion',
-    ]
-    const result: AccessibilitySettings = { ...DEFAULT_ACCESSIBILITY_SETTINGS }
-    for (const key of validKeys) {
-      if (typeof parsed[key] !== 'undefined') {
-        ;(result as Record<string, unknown>)[key] = parsed[key]
-      }
+    return {
+      textSizeMultiplier:
+        typeof parsed.textSizeMultiplier === 'number'
+          ? parsed.textSizeMultiplier
+          : DEFAULT_ACCESSIBILITY_SETTINGS.textSizeMultiplier,
+      touchTargetMultiplier:
+        typeof parsed.touchTargetMultiplier === 'number'
+          ? parsed.touchTargetMultiplier
+          : DEFAULT_ACCESSIBILITY_SETTINGS.touchTargetMultiplier,
+      assistMode:
+        typeof parsed.assistMode === 'boolean'
+          ? parsed.assistMode
+          : DEFAULT_ACCESSIBILITY_SETTINGS.assistMode,
+      reduceMotion:
+        typeof parsed.reduceMotion === 'boolean'
+          ? parsed.reduceMotion
+          : DEFAULT_ACCESSIBILITY_SETTINGS.reduceMotion,
     }
-    return result
   } catch {
     return createDefaultAccessibilitySettings()
   }
