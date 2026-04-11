@@ -77,3 +77,18 @@
 - Games consume settings via useAccessibilitySettings hook
 - Settings persisted to localStorage under 'advantage-games-accessibility' key
 - Both getEffectiveTextSize() and getEffectiveTouchTarget() require baseSize argument
+
+---
+
+## Content Rotation Schema (2026-04-11)
+
+### Completed
+- Phase 1: Created contentPackSchema.ts with v1-legacy and v2 format support
+- Types: ContentPackMetadata, VocabularyItem, PackFormat, ContentPackValidationResult
+- Validation: detectPackFormat, validateVocabularyItem, validateContentPackMetadata, validateContentPack
+- Tests: 36 tests with 94.33% coverage
+
+### Next Steps (Phase 2)
+- Implement pack rotation controls (enable/disable mechanism)
+- Add rollback path to previous stable pack set
+- Document weekly rotation runbook

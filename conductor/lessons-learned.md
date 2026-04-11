@@ -1,15 +1,27 @@
 # Lessons Learned
 
+## Track: Content Rotation Phase 1 (2026-04-11)
+
+### Summary
+- Created contentPackSchema module for vocabulary/sentence pack validation
+- Supports both v1-legacy (array) and v2 (metadata object) formats
+- 36 tests with 94.33% coverage
+
+### Key Learnings
+- Legacy v1 packs are auto-converted to v2 with generated packId
+- Set<string>([...constArray]) needed for Object.keys() type compatibility
+- VocabularyItem.id is optional - validation must not reject items with id field
+
+### Technical Debt Resolved
+- None - new infrastructure
+
+---
+
 ## Track: Shared Accessibility Integration - Phase 2 Completion (2026-04-11)
 
 ### Summary
 - Completed Phase 2 validation: all tests pass, build succeeds
 - Created rollout_pattern.md documenting integration pattern for future games
-
-### Validation Results
-- useAccessibilitySettings tests: 17 passed
-- WizardZombieGame tests: 5 passed
-- Full build: successful
 
 ### Rollout Pattern Key Points
 - Touch target scaling via CSS transform: `scale(getEffectiveTouchTarget(base) / base)`
