@@ -19,9 +19,9 @@ Establish a repeatable workflow for rotating sentence and vocabulary content pac
 ## Acceptance Criteria
 
 - [x] Pack metadata schema is defined and documented.
-- [ ] Rotation mechanism supports enabling/disabling packs safely.
-- [ ] Invalid packs are rejected with actionable errors.
-- [ ] Operational rotation checklist is added to project docs.
+- [x] Rotation mechanism supports enabling/disabling packs safely.
+- [x] Invalid packs are rejected with actionable errors.
+- [x] Operational rotation checklist is added to project docs.
 
 ## Content Pack Schema (v2 Format)
 

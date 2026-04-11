@@ -637,3 +637,147 @@ Snapshots:   0 total
 Time:        0.971 s, estimated 1 s
 Ran all test suites matching vocabularyRoute.
 [0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && git add -A && git commit -m "feat(content-rotation): add pack rotation manager with rollback support
+
+- Create packRotation module with RotationManager for managing active packs
+- Support setActivePacks, addActivePack, removeActivePack operations
+- Implement rollback to previous state with history tracking
+- Add saveStablePacks for creating restore points
+- Add validatePackAvailability and mergePacksFromIds utilities
+- 26 tests with full coverage
+
+Phase 2 of Live Content Rotation track."
+[master fba18ad] feat(content-rotation): add pack rotation manager with rollback support
+ 4 files changed, 1136 insertions(+), 4 deletions(-)
+ create mode 100644 src/lib/games/packRotation.test.ts
+ create mode 100644 src/lib/games/packRotation.ts
+[0m
+[0m# [0mTodos
+[x] Implement pack selection/rotation controls with rollback path
+[x] Verify game integration with rotated packs
+[ ] Document weekly rotation runbook
+[ ] Update tech-debt.md and lessons-learned.md
+[ ] Commit checkpoint with git note
+[0m
+[0m← [0mWrite docs/rotation-runbook.md
+Wrote file successfully.
+[0m
+[0m← [0mEdit conductor/tracks/content_rotation_pack_mgmt_20260407/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/content_rotation_pack_mgmt_20260407/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/content_rotation_pack_mgmt_20260407/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/content_rotation_pack_mgmt_20260407/plan.md
+@@ -14,10 +14,10 @@
+ 
+ - [x] Task: Implement pack selection/rotation controls.
+   - [x] Add logic to choose active packs.
+   - [x] Add rollback path to previous stable pack set.
+-- [ ] Task: Verify game integration with rotated packs.
+-  - [ ] Run targeted loading and gameplay smoke checks.
+-  - [ ] Confirm no regressions in completion/ranking flows.
+-- [ ] Task: Document weekly rotation runbook.
++- [x] Task: Verify game integration with rotated packs.
++  - [x] Run targeted loading and gameplay smoke checks.
++  - [x] Confirm no regressions in completion/ranking flows.
++- [x] Task: Document weekly rotation runbook.
+ - [ ] Task: Conductor - User Manual Verification 'Phase 2: Rotation Workflow' (Protocol in workflow.md)
+ 
+
+[0m
+[0m← [0mEdit conductor/tracks/content_rotation_pack_mgmt_20260407/spec.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/content_rotation_pack_mgmt_20260407/spec.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/content_rotation_pack_mgmt_20260407/spec.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/content_rotation_pack_mgmt_20260407/spec.md
+@@ -18,11 +18,11 @@
+ 
+ ## Acceptance Criteria
+ 
+ - [x] Pack metadata schema is defined and documented.
+-- [ ] Rotation mechanism supports enabling/disabling packs safely.
+-- [ ] Invalid packs are rejected with actionable errors.
+-- [ ] Operational rotation checklist is added to project docs.
++- [x] Rotation mechanism supports enabling/disabling packs safely.
++- [x] Invalid packs are rejected with actionable errors.
++- [x] Operational rotation checklist is added to project docs.
+ 
+ ## Content Pack Schema (v2 Format)
+ 
+ ```typescript
+
+[0m
+[0m# [0mTodos
+[x] Implement pack selection/rotation controls with rollback path
+[x] Verify game integration with rotated packs
+[x] Document weekly rotation runbook
+[ ] Update tech-debt.md and lessons-learned.md
+[ ] Commit checkpoint with git note
+[0m
+[0m→ [0mRead conductor/tech-debt.md[90m [offset=80, limit=100][0m
+[0m
+[0m← [0mEdit conductor/tech-debt.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+@@ -87,8 +87,11 @@
+ - Types: ContentPackMetadata, VocabularyItem, PackFormat, ContentPackValidationResult
+ - Validation: detectPackFormat, validateVocabularyItem, validateContentPackMetadata, validateContentPack
+ - Tests: 36 tests with 94.33% coverage
+ 
+-### Next Steps (Phase 2)
+-- Implement pack rotation controls (enable/disable mechanism)
+-- Add rollback path to previous stable pack set
+-- Document weekly rotation runbook
+\ No newline at end of file
++### Phase 2 Complete (2026-04-12)
++- Created packRotation.ts with RotationManager for active pack management
++- Operations: setActivePacks, addActivePack, removeActivePack, rollback, saveStablePacks
++- Rollback tracks history and marks activation records as consumed
++- Utilities: validatePackAvailability, mergePacksFromIds for pack merging
++- Tests: 26 tests, all passing
++- Runbook: docs/rotation-runbook.md with weekly rotation procedures
+\ No newline at end of file
+
+[0m
+[0m→ [0mRead conductor/lessons-learned.md[90m [offset=1, limit=30][0m
+[0m
+[0m← [0mEdit conductor/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+@@ -1,6 +1,24 @@
+ # Lessons Learned
+ 
++## Track: Content Rotation Phase 2 (2026-04-12)
++
++### Summary
++- Created packRotation module with RotationManager for active pack lifecycle management
++- Supports rollback through activation history with consumed-record tracking
++- 26 tests with full coverage
++
++### Key Learnings
++- Rollback history must track consumed records to prevent re-using the same activation
++- localStorage mocking in Jest requires careful isolation in beforeEach
++- When testing rollback chain, trace through each state change to verify correct record selection
++- Activation records are immutable snapshots - rollback creates new records, doesn't modify old ones
++
++### Technical Debt Resolved
++- None - new feature infrastructure
++
++---
++
+ ## Track: Content Rotation Phase 1 (2026-04-11)
+ 
+ ### Summary
+ - Created contentPackSchema module for vocabulary/sentence pack validation
+
+[0m
+[0m# [0mTodos
+[x] Implement pack selection/rotation controls with rollback path
+[x] Verify game integration with rotated packs
+[x] Document weekly rotation runbook
+[x] Update tech-debt.md and lessons-learned.md
+[ ] Commit checkpoint with git note
+[0m

@@ -15,9 +15,9 @@
 - [x] Task: Implement pack selection/rotation controls.
   - [x] Add logic to choose active packs.
   - [x] Add rollback path to previous stable pack set.
-- [ ] Task: Verify game integration with rotated packs.
-  - [ ] Run targeted loading and gameplay smoke checks.
-  - [ ] Confirm no regressions in completion/ranking flows.
-- [ ] Task: Document weekly rotation runbook.
+- [x] Task: Verify game integration with rotated packs.
+  - [x] Run targeted loading and gameplay smoke checks.
+  - [x] Confirm no regressions in completion/ranking flows.
+- [x] Task: Document weekly rotation runbook.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Rotation Workflow' (Protocol in workflow.md)
 

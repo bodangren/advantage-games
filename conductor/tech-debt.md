@@ -88,7 +88,10 @@
 - Validation: detectPackFormat, validateVocabularyItem, validateContentPackMetadata, validateContentPack
 - Tests: 36 tests with 94.33% coverage
 
-### Next Steps (Phase 2)
-- Implement pack rotation controls (enable/disable mechanism)
-- Add rollback path to previous stable pack set
-- Document weekly rotation runbook
+### Phase 2 Complete (2026-04-12)
+- Created packRotation.ts with RotationManager for active pack management
+- Operations: setActivePacks, addActivePack, removeActivePack, rollback, saveStablePacks
+- Rollback tracks history and marks activation records as consumed
+- Utilities: validatePackAvailability, mergePacksFromIds for pack merging
+- Tests: 26 tests, all passing
+- Runbook: docs/rotation-runbook.md with weekly rotation procedures

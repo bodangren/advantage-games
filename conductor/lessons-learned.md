@@ -1,5 +1,23 @@
 # Lessons Learned
 
+## Track: Content Rotation Phase 2 (2026-04-12)
+
+### Summary
+- Created packRotation module with RotationManager for active pack lifecycle management
+- Supports rollback through activation history with consumed-record tracking
+- 26 tests with full coverage
+
+### Key Learnings
+- Rollback history must track consumed records to prevent re-using the same activation
+- localStorage mocking in Jest requires careful isolation in beforeEach
+- When testing rollback chain, trace through each state change to verify correct record selection
+- Activation records are immutable snapshots - rollback creates new records, doesn't modify old ones
+
+### Technical Debt Resolved
+- None - new feature infrastructure
+
+---
+
 ## Track: Content Rotation Phase 1 (2026-04-11)
 
 ### Summary
