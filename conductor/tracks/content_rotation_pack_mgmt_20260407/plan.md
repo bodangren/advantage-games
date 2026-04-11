@@ -2,12 +2,12 @@
 
 ## Phase 1: Schema and Validation
 
-- [ ] Task: Define content-pack schema and IDs.
-  - [ ] Specify required fields and validation rules.
-  - [ ] Document versioning and deprecation rules.
-- [ ] Task: Implement pack validation utilities.
-  - [ ] Add tests for valid and invalid pack shapes.
-  - [ ] Add failure messages for missing critical fields.
+- [x] Task: Define content-pack schema and IDs.
+  - [x] Specify required fields and validation rules.
+  - [x] Document versioning and deprecation rules.
+- [x] Task: Implement pack validation utilities.
+  - [x] Add tests for valid and invalid pack shapes.
+  - [x] Add failure messages for missing critical fields.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Schema and Validation' (Protocol in workflow.md)
 
 ## Phase 2: Rotation Workflow
