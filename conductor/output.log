@@ -781,3 +781,61 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
 [x] Update tech-debt.md and lessons-learned.md
 [ ] Commit checkpoint with git note
 [0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && git add -A && git commit -m "feat(content-rotation): complete Phase 2 with rotation controls and runbook
+
+Phase 2 complete for Live Content Rotation and Pack Management track.
+
+Changes:
+- packRotation.ts: RotationManager with setActivePacks, addActivePack, removeActivePack, rollback, saveStablePacks
+- packRotation.test.ts: 26 tests covering all rotation operations
+- docs/rotation-runbook.md: Weekly rotation procedures for operators
+- Updated spec.md and plan.md with completion status
+- Updated tech-debt.md and lessons-learned.md
+
+Model: minimax-m2.7" && git note add -m "Autonomous checkpoint: Phase 2 complete
+
+Completed:
+- Pack selection/rotation controls with rollback
+- Game integration verified (wizardZombie tests pass)
+- Weekly rotation runbook documented
+
+Next pending: User Manual Verification for Phase 2"
+[master b95b0fa] feat(content-rotation): complete Phase 2 with rotation controls and runbook
+ 6 files changed, 340 insertions(+), 11 deletions(-)
+ create mode 100644 docs/rotation-runbook.md
+git: 'note' is not a git command. See 'git --help'.
+
+The most similar command is
+	notes
+[0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && git notes add -m "Autonomous checkpoint: Phase 2 complete
+
+Completed:
+- Pack selection/rotation controls with rollback
+- Game integration verified (wizardZombie tests pass)
+- Weekly rotation runbook documented
+
+Next pending: User Manual Verification for Phase 2" HEAD
+[0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && git push
+To https://github.com/bodangren/advantage-games.git
+   5ab4f58..b95b0fa  master -> master
+[0m
+[0m# [0mTodos
+[x] Implement pack selection/rotation controls with rollback path
+[x] Verify game integration with rotated packs
+[x] Document weekly rotation runbook
+[x] Update tech-debt.md and lessons-learned.md
+[x] Commit checkpoint with git note
+[0m
+[0m$ [0mcd /home/daniel-bo/Desktop/advantage-games && git status
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conductor/output.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[0m
