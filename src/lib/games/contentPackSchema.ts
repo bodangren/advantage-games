@@ -85,10 +85,6 @@ export function validateVocabularyItem(
 ): string[] {
   const errors: string[] = []
 
-  if (!VOCABULARY_ITEM_REQUIRED_FIELDS.includes('term')) {
-    // type check
-  }
-
   if (item.term === undefined || item.term === null) {
     errors.push('Vocabulary item missing required field: term')
   } else if (typeof item.term !== 'string') {
@@ -132,13 +128,13 @@ export function validateContentPackMetadata(
   }
 
   if (pack.difficulty !== undefined) {
-    if (!VALID_DIFFICULTIES.includes(pack.difficulty as any)) {
+    if (typeof pack.difficulty !== 'string' || !VALID_DIFFICULTIES.includes(pack.difficulty as typeof VALID_DIFFICULTIES[number])) {
       errors.push('Content pack difficulty must be one of: easy, normal, hard, extreme')
     }
   }
 
   if (pack.gameType !== undefined) {
-    if (!VALID_GAME_TYPES.includes(pack.gameType as any)) {
+    if (typeof pack.gameType !== 'string' || !VALID_GAME_TYPES.includes(pack.gameType as typeof VALID_GAME_TYPES[number])) {
       errors.push('Content pack gameType must be one of: vocabulary, sentence')
     }
   }

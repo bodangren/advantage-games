@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import {
   ACCESSIBILITY_KEY,
-  DEFAULT_ACCESSIBILITY_SETTINGS,
   createDefaultAccessibilitySettings,
   deserializeAccessibilitySettings,
   serializeAccessibilitySettings,
