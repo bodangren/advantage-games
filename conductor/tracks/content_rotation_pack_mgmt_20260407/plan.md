@@ -19,5 +19,5 @@
   - [x] Run targeted loading and gameplay smoke checks.
   - [x] Confirm no regressions in completion/ranking flows.
 - [x] Task: Document weekly rotation runbook.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Rotation Workflow' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Rotation Workflow' (Protocol in workflow.md) [checkpoint: 2222800]
 
