@@ -6,7 +6,7 @@
 - griffinSkyJoust.test.ts line 92: "should handle collision from above with wrong word" expects HP=2 but gets HP=3 — game logic bug in collision detection (pre-existing) - **RESOLVED 2026-04-13 (tests pass - was stale)**
 - difficulty.ts: `extreme` tier wordCount.max=12 exceeds DIFFICULTY_GUARDRAILS.maxWordCount=10 (semantic inconsistency) - **RESOLVED 2026-04-13**
 - gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences - **RESOLVED 2026-04-13**
-- difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module
+- difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module - **RESOLVED 2026-04-14 (moved to difficulty.ts)**
 
 ### Medium Priority
 - griffin-sky-joust: `any` type usage in game logic (line 94) - **RESOLVED 2026-04-08**
@@ -14,7 +14,7 @@
 - gryphon-patrol/GryphonPatrolGame.tsx: Replaced `<Bird>` lucide SVG with Konva Rect (was rendering SVG in canvas context)
 - gryphon-patrol/gryphonPatrolGame.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible)
 - villageGuardian.test.ts: Trail-following test was flaky due to monster spawning near trail via Math.random() — fixed by moving monster far away + adding invulnerability
-- Multiple games: Duplicate camera/ResizeObserver/dimension tracking code — should be extracted to shared hook (e.g., useGameCamera)
+- Multiple games: Duplicate camera/ResizeObserver/dimension tracking code — extracted to useGameDimensions hook, WizardZombieGame migrated - **PARTIALLY RESOLVED 2026-04-14**
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
 - gryphon-patrol/GryphonPatrolGame.tsx: useEffect onComplete has missing deps (collectedWords.length, sentence.length) — potential stale closure
 - griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)

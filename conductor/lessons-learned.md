@@ -1,5 +1,23 @@
 # Lessons Learned
 
+## Track: Shared Game Camera Hook (2026-04-14)
+
+### Summary
+- Extracted duplicate ResizeObserver dimension tracking into useGameDimensions hook
+- Created useGameCamera hook that uses useGameDimensions internally
+- Migrated WizardZombieGame to use useGameDimensions
+
+### Key Learnings
+- Camera computation varies significantly by game type (player-centered vs world-centered)
+- Extracting only the shared dimension tracking (ResizeObserver) is more practical than trying to abstract camera computation
+- useGameDimensions reduces ~30 lines of boilerplate per game
+
+### Technical Debt Resolved
+- WizardZombieGame: Removed duplicate ResizeObserver code (30 lines)
+- Created reusable hooks for future migrations
+
+---
+
 ## Track: Content Rotation Phase 2 (2026-04-12)
 
 ### Summary

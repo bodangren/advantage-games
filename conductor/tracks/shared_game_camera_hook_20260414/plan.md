@@ -14,7 +14,7 @@
 
 ## Phase 2: Pilot Migration
 
-- [ ] Task: Migrate WizardZombieGame to use `useGameCamera`
-  - [ ] Update imports and replace local dimension tracking
-  - [ ] Run tests and verify functionality
+- [x] Task: Migrate WizardZombieGame to use `useGameDimensions`
+  - [x] Update imports and replace local dimension tracking
+  - [x] Run tests and verify functionality
 - [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
