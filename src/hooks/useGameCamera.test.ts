@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react'
+import { renderHook } from '@testing-library/react'
 import { useGameCamera } from './useGameCamera'
 
 describe('useGameCamera', () => {
@@ -18,7 +18,7 @@ describe('useGameCamera', () => {
     it('should cleanup ResizeObserver on unmount', () => {
       const disconnectMock = jest.fn()
       const observeMock = jest.fn()
-      
+
       class ResizeObserverMock {
         observe = observeMock
         disconnect = disconnectMock
@@ -32,9 +32,9 @@ describe('useGameCamera', () => {
       const { unmount } = renderHook(() =>
         useGameCamera(containerRef, 390, 844)
       )
-      
+
       unmount()
-      
+
       expect(disconnectMock).toHaveBeenCalled()
     })
   })
