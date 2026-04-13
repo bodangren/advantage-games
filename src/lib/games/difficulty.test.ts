@@ -1,4 +1,4 @@
-import { DIFFICULTY_GUARDRAILS, DIFFICULTY_TIERS, FALLBACK_DIFFICULTY_CONFIG } from './difficulty'
+import { DIFFICULTY_GUARDRAILS, DIFFICULTY_TIERS, FALLBACK_DIFFICULTY_CONFIG, validateDifficultyConfig } from './difficulty'
 
 describe('difficulty guardrails', () => {
   describe('DIFFICULTY_GUARDRAILS', () => {
@@ -69,40 +69,3 @@ describe('difficulty guardrails', () => {
     })
   })
 })
-
-export function validateDifficultyConfig(config: {
-  speed?: number
-  spawnInterval?: number
-  wordCount?: number
-  timer?: number
-  initialHp?: number
-  initialLives?: number
-}): string[] {
-  const errors: string[] = []
-
-  if (config.speed !== undefined && config.speed > DIFFICULTY_GUARDRAILS.maxScrollSpeedPxPerSec) {
-    errors.push(`Speed ${config.speed} exceeds max ${DIFFICULTY_GUARDRAILS.maxScrollSpeedPxPerSec} px/s`)
-  }
-
-  if (config.spawnInterval !== undefined && config.spawnInterval < DIFFICULTY_GUARDRAILS.minSpawnIntervalMs) {
-    errors.push(`Spawn interval ${config.spawnInterval}ms is below minimum ${DIFFICULTY_GUARDRAILS.minSpawnIntervalMs}ms`)
-  }
-
-  if (config.wordCount !== undefined && config.wordCount > DIFFICULTY_GUARDRAILS.maxWordCount) {
-    errors.push(`Word count ${config.wordCount} exceeds max ${DIFFICULTY_GUARDRAILS.maxWordCount}`)
-  }
-
-  if (config.timer !== undefined && config.timer < DIFFICULTY_GUARDRAILS.minTimerMs) {
-    errors.push(`Timer ${config.timer}ms is below minimum ${DIFFICULTY_GUARDRAILS.minTimerMs}ms`)
-  }
-
-  if (config.initialHp !== undefined && config.initialHp < DIFFICULTY_GUARDRAILS.minHp) {
-    errors.push(`Initial HP ${config.initialHp} is below minimum ${DIFFICULTY_GUARDRAILS.minHp}`)
-  }
-
-  if (config.initialLives !== undefined && config.initialLives < DIFFICULTY_GUARDRAILS.minLives) {
-    errors.push(`Initial lives ${config.initialLives} is below minimum ${DIFFICULTY_GUARDRAILS.minLives}`)
-  }
-
-  return errors
-}
