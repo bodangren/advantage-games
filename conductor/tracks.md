@@ -300,6 +300,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [x] **Track: Game Data Arrays Fix**
+*Link: [./conductor/tracks/game_data_arrays_fix_20260413/](./conductor/tracks/game_data_arrays_fix_20260413/)*
+*Description: Fix insufficient test data for gryphon-patrol (3 sentences) and haunted-library (0 valid sentences).*
+*Priority: High*
+*Type: Bug*
+*Status: ✅ COMPLETE - gryphon-patrol: 11 sentences, default.json: 12 valid sentences*
+
+---
+
 - [ ] **Track: Difficulty Curve Tuning**
 *Link: [./conductor/tracks/difficulty_curve_tuning_20260407/](./conductor/tracks/difficulty_curve_tuning_20260407/)*
 *Description: Standardize difficulty progression and spawn tuning across active games.*
