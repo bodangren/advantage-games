@@ -28,6 +28,7 @@ import { useSound } from "@/hooks/useSound";
 import { useInterval } from "@/hooks/useInterval";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { useGameDimensions } from "@/hooks/useGameDimensions";
 import { VirtualDPad } from "@/components/ui/VirtualDPad";
 import { calculateIndicators } from "@/lib/games/wizardZombieIndicators";
 import { withBasePath } from "@/lib/games/basePath";
@@ -110,7 +111,7 @@ export function WizardZombieGame({
   } | null>(null);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+  const dimensions = useGameDimensions(containerRef);
   const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 });
 
   // Animation Frames
@@ -302,38 +303,6 @@ export function WizardZombieGame({
     },
     gameState?.status === "playing" && hasStarted ? 50 : null,
   );
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const updateDimensions = () => {
-      if (!containerRef.current) return;
-      const { width, height } = containerRef.current.getBoundingClientRect();
-      if (width > 0 && height > 0) setDimensions({ width, height });
-    };
-
-    const observer = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
-          setDimensions({
-            width: entry.contentRect.width,
-            height: entry.contentRect.height,
-          });
-        }
-      }
-    });
-
-    observer.observe(containerRef.current);
-    const interval = setInterval(updateDimensions, 200);
-    const timeout = setTimeout(() => clearInterval(interval), 2000);
-    updateDimensions();
-
-    return () => {
-      observer.disconnect();
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, []);
 
   // Memoize sprite grids
   const grids = useMemo(() => {
