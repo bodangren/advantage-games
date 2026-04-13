@@ -325,6 +325,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [x] **Track: Shared Game Camera Hook**
+*Link: [./conductor/tracks/shared_game_camera_hook_20260414/](./conductor/tracks/shared_game_camera_hook_20260414/)*
+*Description: Extract duplicate camera/ResizeObserver/dimension tracking code into shared useGameCamera hook.*
+*Priority: Medium*
+*Type: Chore*
+*Status: ✅ COMPLETE - Created useGameDimensions + useGameCamera hooks, migrated WizardZombieGame*
+
+---
+
 - [ ] **Track: XP Leaderboard & Session History**
 *Link: [./conductor/tracks/xp_leaderboard_20260408/](./conductor/tracks/xp_leaderboard_20260408/)*
 *Description: Persistent localStorage leaderboard with per-game high scores, cumulative XP total, and 20-entry session history. End screens link to leaderboard after awarding XP.*
