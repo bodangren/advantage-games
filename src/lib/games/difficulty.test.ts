@@ -1,4 +1,4 @@
-import { DIFFICULTY_GUARDRAILS, FALLBACK_DIFFICULTY_CONFIG } from './difficulty'
+import { DIFFICULTY_GUARDRAILS, DIFFICULTY_TIERS, FALLBACK_DIFFICULTY_CONFIG } from './difficulty'
 
 describe('difficulty guardrails', () => {
   describe('DIFFICULTY_GUARDRAILS', () => {
@@ -28,6 +28,17 @@ describe('difficulty guardrails', () => {
 
     it('should have max word count of 10', () => {
       expect(DIFFICULTY_GUARDRAILS.maxWordCount).toBeLessThanOrEqual(10)
+    })
+  })
+
+  describe('DIFFICULTY_TIERS compliance', () => {
+    it('all tiers should have wordCount.max <= guardrails.maxWordCount', () => {
+      for (const [tier, config] of Object.entries(DIFFICULTY_TIERS)) {
+        expect(config.wordCount.max).toBeLessThanOrEqual(
+          DIFFICULTY_GUARDRAILS.maxWordCount,
+          `${tier} tier wordCount.max (${config.wordCount.max}) exceeds guardrail (${DIFFICULTY_GUARDRAILS.maxWordCount})`
+        )
+      }
     })
   })
 

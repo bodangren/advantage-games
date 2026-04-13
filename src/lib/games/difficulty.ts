@@ -42,7 +42,7 @@ export const DIFFICULTY_TIERS: Record<Difficulty, DifficultyTier> = {
     label: 'Extreme',
     speedMultiplier: 1.6,
     spawnRateMultiplier: 0.5,
-    wordCount: { min: 9, max: 12 },
+    wordCount: { min: 9, max: 10 },
     timerMultiplier: 0.65,
     hpMultiplier: 0.4,
     penaltyMultiplier: 2.0,
