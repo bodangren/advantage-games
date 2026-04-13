@@ -1,0 +1,11 @@
+{
+  "trackId": "game_data_arrays_fix_20260413",
+  "title": "Fix Game Data Arrays",
+  "description": "Fix insufficient test data for gryphon-patrol and haunted-library",
+  "priority": "high",
+  "type": "bug",
+  "status": "in_progress",
+  "created": "2026-04-13",
+  "spec": "spec.md",
+  "plan": "plan.md"
+}

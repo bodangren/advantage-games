@@ -5,7 +5,7 @@
 ### High Priority
 - griffinSkyJoust.test.ts line 92: "should handle collision from above with wrong word" expects HP=2 but gets HP=3 — game logic bug in collision detection (pre-existing) - **RESOLVED 2026-04-13 (tests pass - was stale)**
 - difficulty.ts: `extreme` tier wordCount.max=12 exceeds DIFFICULTY_GUARDRAILS.maxWordCount=10 (semantic inconsistency) - **RESOLVED 2026-04-13**
-- gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences
+- gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences - **RESOLVED 2026-04-13**
 - difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module
 
 ### Medium Priority
