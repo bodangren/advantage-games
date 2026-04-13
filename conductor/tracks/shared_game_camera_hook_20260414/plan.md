@@ -1,0 +1,20 @@
+# Implementation Plan: Shared Game Camera Hook
+
+## Phase 1: Create Shared Hook
+
+- [x] Task: Analyze existing dimension/camera code patterns
+  - [x] Document common patterns in WizardZombieGame, DungeonLiberatorGame, GriffinSkyJoustGame
+  - [x] Identify all shared behavior to extract
+- [x] Task: Create `useGameCamera` hook
+  - [x] Write unit tests for hook
+  - [x] Implement dimension tracking with ResizeObserver
+  - [x] Implement camera computation (offset, scale)
+  - [x] Implement `getIndicatorPosition` utility
+- [ ] Task: Conductor - User Manual Verification 'Phase 1' (Protocol in workflow.md)
+
+## Phase 2: Pilot Migration
+
+- [ ] Task: Migrate WizardZombieGame to use `useGameCamera`
+  - [ ] Update imports and replace local dimension tracking
+  - [ ] Run tests and verify functionality
+- [ ] Task: Conductor - User Manual Verification 'Phase 2' (Protocol in workflow.md)
