@@ -282,11 +282,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Live Content Rotation and Pack Management**
+- [x] **Track: Live Content Rotation and Pack Management**
 *Link: [./conductor/tracks/content_rotation_pack_mgmt_20260407/](./conductor/tracks/content_rotation_pack_mgmt_20260407/)*
 *Description: Introduce a managed rotation plan for sentence/vocabulary packs to support weekly content refreshes.*
 *Priority: Medium*
 *Type: Feature*
+*Status: ✅ COMPLETE - Phase 1 (schema/validation) + Phase 2 (rotation workflow) complete with 62 tests, runbook at docs/rotation-runbook.md*
 
 ---
 

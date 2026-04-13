@@ -1,8 +1,8 @@
 # Current Directive
 
-## Status: IN PROGRESS
+## Status: COMPLETE
 
-## Active Track: Live Content Rotation and Pack Management
+## Active Track: Live Content Rotation and Pack Management - COMPLETE
 
 ### Phase 1: Schema and Validation - COMPLETE
 - Created contentPackSchema.ts with v1-legacy and v2 format support
@@ -18,10 +18,9 @@
   - WizardZombie tests pass, vocabularyRoute tests pass
 - [x] Document weekly rotation runbook
   - docs/rotation-runbook.md created
-
-### User Manual Verification (Phase 2)
-- [ ] Conductor - User Manual Verification 'Phase 2: Rotation Workflow'
+- [x] Conductor - User Manual Verification 'Phase 2: Rotation Workflow' - COMPLETE (checkpoint: 7bce982)
 
 ## Completed Tracks (Recent)
+- Live Content Rotation and Pack Management (2026-04-13) - FULLY COMPLETE
 - Shared Accessibility and Input Assist Layer (2026-04-11)
 - XP Leaderboard & Session History (2026-04-09)
