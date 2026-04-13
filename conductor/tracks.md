@@ -291,6 +291,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [x] **Track: Difficulty Guardrail Fix**
+*Link: [./conductor/tracks/difficulty_guardrail_fix_20260413/](./conductor/tracks/difficulty_guardrail_fix_20260413/)*
+*Description: Fix semantic inconsistency where extreme tier wordCount.max exceeded DIFFICULTY_GUARDRAILS.maxWordCount.*
+*Priority: High*
+*Type: Bug*
+*Status: ✅ COMPLETE - extreme.wordCount.max changed 12 -> 10, tests pass*
+
+---
+
 - [ ] **Track: Difficulty Curve Tuning**
 *Link: [./conductor/tracks/difficulty_curve_tuning_20260407/](./conductor/tracks/difficulty_curve_tuning_20260407/)*
 *Description: Standardize difficulty progression and spawn tuning across active games.*

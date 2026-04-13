@@ -1,26 +1,20 @@
 # Current Directive
 
-## Status: COMPLETE
+## Status: IN PROGRESS
 
-## Active Track: Live Content Rotation and Pack Management - COMPLETE
+## Active Track: Difficulty Guardrail Fix
 
-### Phase 1: Schema and Validation - COMPLETE
-- Created contentPackSchema.ts with v1-legacy and v2 format support
-- Types: ContentPackMetadata, VocabularyItem, PackFormat, ContentPackValidationResult
-- Validation: detectPackFormat, validateVocabularyItem, validateContentPackMetadata, validateContentPack
-- Tests: 36 tests with 94.33% coverage
+### Issue
+- File: `src/lib/games/difficulty.ts`
+- extreme tier wordCount.max=12 exceeded DIFFICULTY_GUARDRAILS.maxWordCount=10
 
-### Phase 2: Rotation Workflow - COMPLETE
-- [x] Implement pack selection/rotation controls
-  - RotationManager with setActivePacks, addActivePack, removeActivePack, rollback
-  - 26 tests with full coverage
-- [x] Verify game integration with rotated packs
-  - WizardZombie tests pass, vocabularyRoute tests pass
-- [x] Document weekly rotation runbook
-  - docs/rotation-runbook.md created
-- [x] Conductor - User Manual Verification 'Phase 2: Rotation Workflow' - COMPLETE (checkpoint: 7bce982)
+### Fix Applied
+- Added DIFFICULTY_TIERS compliance test to difficulty.test.ts
+- Changed extreme.wordCount.max from 12 to 10
+- Tests: 13/13 passing
 
 ## Completed Tracks (Recent)
-- Live Content Rotation and Pack Management (2026-04-13) - FULLY COMPLETE
+- Difficulty Guardrail Fix (2026-04-13) - FIXED
+- Live Content Rotation and Pack Management (2026-04-13) - COMPLETE
 - Shared Accessibility and Input Assist Layer (2026-04-11)
 - XP Leaderboard & Session History (2026-04-09)
