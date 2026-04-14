@@ -1,5 +1,21 @@
 # Lessons Learned
 
+## Track: Haunted Library Test Fix (2026-04-14)
+
+### Summary
+- Fixed flaky "should handle victory" test that was failing due to non-deterministic door placement
+
+### Key Learnings
+- Math.random() in game logic creates non-deterministic tests when player positioning relies on collision detection
+- When game entities use random placement, tests that rely on specific positions should either mock random or manually set controlled positions
+- Door collision detection uses 40px vertical threshold from door center - player must be positioned within this range
+- Ghost collision can happen multiple times per tick if ghost is very close (distance < 30 triggers once but ghost doesn't move away)
+
+### Technical Debt Resolved
+- hauntedLibrary.test.ts: "should handle victory" was flaky due to random door floor assignment
+
+---
+
 ## Track: Shared Game Camera Hook (2026-04-14)
 
 ### Summary

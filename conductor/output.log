@@ -741,3 +741,72 @@ All tests pass. Let me verify the build still works:
 ●  (SSG)      prerendered as static HTML (uses generateStaticParams)
 ƒ  (Dynamic)  server-rendered on demand
 [0m
+[0m$ [0mgit add -A && git commit -m "[MiniMax-M2] fix(haunted-library): fix flaky victory test with deterministic door placement
+
+The 'should handle victory' test was failing due to Math.random() door
+placement causing player-door collision misalignment. Doors on higher
+floors would not trigger collision when player was positioned at floor 0
+due to vertical distance exceeding the 40px threshold.
+
+Fix: Manually position word doors on floor 0 at controlled x positions
+to ensure reliable collision detection in the test."
+[master 2055a8a] [MiniMax-M2] fix(haunted-library): fix flaky victory test with deterministic door placement
+ 2 files changed, 741 insertions(+), 8 deletions(-)
+[0m
+[0m$ [0mgit push
+fatal: unable to access 'https://github.com/bodangren/advantage-games.git/': Could not resolve host: github.com
+[0m
+[0m$ [0mgit push 2>&1 || echo "Push failed, continuing..."
+To https://github.com/bodangren/advantage-games.git
+   b3a132e..2055a8a  master -> master
+[0m
+[0m→ [0mRead conductor/lessons-learned.md[90m [offset=1, limit=10][0m
+[0m→ [0mRead conductor/tech-debt.md[90m [offset=1, limit=10][0m
+[0m
+[0m← [0mEdit conductor/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+@@ -1,6 +1,22 @@
+ # Lessons Learned
+ 
++## Track: Haunted Library Test Fix (2026-04-14)
++
++### Summary
++- Fixed flaky "should handle victory" test that was failing due to non-deterministic door placement
++
++### Key Learnings
++- Math.random() in game logic creates non-deterministic tests when player positioning relies on collision detection
++- When game entities use random placement, tests that rely on specific positions should either mock random or manually set controlled positions
++- Door collision detection uses 40px vertical threshold from door center - player must be positioned within this range
++- Ghost collision can happen multiple times per tick if ghost is very close (distance < 30 triggers once but ghost doesn't move away)
++
++### Technical Debt Resolved
++- hauntedLibrary.test.ts: "should handle victory" was flaky due to random door floor assignment
++
++---
++
+ ## Track: Shared Game Camera Hook (2026-04-14)
+ 
+ ### Summary
+ - Extracted duplicate ResizeObserver dimension tracking into useGameDimensions hook
+
+[0m
+[0m← [0mEdit conductor/tech-debt.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+@@ -6,8 +6,9 @@
+ - griffinSkyJoust.test.ts line 92: "should handle collision from above with wrong word" expects HP=2 but gets HP=3 — game logic bug in collision detection (pre-existing) - **RESOLVED 2026-04-13 (tests pass - was stale)**
+ - difficulty.ts: `extreme` tier wordCount.max=12 exceeds DIFFICULTY_GUARDRAILS.maxWordCount=10 (semantic inconsistency) - **RESOLVED 2026-04-13**
+ - gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences - **RESOLVED 2026-04-13**
+ - difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module - **RESOLVED 2026-04-14 (moved to difficulty.ts)**
++- hauntedLibrary.test.ts: "should handle victory" flaky due to Math.random() door placement causing collision misalignment - **RESOLVED 2026-04-14 (deterministic door positioning)**
+ 
+ ### Medium Priority
+ - griffin-sky-joust: `any` type usage in game logic (line 94) - **RESOLVED 2026-04-08**
+ - griffin-sky-joust: `Math.random().toString(36).substr(2,9)` for enemy IDs in createEnemies - **RESOLVED 2026-04-08**
+
+[0m
