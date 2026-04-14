@@ -160,16 +160,27 @@ describe('Haunted Library Logic', () => {
   })
 
   it('should handle victory', () => {
-    let state = createLibraryState(mockSentences)
+    // Create state and manually position doors on floor[0] at known x positions
+    let state = createLibraryState(mockSentences, { difficulty: 'medium' })
     state.ghosts = []
-    state.words.forEach((_, i) => {
-      const door = state.doors.find(d => d.wordIndex === i)
-      if (door) {
-        state.player.x = door.x
-        state.player.y = door.y + 10
-        state = tickLibrary(state, 16.6, { dx: 0, dy: -1 })
-      }
+    // Find the 3 word doors and position them on floor 0, spaced far apart
+    const wordDoors = state.doors.filter(d => d.wordIndex !== null)
+    const floorY = state.floors[0].y
+    const doorSpacing = 120
+    wordDoors.forEach((door, i) => {
+      door.floor = 0
+      door.y = floorY - 80 // Door at floor level
+      door.x = 50 + i * doorSpacing // Space doors 120px apart
     })
+    // Iterate through words and tick to open correct door each time
+    for (let i = 0; i < state.words.length; i++) {
+      const door = wordDoors[i]
+      // Position player to interact with this door
+      state.player.x = door.x + 15
+      state.player.y = floorY - state.player.height - 10 // Slightly above floor
+      state.player.velocity.y = 0
+      state = tickLibrary(state, 16.6, { dx: 0, dy: -1 })
+    }
     expect(state.phase).toBe('victory')
     expect(state.lastEvent).toBe('victory')
   })
