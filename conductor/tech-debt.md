@@ -13,7 +13,7 @@
 - griffin-sky-joust: `any` type usage in game logic (line 94) - **RESOLVED 2026-04-08**
 - griffin-sky-joust: `Math.random().toString(36).substr(2,9)` for enemy IDs in createEnemies - **RESOLVED 2026-04-08**
 - gryphon-patrol/GryphonPatrolGame.tsx: Replaced `<Bird>` lucide SVG with Konva Rect (was rendering SVG in canvas context)
-- gryphon-patrol/gryphonPatrolGame.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible)
+- gryphon-patrol/gryphonPatrolGame.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible) - **RESOLVED 2026-04-15 (rng parameter added to spawnGryphonPatrolEnemies)**
 - villageGuardian.test.ts: Trail-following test was flaky due to monster spawning near trail via Math.random() — fixed by moving monster far away + adding invulnerability
 - Multiple games: Duplicate camera/ResizeObserver/dimension tracking code — extracted to useGameDimensions hook, WizardZombieGame migrated - **PARTIALLY RESOLVED 2026-04-14**
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback

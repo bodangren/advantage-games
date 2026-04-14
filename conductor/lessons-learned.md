@@ -1,5 +1,21 @@
 # Lessons Learned
 
+## Track: Gryphon Patrol RNG Injectable (2026-04-15)
+
+### Summary
+- Made Math.random() injectable via optional rng parameter in spawnGryphonPatrolEnemies
+- Enables deterministic testing by passing mock RNG function
+
+### Key Learnings
+- Default parameter `rng: () => number = Math.random` preserves production behavior
+- Tests can pass deterministic values like `() => 0.5` to verify specific spawn positions
+- Same pattern can be applied to other games with Math.random() in logic
+
+### Technical Debt Resolved
+- gryphon-patrol: Math.random() replaced with injectable rng parameter
+
+---
+
 ## Track: Haunted Library Test Fix (2026-04-14)
 
 ### Summary

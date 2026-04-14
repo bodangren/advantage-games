@@ -511,3 +511,59 @@ Changes not staged for commit:
 
 no changes added to commit (use "git add" and/or "git commit -a")
 [0m
+[0m$ [0mgit add conductor/output.log && git commit -m "chore: update output log"
+[master 4f9297b] chore: update output log
+ 1 file changed, 25 insertions(+)
+[0m
+[0m→ [0mRead conductor/tech-debt.md[90m [limit=50][0m
+[0m
+[0m← [0mEdit conductor/tech-debt.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+@@ -12,9 +12,9 @@
+ ### Medium Priority
+ - griffin-sky-joust: `any` type usage in game logic (line 94) - **RESOLVED 2026-04-08**
+ - griffin-sky-joust: `Math.random().toString(36).substr(2,9)` for enemy IDs in createEnemies - **RESOLVED 2026-04-08**
+ - gryphon-patrol/GryphonPatrolGame.tsx: Replaced `<Bird>` lucide SVG with Konva Rect (was rendering SVG in canvas context)
+-- gryphon-patrol/gryphonPatrolGame.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible)
++- gryphon-patrol/gryphonPatrolGame.ts: `Math.random()` used directly instead of injectable RNG param (makes deterministic testing impossible) - **RESOLVED 2026-04-15 (rng parameter added to spawnGryphonPatrolEnemies)**
+ - villageGuardian.test.ts: Trail-following test was flaky due to monster spawning near trail via Math.random() — fixed by moving monster far away + adding invulnerability
+ - Multiple games: Duplicate camera/ResizeObserver/dimension tracking code — extracted to useGameDimensions hook, WizardZombieGame migrated - **PARTIALLY RESOLVED 2026-04-14**
+ - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
+ - gryphon-patrol/GryphonPatrolGame.tsx: useEffect onComplete has missing deps (collectedWords.length, sentence.length) — potential stale closure
+
+[0m
+[0m→ [0mRead conductor/lessons-learned.md[90m [limit=10][0m
+[0m
+[0m← [0mEdit conductor/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+@@ -1,6 +1,22 @@
+ # Lessons Learned
+ 
++## Track: Gryphon Patrol RNG Injectable (2026-04-15)
++
++### Summary
++- Made Math.random() injectable via optional rng parameter in spawnGryphonPatrolEnemies
++- Enables deterministic testing by passing mock RNG function
++
++### Key Learnings
++- Default parameter `rng: () => number = Math.random` preserves production behavior
++- Tests can pass deterministic values like `() => 0.5` to verify specific spawn positions
++- Same pattern can be applied to other games with Math.random() in logic
++
++### Technical Debt Resolved
++- gryphon-patrol: Math.random() replaced with injectable rng parameter
++
++---
++
+ ## Track: Haunted Library Test Fix (2026-04-14)
+ 
+ ### Summary
+ - Fixed flaky "should handle victory" test that was failing due to non-deterministic door placement
+
+[0m
