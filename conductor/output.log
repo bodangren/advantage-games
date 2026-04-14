@@ -810,3 +810,27 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
  - griffin-sky-joust: `Math.random().toString(36).substr(2,9)` for enemy IDs in createEnemies - **RESOLVED 2026-04-08**
 
 [0m
+[0m$ [0mgit add -A && git commit -m "[MiniMax-M2] Update lessons-learned and tech-debt for haunted-library test fix"
+[master a9baed9] [MiniMax-M2] Update lessons-learned and tech-debt for haunted-library test fix
+ 3 files changed, 86 insertions(+)
+[0m
+[0m$ [0mgit push
+To https://github.com/bodangren/advantage-games.git
+   2055a8a..a9baed9  master -> master
+[0m
+[0m$ [0mgit status && git log --oneline -5
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conductor/output.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+a9baed9 [MiniMax-M2] Update lessons-learned and tech-debt for haunted-library test fix
+2055a8a [MiniMax-M2] fix(haunted-library): fix flaky victory test with deterministic door placement
+b3a132e chore: update output log
+04bf05f [MiniMax-M2] chore: whitespace cleanup and finalize
+9580399 [MiniMax-M2] chore: mark shared game camera hook track complete
+[0m
