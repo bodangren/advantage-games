@@ -1,0 +1,1 @@
+Checkpoint: gryphon-patrol RNG injectable - spawnGryphonPatrolEnemies now accepts optional rng parameter for deterministic testing. All tests pass. Build passes. MiniMax-M2 model.
