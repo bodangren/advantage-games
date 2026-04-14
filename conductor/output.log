@@ -127,3 +127,362 @@ index f5b1755..d686564 100644
 -├ ƒ /api/v1/games/rune-forge-chamber/complete                 262 B         103 kB
 -├ ○ /api/v1/games/rune-forge-chamber/sentences                262 B         103 kB
 [0m
+[0m$ [0mgit add conductor/output.log && git commit -m "chore: update output log"
+[master 5d34073] chore: update output log
+ 1 file changed, 107 insertions(+), 814 deletions(-)
+[0m
+[0m→ [0mRead conductor/tracks/xp_leaderboard_20260408/plan.md
+[0m→ [0mRead conductor/tracks/xp_leaderboard_20260408/spec.md
+Let me check the state of XP Leaderboard implementation and the game's end screen.
+[0m✱ [0mGlob "**/useLeaderboard*"[90m 2 matches[0m
+[0m
+[0m$ [0mgit status
+On branch master
+Your branch is ahead of 'origin/master' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conductor/output.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[0m
+[0m✱ [0mGlob "**/leaderboard/**"[90m 1 match[0m
+[0m→ [0mRead src/components/games/game/GameEndScreen.tsx
+[0m
+[0m$ [0mgit push
+fatal: unable to access 'https://github.com/bodangren/advantage-games.git/': Could not resolve host: github.com
+[0m
+Let me verify XP Leaderboard is complete by running tests.
+[0m$ [0mnpm test -- --testPathPattern="useLeaderboard|GameEndScreen" --passWithNoTests 2>&1 | tail -50
+> vocabulary-games@0.1.0 test
+> jest --testPathPattern=useLeaderboard|GameEndScreen --passWithNoTests
+
+testPathPattern:
+
+  Option "testPathPattern" was replaced by "--testPathPatterns". "--testPathPatterns" is only available as a command-line option.
+  
+  Please update your configuration.
+
+  CLI Options Documentation:
+  https://jestjs.io/docs/cli
+[0m
+[0m$ [0mnpm test -- --testPathPatterns="useLeaderboard" 2>&1 | tail -50
+When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      47 |       }
+      48 |
+    > 49 |       setState((prev) => {
+         |       ^
+      50 |         const newSessions = [session, ...prev.sessions].slice(0, MAX_SESSIONS)
+      51 |
+      52 |         const existingHighScore = prev.highScores[gameId]
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setState [as recordSession] (src/hooks/useLeaderboard.ts:49:7)
+      at Object.recordSession (src/hooks/useLeaderboard.test.ts:35:37)
+
+PASS src/hooks/useLeaderboard.test.ts
+  useLeaderboard
+    recordSession
+      ✓ creates a new session record (79 ms)
+      ✓ updates high scores for new game (7 ms)
+      ✓ keeps highest score for repeated game (5 ms)
+      ✓ does not lower high score if new score is lower (5 ms)
+      ✓ accumulates totalXp across sessions (5 ms)
+    clearHistory
+      ✓ clears all sessions and high scores (4 ms)
+    getLeaderboard
+      ✓ returns current leaderboard state (3 ms)
+    MAX_SESSIONS cap
+      ✓ caps sessions at 20 (3 ms)
+      ✓ keeps most recent sessions when capped (4 ms)
+    localStorage persistence
+      ✓ persists data to localStorage on recordSession (4 ms)
+      ✓ loads from localStorage on init (3 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       11 passed, 11 total
+Snapshots:   0 total
+Time:        1.447 s
+Ran all test suites matching useLeaderboard.
+[0m
+[0m✱ [0mGlob "**/GameEndScreen*.test*"[90m 0 matches[0m
+[0m
+[0m$ [0mnpm run build 2>&1 | tail -20
+├ ○ /api/v1/games/shadow-gate-dungeon/sentences               262 B         103 kB
+├ ƒ /api/v1/games/spellweavers-run/complete                   262 B         103 kB
+├ ○ /api/v1/games/spellweavers-run/sentences                  262 B         103 kB
+├ ƒ /api/v1/games/storm-castle-tower/complete                 262 B         103 kB
+├ ○ /api/v1/games/storm-castle-tower/sentences                262 B         103 kB
+├ ƒ /api/v1/games/village-guardian/complete                   262 B         103 kB
+├ ○ /api/v1/games/village-guardian/sentences                  262 B         103 kB
+├ ƒ /api/v1/games/wizard-vs-zombie/complete                   262 B         103 kB
+├ ○ /api/v1/games/wizard-vs-zombie/vocabulary                 262 B         103 kB
+└ ○ /dev/game-screens                                       3.84 kB         152 kB
++ First Load JS shared by all                                103 kB
+  ├ chunks/1255-5d6ce65c18108441.js                         45.7 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js                     54.2 kB
+  └ other shared chunks (total)                             2.57 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+[0m
+Let me check the existing game tests for end screen coverage.
+[0m$ [0mnpm test -- --testPathPatterns="wizard-vs-zombie|dungeon-liberator" 2>&1 | tail -60
+When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      35 |         } else {
+      36 |           // Fallback
+    > 37 |           setVocabulary([
+         |           ^
+      38 |             { term: "Run", translation: "Correr" },
+      39 |             { term: "Jump", translation: "Saltar" },
+      40 |             { term: "Eat", translation: "Comer" },
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setVocabulary (/home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)../../../../student/games/vocabulary/wizard-vs-zombie/page.tsx:37:11)
+
+    console.error
+      An update to WizardZombiePage inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      35 |         } else {
+      36 |           // Fallback
+    > 37 |           setVocabulary([
+         |           ^
+      38 |             { term: "Run", translation: "Correr" },
+      39 |             { term: "Jump", translation: "Saltar" },
+      40 |             { term: "Eat", translation: "Comer" },
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at setVocabulary (/home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)../../../../student/games/vocabulary/wizard-vs-zombie/page.tsx:37:11)
+
+
+Test Suites: 2 passed, 2 total
+Tests:       8 passed, 8 total
+Snapshots:   0 total
+Time:        2.807 s
+Ran all test suites matching wizard-vs-zombie|dungeon-liberator.
+[0m
+The XP Leaderboard implementation is complete (recordSession wiring + View Leaderboard link). Let me mark it complete and check the next pending track.
+[0m→ [0mRead conductor/tracks/difficulty_curve_tuning_20260407/spec.md
+[0m→ [0mRead conductor/tracks/difficulty_curve_tuning_20260407/plan.md
+[0m→ [0mRead conductor/tracks/mobile_perf_hardening_20260407/spec.md
+[0m→ [0mRead conductor/tracks/mobile_perf_hardening_20260407/plan.md
+Let me check the full test suite status.
+[0m
+[0m$ [0mnpm test -- --testPathPatterns="src/hooks/useLeaderboard|src/lib/games/difficulty" 2>&1 | tail -30
+/* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      47 |       }
+      48 |
+    > 49 |       setState((prev) => {
+         |       ^
+      50 |         const newSessions = [session, ...prev.sessions].slice(0, MAX_SESSIONS)
+      51 |
+      52 |         const existingHighScore = prev.highScores[gameId]
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setState [as recordSession] (src/hooks/useLeaderboard.ts:49:7)
+      at Object.recordSession (src/hooks/useLeaderboard.test.ts:35:37)
+
+PASS src/lib/games/difficulty.test.ts
+
+Test Suites: 2 passed, 2 total
+Tests:       24 passed, 24 total
+Snapshots:   0 total
+Time:        1.609 s
+Ran all test suites matching src/hooks/useLeaderboard|src/lib/games/difficulty.
+[0m
+[0m$ [0mnpm run build 2>&1 | tail -5
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+[0m
+Since current_directive is COMPLETE and nothing is in progress, I should create a new track from the top tech-debt item. The `gryphon-patrol` has `Math.random()` instead of injectable RNG - this is a good candidate for a new track.
+[0m$ [0mmkdir -p conductor/tracks/gryphon_patrol_rng_injectable_20260415
+[0m
+[0m← [0mWrite conductor/tracks/gryphon_patrol_rng_injectable_20260415/spec.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite conductor/tracks/gryphon_patrol_rng_injectable_20260415/plan.md
+Wrote file successfully.
+[0m
+[0m← [0mWrite conductor/tracks/gryphon_patrol_rng_injectable_20260415/metadata.json
+Wrote file successfully.
+[0m
+[0m✗ [0mread failed
+[91m[1mError: [0mFile not found: /home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+[0m✱ [0mGlob "**/gryphon*/**/*.tsx"[90m 2 matches[0m
+[0m→ [0mRead src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+[0m→ [0mRead src/lib/games/gryphonPatrol.ts
+[0m✱ [0mGlob "**/gryphon*test*"[90m 1 match[0m
+[0m→ [0mRead src/lib/games/gryphonPatrol.test.ts
+Now I'll implement the fix. The `spawnGryphonPatrolEnemies` function needs an injectable RNG.
+[0m
+[0m← [0mEdit src/lib/games/gryphonPatrol.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.ts
+@@ -73,21 +73,24 @@
+   xp: 0,
+   time: 0,
+ });
+ 
+-export const spawnGryphonPatrolEnemies = (state: GameState): GameState => {
++export const spawnGryphonPatrolEnemies = (
++  state: GameState,
++  rng: () => number = Math.random
++): GameState => {
+   const enemies: Enemy[] = [];
+   const { sentence } = state;
+   const { mapWidth, gameHeight, enemy: enemyConfig } = GRYPHON_PATROL_CONFIG;
+ 
+   for (let i = 0; i < enemyConfig.count; i++) {
+     const word = sentence[i % sentence.length];
+     enemies.push({
+       id: `enemy-${i}`,
+-      x: Math.random() * mapWidth,
+-      y: 100 + Math.random() * (gameHeight - 200),
+-      vx: (Math.random() - 0.5) * enemyConfig.speed,
+-      vy: (Math.random() - 0.5) * enemyConfig.speed,
++      x: rng() * mapWidth,
++      y: 100 + rng() * (gameHeight - 200),
++      vx: (rng() - 0.5) * enemyConfig.speed,
++      vy: (rng() - 0.5) * enemyConfig.speed,
+       size: enemyConfig.size,
+       word,
+       isTarget: word === sentence[0],
+       isActive: true,
+
+[0m
+Now let me add tests that verify the deterministic RNG behavior.
+[0m← [0mEdit src/lib/games/gryphonPatrol.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/gryphonPatrol.test.ts
+@@ -134,8 +134,18 @@
+   expect(state.enemies.length).toBe(GRYPHON_PATROL_CONFIG.enemy.count);
+   expect(state.enemies[0].word).toBeDefined();
+ });
+ 
++it('should spawn enemies at deterministic positions with injected RNG', () => {
++  let state = createInitialGryphonPatrolState(sentence);
++  const deterministicRng = () => 0.5;
++  state = spawnGryphonPatrolEnemies(state, deterministicRng);
++  
++  expect(state.enemies.length).toBe(GRYPHON_PATROL_CONFIG.enemy.count);
++  expect(state.enemies[0].x).toBe(0.5 * GRYPHON_PATROL_CONFIG.mapWidth);
++  expect(state.enemies[0].y).toBe(100 + 0.5 * (GRYPHON_PATROL_CONFIG.gameHeight - 200));
++});
++
+ it('should drop an orb when correct enemy is hit', () => {
+   let state = createInitialGryphonPatrolState(sentence);
+   state.status = 'playing';
+   state.enemies = [{
+
+[0m
+[0m$ [0mnpm test -- --testPathPatterns="gryphonPatrol" 2>&1 | tail -40
+> vocabulary-games@0.1.0 test
+> jest --testPathPatterns=gryphonPatrol
+
+PASS src/lib/games/gryphonPatrol.test.ts
+  GryphonPatrol Logic
+    ✓ should initialize with start status (4 ms)
+    ✓ should update time when playing (1 ms)
+    Movement & Wrap-around
+      ✓ should move player based on velocity (1 ms)
+      ✓ should wrap around horizontally when exceeding mapWidth
+      ✓ should wrap around horizontally when below 0
+      ✓ should clamp player vertically within game height (1 ms)
+      ✓ should apply friction to velocity (1 ms)
+      ✓ should accelerate player based on input (1 ms)
+    Camera System
+      ✓ should update cameraX based on player position
+      ✓ should wrap cameraX within map bounds
+    Enemies & Combat
+      ✓ should initialize enemies with sentence words
+      ✓ should spawn enemies based on config (1 ms)
+      ✓ should spawn enemies at deterministic positions with injected RNG (1 ms)
+      ✓ should drop an orb when correct enemy is hit (1 ms)
+      ✓ should collect orb when player touches it (1 ms)
+      ✓ should create a projectile when shooting (1 ms)
+      ✓ should destroy enemy when hit by projectile in tick (1 ms)
+      ✓ should lose HP when colliding with an enemy
+      ✓ should set status to lost when HP reaches zero
+
+Test Suites: 1 passed, 1 total
+Tests:       19 passed, 19 total
+Snapshots:   0 total
+Time:        1.04 s
+Ran all test suites matching gryphonPatrol.
+[0m
+All tests pass. Let me run the full build to verify.
+[0m$ [0mnpm run build 2>&1 | tail -10
++ First Load JS shared by all                                103 kB
+  ├ chunks/1255-5d6ce65c18108441.js                         45.7 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js                     54.2 kB
+  └ other shared chunks (total)                             2.57 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+[0m
+[0m$ [0mnpm test 2>&1 | tail -20
+<bash_metadata>
+bash tool terminated command after exceeding timeout 120000 ms
+</bash_metadata>
+[0m

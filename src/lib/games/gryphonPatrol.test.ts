@@ -135,6 +135,16 @@ describe('GryphonPatrol Logic', () => {
       expect(state.enemies[0].word).toBeDefined();
     });
 
+    it('should spawn enemies at deterministic positions with injected RNG', () => {
+      let state = createInitialGryphonPatrolState(sentence);
+      const deterministicRng = () => 0.5;
+      state = spawnGryphonPatrolEnemies(state, deterministicRng);
+      
+      expect(state.enemies.length).toBe(GRYPHON_PATROL_CONFIG.enemy.count);
+      expect(state.enemies[0].x).toBe(0.5 * GRYPHON_PATROL_CONFIG.mapWidth);
+      expect(state.enemies[0].y).toBe(100 + 0.5 * (GRYPHON_PATROL_CONFIG.gameHeight - 200));
+    });
+
     it('should drop an orb when correct enemy is hit', () => {
       let state = createInitialGryphonPatrolState(sentence);
       state.status = 'playing';

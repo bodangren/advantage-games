@@ -74,7 +74,10 @@ export const createInitialGryphonPatrolState = (sentence: string[]): GameState =
   time: 0,
 });
 
-export const spawnGryphonPatrolEnemies = (state: GameState): GameState => {
+export const spawnGryphonPatrolEnemies = (
+  state: GameState,
+  rng: () => number = Math.random
+): GameState => {
   const enemies: Enemy[] = [];
   const { sentence } = state;
   const { mapWidth, gameHeight, enemy: enemyConfig } = GRYPHON_PATROL_CONFIG;
@@ -83,10 +86,10 @@ export const spawnGryphonPatrolEnemies = (state: GameState): GameState => {
     const word = sentence[i % sentence.length];
     enemies.push({
       id: `enemy-${i}`,
-      x: Math.random() * mapWidth,
-      y: 100 + Math.random() * (gameHeight - 200),
-      vx: (Math.random() - 0.5) * enemyConfig.speed,
-      vy: (Math.random() - 0.5) * enemyConfig.speed,
+      x: rng() * mapWidth,
+      y: 100 + rng() * (gameHeight - 200),
+      vx: (rng() - 0.5) * enemyConfig.speed,
+      vy: (rng() - 0.5) * enemyConfig.speed,
       size: enemyConfig.size,
       word,
       isTarget: word === sentence[0],
