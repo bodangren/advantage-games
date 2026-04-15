@@ -1,4 +1,4 @@
-import { DIFFICULTY_GUARDRAILS, DIFFICULTY_TIERS, FALLBACK_DIFFICULTY_CONFIG, validateDifficultyConfig } from './difficulty'
+import { DIFFICULTY_GUARDRAILS, DIFFICULTY_TIERS, FALLBACK_DIFFICULTY_CONFIG } from './difficulty'
 
 describe('difficulty guardrails', () => {
   describe('DIFFICULTY_GUARDRAILS', () => {
