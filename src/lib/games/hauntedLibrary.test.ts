@@ -101,13 +101,19 @@ describe('Haunted Library Logic', () => {
   })
 
   it('should take damage from ghost collision', () => {
-    let state = createLibraryState(mockSentences)
+    // Use deterministic RNG: always returns 0.5 for consistent ghost placement
+    // floor = Math.floor(0.5 * 3) = 1 (floor 1), so ghost spawns on floor 1
+    let state = createLibraryState(mockSentences, { difficulty: 'medium' }, () => 0.5)
     state.bats = [] // Clear bats
+    // Directly set ghost on player's floor to ensure collision
     const ghost = state.ghosts[0]
-    // Teleport player to ghost
+    ghost.x = 100
+    ghost.y = state.floors[0].y - ghost.height // On floor 0
+    // Teleport player to ghost position
     state.player.x = ghost.x
     state.player.y = ghost.y
-    
+    state.player.velocity.y = 0
+
     state = tickLibrary(state, 16.6, { dx: 0, dy: 0 })
     expect(state.lives).toBe(2)
     expect(state.lastEvent).toBe('damage')
@@ -160,9 +166,10 @@ describe('Haunted Library Logic', () => {
   })
 
   it('should handle victory', () => {
-    // Create state and manually position doors on floor[0] at known x positions
-    let state = createLibraryState(mockSentences, { difficulty: 'medium' })
-    state.ghosts = []
+    // Use deterministic RNG to avoid random ghost/bat placement affecting test
+    let state = createLibraryState(mockSentences, { difficulty: 'medium' }, () => 0.5)
+    state.ghosts = [] // Clear all ghosts
+    state.bats = [] // Clear all bats
     // Find the 3 word doors and position them on floor 0, spaced far apart
     const wordDoors = state.doors.filter(d => d.wordIndex !== null)
     const floorY = state.floors[0].y
@@ -186,10 +193,17 @@ describe('Haunted Library Logic', () => {
   })
 
   it('should handle defeat', () => {
-    let state = createLibraryState(mockSentences)
+    // Use deterministic RNG
+    let state = createLibraryState(mockSentences, { difficulty: 'medium' }, () => 0.5)
     state.lives = 1
-    state.player.x = state.ghosts[0].x
-    state.player.y = state.ghosts[0].y
+    // Place ghost on player's floor to ensure collision
+    const ghost = state.ghosts[0]
+    ghost.x = 100
+    ghost.y = state.floors[0].y - ghost.height
+    state.player.x = ghost.x
+    state.player.y = ghost.y
+    state.player.velocity.y = 0
+
     state = tickLibrary(state, 16.6, { dx: 0, dy: 0 })
     expect(state.phase).toBe('defeat')
     expect(state.lastEvent).toBe('defeat')

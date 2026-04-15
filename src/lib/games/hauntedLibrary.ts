@@ -57,7 +57,11 @@ export interface LibraryConfig {
   difficulty: 'easy' | 'medium' | 'hard'
 }
 
-export function createLibraryState(sentences: VocabularyItem[], config: LibraryConfig = { difficulty: 'medium' }): LibraryState {
+export function createLibraryState(
+  sentences: VocabularyItem[],
+  config: LibraryConfig = { difficulty: 'medium' },
+  rng: () => number = Math.random
+): LibraryState {
   const sentence = sentences[0]
   const words = sentence.term.split(' ')
 
@@ -72,10 +76,10 @@ export function createLibraryState(sentences: VocabularyItem[], config: LibraryC
 
   const doors: Door[] = []
   words.forEach((word, index) => {
-    const floor = Math.floor(Math.random() * floorCount)
+    const floor = Math.floor(rng() * floorCount)
     doors.push({
       id: `door-${index}`,
-      x: 50 + Math.random() * (GAME_WIDTH - 100),
+      x: 50 + rng() * (GAME_WIDTH - 100),
       y: floors[floor].y - DOOR_HEIGHT,
       floor,
       wordIndex: index,
@@ -88,10 +92,10 @@ export function createLibraryState(sentences: VocabularyItem[], config: LibraryC
 
   // Add fake/trap doors
   for (let i = 0; i < trapDoorCount; i++) {
-    const floor = Math.floor(Math.random() * floorCount)
+    const floor = Math.floor(rng() * floorCount)
     doors.push({
       id: `trap-${i}`,
-      x: 50 + Math.random() * (GAME_WIDTH - 100),
+      x: 50 + rng() * (GAME_WIDTH - 100),
       y: floors[floor].y - DOOR_HEIGHT,
       floor,
       wordIndex: null,
@@ -105,15 +109,15 @@ export function createLibraryState(sentences: VocabularyItem[], config: LibraryC
   const ghosts: Entity[] = []
   const ghostSpeed = config.difficulty === 'easy' ? 60 : config.difficulty === 'medium' ? 80 : 120
   for (let i = 0; i < ghostCount; i++) {
-    const floor = 1 + Math.floor(Math.random() * (floorCount - 1))
+    const floor = 1 + Math.floor(rng() * (floorCount - 1))
     ghosts.push({
       id: `ghost-${i}`,
-      x: Math.random() * (GAME_WIDTH - 48),
+      x: rng() * (GAME_WIDTH - 48),
       y: floors[floor].y - 48,
       width: 48,
       height: 48,
       type: 'ghost',
-      velocity: { x: (Math.random() > 0.5 ? 1 : -1) * ghostSpeed, y: 0 },
+      velocity: { x: (rng() > 0.5 ? 1 : -1) * ghostSpeed, y: 0 },
       facing: 'right',
       state: 'walking',
       stunTimer: 0,
