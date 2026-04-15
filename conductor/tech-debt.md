@@ -19,7 +19,7 @@
 - dragon-flight, magic-defense: Missing hook dependencies in useEffect/useCallback
 - gryphon-patrol/GryphonPatrolGame.tsx: useEffect onComplete has missing deps (collectedWords.length, sentence.length) — potential stale closure
 - griffin-rider, realm-carver: TypeScript `any` usage in tests (Konva mock in test files)
-- realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested)
+- realm-carver: 75.51% coverage below 80% threshold (GameEndScreen, VirtualDPad, useSound not fully tested) — **RESOLVED 2026-04-15 (added tests for GameEndScreen, VirtualDPad, useSound)**
 - remotion/WizardZombieGameRenderer.tsx: useMemo missing deps (eslint-disable added — intentional for Remotion frame-based state)
 
 ### Low Priority (Warnings Only)

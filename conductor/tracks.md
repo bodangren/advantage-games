@@ -334,6 +334,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [x] **Track: Realm Carver Coverage Fix**
+*Link: [./conductor/tracks/realm_carver_coverage_20260415/](./conductor/tracks/realm_carver_coverage_20260415/)*
+*Description: Increase realm-carver test coverage from 75.51% to ≥80% by testing GameEndScreen, VirtualDPad, and useSound.*
+*Priority: Medium*
+*Type: Chore*
+*Status: ✅ COMPLETE - Added GameEndScreen (8 tests), VirtualDPad (3 tests), useSound (3 tests)*
+
+---
+
 - [ ] **Track: XP Leaderboard & Session History**
 *Link: [./conductor/tracks/xp_leaderboard_20260408/](./conductor/tracks/xp_leaderboard_20260408/)*
 *Description: Persistent localStorage leaderboard with per-game high scores, cumulative XP total, and 20-entry session history. End screens link to leaderboard after awarding XP.*
