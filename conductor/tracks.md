@@ -343,6 +343,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [x] **Track: Haunted Library Flaky Tests Fix**
+*Link: [./conductor/tracks/haunted_library_flaky_fix_20260416/](./conductor/tracks/haunted_library_flaky_fix_20260416/)*
+*Description: Fix intermittent test failures by making Math.random() injectable via rng parameter and using deterministic positioning in tests.*
+*Priority: High*
+*Type: Bug*
+*Status: ✅ COMPLETE - Tests pass 20/20 runs consistently*
+
+---
+
 - [ ] **Track: XP Leaderboard & Session History**
 *Link: [./conductor/tracks/xp_leaderboard_20260408/](./conductor/tracks/xp_leaderboard_20260408/)*
 *Description: Persistent localStorage leaderboard with per-game high scores, cumulative XP total, and 20-entry session history. End screens link to leaderboard after awarding XP.*

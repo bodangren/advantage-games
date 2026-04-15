@@ -1,5 +1,22 @@
 # Lessons Learned
 
+## Track: Haunted Library Flaky Tests Fix (2026-04-16)
+
+### Summary
+- Made Math.random() injectable via optional rng parameter in createLibraryState
+- Fixed flaky tests by ensuring deterministic ghost placement in tests
+
+### Key Learnings
+- Ghost spawns on random floor, not player's initial floor — collision distance check can fail if on different floors
+- Using deterministic RNG (() => 0.5) ensures consistent spawn positions
+- For collision tests, directly set ghost position AFTER createLibraryState to guarantee overlap
+- Simply teleporting player to ghost.x, ghost.y doesn't guarantee collision if floors differ
+
+### Technical Debt Resolved
+- hauntedLibrary.test.ts: flaky tests due to Math.random() ghost/bat positioning
+
+---
+
 ## Track: Gryphon Patrol RNG Injectable (2026-04-15)
 
 ### Summary

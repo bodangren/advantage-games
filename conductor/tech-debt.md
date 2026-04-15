@@ -7,7 +7,7 @@
 - difficulty.ts: `extreme` tier wordCount.max=12 exceeds DIFFICULTY_GUARDRAILS.maxWordCount=10 (semantic inconsistency) - **RESOLVED 2026-04-13**
 - gameDataArrays.test.ts: gryphon-patrol has only 3 sentences in route (needs >=10); haunted-library default.json has 0 valid sentences - **RESOLVED 2026-04-13**
 - difficulty.test.ts: `validateDifficultyConfig` function exported from test file instead of main module - **RESOLVED 2026-04-14 (moved to difficulty.ts)**
-- hauntedLibrary.test.ts: flaky tests due to Math.random() ghost/bat positioning — "should handle victory" and "should take damage from ghost collision" still intermittently fail despite deterministic door positioning fix (2026-04-14) — **STILL FLAKY 2026-04-16**
+- hauntedLibrary.test.ts: flaky tests due to Math.random() ghost/bat positioning — "should handle victory" and "should take damage from ghost collision" still intermittently fail despite deterministic door positioning fix (2026-04-14) — **RESOLVED 2026-04-16 (rng parameter added to createLibraryState, tests use deterministic positioning)**
 
 ### Medium Priority
 - griffin-sky-joust: `any` type usage in game logic (line 94) - **RESOLVED 2026-04-08**
