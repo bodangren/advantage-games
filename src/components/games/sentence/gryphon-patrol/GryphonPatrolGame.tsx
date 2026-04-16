@@ -80,7 +80,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
         score: gameState.score
       });
     }
-  }, [gameState.status, gameState.xp, gameState.score, difficulty, onComplete]);
+  }, [gameState.status, gameState.xp, gameState.score, gameState.collectedWords.length, gameState.sentence.length, difficulty, onComplete]);
 
   const handleStart = () => {
     const initialState = createInitialGryphonPatrolState(vocabList[0]?.term?.split(' ') || []);

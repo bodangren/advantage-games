@@ -1,5 +1,20 @@
 # Lessons Learned
 
+## Track: Gryphon Patrol Hook Dependencies Fix (2026-04-17)
+
+### Summary
+- Added missing dependencies `gameState.collectedWords.length` and `gameState.sentence.length` to useEffect dependency array in GryphonPatrolGame.tsx
+
+### Key Learnings
+- When using values inside useEffect for calculations (like accuracy), all dependencies must be explicitly listed
+- Even if the game state won't change after status === 'won'/'lost', ESLint still requires explicit dependencies for values used inside the effect
+- Adding nested state properties (like `gameState.collectedWords.length`) directly to deps array is valid and necessary
+
+### Technical Debt Resolved
+- gryphon-patrol/GryphonPatrolGame.tsx: useEffect onComplete missing deps
+
+---
+
 ## Track: Haunted Library Flaky Tests Fix (2026-04-16)
 
 ### Summary

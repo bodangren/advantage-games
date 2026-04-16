@@ -1,0 +1,10 @@
+{
+  "trackId": "gryphon_patrol_deps_fix_20260417",
+  "title": "Gryphon Patrol Hook Dependencies Fix",
+  "description": "Fix missing useEffect dependencies in GryphonPatrolGame.tsx for accuracy calculation",
+  "priority": "medium",
+  "type": "bug",
+  "status": "pending",
+  "created": "2026-04-17",
+  "component": "gryphon-patrol"
+}
