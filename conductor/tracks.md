@@ -352,6 +352,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [x] **Track: Gryphon Patrol Hook Dependencies Fix**
+*Link: [./conductor/tracks/gryphon_patrol_deps_fix_20260417/](./conductor/tracks/gryphon_patrol_deps_fix_20260417/)*
+*Description: Fix missing useEffect dependencies in GryphonPatrolGame.tsx for accuracy calculation (collectedWords.length, sentence.length).*
+*Priority: Medium*
+*Type: Bug*
+*Status: ✅ COMPLETE - Added missing deps to useEffect dependency array*
+
+---
+
 - [ ] **Track: XP Leaderboard & Session History**
 *Link: [./conductor/tracks/xp_leaderboard_20260408/](./conductor/tracks/xp_leaderboard_20260408/)*
 *Description: Persistent localStorage leaderboard with per-game high scores, cumulative XP total, and 20-entry session history. End screens link to leaderboard after awarding XP.*
