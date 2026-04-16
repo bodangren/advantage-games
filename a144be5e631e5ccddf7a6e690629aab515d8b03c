@@ -1,0 +1,22 @@
+Track: Gryphon Patrol Hook Dependencies Fix (2026-04-17)
+
+Summary:
+- Added missing dependencies gameState.collectedWords.length and gameState.sentence.length to useEffect dependency array in GryphonPatrolGame.tsx
+
+Files Modified:
+- src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx (1 line change)
+
+Files Created:
+- conductor/tracks/gryphon_patrol_deps_fix_20260417/spec.md
+- conductor/tracks/gryphon_patrol_deps_fix_20260417/plan.md
+- conductor/tracks/gryphon_patrol_deps_fix_20260417/metadata.json
+
+Why:
+- ESLint was flagging missing dependencies in the onComplete useEffect
+- Accuracy calculation (collectedWords.length / sentence.length) was being used inside the effect without being in the deps array
+- This posed a stale closure risk if values changed without status changing
+
+Verification:
+- ESLint: No warnings on gryphon-patrol files
+- Tests: 19 passed (CI=true npm test -- gryphonPatrol)
+- Build: Successful (npm run build)
