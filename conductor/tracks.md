@@ -361,8 +361,9 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: XP Leaderboard & Session History**
+- [x] **Track: XP Leaderboard & Session History**
 *Link: [./conductor/tracks/xp_leaderboard_20260408/](./conductor/tracks/xp_leaderboard_20260408/)*
 *Description: Persistent localStorage leaderboard with per-game high scores, cumulative XP total, and 20-entry session history. End screens link to leaderboard after awarding XP.*
 *Priority: Medium*
 *Type: Feature*
+*Status: ✅ COMPLETE - useLeaderboard hook, /student/leaderboard page, GameEndScreen integration*
