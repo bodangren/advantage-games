@@ -1,5 +1,21 @@
 # Lessons Learned
 
+## Track: XP Leaderboard Plan Verification (2026-04-17)
+
+### Summary
+- Verified XP Leaderboard implementation was fully complete despite plan.md showing unchecked tasks
+- Implementation includes: useLeaderboard hook (11 tests), /student/leaderboard page, GameEndScreen integration
+
+### Key Learnings
+- plan.md files may not reflect actual implementation state - always verify against codebase
+- XP Leaderboard feature was implemented on 2026-04-09 but plan.md was never updated
+- Implementation consists of: types/leaderboard.ts, hooks/useLeaderboard.ts, app/[locale]/(student)/student/leaderboard/page.tsx
+
+### Technical Debt Resolved
+- None - this was verification/documentation sync
+
+---
+
 ## Track: Gryphon Patrol Hook Dependencies Fix (2026-04-17)
 
 ### Summary
