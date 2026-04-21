@@ -4,8 +4,9 @@
   "description": "Fix insufficient test data for gryphon-patrol and haunted-library",
   "priority": "high",
   "type": "bug",
-  "status": "in_progress",
+  "status": "completed",
   "created": "2026-04-13",
+  "updated": "2026-04-21",
   "spec": "spec.md",
   "plan": "plan.md"
 }

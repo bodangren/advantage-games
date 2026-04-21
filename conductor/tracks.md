@@ -176,54 +176,11 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Griffin Rider's Escape**
-*Description: Subway Surfers style 3D endless runner*
-*Priority: Medium*
-*Type: Feature*
-*Link: [./conductor/archive/griffin-riders-escape-20260327/](./conductor/archive/griffin-riders-escape-20260327/)*
-*Status: ✅ COMPLETE*
-
----
-
-- [x] **Track: Alchemist's Synthesis**
-*Description: Grid-based matching and merging vocabulary game with boss battle mechanics.*
-*Priority: Medium*
-*Type: Feature*
-*Link: [./conductor/archive/alchemists-synthesis-20260327/](./conductor/archive/alchemists-synthesis-20260327/)*
-
----
-
-- [x] **Track: Astral Mage**
-*Description: Asteroids-style zero-friction overhead space shooter sentence game.*
-*Priority: Medium*
-*Type: Feature*
-*Link: [./conductor/archive/astral-mage-20260328/](./conductor/archive/astral-mage-20260328/)*
-
----
-
 - [x] **Track: Devourer Slime**
 *Description: Hole.io style arena growth game. Start small, eat words in the correct order to grow big enough to devour enemies!*
 *Priority: Medium*
 *Type: Feature*
 *Link: [./conductor/archive/devourer-slime-20260328/](./conductor/archive/devourer-slime-20260328/)*
-*Status: ✅ COMPLETE*
-
----
-
-- [x] **Track: Babel's Architect**
-*Description: Tower Bloxx style precision tower stacking sentence game with dwarven builder theme.*
-*Priority: Medium*
-*Type: Feature*
-*Link: [./conductor/archive/babel-architect-20260328/](./conductor/archive/babel-architect-20260328/)*
-*Status: ✅ COMPLETE*
-
----
-
-- [x] **Track: The Sorcerer's Ziggurat**
-*Description: Q*bert-style isometric jumping puzzle sentence game with wizard theme.*
-*Priority: Medium*
-*Type: Feature*
-*Link: [./conductor/archive/sorcerer-ziggurat-20260328/](./conductor/archive/sorcerer-ziggurat-20260328/)*
 *Status: ✅ COMPLETE*
 
 ---
@@ -253,16 +210,25 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Games QA/QC - E2E Testing and Validation**
+- [~] **Track: Games QA/QC - E2E Testing and Validation**
 *Link: [./conductor/tracks/games-qa-qc_20260328/](./conductor/tracks/games-qa-qc_20260328/)*
 *Description: Comprehensive QA/QC track covering all 26 games with Playwright E2E tests, unit test coverage verification, props/API validation, and screenshot capture.*
 *Priority: High*
 *Type: Chore*
-*Status: ✅ COMPLETE*
+*Status: IN PROGRESS - paladins-twin-soul tests now pass, but phase coverage remains below threshold and manual verification tasks remain*
 
 ---
 
 ## Upcoming Tracks
+
+- [~] **Track: Griffin Rider's Escape**
+*Link: [./conductor/tracks/griffin-riders-escape/](./conductor/tracks/griffin-riders-escape/)*
+*Description: Subway Surfers-style 3D endless runner sentence game with lane switching and gate collection.*
+*Priority: Medium*
+*Type: Feature*
+*Status: IN PROGRESS - gameplay, routes, translations, and tests exist; cover image and final verification remain*
+
+---
 
 - [x] **Track: Griffin Sky-Joust any Type Fix**
 *Link: [./conductor/tracks/griffin_sky_joust_any_type_fix_20260408/](./conductor/tracks/griffin_sky_joust_any_type_fix_20260408/)*
@@ -273,12 +239,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [x] **Track: Shared Accessibility and Input Assist Layer**
+- [~] **Track: Shared Accessibility and Input Assist Layer**
 *Link: [./conductor/tracks/accessibility_input_assist_20260407/](./conductor/tracks/accessibility_input_assist_20260407/)*
 *Description: Add consistent text sizing, touch-target sizing, and optional assist modes across all active games.*
 *Priority: Medium*
 *Type: Feature*
-*Status: ✅ COMPLETE*
+*Status: IN PROGRESS - implementation landed; final Conductor verification task remains*
 
 ---
 
@@ -309,28 +275,30 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Difficulty Curve Tuning**
+- [~] **Track: Difficulty Curve Tuning**
 *Link: [./conductor/tracks/difficulty_curve_tuning_20260407/](./conductor/tracks/difficulty_curve_tuning_20260407/)*
 *Description: Standardize difficulty progression and spawn tuning across active games.*
 *Priority: Medium*
 *Type: Chore*
+*Status: IN PROGRESS - shared model and playbook shipped; Conductor verification tasks remain*
 
 ---
 
-- [ ] **Track: Mobile Performance Hardening**
+- [x] **Track: Mobile Performance Hardening**
 *Link: [./conductor/tracks/mobile_perf_hardening_20260407/](./conductor/tracks/mobile_perf_hardening_20260407/)*
 *Description: Harden mobile performance on low-end devices for active games.*
 *Priority: Medium*
 *Type: Chore*
+*Status: ✅ COMPLETE - hotspot remediations and before/after notes published*
 
 ---
 
-- [x] **Track: Shared Game Camera Hook**
+- [~] **Track: Shared Game Camera Hook**
 *Link: [./conductor/tracks/shared_game_camera_hook_20260414/](./conductor/tracks/shared_game_camera_hook_20260414/)*
 *Description: Extract duplicate camera/ResizeObserver/dimension tracking code into shared useGameCamera hook.*
 *Priority: Medium*
 *Type: Chore*
-*Status: ✅ COMPLETE - Created useGameDimensions + useGameCamera hooks, migrated WizardZombieGame*
+*Status: IN PROGRESS - hooks and pilot migration landed; Conductor verification tasks remain*
 
 ---
 
@@ -340,6 +308,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Priority: Medium*
 *Type: Chore*
 *Status: ✅ COMPLETE - Added GameEndScreen (8 tests), VirtualDPad (3 tests), useSound (3 tests)*
+
+---
+
+- [x] **Track: Dungeon Liberator Sentences Bug Fix**
+*Link: [./conductor/tracks/dungeon-liberator-sentences-bug/](./conductor/tracks/dungeon-liberator-sentences-bug/)*
+*Description: Fix Dungeon Liberator sentence loading by aligning API data with `VocabularyItem.term` and meeting the route minimum sentence count.*
+*Priority: High*
+*Type: Bug*
+*Status: ✅ COMPLETE - API and component both use `term`, and the route now serves at least 5 sentences*
 
 ---
 
@@ -358,6 +335,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Priority: Medium*
 *Type: Bug*
 *Status: ✅ COMPLETE - Added missing deps to useEffect dependency array*
+
+---
+
+- [~] **Track: Gryphon Patrol RNG Injectable**
+*Link: [./conductor/tracks/gryphon_patrol_rng_injectable_20260415/](./conductor/tracks/gryphon_patrol_rng_injectable_20260415/)*
+*Description: Refactor `Math.random()` usage in Gryphon Patrol into injectable RNG so tests can verify deterministic spawn positions.*
+*Priority: Medium*
+*Type: Chore*
+*Status: IN PROGRESS - RNG injection and targeted tests are in place; full-suite/build verification remains*
 
 ---
 

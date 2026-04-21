@@ -36,4 +36,4 @@ const handleFlap = useCallback((e?: KonvaEventObject<MouseEvent | TouchEvent>) =
 ## Phase 3: Finalize
 
 - [x] Commit changes
-- [ ] Update tech-debt.md to mark issue as resolved
+- [x] Update tech-debt.md to mark issue as resolved

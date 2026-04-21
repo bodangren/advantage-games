@@ -24,13 +24,13 @@ Previous fix (2026-04-14) made door positioning deterministic, but ghost/bat pos
 ## Implementation Plan
 
 ### Phase 1: Make ghost/bat spawning deterministic
-- [ ] Make Math.random() injectable via rng parameter in createEnemies
-- [ ] Update hauntedLibrary.test.ts to use mock RNG
+- [x] Make Math.random() injectable via rng parameter in `createLibraryState`
+- [x] Update `hauntedLibrary.test.ts` to use mock RNG where deterministic setup is required
 
 ### Phase 2: Fix specific flaky tests
-- [ ] "should handle victory" - ensure no ghost spawns near player path
-- [ ] "should take damage from ghost collision" - deterministic ghost placement
+- [x] "should handle victory" - ensure no ghost spawns near player path
+- [x] "should take damage from ghost collision" - deterministic ghost placement
 
 ### Phase 3: Verify
-- [ ] Run tests 10 times to confirm no flakiness
-- [ ] All existing tests pass
+- [x] Run tests 10 times to confirm no flakiness
+- [x] All existing tests pass

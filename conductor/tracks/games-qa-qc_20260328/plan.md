@@ -114,9 +114,9 @@
 
 - [~] Task: Run unit tests and verify coverage
     - [x] Tests executed
-    - [ ] 3 failing tests (mock issue - custom hooks not mocked)
-    - [x] Coverage: 54.98% - BELOW THRESHOLD (documented as tech debt)
-    - Note: Unit test failures due to missing `useDPad` and `useKeyboard` hook mocks
+    - [x] Previously failing tests now pass after custom hook mock fixes landed
+    - [x] Coverage rerun: 75.38% overall / 91.43% component / 94.80% logic slice - STILL BELOW THRESHOLD
+    - Note: Test run still emits Konva prop warnings in the React DOM test renderer
 - [x] Task: Props/API validation
     - [x] API routes correct: `/api/v1/games/paladins-twin-soul/*`
     - [x] No `any` usage, no lint errors

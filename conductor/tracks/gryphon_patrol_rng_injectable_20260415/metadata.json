@@ -5,5 +5,8 @@
   "priority": "medium",
   "type": "chore",
   "status": "in_progress",
-  "created": "2026-04-15"
+  "created": "2026-04-15",
+  "updated": "2026-04-21",
+  "estimated_tasks": 7,
+  "actual_tasks": 5
 }

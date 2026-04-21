@@ -4,7 +4,8 @@
   "description": "Fix missing useEffect dependencies in GryphonPatrolGame.tsx for accuracy calculation",
   "priority": "medium",
   "type": "bug",
-  "status": "pending",
+  "status": "completed",
   "created": "2026-04-17",
+  "updated": "2026-04-21",
   "component": "gryphon-patrol"
 }
