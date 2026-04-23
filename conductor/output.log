@@ -1,10 +1,23 @@
 [0m
 > build · k2p6
 [0m
-[0m✗ [0mread failed
-[91m[1mError: [0mFile not found: /home/daniel-bo/Desktop/advantage-games/@conductor/autonomous_prompt.md
-[0m✱ [0mGlob "**/autonomous_prompt.md"[90m 1 match[0m
+[0m✱ [0mGlob "**/autonomous_prompt.md"[90m in . · 1 match[0m
 [0m→ [0mRead conductor/autonomous_prompt.md
-Received. This is the autonomous conductor unattended run prompt. 
+[0m→ [0mSkill "conductor"
+[0m→ [0mRead conductor/tracks.md
+[0m→ [0mRead conductor/tech-debt.md
+[0m→ [0mRead conductor/lessons-learned.md
+[0m✱ [0mGlob "**/current_directive.md"[90m in conductor · 1 match[0m
+[0m→ [0mRead conductor/current_directive.md
+[0m
+[0m$ [0mgit status
+On branch master
+Your branch is up to date with 'origin/master'.
 
-What would you like me to do?
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   conductor/output.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+[0m
