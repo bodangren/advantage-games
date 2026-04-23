@@ -1,6 +1,6 @@
 # Implementation Plan: Multiplayer Competitive Mode
 
-## Phase 1: WebSocket Infrastructure
+## Phase 1: WebSocket Infrastructure [checkpoint: 394cc64]
 
 - [x] Task: Set up WebSocket server with `ws` library. [0107ddc]
   - [x] Create `lib/multiplayer/ws-server.ts` with WebSocket server initialization.
@@ -14,7 +14,7 @@
   - [x] Create `hooks/useMultiplayerSocket.ts` with connect, disconnect, send, and event listener APIs.
   - [x] Handle reconnection logic (retry 3 times with exponential backoff, 60s window).
   - [x] Write unit tests for connection, reconnection, and message handling.
-- [ ] Task: Conductor — User Manual Verification 'Phase 1: WebSocket Infrastructure' (Protocol in workflow.md)
+- [x] Task: Conductor — User Manual Verification 'Phase 1: WebSocket Infrastructure' (Protocol in workflow.md)
 
 ## Phase 2: Room Management
 
