@@ -105,8 +105,19 @@
 - Client hook with connection management and reconnection logic
 - 31 tests, 93.88% coverage
 
+### Phase 2 Complete: Room Management (2026-04-24)
+- Room manager with create/join/leave/getRoom operations
+- 6-character alphanumeric room code generation with collision checking
+- Room lifecycle: pending → active → completed → expired (10min inactivity)
+- Host auto-promotion on disconnect
+- Lobby UI with create/join flows, player list, host controls
+- WebSocket message handlers for room operations
+- 71 tests across room-manager, LobbyScreen, and ws-server.room
+- Coverage: room-manager 98.47%, LobbyScreen 95.94%, ws-server 89.13%
+
 ### Technical Debt
 - ws module mocking required for Jest (ESM/CJS compatibility)
 - useMultiplayerSocket uses `any` in event handler signatures — **PARTIALLY RESOLVED 2026-04-23 (source file fixed, 8 warnings remain in test mock types)**
 - Integration tests with real WebSocket needed in Phase 5
 - useMultiplayerSocket.test.ts: MockWebSocket event handler types use `any` (cosmetic, test-only)
+- Room manager currently uses in-memory storage - will need persistence for production scaling

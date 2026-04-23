@@ -1,5 +1,25 @@
 # Lessons Learned
 
+## Track: Multiplayer Competitive Mode - Phase 2 (2026-04-24)
+
+### Summary
+- Implemented room management system with lifecycle, host promotion, and player operations
+- Created LobbyScreen component with create/join flows and host controls
+- Wired room operations to WebSocket server with message-based protocol
+- Achieved >94% test coverage across all new code
+
+### Key Learnings
+- Room code generation should avoid similar-looking characters (0/O, 1/I/l) to prevent user confusion
+- Host promotion on disconnect must handle edge case where no connected players remain (mark room expired)
+- WebSocket message handlers need separate try-catch for JSON parse errors vs business logic errors
+- Mock WebSocket testing requires careful setup to simulate broadcast behavior across multiple clients
+- TypeScript strict mode requires exact type matching for message payloads - extra fields cause build failures
+
+### Technical Debt Resolved
+- None - new feature infrastructure
+
+---
+
 ## Track: Multiplayer Competitive Mode - Phase 1 (2026-04-23)
 
 ### Summary
