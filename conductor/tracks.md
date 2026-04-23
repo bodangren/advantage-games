@@ -210,23 +210,23 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Games QA/QC - E2E Testing and Validation**
-*Link: [./conductor/tracks/games-qa-qc_20260328/](./conductor/tracks/games-qa-qc_20260328/)*
+- [x] **Track: Games QA/QC - E2E Testing and Validation**
+*Link: [./conductor/archive/games-qa-qc_20260328/](./conductor/archive/games-qa-qc_20260328/)*
 *Description: Comprehensive QA/QC track covering all 26 games with Playwright E2E tests, unit test coverage verification, props/API validation, and screenshot capture.*
 *Priority: High*
 *Type: Chore*
-*Status: IN PROGRESS - paladins-twin-soul tests now pass, but phase coverage remains below threshold and manual verification tasks remain*
+*Status: ✅ COMPLETE - Archived 2026-04-23 (verification sweep)*
 
 ---
 
 ## Upcoming Tracks
 
-- [~] **Track: Griffin Rider's Escape**
-*Link: [./conductor/tracks/griffin-riders-escape/](./conductor/tracks/griffin-riders-escape/)*
+- [x] **Track: Griffin Rider's Escape**
+*Link: [./conductor/archive/griffin-riders-escape/](./conductor/archive/griffin-riders-escape/)*
 *Description: Subway Surfers-style 3D endless runner sentence game with lane switching and gate collection.*
 *Priority: Medium*
 *Type: Feature*
-*Status: IN PROGRESS - gameplay, routes, translations, and tests exist; cover image and final verification remain*
+*Status: ✅ COMPLETE - Archived 2026-04-23 (verification sweep)*
 
 ---
 
@@ -239,12 +239,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Shared Accessibility and Input Assist Layer**
-*Link: [./conductor/tracks/accessibility_input_assist_20260407/](./conductor/tracks/accessibility_input_assist_20260407/)*
+- [x] **Track: Shared Accessibility and Input Assist Layer**
+*Link: [./conductor/archive/accessibility_input_assist_20260407/](./conductor/archive/accessibility_input_assist_20260407/)*
 *Description: Add consistent text sizing, touch-target sizing, and optional assist modes across all active games.*
 *Priority: Medium*
 *Type: Feature*
-*Status: IN PROGRESS - implementation landed; final Conductor verification task remains*
+*Status: ✅ COMPLETE - Archived 2026-04-23 (verification sweep)*
 
 ---
 
@@ -275,12 +275,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Difficulty Curve Tuning**
-*Link: [./conductor/tracks/difficulty_curve_tuning_20260407/](./conductor/tracks/difficulty_curve_tuning_20260407/)*
+- [x] **Track: Difficulty Curve Tuning**
+*Link: [./conductor/archive/difficulty_curve_tuning_20260407/](./conductor/archive/difficulty_curve_tuning_20260407/)*
 *Description: Standardize difficulty progression and spawn tuning across active games.*
 *Priority: Medium*
 *Type: Chore*
-*Status: IN PROGRESS - shared model and playbook shipped; Conductor verification tasks remain*
+*Status: ✅ COMPLETE - Archived 2026-04-23 (verification sweep)*
 
 ---
 
@@ -293,12 +293,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Shared Game Camera Hook**
-*Link: [./conductor/tracks/shared_game_camera_hook_20260414/](./conductor/tracks/shared_game_camera_hook_20260414/)*
+- [x] **Track: Shared Game Camera Hook**
+*Link: [./conductor/archive/shared_game_camera_hook_20260414/](./conductor/archive/shared_game_camera_hook_20260414/)*
 *Description: Extract duplicate camera/ResizeObserver/dimension tracking code into shared useGameCamera hook.*
 *Priority: Medium*
 *Type: Chore*
-*Status: IN PROGRESS - hooks and pilot migration landed; Conductor verification tasks remain*
+*Status: ✅ COMPLETE - Archived 2026-04-23 (verification sweep)*
 
 ---
 
@@ -338,12 +338,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Gryphon Patrol RNG Injectable**
-*Link: [./conductor/tracks/gryphon_patrol_rng_injectable_20260415/](./conductor/tracks/gryphon_patrol_rng_injectable_20260415/)*
+- [x] **Track: Gryphon Patrol RNG Injectable**
+*Link: [./conductor/archive/gryphon_patrol_rng_injectable_20260415/](./conductor/archive/gryphon_patrol_rng_injectable_20260415/)*
 *Description: Refactor `Math.random()` usage in Gryphon Patrol into injectable RNG so tests can verify deterministic spawn positions.*
 *Priority: Medium*
 *Type: Chore*
-*Status: IN PROGRESS - RNG injection and targeted tests are in place; full-suite/build verification remains*
+*Status: ✅ COMPLETE - Archived 2026-04-23 (verification sweep)*
 
 ---
 
@@ -353,3 +353,39 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Priority: Medium*
 *Type: Feature*
 *Status: ✅ COMPLETE - useLeaderboard hook, /student/leaderboard page, GameEndScreen integration*
+
+---
+
+- [ ] **Track: Multiplayer Competitive Mode**
+*Link: [./conductor/tracks/multiplayer_competitive_mode_20260423/](./conductor/tracks/multiplayer_competitive_mode_20260423/)*
+*Description: Real-time multiplayer competitive mode where 2-4 players compete in vocabulary/sentence games simultaneously. Room-based matchmaking, live score tracking, and round-based progression.*
+*Priority: High*
+*Type: Feature*
+*Status: Planned*
+
+---
+
+- [ ] **Track: Adaptive Difficulty Engine**
+*Link: [./conductor/tracks/adaptive_difficulty_engine_20260423/](./conductor/tracks/adaptive_difficulty_engine_20260423/)*
+*Description: Runtime difficulty adjustment engine that monitors player performance and dynamically adjusts game parameters within each session.*
+*Priority: High*
+*Type: Feature*
+*Status: Planned*
+
+---
+
+- [ ] **Track: Teacher Dashboard**
+*Link: [./conductor/tracks/teacher_dashboard_20260423/](./conductor/tracks/teacher_dashboard_20260423/)*
+*Description: Teacher-facing dashboard for classroom management: class creation, game/vocabulary pack assignments, student progress tracking, and projection mode.*
+*Priority: High*
+*Type: Feature*
+*Status: Planned*
+
+---
+
+- [ ] **Track: Sentence Game Expansion**
+*Link: [./conductor/tracks/sentence_game_expansion_20260423/](./conductor/tracks/sentence_game_expansion_20260423/)*
+*Description: Expand sentence-level game coverage with 4 new game types: fill-in-the-blank platformer, word reorder/sequence builder, translation matching game, and context clue detective.*
+*Priority: Medium*
+*Type: Feature*
+*Status: Planned*
