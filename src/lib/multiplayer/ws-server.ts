@@ -26,12 +26,14 @@ function broadcastToRoom(wss: WebSocketServer, roomCode: string, message: string
   });
 }
 
-function getPlayerList(room: Room): Array<{ id: string; name: string; isHost: boolean; isConnected: boolean }> {
+function getPlayerList(room: Room): Array<{ id: string; name: string; score: number; wordsCollected: number; isConnected: boolean; isHost: boolean }> {
   return Array.from(room.players.values()).map((p: Player) => ({
     id: p.id,
     name: p.name,
-    isHost: p.isHost,
+    score: 0,
+    wordsCollected: 0,
     isConnected: p.isConnected,
+    isHost: p.isHost,
   }));
 }
 
@@ -67,8 +69,8 @@ export function createWebSocketServer(httpServer: Server): WebSocketServer {
         const message = JSON.parse(data.toString()) as RoomMessage;
         try {
           handleRoomMessage(wss, roomManager, ws, message);
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+        } catch (err) {
+          const errorMessage = err instanceof Error ? err.message : 'Unknown error';
           ws.send(JSON.stringify({ error: errorMessage }));
         }
       } catch {
@@ -147,7 +149,6 @@ function handleRoomMessage(
               players: getPlayerList(room),
             },
             timestamp: Date.now(),
-            roomCode: room.code,
           },
         })
       );
