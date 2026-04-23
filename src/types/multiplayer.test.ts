@@ -1,5 +1,4 @@
 import {
-  type MultiplayerMessage,
   type JoinMessage,
   type LeaveMessage,
   type StateUpdateMessage,

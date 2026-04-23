@@ -94,11 +94,10 @@ jest.mock('ws', () => {
 
 const wsModule = jest.requireMock('ws');
 const WebSocket = wsModule.WebSocket;
-const WebSocketServer = wsModule.WebSocketServer;
 
 describe('WebSocket Server', () => {
   let httpServer: http.Server;
-  let wss: InstanceType<typeof WebSocketServer>;
+  let wss: InstanceType<typeof wsModule.WebSocketServer>;
 
   beforeAll(async () => {
     jest.useFakeTimers();
