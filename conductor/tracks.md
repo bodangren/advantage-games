@@ -231,7 +231,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Griffin Sky-Joust any Type Fix**
-*Link: [./conductor/tracks/griffin_sky_joust_any_type_fix_20260408/](./conductor/tracks/griffin_sky_joust_any_type_fix_20260408/)*
+*Link: [./conductor/archive/griffin_sky_joust_any_type_fix_20260408/](./conductor/archive/griffin_sky_joust_any_type_fix_20260408/)*
 *Description: Replace `any` type in handleFlap callback with proper Konva event type*
 *Priority: Medium*
 *Type: Chore*
@@ -249,7 +249,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Live Content Rotation and Pack Management**
-*Link: [./conductor/tracks/content_rotation_pack_mgmt_20260407/](./conductor/tracks/content_rotation_pack_mgmt_20260407/)*
+*Link: [./conductor/archive/content_rotation_pack_mgmt_20260407/](./conductor/archive/content_rotation_pack_mgmt_20260407/)*
 *Description: Introduce a managed rotation plan for sentence/vocabulary packs to support weekly content refreshes.*
 *Priority: Medium*
 *Type: Feature*
@@ -258,7 +258,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Difficulty Guardrail Fix**
-*Link: [./conductor/tracks/difficulty_guardrail_fix_20260413/](./conductor/tracks/difficulty_guardrail_fix_20260413/)*
+*Link: [./conductor/archive/difficulty_guardrail_fix_20260413/](./conductor/archive/difficulty_guardrail_fix_20260413/)*
 *Description: Fix semantic inconsistency where extreme tier wordCount.max exceeded DIFFICULTY_GUARDRAILS.maxWordCount.*
 *Priority: High*
 *Type: Bug*
@@ -267,7 +267,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Game Data Arrays Fix**
-*Link: [./conductor/tracks/game_data_arrays_fix_20260413/](./conductor/tracks/game_data_arrays_fix_20260413/)*
+*Link: [./conductor/archive/game_data_arrays_fix_20260413/](./conductor/archive/game_data_arrays_fix_20260413/)*
 *Description: Fix insufficient test data for gryphon-patrol (3 sentences) and haunted-library (0 valid sentences).*
 *Priority: High*
 *Type: Bug*
@@ -285,7 +285,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Mobile Performance Hardening**
-*Link: [./conductor/tracks/mobile_perf_hardening_20260407/](./conductor/tracks/mobile_perf_hardening_20260407/)*
+*Link: [./conductor/archive/mobile_perf_hardening_20260407/](./conductor/archive/mobile_perf_hardening_20260407/)*
 *Description: Harden mobile performance on low-end devices for active games.*
 *Priority: Medium*
 *Type: Chore*
@@ -303,7 +303,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Realm Carver Coverage Fix**
-*Link: [./conductor/tracks/realm_carver_coverage_20260415/](./conductor/tracks/realm_carver_coverage_20260415/)*
+*Link: [./conductor/archive/realm_carver_coverage_20260415/](./conductor/archive/realm_carver_coverage_20260415/)*
 *Description: Increase realm-carver test coverage from 75.51% to ≥80% by testing GameEndScreen, VirtualDPad, and useSound.*
 *Priority: Medium*
 *Type: Chore*
@@ -312,7 +312,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Dungeon Liberator Sentences Bug Fix**
-*Link: [./conductor/tracks/dungeon-liberator-sentences-bug/](./conductor/tracks/dungeon-liberator-sentences-bug/)*
+*Link: [./conductor/archive/dungeon-liberator-sentences-bug/](./conductor/archive/dungeon-liberator-sentences-bug/)*
 *Description: Fix Dungeon Liberator sentence loading by aligning API data with `VocabularyItem.term` and meeting the route minimum sentence count.*
 *Priority: High*
 *Type: Bug*
@@ -321,7 +321,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Haunted Library Flaky Tests Fix**
-*Link: [./conductor/tracks/haunted_library_flaky_fix_20260416/](./conductor/tracks/haunted_library_flaky_fix_20260416/)*
+*Link: [./conductor/archive/haunted_library_flaky_fix_20260416/](./conductor/archive/haunted_library_flaky_fix_20260416/)*
 *Description: Fix intermittent test failures by making Math.random() injectable via rng parameter and using deterministic positioning in tests.*
 *Priority: High*
 *Type: Bug*
@@ -330,7 +330,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Gryphon Patrol Hook Dependencies Fix**
-*Link: [./conductor/tracks/gryphon_patrol_deps_fix_20260417/](./conductor/tracks/gryphon_patrol_deps_fix_20260417/)*
+*Link: [./conductor/archive/gryphon_patrol_deps_fix_20260417/](./conductor/archive/gryphon_patrol_deps_fix_20260417/)*
 *Description: Fix missing useEffect dependencies in GryphonPatrolGame.tsx for accuracy calculation (collectedWords.length, sentence.length).*
 *Priority: Medium*
 *Type: Bug*
@@ -348,7 +348,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: XP Leaderboard & Session History**
-*Link: [./conductor/tracks/xp_leaderboard_20260408/](./conductor/tracks/xp_leaderboard_20260408/)*
+*Link: [./conductor/archive/xp_leaderboard_20260408/](./conductor/archive/xp_leaderboard_20260408/)*
 *Description: Persistent localStorage leaderboard with per-game high scores, cumulative XP total, and 20-entry session history. End screens link to leaderboard after awarding XP.*
 *Priority: Medium*
 *Type: Feature*

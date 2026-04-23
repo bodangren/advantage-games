@@ -107,5 +107,6 @@
 
 ### Technical Debt
 - ws module mocking required for Jest (ESM/CJS compatibility)
-- useMultiplayerSocket uses `any` in event handler signatures
+- useMultiplayerSocket uses `any` in event handler signatures — **PARTIALLY RESOLVED 2026-04-23 (source file fixed, 8 warnings remain in test mock types)**
 - Integration tests with real WebSocket needed in Phase 5
+- useMultiplayerSocket.test.ts: MockWebSocket event handler types use `any` (cosmetic, test-only)
