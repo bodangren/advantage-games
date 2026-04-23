@@ -2,7 +2,7 @@
 
 ## Phase 1: WebSocket Infrastructure
 
-- [ ] Task: Set up WebSocket server with `ws` library.
+- [~] Task: Set up WebSocket server with `ws` library.
   - [ ] Create `lib/multiplayer/ws-server.ts` with WebSocket server initialization.
   - [ ] Implement connection lifecycle: open, message, close, error handlers.
   - [ ] Add heartbeat mechanism (ping/pong every 30s, disconnect after 3 missed pongs).
