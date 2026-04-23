@@ -12,7 +12,7 @@ interface UseMultiplayerSocketReturn {
   connect: (url: string) => void;
   disconnect: () => void;
   send: (message: string) => void;
-  on: (event: string, handler: Function) => void;
+  on: (event: string, handler: (...args: any[]) => void) => void;
 }
 
 export function useMultiplayerSocket(
@@ -26,7 +26,7 @@ export function useMultiplayerSocket(
 
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
-  const eventHandlersRef = useRef<Map<string, Function[]>>(new Map());
+  const eventHandlersRef = useRef<Map<string, ((...args: any[]) => void)[]>>(new Map());
   const retryCountRef = useRef(0);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const connectTimeRef = useRef<number | null>(null);
@@ -123,7 +123,7 @@ export function useMultiplayerSocket(
     [socket]
   );
 
-  const on = useCallback((event: string, handler: Function) => {
+  const on = useCallback((event: string, handler: (...args: any[]) => void) => {
     if (!eventHandlersRef.current.has(event)) {
       eventHandlersRef.current.set(event, []);
     }

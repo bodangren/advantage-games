@@ -3,8 +3,8 @@ import { createWebSocketServer, HEARTBEAT_INTERVAL, HEARTBEAT_TIMEOUT } from './
 
 // Mock ws module
 jest.mock('ws', () => {
-  const mockClients = new Set();
-  let connectionHandler: ((ws: any) => void) | null = null;
+  const mockClients = new Set<MockWebSocket>();
+  let connectionHandler: ((ws: MockWebSocket) => void) | null = null;
   let closeHandler: (() => void) | null = null;
 
   class MockWebSocket {
@@ -12,24 +12,23 @@ jest.mock('ws', () => {
     static OPEN = 1;
     static CLOSING = 2;
     static CLOSED = 3;
-    
-    readyState = 1;
-    metadata: any = null;
-    private eventHandlers: Record<string, Function[]> = {};
 
-    on(event: string, handler: Function) {
+    readyState = 1;
+    metadata: { isAlive: boolean } | null = null;
+    private eventHandlers: Record<string, Array<(...args: unknown[]) => void>> = {};
+
+    on(event: string, handler: (...args: unknown[]) => void) {
       if (!this.eventHandlers[event]) this.eventHandlers[event] = [];
       this.eventHandlers[event].push(handler);
     }
 
-    emit(event: string, ...args: any[]) {
+    emit(event: string, ...args: unknown[]) {
       if (this.eventHandlers[event]) {
-        this.eventHandlers[event].forEach(h => h(...args));
+        this.eventHandlers[event].forEach((h) => h(...args));
       }
     }
 
     ping() {
-      // Simulate ping - if no pong response, client should be terminated
       setTimeout(() => {
         if (!this.metadata?.isAlive) {
           this.terminate();
@@ -56,28 +55,27 @@ jest.mock('ws', () => {
 
   class MockWebSocketServer {
     clients = mockClients;
-    private eventHandlers: Record<string, Function[]> = {};
-    private heartbeatInterval: any = null;
+    private eventHandlers: Record<string, Array<(...args: unknown[]) => void>> = {};
+    options: Record<string, unknown>;
 
-    constructor(public options: any) {}
-
-    on(event: string, handler: Function) {
-      if (!this.eventHandlers[event]) this.eventHandlers[event] = [];
-      this.eventHandlers[event].push(handler);
-      if (event === 'connection') connectionHandler = handler as any;
-      if (event === 'close') closeHandler = handler as any;
+    constructor(options: Record<string, unknown>) {
+      this.options = options;
     }
 
-    emit(event: string, ...args: any[]) {
+    on(event: string, handler: (...args: unknown[]) => void) {
+      if (!this.eventHandlers[event]) this.eventHandlers[event] = [];
+      this.eventHandlers[event].push(handler);
+      if (event === 'connection') connectionHandler = handler as (ws: MockWebSocket) => void;
+      if (event === 'close') closeHandler = handler;
+    }
+
+    emit(event: string, ...args: unknown[]) {
       if (this.eventHandlers[event]) {
-        this.eventHandlers[event].forEach(h => h(...args));
+        this.eventHandlers[event].forEach((h) => h(...args));
       }
     }
 
     close(callback?: () => void) {
-      if (this.heartbeatInterval) {
-        clearInterval(this.heartbeatInterval);
-      }
       if (closeHandler) closeHandler();
       if (callback) callback();
     }
@@ -94,7 +92,9 @@ jest.mock('ws', () => {
   };
 });
 
-const { WebSocket, WebSocketServer } = require('ws');
+const wsModule = jest.requireMock('ws');
+const WebSocket = wsModule.WebSocket;
+const WebSocketServer = wsModule.WebSocketServer;
 
 describe('WebSocket Server', () => {
   let httpServer: http.Server;
@@ -142,7 +142,6 @@ describe('WebSocket Server', () => {
     const client = new WebSocket('ws://localhost:1234');
     const pingSpy = jest.spyOn(client, 'ping');
     wss.simulateConnection(client);
-    // Simulate heartbeat interval firing by calling ping directly
     client.metadata.isAlive = false;
     client.ping();
     expect(pingSpy).toHaveBeenCalled();
@@ -152,11 +151,11 @@ describe('WebSocket Server', () => {
     const client1 = new WebSocket('ws://localhost:1234');
     const client2 = new WebSocket('ws://localhost:1234');
     const client3 = new WebSocket('ws://localhost:1234');
-    
+
     wss.simulateConnection(client1);
     wss.simulateConnection(client2);
     wss.simulateConnection(client3);
-    
+
     expect(wss.clients.has(client1)).toBe(true);
     expect(wss.clients.has(client2)).toBe(true);
     expect(wss.clients.has(client3)).toBe(true);
@@ -170,8 +169,7 @@ describe('WebSocket Server', () => {
   it('should handle client errors gracefully', () => {
     const client = new WebSocket('ws://localhost:1234');
     wss.simulateConnection(client);
-    
-    // Simulate error - should not throw
+
     expect(() => {
       client.emit('error', new Error('Test error'));
     }).not.toThrow();
@@ -180,20 +178,19 @@ describe('WebSocket Server', () => {
   it('should handle heartbeat pong responses', () => {
     const client = new WebSocket('ws://localhost:1234');
     wss.simulateConnection(client);
-    
-    expect(client.metadata.isAlive).toBe(true);
-    
-    // Simulate pong response
+
+    expect(client.metadata!.isAlive).toBe(true);
+
     client.emit('pong');
-    
-    expect(client.metadata.isAlive).toBe(true);
+
+    expect(client.metadata!.isAlive).toBe(true);
   });
 
   it('should handle server close event', (done) => {
     const testServer = http.createServer();
     testServer.listen(0, async () => {
       const testWss = createWebSocketServer(testServer);
-      
+
       testWss.close(() => {
         testServer.close(() => {
           done();
@@ -204,11 +201,9 @@ describe('WebSocket Server', () => {
 
   it('should set metadata on new clients without existing metadata', () => {
     const client = new WebSocket('ws://localhost:1234');
-    // Ensure client has no metadata initially
     client.metadata = null;
     wss.simulateConnection(client);
-    
-    // The connection handler should set metadata
+
     expect(client.metadata).toEqual({ isAlive: true });
   });
 
@@ -216,28 +211,22 @@ describe('WebSocket Server', () => {
     const client = new WebSocket('ws://localhost:1234');
     const pingSpy = jest.spyOn(client, 'ping');
     wss.simulateConnection(client);
-    
-    // Advance timers by heartbeat interval
+
     jest.advanceTimersByTime(HEARTBEAT_INTERVAL + 100);
-    
+
     expect(pingSpy).toHaveBeenCalled();
-    expect(client.metadata.isAlive).toBe(false);
+    expect(client.metadata!.isAlive).toBe(false);
   });
 
   it('should terminate unresponsive clients via heartbeat interval', () => {
     const client = new WebSocket('ws://localhost:1234');
     wss.simulateConnection(client);
-    
-    // Set client as not alive
-    client.metadata.isAlive = false;
-    
-    // Advance timers to trigger heartbeat
+
+    client.metadata!.isAlive = false;
+
     jest.advanceTimersByTime(HEARTBEAT_INTERVAL + 100);
-    
-    // The ping method in mock should terminate the client after 100ms
     jest.advanceTimersByTime(200);
-    
+
     expect(client.readyState).toBe(WebSocket.CLOSED);
   });
-
 });

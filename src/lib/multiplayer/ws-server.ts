@@ -1,5 +1,5 @@
 import type { Server } from 'http';
-import type { WebSocketServer as WSServerType, WebSocket as WSType } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 
 export const HEARTBEAT_INTERVAL = 30000;
 export const HEARTBEAT_TIMEOUT = 90000;
@@ -8,15 +8,12 @@ interface ClientMetadata {
   isAlive: boolean;
 }
 
-export function createWebSocketServer(httpServer: Server): WSServerType {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const ws = require('ws');
-  const WSS = ws.WebSocketServer || ws.default?.WebSocketServer || ws.Server;
-  const wss: WSServerType = new WSS({ server: httpServer });
+export function createWebSocketServer(httpServer: Server): WebSocketServer {
+  const wss = new WebSocketServer({ server: httpServer });
 
-  wss.on('connection', (ws: WSType) => {
+  wss.on('connection', (ws: WebSocket) => {
     const metadata: ClientMetadata = { isAlive: true };
-    (ws as any).metadata = metadata;
+    (ws as unknown as { metadata: ClientMetadata }).metadata = metadata;
 
     ws.on('pong', () => {
       metadata.isAlive = true;
@@ -32,8 +29,8 @@ export function createWebSocketServer(httpServer: Server): WSServerType {
   });
 
   const heartbeatInterval = setInterval(() => {
-    wss.clients.forEach((ws: WSType) => {
-      const client = ws as any;
+    wss.clients.forEach((ws: WebSocket) => {
+      const client = ws as unknown as { metadata?: ClientMetadata };
       if (!client.metadata) {
         client.metadata = { isAlive: true };
       }
