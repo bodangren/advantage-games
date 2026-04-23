@@ -10,10 +10,10 @@
 - [x] Task: Define message protocol types. [4ee9b4d]
   - [x] Create `types/multiplayer.ts` with all message types (join, leave, state_update, score_submit, round_start, round_end, game_over).
   - [x] Write unit tests for message serialization/deserialization.
-- [~] Task: Implement client-side WebSocket hook.
-  - [ ] Create `hooks/useMultiplayerSocket.ts` with connect, disconnect, send, and event listener APIs.
-  - [ ] Handle reconnection logic (retry 3 times with exponential backoff, 60s window).
-  - [ ] Write unit tests for connection, reconnection, and message handling.
+- [x] Task: Implement client-side WebSocket hook. [ec906ce]
+  - [x] Create `hooks/useMultiplayerSocket.ts` with connect, disconnect, send, and event listener APIs.
+  - [x] Handle reconnection logic (retry 3 times with exponential backoff, 60s window).
+  - [x] Write unit tests for connection, reconnection, and message handling.
 - [ ] Task: Conductor — User Manual Verification 'Phase 1: WebSocket Infrastructure' (Protocol in workflow.md)
 
 ## Phase 2: Room Management
