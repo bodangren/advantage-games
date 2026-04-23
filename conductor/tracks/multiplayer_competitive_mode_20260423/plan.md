@@ -16,24 +16,24 @@
   - [x] Write unit tests for connection, reconnection, and message handling.
 - [x] Task: Conductor — User Manual Verification 'Phase 1: WebSocket Infrastructure' (Protocol in workflow.md)
 
-## Phase 2: Room Management
+## Phase 2: Room Management [checkpoint: ee1e43a]
 
-- [ ] Task: Implement server-side room manager.
-  - [ ] Create `lib/multiplayer/room-manager.ts` with create, join, leave, getRoom operations.
-  - [ ] Room code generation: 6-character alphanumeric, collision-checked.
-  - [ ] Room lifecycle: pending → active → completed → expired (10min inactivity).
-  - [ ] Host auto-promotion on disconnect.
-  - [ ] Write unit tests for all room operations and lifecycle transitions.
-- [ ] Task: Implement client-side lobby UI.
-  - [ ] Create `components/multiplayer/LobbyScreen.tsx` with create/join flows.
-  - [ ] Display room code, player list, and host controls (start, kick, transfer host).
-  - [ ] "Waiting for host..." state for non-host players.
-  - [ ] Write component tests for lobby interactions.
-- [ ] Task: Wire lobby to WebSocket server.
-  - [ ] Host creates room via WebSocket message; server responds with room code.
-  - [ ] Players join via room code; server broadcasts player list update.
-  - [ ] Write integration tests for create/join flow.
-- [ ] Task: Conductor — User Manual Verification 'Phase 2: Room Management' (Protocol in workflow.md)
+- [x] Task: Implement server-side room manager. [be10d7b]
+  - [x] Create `lib/multiplayer/room-manager.ts` with create, join, leave, getRoom operations.
+  - [x] Room code generation: 6-character alphanumeric, collision-checked.
+  - [x] Room lifecycle: pending → active → completed → expired (10min inactivity).
+  - [x] Host auto-promotion on disconnect.
+  - [x] Write unit tests for all room operations and lifecycle transitions.
+- [x] Task: Implement client-side lobby UI. [42c2a3f]
+  - [x] Create `components/multiplayer/LobbyScreen.tsx` with create/join flows.
+  - [x] Display room code, player list, and host controls (start, kick, transfer host).
+  - [x] "Waiting for host..." state for non-host players.
+  - [x] Write component tests for lobby interactions.
+- [x] Task: Wire lobby to WebSocket server. [2548318]
+  - [x] Host creates room via WebSocket message; server responds with room code.
+  - [x] Players join via room code; server broadcasts player list update.
+  - [x] Write integration tests for create/join flow.
+- [x] Task: Conductor — User Manual Verification 'Phase 2: Room Management' (Protocol in workflow.md)
 
 ## Phase 3: Game State Synchronization
 
