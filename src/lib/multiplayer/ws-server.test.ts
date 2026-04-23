@@ -101,6 +101,7 @@ describe('WebSocket Server', () => {
   let wss: InstanceType<typeof WebSocketServer>;
 
   beforeAll(async () => {
+    jest.useFakeTimers();
     httpServer = http.createServer();
     await new Promise<void>((resolve) => {
       httpServer.listen(0, resolve);
@@ -109,6 +110,7 @@ describe('WebSocket Server', () => {
   }, 10000);
 
   afterAll(async () => {
+    jest.useRealTimers();
     await new Promise<void>((resolve) => {
       wss.close(() => {
         httpServer.close(() => resolve());
@@ -146,20 +148,6 @@ describe('WebSocket Server', () => {
     expect(pingSpy).toHaveBeenCalled();
   });
 
-  it('should disconnect clients that miss heartbeat responses', async () => {
-    const client = new WebSocket('ws://localhost:1234');
-    wss.simulateConnection(client);
-    
-    // Simulate missing pong response
-    client.metadata.isAlive = false;
-    client.ping();
-    
-    // Wait for termination
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    expect(client.readyState).toBe(WebSocket.CLOSED);
-  }, 5000);
-
   it('should handle multiple concurrent connections', () => {
     const client1 = new WebSocket('ws://localhost:1234');
     const client2 = new WebSocket('ws://localhost:1234');
@@ -178,4 +166,78 @@ describe('WebSocket Server', () => {
     expect(HEARTBEAT_INTERVAL).toBe(30000);
     expect(HEARTBEAT_TIMEOUT).toBe(90000);
   });
+
+  it('should handle client errors gracefully', () => {
+    const client = new WebSocket('ws://localhost:1234');
+    wss.simulateConnection(client);
+    
+    // Simulate error - should not throw
+    expect(() => {
+      client.emit('error', new Error('Test error'));
+    }).not.toThrow();
+  });
+
+  it('should handle heartbeat pong responses', () => {
+    const client = new WebSocket('ws://localhost:1234');
+    wss.simulateConnection(client);
+    
+    expect(client.metadata.isAlive).toBe(true);
+    
+    // Simulate pong response
+    client.emit('pong');
+    
+    expect(client.metadata.isAlive).toBe(true);
+  });
+
+  it('should handle server close event', (done) => {
+    const testServer = http.createServer();
+    testServer.listen(0, async () => {
+      const testWss = createWebSocketServer(testServer);
+      
+      testWss.close(() => {
+        testServer.close(() => {
+          done();
+        });
+      });
+    });
+  }, 10000);
+
+  it('should set metadata on new clients without existing metadata', () => {
+    const client = new WebSocket('ws://localhost:1234');
+    // Ensure client has no metadata initially
+    client.metadata = null;
+    wss.simulateConnection(client);
+    
+    // The connection handler should set metadata
+    expect(client.metadata).toEqual({ isAlive: true });
+  });
+
+  it('should trigger heartbeat interval and ping clients', () => {
+    const client = new WebSocket('ws://localhost:1234');
+    const pingSpy = jest.spyOn(client, 'ping');
+    wss.simulateConnection(client);
+    
+    // Advance timers by heartbeat interval
+    jest.advanceTimersByTime(HEARTBEAT_INTERVAL + 100);
+    
+    expect(pingSpy).toHaveBeenCalled();
+    expect(client.metadata.isAlive).toBe(false);
+  });
+
+  it('should terminate unresponsive clients via heartbeat interval', () => {
+    const client = new WebSocket('ws://localhost:1234');
+    wss.simulateConnection(client);
+    
+    // Set client as not alive
+    client.metadata.isAlive = false;
+    
+    // Advance timers to trigger heartbeat
+    jest.advanceTimersByTime(HEARTBEAT_INTERVAL + 100);
+    
+    // The ping method in mock should terminate the client after 100ms
+    jest.advanceTimersByTime(200);
+    
+    expect(client.readyState).toBe(WebSocket.CLOSED);
+  });
+
 });
