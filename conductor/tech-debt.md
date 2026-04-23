@@ -90,9 +90,22 @@
 - Tests: 36 tests with 94.33% coverage
 
 ### Phase 2 Complete (2026-04-12)
-- Created packRotation.ts with RotationManager for active pack management
+- Created packRotation.ts with RotationManager for active pack lifecycle management
 - Operations: setActivePacks, addActivePack, removeActivePack, rollback, saveStablePacks
-- Rollback tracks history and marks activation records as consumed
-- Utilities: validatePackAvailability, mergePacksFromIds for pack merging
 - Tests: 26 tests, all passing
 - Runbook: docs/rotation-runbook.md with weekly rotation procedures
+
+---
+
+## Multiplayer Competitive Mode (2026-04-23)
+
+### Phase 1 Complete: WebSocket Infrastructure
+- WebSocket server with heartbeat (30s ping, 90s timeout)
+- Message protocol types with serialization/deserialization
+- Client hook with connection management and reconnection logic
+- 31 tests, 93.88% coverage
+
+### Technical Debt
+- ws module mocking required for Jest (ESM/CJS compatibility)
+- useMultiplayerSocket uses `any` in event handler signatures
+- Integration tests with real WebSocket needed in Phase 5

@@ -1,5 +1,23 @@
 # Lessons Learned
 
+## Track: Multiplayer Competitive Mode - Phase 1 (2026-04-23)
+
+### Summary
+- Implemented WebSocket infrastructure with server (ws), message protocol types, and React hook
+- Faced ESM/CJS compatibility issues with `ws` module in Jest test environment
+- Used mock-based testing for WebSocket to avoid module resolution complexity
+
+### Key Learnings
+- `ws` package has ESM/CJS interop issues in Jest - mocking is more reliable than dynamic imports
+- Heartbeat testing requires jest.useFakeTimers() with careful mock design
+- React hooks with WebSocket need useEffect cleanup to prevent memory leaks and zombie connections
+- useRef is better than useState for event handler collections to avoid re-renders
+
+### Technical Debt Resolved
+- None - new feature infrastructure
+
+---
+
 ## Track: XP Leaderboard Plan Verification (2026-04-17)
 
 ### Summary

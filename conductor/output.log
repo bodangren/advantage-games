@@ -3137,3 +3137,80 @@ bash tool terminated command after exceeding timeout 120000 ms. If this command 
 </bash_metadata>
 [0m
 Build succeeds. Committing lint fixes.
+[0m$ [0mgit add -A && git commit -m "fix(multiplayer): Resolve lint errors in WebSocket server and hook"
+[master 0df2b8f] fix(multiplayer): Resolve lint errors in WebSocket server and hook
+ 4 files changed, 635 insertions(+), 62 deletions(-)
+[0m
+[0m→ [0mRead conductor/tech-debt.md
+[0m
+[0m← [0mEdit conductor/tech-debt.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+@@ -89,10 +89,23 @@
+ - Validation: detectPackFormat, validateVocabularyItem, validateContentPackMetadata, validateContentPack
+ - Tests: 36 tests with 94.33% coverage
+ 
+ ### Phase 2 Complete (2026-04-12)
+-- Created packRotation.ts with RotationManager for active pack management
++- Created packRotation.ts with RotationManager for active pack lifecycle management
+ - Operations: setActivePacks, addActivePack, removeActivePack, rollback, saveStablePacks
+-- Rollback tracks history and marks activation records as consumed
+-- Utilities: validatePackAvailability, mergePacksFromIds for pack merging
+ - Tests: 26 tests, all passing
+-- Runbook: docs/rotation-runbook.md with weekly rotation procedures
+\ No newline at end of file
++- Runbook: docs/rotation-runbook.md with weekly rotation procedures
++
++---
++
++## Multiplayer Competitive Mode (2026-04-23)
++
++### Phase 1 Complete: WebSocket Infrastructure
++- WebSocket server with heartbeat (30s ping, 90s timeout)
++- Message protocol types with serialization/deserialization
++- Client hook with connection management and reconnection logic
++- 31 tests, 93.88% coverage
++
++### Technical Debt
++- ws module mocking required for Jest (ESM/CJS compatibility)
++- useMultiplayerSocket uses `any` in event handler signatures
++- Integration tests with real WebSocket needed in Phase 5
+\ No newline at end of file
+
+[0m
+[0m→ [0mRead conductor/lessons-learned.md[90m [limit=20][0m
+[0m
+[0m← [0mEdit conductor/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+@@ -1,6 +1,24 @@
+ # Lessons Learned
+ 
++## Track: Multiplayer Competitive Mode - Phase 1 (2026-04-23)
++
++### Summary
++- Implemented WebSocket infrastructure with server (ws), message protocol types, and React hook
++- Faced ESM/CJS compatibility issues with `ws` module in Jest test environment
++- Used mock-based testing for WebSocket to avoid module resolution complexity
++
++### Key Learnings
++- `ws` package has ESM/CJS interop issues in Jest - mocking is more reliable than dynamic imports
++- Heartbeat testing requires jest.useFakeTimers() with careful mock design
++- React hooks with WebSocket need useEffect cleanup to prevent memory leaks and zombie connections
++- useRef is better than useState for event handler collections to avoid re-renders
++
++### Technical Debt Resolved
++- None - new feature infrastructure
++
++---
++
+ ## Track: XP Leaderboard Plan Verification (2026-04-17)
+ 
+ ### Summary
+ - Verified XP Leaderboard implementation was fully complete despite plan.md showing unchecked tasks
+
+[0m
