@@ -1,0 +1,13 @@
+Task: Set up WebSocket server with ws library
+
+Summary: Created WebSocket server infrastructure with heartbeat mechanism
+
+Files created:
+- src/lib/multiplayer/ws-server.ts - WebSocket server with connection lifecycle, heartbeat (30s ping, 90s timeout)
+- src/lib/multiplayer/ws-server.test.ts - 7 unit tests covering connections, disconnections, heartbeat, multi-client
+
+Changes:
+- Installed ws@8.18.2 and @types/ws
+- Implemented createWebSocketServer() with connection, error, close handlers
+- Heartbeat: pings every 30s, terminates clients after 3 missed pongs
+- Tests mock ws module for deterministic testing
