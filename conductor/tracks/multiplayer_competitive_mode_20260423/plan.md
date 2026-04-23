@@ -7,7 +7,7 @@
   - [x] Implement connection lifecycle: open, message, close, error handlers.
   - [x] Add heartbeat mechanism (ping/pong every 30s, disconnect after 3 missed pongs).
   - [x] Write unit tests for connection lifecycle and heartbeat.
-- [ ] Task: Define message protocol types.
+- [~] Task: Define message protocol types.
   - [ ] Create `types/multiplayer.ts` with all message types (join, leave, state_update, score_submit, round_start, round_end, game_over).
   - [ ] Write unit tests for message serialization/deserialization.
 - [ ] Task: Implement client-side WebSocket hook.

@@ -915,3 +915,151 @@ Time:        1.214 s, estimated 6 s
 Ran all test suites matching src/lib/multiplayer/ws-server.test.ts.
 [0m
 All 7 tests pass. Now committing and moving to next task.
+[0m$ [0mgit add -A && git commit -m "feat(multiplayer): Add WebSocket server with heartbeat mechanism"
+[master 0107ddc] feat(multiplayer): Add WebSocket server with heartbeat mechanism
+ 6 files changed, 1110 insertions(+), 8 deletions(-)
+ create mode 100644 src/lib/multiplayer/ws-server.test.ts
+ create mode 100644 src/lib/multiplayer/ws-server.ts
+[0m
+[0m$ [0mgit log -1 --format="%H"
+0107ddc1d7531e38efc8dcac8f73097008ff23bb
+[0m
+[0m$ [0mgit notes add -m "Task: Set up WebSocket server with ws library
+
+Summary: Created WebSocket server infrastructure with heartbeat mechanism
+
+Files created:
+- src/lib/multiplayer/ws-server.ts - WebSocket server with connection lifecycle, heartbeat (30s ping, 90s timeout)
+- src/lib/multiplayer/ws-server.test.ts - 7 unit tests covering connections, disconnections, heartbeat, multi-client
+
+Changes:
+- Installed ws@8.18.2 and @types/ws
+- Implemented createWebSocketServer() with connection, error, close handlers
+- Heartbeat: pings every 30s, terminates clients after 3 missed pongs
+- Tests mock ws module for deterministic testing" 0107ddc1d7531e38efc8dcac8f73097008ff23bb
+(no output)
+[0m
+[0m← [0mEdit conductor/tracks/multiplayer_competitive_mode_20260423/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/multiplayer_competitive_mode_20260423/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/multiplayer_competitive_mode_20260423/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/multiplayer_competitive_mode_20260423/plan.md
+@@ -1,13 +1,13 @@
+ # Implementation Plan: Multiplayer Competitive Mode
+ 
+ ## Phase 1: WebSocket Infrastructure
+ 
+-- [~] Task: Set up WebSocket server with `ws` library.
+-  - [ ] Create `lib/multiplayer/ws-server.ts` with WebSocket server initialization.
+-  - [ ] Implement connection lifecycle: open, message, close, error handlers.
+-  - [ ] Add heartbeat mechanism (ping/pong every 30s, disconnect after 3 missed pongs).
+-  - [ ] Write unit tests for connection lifecycle and heartbeat.
++- [x] Task: Set up WebSocket server with `ws` library. [0107ddc]
++  - [x] Create `lib/multiplayer/ws-server.ts` with WebSocket server initialization.
++  - [x] Implement connection lifecycle: open, message, close, error handlers.
++  - [x] Add heartbeat mechanism (ping/pong every 30s, disconnect after 3 missed pongs).
++  - [x] Write unit tests for connection lifecycle and heartbeat.
+ - [ ] Task: Define message protocol types.
+   - [ ] Create `types/multiplayer.ts` with all message types (join, leave, state_update, score_submit, round_start, round_end, game_over).
+   - [ ] Write unit tests for message serialization/deserialization.
+ - [ ] Task: Implement client-side WebSocket hook.
+
+[0m
+[0m$ [0mgit add conductor/tracks/multiplayer_competitive_mode_20260423/plan.md && git commit -m "conductor(plan): Mark WebSocket server task as complete"
+[master fb9272f] conductor(plan): Mark WebSocket server task as complete
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+[0m
+[0m← [0mEdit conductor/tracks/multiplayer_competitive_mode_20260423/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/multiplayer_competitive_mode_20260423/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/multiplayer_competitive_mode_20260423/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/multiplayer_competitive_mode_20260423/plan.md
+@@ -6,9 +6,9 @@
+   - [x] Create `lib/multiplayer/ws-server.ts` with WebSocket server initialization.
+   - [x] Implement connection lifecycle: open, message, close, error handlers.
+   - [x] Add heartbeat mechanism (ping/pong every 30s, disconnect after 3 missed pongs).
+   - [x] Write unit tests for connection lifecycle and heartbeat.
+-- [ ] Task: Define message protocol types.
++- [~] Task: Define message protocol types.
+   - [ ] Create `types/multiplayer.ts` with all message types (join, leave, state_update, score_submit, round_start, round_end, game_over).
+   - [ ] Write unit tests for message serialization/deserialization.
+ - [ ] Task: Implement client-side WebSocket hook.
+   - [ ] Create `hooks/useMultiplayerSocket.ts` with connect, disconnect, send, and event listener APIs.
+
+[0m
+[0m# [0mTodos
+[x] Phase 1 Task 1: Set up WebSocket server with ws library
+[ ] Phase 1 Task 2: Define message protocol types
+[ ] Phase 1 Task 3: Implement client-side WebSocket hook
+[ ] Phase 1 Task 4: Conductor verification
+[0m
+[0m← [0mWrite src/types/multiplayer.test.ts
+Wrote file successfully.
+[0m
+[0m$ [0mCI=true npm test -- src/types/multiplayer.test.ts --verbose
+> vocabulary-games@0.1.0 test
+> jest src/types/multiplayer.test.ts --verbose
+
+FAIL src/types/multiplayer.test.ts
+  ● Test suite failed to run
+
+    Cannot find module './multiplayer' from 'src/types/multiplayer.test.ts'
+
+    However, Jest was able to find:
+    	'./multiplayer.test.ts'
+
+    You might want to include a file extension in your import, or update your 'moduleFileExtensions', which is currently ['js', 'mjs', 'cjs', 'jsx', 'ts', 'mts', 'cts', 'tsx', 'json', 'node'].
+
+    See https://jestjs.io/docs/configuration#modulefileextensions-arraystring
+
+    [0m [90m 3 |[39m   type [33mJoinMessage[39m[33m,[39m
+     [90m 4 |[39m   type [33mLeaveMessage[39m[33m,[39m
+    [31m[1m>[22m[39m[90m 5 |[39m   type [33mStateUpdateMessage[39m[33m,[39m
+     [90m   |[39m                      [31m[1m^[22m[39m
+     [90m 6 |[39m   type [33mScoreSubmitMessage[39m[33m,[39m
+     [90m 7 |[39m   type [33mRoundStartMessage[39m[33m,[39m
+     [90m 8 |[39m   type [33mRoundEndMessage[39m[33m,[39m[0m
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (src/types/multiplayer.test.ts:5:22)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        2.012 s
+Ran all test suites matching src/types/multiplayer.test.ts.
+[0m
+[0m← [0mWrite src/types/multiplayer.ts
+Wrote file successfully.
+[0m
+[0m$ [0mCI=true npm test -- src/types/multiplayer.test.ts --verbose
+> vocabulary-games@0.1.0 test
+> jest src/types/multiplayer.test.ts --verbose
+
+PASS src/types/multiplayer.test.ts
+  Multiplayer Message Types
+    MessageType enum
+      ✓ should define all required message types (25 ms)
+    serializeMessage
+      ✓ should serialize a join message (6 ms)
+      ✓ should serialize a state update message (4 ms)
+      ✓ should serialize a score submit message (4 ms)
+    deserializeMessage
+      ✓ should deserialize a join message (9 ms)
+      ✓ should deserialize a leave message (6 ms)
+      ✓ should deserialize a round start message (6 ms)
+      ✓ should deserialize a round end message (7 ms)
+      ✓ should deserialize a game over message (3 ms)
+      ✓ should throw error for invalid JSON (64 ms)
+      ✓ should throw error for messages without type (7 ms)
+      ✓ should throw error for unknown message types (4 ms)
+    type guards
+      ✓ should validate PlayerState structure (2 ms)
+      ✓ should validate GameState structure (1 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       14 passed, 14 total
+Snapshots:   0 total
+Time:        3.405 s
+Ran all test suites matching src/types/multiplayer.test.ts.
+[0m
