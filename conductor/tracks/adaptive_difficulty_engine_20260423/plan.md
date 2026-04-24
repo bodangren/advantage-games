@@ -51,7 +51,7 @@
   - [x] Write integration tests for both games.
 - [x] Task: Conductor — User Manual Verification 'Phase 3: Game Integration' (Protocol in workflow.md)
 
-## Phase 4: Testing & Calibration
+## Phase 4: Testing & Calibration [checkpoint: 0c02439]
 
 - [x] Task: Calibration test suite. [be06305]
   - [x] Simulate player sessions with known accuracy/speed patterns.
