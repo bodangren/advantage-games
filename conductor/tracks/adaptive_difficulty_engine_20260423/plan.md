@@ -53,11 +53,11 @@
 
 ## Phase 4: Testing & Calibration
 
-- [ ] Task: Calibration test suite.
-  - [ ] Simulate player sessions with known accuracy/speed patterns.
-  - [ ] Verify engine converges to flow zone (score 40-80) within 20 responses.
-  - [ ] Test edge cases: perfect accuracy, 0% accuracy, all fast, all slow.
-  - [ ] Write calibration tests with assertion on convergence.
+- [x] Task: Calibration test suite. [COMMIT_PLACEHOLDER]
+  - [x] Simulate player sessions with known accuracy/speed patterns.
+  - [x] Verify engine converges to flow zone (score 40-80) within 20 responses.
+  - [x] Test edge cases: perfect accuracy, 0% accuracy, all fast, all slow.
+  - [x] Write calibration tests with assertion on convergence.
 - [ ] Task: Optional session-start hint persistence.
   - [ ] Save last session's ending parameters to localStorage.
   - [ ] On next session start, load as initial parameters (if available).
