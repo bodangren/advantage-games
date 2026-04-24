@@ -18,7 +18,7 @@
 
 ## Phase 2: Adjustment Algorithm
 
-- [ ] Task: Implement EMA-based adjustment engine.
+- [~] Task: Implement EMA-based adjustment engine.
   - [ ] Create `lib/adaptive-difficulty/adjustment-engine.ts`.
   - [ ] Exponential moving average with configurable α (default 0.3).
   - [ ] Threshold logic: score > 80 → increase, < 40 → decrease, 40-80 → hold.
