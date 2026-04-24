@@ -16,21 +16,21 @@
   - [x] Write unit tests for parameter registration and retrieval.
 - [x] Task: Conductor — User Manual Verification 'Phase 1: Performance Metrics Collection' (Protocol in workflow.md)
 
-## Phase 2: Adjustment Algorithm
+## Phase 2: Adjustment Algorithm [checkpoint: 272f8e9]
 
-- [~] Task: Implement EMA-based adjustment engine.
-  - [ ] Create `lib/adaptive-difficulty/adjustment-engine.ts`.
-  - [ ] Exponential moving average with configurable α (default 0.3).
-  - [ ] Threshold logic: score > 80 → increase, < 40 → decrease, 40-80 → hold.
-  - [ ] Parameter change capped at ±15% per adjustment cycle.
-  - [ ] Adjustment cycle triggers every 5 responses.
-  - [ ] Write unit tests: EMA smoothing, threshold triggers, rate limiting, cycle counting.
-- [ ] Task: Implement parameter modifier.
-  - [ ] Given current parameters and performance score, compute adjusted parameters.
-  - [ ] Respect min/max bounds from parameter registry.
-  - [ ] Return delta (what changed) for UI feedback.
-  - [ ] Write unit tests: boundary clamping, direction of change, delta calculation.
-- [ ] Task: Conductor — User Manual Verification 'Phase 2: Adjustment Algorithm' (Protocol in workflow.md)
+- [x] Task: Implement EMA-based adjustment engine. [272f8e9]
+  - [x] Create `lib/adaptive-difficulty/adjustment-engine.ts`.
+  - [x] Exponential moving average with configurable α (default 0.3).
+  - [x] Threshold logic: score > 80 → increase, < 40 → decrease, 40-80 → hold.
+  - [x] Parameter change capped at ±15% per adjustment cycle.
+  - [x] Adjustment cycle triggers every 5 responses.
+  - [x] Write unit tests: EMA smoothing, threshold triggers, rate limiting, cycle counting.
+- [x] Task: Implement parameter modifier.
+  - [x] Given current parameters and performance score, compute adjusted parameters.
+  - [x] Respect min/max bounds from parameter registry.
+  - [x] Return delta (what changed) for UI feedback.
+  - [x] Write unit tests: boundary clamping, direction of change, delta calculation.
+- [x] Task: Conductor — User Manual Verification 'Phase 2: Adjustment Algorithm' (Protocol in workflow.md)
 
 ## Phase 3: Game Integration
 

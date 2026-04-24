@@ -164,7 +164,14 @@
 - registerDifficultyParams with module-level registry for game difficulty parameters
 - 23 tests with 98.38% coverage
 
+### Phase 2 Complete: Adjustment Algorithm (2026-04-24)
+- EMA-based adjustment engine with configurable α (default 0.3)
+- Threshold logic: score > 80 → increase, < 40 → decrease, 40-80 → hold
+- Parameter changes capped at ±15% per adjustment cycle
+- Adjustment cycle triggers every 5 responses
+- parameter-modifier.ts with per-game engine persistence via module-level registry
+- 34 total tests across adjustment-engine, registerDifficultyParams, parameter-modifier
+
 ### Technical Debt
-- Adjustment algorithm (EMA-based) needed in Phase 2
 - Game integration hooks needed in Phase 3
 - Calibration and convergence tests needed in Phase 4

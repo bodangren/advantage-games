@@ -1,5 +1,25 @@
 # Lessons Learned
 
+## Track: Adaptive Difficulty Engine - Phase 2 (2026-04-24)
+
+### Summary
+- Implemented EMA-based adjustment engine with configurable smoothing factor α=0.3
+- Created parameter-modifier.ts that applies adjustments to registered game parameters
+- Engine state persists per-game via module-level registry (EMA score and response count must persist across calls)
+- 34 total tests across all Phase 1-2 modules
+
+### Key Learnings
+- EMA smoothing requires persistent engine state across multiple performance scores - creating a new engine per call resets EMA to neutral (50)
+- With α=0.3, it takes ~4 consecutive high scores (≥90) to push EMA above the 80 threshold for difficulty increase
+- Parameter changes must be clamped to min/max bounds AND rate-limited (±15% cap) to prevent dramatic swings
+- Module-level engine registry mirrors the pattern used for parameter registry - clean and testable
+- registerDifficultyParams accepts Record<string, ...> object, not array - type mismatch caused silent failures in initial tests
+
+### Technical Debt Resolved
+- None - new feature infrastructure
+
+---
+
 ## Track: Adaptive Difficulty Engine - Phase 1 (2026-04-24)
 
 ### Summary
