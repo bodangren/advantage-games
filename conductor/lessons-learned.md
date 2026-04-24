@@ -1,5 +1,25 @@
 # Lessons Learned
 
+## Track: Multiplayer Competitive Mode - Phase 3 (2026-04-24)
+
+### Summary
+- Implemented server-authoritative game session with 20Hz tick rate and state machine
+- Created client-side hook with optimistic UI and rollback for latency compensation
+- Built MultiplayerGameWrapper component with React Context for state injection
+- Achieved >97% test coverage across all new code
+
+### Key Learnings
+- Game state snapshots must be deep-cloned (not just Map spread) to prevent mutation leaks between renders
+- Optimistic UI requires tracking pending submissions with timestamps for graceful rejection handling
+- Server tick loops must be properly cleaned up on game end to prevent memory leaks
+- TypeScript optional chaining with comparisons (`gameState?.status === 'playing'`) returns boolean, so `?? false` is unreachable
+- React Context is the cleanest way to inject multiplayer state into deeply nested game components
+
+### Technical Debt Resolved
+- None - new feature infrastructure
+
+---
+
 ## Track: Multiplayer Competitive Mode - Phase 2 (2026-04-24)
 
 ### Summary
