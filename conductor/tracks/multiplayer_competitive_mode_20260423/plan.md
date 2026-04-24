@@ -53,24 +53,24 @@
   - [x] Write component tests for wrapper integration.
 - [x] Task: Conductor — User Manual Verification 'Phase 3: Game State Synchronization' (Protocol in workflow.md)
 
-## Phase 4: Scoring, Leaderboard & Anti-Cheat
+## Phase 4: Scoring, Leaderboard & Anti-Cheat [checkpoint: 01e75c8]
 
-- [~] Task: Implement server-side scoring engine.
-  - [~] Server calculates scores from validated inputs (correct answers, response time).
-  - [~] Round progression: server tracks round number, triggers round transitions.
-  - [~] Anti-cheat: reject score submissions that exceed maximum possible score for the round.
-  - [~] Write unit tests for scoring calculations and anti-cheat validation.
-- [~] Task: Build real-time scoreboard overlay.
-  - [~] Create `components/multiplayer/ScoreboardOverlay.tsx` showing all players' scores.
-  - [~] Animate score changes with Framer Motion.
-  - [~] Round transition screen: intermediate rankings between rounds.
-  - [~] Write component tests for scoreboard rendering and animations.
-- [~] Task: Build end-of-game podium screen.
-  - [~] Create `components/multiplayer/PodiumScreen.tsx` with final rankings.
-  - [~] XP bonus calculation: 1st +50%, 2nd +25%, 3rd +10%.
-  - [~] "Play Again" and "Leave Room" actions.
-  - [~] Write component tests for podium display and XP calculation.
-- [~] Task: Conductor — User Manual Verification 'Phase 4: Scoring, Leaderboard & Anti-Cheat' (Protocol in workflow.md)
+- [x] Task: Implement server-side scoring engine. [fa743f3]
+  - [x] Server calculates scores from validated inputs (correct answers, response time).
+  - [x] Round progression: server tracks round number, triggers round transitions.
+  - [x] Anti-cheat: reject score submissions that exceed maximum possible score for the round.
+  - [x] Write unit tests for scoring calculations and anti-cheat validation.
+- [x] Task: Build real-time scoreboard overlay. [6cd3888]
+  - [x] Create `components/multiplayer/ScoreboardOverlay.tsx` showing all players' scores.
+  - [x] Animate score changes with Framer Motion.
+  - [x] Round transition screen: intermediate rankings between rounds.
+  - [x] Write component tests for scoreboard rendering and animations.
+- [x] Task: Build end-of-game podium screen. [01e75c8]
+  - [x] Create `components/multiplayer/PodiumScreen.tsx` with final rankings.
+  - [x] XP bonus calculation: 1st +50%, 2nd +25%, 3rd +10%.
+  - [x] "Play Again" and "Leave Room" actions.
+  - [x] Write component tests for podium display and XP calculation.
+- [x] Task: Conductor — User Manual Verification 'Phase 4: Scoring, Leaderboard & Anti-Cheat' (Protocol in workflow.md)
 
 ## Phase 5: Integration Testing & Polish
 
