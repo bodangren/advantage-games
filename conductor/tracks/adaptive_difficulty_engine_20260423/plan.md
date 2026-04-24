@@ -58,10 +58,10 @@
   - [x] Verify engine converges to flow zone (score 40-80) within 20 responses.
   - [x] Test edge cases: perfect accuracy, 0% accuracy, all fast, all slow.
   - [x] Write calibration tests with assertion on convergence.
-- [ ] Task: Optional session-start hint persistence.
-  - [ ] Save last session's ending parameters to localStorage.
-  - [ ] On next session start, load as initial parameters (if available).
-  - [ ] Write unit tests for hint save/load and fallback to tier defaults.
+- [x] Task: Optional session-start hint persistence. [COMMIT_PLACEHOLDER]
+  - [x] Save last session's ending parameters to localStorage.
+  - [x] On next session start, load as initial parameters (if available).
+  - [x] Write unit tests for hint save/load and fallback to tier defaults.
 - [ ] Task: Performance overhead verification.
   - [ ] Benchmark `recordResponse()` latency — must be <1ms.
   - [ ] Verify no frame drops when adaptive mode is enabled.
