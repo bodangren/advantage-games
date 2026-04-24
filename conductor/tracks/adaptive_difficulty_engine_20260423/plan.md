@@ -34,22 +34,22 @@
 
 ## Phase 3: Game Integration
 
-- [ ] Task: Implement `useAdaptiveDifficulty` hook.
-  - [ ] Combines `usePerformanceMetrics` + adjustment engine.
-  - [ ] Exposes `recordResponse()`, `getCurrentParams()`, `isEnabled()`.
-  - [ ] Accepts `adaptive` boolean prop and `gameId` for parameter lookup.
-  - [ ] No-op mode: when `adaptive=false`, `recordResponse()` is a no-op and `getCurrentParams()` returns defaults.
-  - [ ] Write unit tests: enabled vs disabled behavior, parameter updates after cycle.
-- [ ] Task: Add `adaptive` prop to game canvas component.
-  - [ ] Extend `<GameCanvas>` with optional `adaptive` prop (default: false).
-  - [ ] Pass adaptive params to game-specific parameter consumers.
-  - [ ] Write component tests: prop passthrough, no-op when disabled.
-- [ ] Task: Integrate with 2 representative games (e.g., Dragon Flight, Wizard vs Zombie).
-  - [ ] Register difficulty parameters for each game.
-  - [ ] Wire `useAdaptiveDifficulty` into game loop.
-  - [ ] Verify parameter changes are applied smoothly between frames.
-  - [ ] Write integration tests for both games.
-- [ ] Task: Conductor — User Manual Verification 'Phase 3: Game Integration' (Protocol in workflow.md)
+- [x] Task: Implement `useAdaptiveDifficulty` hook.
+  - [x] Combines `usePerformanceMetrics` + adjustment engine.
+  - [x] Exposes `recordResponse()`, `getCurrentParams()`, `isEnabled()`.
+  - [x] Accepts `adaptive` boolean prop and `gameId` for parameter lookup.
+  - [x] No-op mode: when `adaptive=false`, `recordResponse()` is a no-op and `getCurrentParams()` returns defaults.
+  - [x] Write unit tests: enabled vs disabled behavior, parameter updates after cycle.
+- [x] Task: Add `adaptive` prop to game canvas component.
+  - [x] Extend `<GameCanvas>` with optional `adaptive` prop (default: false).
+  - [x] Pass adaptive params to game-specific parameter consumers.
+  - [x] Write component tests: prop passthrough, no-op when disabled.
+- [x] Task: Integrate with 2 representative games (e.g., Dragon Flight, Wizard vs Zombie).
+  - [x] Register difficulty parameters for each game.
+  - [x] Wire `useAdaptiveDifficulty` into game loop.
+  - [x] Verify parameter changes are applied smoothly between frames.
+  - [x] Write integration tests for both games.
+- [x] Task: Conductor — User Manual Verification 'Phase 3: Game Integration' (Protocol in workflow.md)
 
 ## Phase 4: Testing & Calibration
 

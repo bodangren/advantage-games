@@ -30,6 +30,8 @@ import type {
 import type { VocabularyItem } from "@/store/useGameStore";
 import { useInterval } from "@/hooks/useInterval";
 import { useSound } from "@/hooks/useSound";
+import { useAdaptiveDifficulty } from "@/hooks/useAdaptiveDifficulty";
+import { registerDifficultyParams } from "@/lib/adaptive-difficulty/registerDifficultyParams";
 
 type DragonFlightAssets = {
   gates: HTMLImageElement;
@@ -51,6 +53,7 @@ type DragonFlightGameProps = {
   onComplete?: (results: DragonFlightResults) => void;
   onRestart?: () => void;
   preloadedAssets?: DragonFlightAssets;
+  adaptive?: boolean;
 };
 
 type GateFeedback = {
@@ -437,6 +440,7 @@ export function DragonFlightGame({
   onComplete,
   onRestart,
   preloadedAssets,
+  adaptive = false,
 }: DragonFlightGameProps) {
   const t = useScopedI18n("pages.student.gamesPage");
   const DIFFICULTY_SETTINGS = useMemo(() => getDifficultySettings(t), [t]);
@@ -453,6 +457,18 @@ export function DragonFlightGame({
     return createDragonFlightState(vocabulary, {
       durationMs: durationMs ?? DIFFICULTY_SETTINGS.normal.durationMs,
     });
+  });
+
+  // Register adaptive difficulty params for dragon-flight
+  useMemo(() => {
+    registerDifficultyParams('dragon-flight', {
+      durationMs: { current: durationMs ?? DIFFICULTY_SETTINGS.normal.durationMs, min: 15000, max: 120000, default: DIFFICULTY_SETTINGS.normal.durationMs, step: 5000 },
+    });
+  }, []);
+
+  const { recordResponse: recordAdaptiveResponse } = useAdaptiveDifficulty({
+    gameId: 'dragon-flight',
+    adaptive,
   });
 
   const initialRoundRef = useRef<DragonFlightRound>(state.round);
@@ -726,6 +742,12 @@ export function DragonFlightGame({
           });
 
           playSound(pending.outcome === "correct" ? "success" : "error");
+
+          // Record adaptive difficulty response
+          recordAdaptiveResponse(
+            pending.outcome === "correct",
+            1500, // Approximate response time
+          );
 
           // Delay return to center to let player reach the gate first
           setTimeout(() => {

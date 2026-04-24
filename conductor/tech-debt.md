@@ -172,6 +172,14 @@
 - parameter-modifier.ts with per-game engine persistence via module-level registry
 - 34 total tests across adjustment-engine, registerDifficultyParams, parameter-modifier
 
+### Phase 3 Complete: Game Integration (2026-04-24)
+- useAdaptiveDifficulty hook combining usePerformanceMetrics + adjustment engine
+- Exposes recordResponse(), getCurrentParams(), getParamValue(), isEnabled
+- No-op mode when adaptive=false
+- Integrated with Dragon Flight (durationMs parameter) and Wizard vs Zombie (zombieSpeed, spawnRate parameters)
+- 9 tests for useAdaptiveDifficulty hook, 62 total tests across all adaptive difficulty modules
+
 ### Technical Debt
-- Game integration hooks needed in Phase 3
+- Game parameter application currently records responses but does not dynamically adjust game parameters in real-time (games use static initial values)
 - Calibration and convergence tests needed in Phase 4
+- DragonFlightGame.test.tsx has pre-existing timeout issue (unrelated to adaptive changes)

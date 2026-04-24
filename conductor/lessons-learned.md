@@ -1,5 +1,25 @@
 # Lessons Learned
 
+## Track: Adaptive Difficulty Engine - Phase 3 (2026-04-24)
+
+### Summary
+- Implemented useAdaptiveDifficulty hook that bridges performance metrics with game parameter adjustment
+- Integrated adaptive difficulty into Dragon Flight (durationMs) and Wizard vs Zombie (zombieSpeed, spawnRate)
+- Added `adaptive` optional prop to both game components with backward compatibility (default: false)
+- 62 total tests across all adaptive difficulty modules
+
+### Key Learnings
+- Hook composition pattern works well: useAdaptiveDifficulty wraps usePerformanceMetrics and parameter-modifier
+- getParamValue() with defaultValue fallback is safer than getCurrentParams() for individual parameter lookups
+- Game integration requires detecting state changes in the game loop (e.g., totalAttempts increasing)
+- registerDifficultyParams should be called once per game session, ideally in useMemo with empty deps
+- TypeScript prop extensions maintain backward compatibility when prop is optional with default value
+
+### Technical Debt Resolved
+- None - new feature infrastructure
+
+---
+
 ## Track: Adaptive Difficulty Engine - Phase 2 (2026-04-24)
 
 ### Summary

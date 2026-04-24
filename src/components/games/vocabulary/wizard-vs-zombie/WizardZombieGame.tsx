@@ -28,6 +28,8 @@ import { useSound } from "@/hooks/useSound";
 import { useInterval } from "@/hooks/useInterval";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { useAdaptiveDifficulty } from "@/hooks/useAdaptiveDifficulty";
+import { registerDifficultyParams } from "@/lib/adaptive-difficulty/registerDifficultyParams";
 import { useGameDimensions } from "@/hooks/useGameDimensions";
 import { VirtualDPad } from "@/components/ui/VirtualDPad";
 import { calculateIndicators } from "@/lib/games/wizardZombieIndicators";
@@ -68,6 +70,7 @@ interface WizardZombieGameProps {
   vocabulary: VocabularyItem[];
   difficulty: Difficulty;
   onComplete: (results: WizardZombieGameResult) => void;
+  adaptive?: boolean;
 }
 
 // Sprite Helper
@@ -88,6 +91,7 @@ export function WizardZombieGame({
   vocabulary,
   difficulty,
   onComplete,
+  adaptive = false,
 }: WizardZombieGameProps) {
   const t = useScopedI18n("pages.student.gamesPage");
   const { playSound } = useSound();
@@ -99,6 +103,26 @@ export function WizardZombieGame({
     createWizardZombieState(vocabulary, { difficulty }),
   );
   const [hasStarted, setHasStarted] = useState(false);
+
+  // Register adaptive difficulty params for wizard-vs-zombie
+  useMemo(() => {
+    const difficultyModifiers = {
+      easy: { speed: 0.8, spawnRate: 1.2 },
+      normal: { speed: 1.0, spawnRate: 1.0 },
+      hard: { speed: 1.2, spawnRate: 0.8 },
+      extreme: { speed: 1.5, spawnRate: 0.6 },
+    };
+    const modifiers = difficultyModifiers[difficulty] || difficultyModifiers.normal;
+    registerDifficultyParams('wizard-vs-zombie', {
+      zombieSpeed: { current: modifiers.speed, min: 0.5, max: 2.0, default: 1.0, step: 0.1 },
+      spawnRate: { current: modifiers.spawnRate, min: 0.4, max: 1.5, default: 1.0, step: 0.1 },
+    });
+  }, []);
+
+  const { recordResponse: recordAdaptiveResponse } = useAdaptiveDifficulty({
+    gameId: 'wizard-vs-zombie',
+    adaptive,
+  });
 
   const touchTarget = getEffectiveTouchTarget(56); // base size for buttons
   const textScale = getEffectiveTextSize(16); // base font size in pixels
@@ -246,6 +270,11 @@ export function WizardZombieGame({
                 velocity: { x: (Math.random() - 0.5) * 2, y: -2 },
               },
             ]);
+          }
+          // Adaptive difficulty: track orb collection
+          if (nextState.totalAttempts > gameState.totalAttempts) {
+            const isCorrect = nextState.correctAnswers > gameState.correctAnswers;
+            recordAdaptiveResponse(isCorrect, 1000);
           }
         }
 
