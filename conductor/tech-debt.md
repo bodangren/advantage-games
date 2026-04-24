@@ -153,3 +153,18 @@
 - Room manager currently uses in-memory storage - will need persistence for production scaling
 - Game session word generation is currently hardcoded placeholder - needs vocabulary pack integration
 - ScoreboardOverlay and PodiumScreen need integration with actual game flow
+
+---
+
+## Adaptive Difficulty Engine (2026-04-24)
+
+### Phase 1 Complete: Performance Metrics Collection
+- Performance metrics types (ResponseRecord, PerformanceMetrics, PerformanceScore, DifficultyParam)
+- usePerformanceMetrics hook with rolling window (20 responses), composite score calculation
+- registerDifficultyParams with module-level registry for game difficulty parameters
+- 23 tests with 98.38% coverage
+
+### Technical Debt
+- Adjustment algorithm (EMA-based) needed in Phase 2
+- Game integration hooks needed in Phase 3
+- Calibration and convergence tests needed in Phase 4

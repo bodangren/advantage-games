@@ -1,5 +1,25 @@
 # Lessons Learned
 
+## Track: Adaptive Difficulty Engine - Phase 1 (2026-04-24)
+
+### Summary
+- Implemented performance metrics collection with rolling window and composite scoring
+- Created usePerformanceMetrics hook with accuracy (50%), speed (30%), streak (20%) weights
+- Built registerDifficultyParams with module-level registry for game parameters
+- 23 tests with 98.38% coverage
+
+### Key Learnings
+- Rolling window eviction should use array slice (not shift) for performance with large windows
+- Speed normalization should be non-linear: very fast responses (under 1s) get full 100 points
+- Streak calculation needs separate tracking for current streak (from end) vs best streak (overall)
+- Module-level Map registry is cleanest for global parameter storage without React context overhead
+- Test expectations must account for floating point precision (use toBeCloseTo for percentages)
+
+### Technical Debt Resolved
+- None - new feature infrastructure
+
+---
+
 ## Track: Multiplayer Competitive Mode - Phase 5 (2026-04-24)
 
 ### Summary
