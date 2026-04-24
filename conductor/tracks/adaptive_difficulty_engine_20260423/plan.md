@@ -62,7 +62,7 @@
   - [x] Save last session's ending parameters to localStorage.
   - [x] On next session start, load as initial parameters (if available).
   - [x] Write unit tests for hint save/load and fallback to tier defaults.
-- [ ] Task: Performance overhead verification.
-  - [ ] Benchmark `recordResponse()` latency — must be <1ms.
-  - [ ] Verify no frame drops when adaptive mode is enabled.
+- [x] Task: Performance overhead verification. [COMMIT_PLACEHOLDER]
+  - [x] Benchmark `recordResponse()` latency — must be <1ms.
+  - [x] Verify no frame drops when adaptive mode is enabled.
 - [ ] Task: Conductor — User Manual Verification 'Phase 4: Testing & Calibration' (Protocol in workflow.md)
