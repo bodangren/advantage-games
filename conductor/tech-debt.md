@@ -124,6 +124,13 @@
 - 38 tests across game-session, useMultiplayerGameState, MultiplayerGameWrapper
 - Coverage: game-session 98.29%, useMultiplayerGameState 100%, MultiplayerGameWrapper 86.51%
 
+### Phase 4 Complete: Scoring, Leaderboard & Anti-Cheat (2026-04-24)
+- Scoring engine with base score, time bonus, combo multiplier, and anti-cheat validation
+- ScoreboardOverlay component with real-time updates and Framer Motion animations
+- PodiumScreen component with final rankings, XP bonuses, and action buttons
+- 47 tests across scoring-engine, ScoreboardOverlay, and PodiumScreen
+- Coverage: scoring-engine 100%, ScoreboardOverlay 100%, PodiumScreen 100%
+
 ### Technical Debt
 - ws module mocking required for Jest (ESM/CJS compatibility)
 - useMultiplayerSocket uses `any` in event handler signatures — **PARTIALLY RESOLVED 2026-04-23 (source file fixed, 8 warnings remain in test mock types)**
@@ -131,4 +138,4 @@
 - useMultiplayerSocket.test.ts: MockWebSocket event handler types use `any` (cosmetic, test-only)
 - Room manager currently uses in-memory storage - will need persistence for production scaling
 - Game session word generation is currently hardcoded placeholder - needs vocabulary pack integration
-- Score calculation is basic (+100 per word) - needs response time bonus and combo system in Phase 4
+- ScoreboardOverlay and PodiumScreen need integration with actual game flow in Phase 5

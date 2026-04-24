@@ -1,5 +1,26 @@
 # Lessons Learned
 
+## Track: Multiplayer Competitive Mode - Phase 4 (2026-04-24)
+
+### Summary
+- Implemented scoring engine with time bonus, combo multiplier, and anti-cheat validation
+- Built ScoreboardOverlay with Framer Motion animations for real-time score updates
+- Created PodiumScreen with final rankings and XP bonus calculations
+- Achieved 100% test coverage across all new code
+
+### Key Learnings
+- Anti-cheat validation should happen at submission time, not just at score calculation
+- Time bonus decay should be non-linear (exponential or quadratic) to reward truly fast responses
+- Combo multipliers need reset mechanisms (on wrong answer or round end) to prevent exploitation
+- Framer Motion's AnimatePresence with layout animations provides smooth score reordering
+- Test assertions need to be specific enough to avoid matching multiple elements (e.g., "Player 1" appearing in both winner announcement and rankings)
+- XP bonuses should be calculated as percentages of total score to maintain balance across different game lengths
+
+### Technical Debt Resolved
+- Score calculation now includes response time bonus and combo system (was placeholder in Phase 3)
+
+---
+
 ## Track: Multiplayer Competitive Mode - Phase 3 (2026-04-24)
 
 ### Summary
