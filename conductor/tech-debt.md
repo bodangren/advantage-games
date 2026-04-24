@@ -183,3 +183,6 @@
 - Game parameter application currently records responses but does not dynamically adjust game parameters in real-time (games use static initial values)
 - Calibration and convergence tests needed in Phase 4
 - DragonFlightGame.test.tsx has pre-existing timeout issue (unrelated to adaptive changes)
+- useAdaptiveDifficulty: stale closure — `getScore()` called immediately after `recordPerf()` returns stale metrics (React state is async). First response always uses empty metrics window. Fix: compute score synchronously from records or use useEffect to react to record changes.
+- parameter-modifier: shared EMA state across parameters — `adjustParameter()` called once per param in a loop increments `responseCount` per param, not per cycle. With N params, the engine triggers adjustment after `cycleSize/N` responses instead of `cycleSize`. Fix: decouple per-param adjustment from shared engine state.
+- performance-benchmark.test.ts: flaky timing assertion — expects 1000 scoring ops in <10ms, measured 20ms on CI. Consider raising threshold or using statistical approach.

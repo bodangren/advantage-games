@@ -1,8 +1,6 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 
 describe('Multiplayer Mobile Viewport', () => {
-  const MOBILE_VIEWPORT = { width: 390, height: 844 };
-
   beforeEach(() => {
     // Reset window size mock
     jest.clearAllMocks();

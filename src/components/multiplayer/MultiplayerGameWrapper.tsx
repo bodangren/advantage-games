@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { useMultiplayerGameState } from '@/hooks/useMultiplayerGameState';
 import type { GameState } from '@/types/multiplayer';
 

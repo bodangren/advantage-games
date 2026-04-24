@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { WizardZombieGame } from "./WizardZombieGame";
 import { VocabularyItem } from "@/store/useGameStore";
 import type React from "react";

@@ -117,7 +117,7 @@ export function WizardZombieGame({
       zombieSpeed: { current: modifiers.speed, min: 0.5, max: 2.0, default: 1.0, step: 0.1 },
       spawnRate: { current: modifiers.spawnRate, min: 0.4, max: 1.5, default: 1.0, step: 0.1 },
     });
-  }, []);
+  }, [difficulty]);
 
   const { recordResponse: recordAdaptiveResponse } = useAdaptiveDifficulty({
     gameId: 'wizard-vs-zombie',
