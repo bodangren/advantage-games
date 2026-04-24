@@ -74,14 +74,14 @@
 
 ## Phase 5: Integration Testing & Polish
 
-- [ ] Task: End-to-end multiplayer flow test.
-  - [ ] Playwright test: 2 browser contexts, create room, join, play 1 round, verify scores.
-  - [ ] Test disconnect/reconnect scenario.
-  - [ ] Test host disconnect and auto-promotion.
-- [ ] Task: Mobile viewport verification.
-  - [ ] Verify all multiplayer UI (lobby, scoreboard, podium) fits within 390×844.
-  - [ ] Test touch interactions for lobby and scoreboard.
-- [ ] Task: Performance benchmarking.
-  - [ ] Measure WebSocket message latency under load (4 players, 20Hz updates).
-  - [ ] Verify <100ms state update latency target.
-- [ ] Task: Conductor — User Manual Verification 'Phase 5: Integration Testing & Polish' (Protocol in workflow.md)
+- [~] Task: End-to-end multiplayer flow test.
+  - [~] Playwright test: 2 browser contexts, create room, join, play 1 round, verify scores.
+  - [~] Test disconnect/reconnect scenario.
+  - [~] Test host disconnect and auto-promotion.
+- [~] Task: Mobile viewport verification.
+  - [~] Verify all multiplayer UI (lobby, scoreboard, podium) fits within 390×844.
+  - [~] Test touch interactions for lobby and scoreboard.
+- [~] Task: Performance benchmarking.
+  - [~] Measure WebSocket message latency under load (4 players, 20Hz updates).
+  - [~] Verify <100ms state update latency target.
+- [~] Task: Conductor — User Manual Verification 'Phase 5: Integration Testing & Polish' (Protocol in workflow.md)
