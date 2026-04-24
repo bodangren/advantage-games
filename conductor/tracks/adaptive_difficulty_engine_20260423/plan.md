@@ -53,7 +53,7 @@
 
 ## Phase 4: Testing & Calibration
 
-- [x] Task: Calibration test suite. [COMMIT_PLACEHOLDER]
+- [x] Task: Calibration test suite. [be06305]
   - [x] Simulate player sessions with known accuracy/speed patterns.
   - [x] Verify engine converges to flow zone (score 40-80) within 20 responses.
   - [x] Test edge cases: perfect accuracy, 0% accuracy, all fast, all slow.
