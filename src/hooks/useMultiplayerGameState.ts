@@ -159,7 +159,7 @@ export function useMultiplayerGameState(
 
   return {
     gameState,
-    isPlaying: gameState?.status === 'playing' ?? false,
+    isPlaying: gameState?.status === 'playing',
     currentRound: gameState?.currentRound ?? 0,
     totalRounds: 3, // Default, will be updated from round_start messages
     players: gameState?.players ?? [],
