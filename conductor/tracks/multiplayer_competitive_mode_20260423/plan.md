@@ -72,16 +72,16 @@
   - [x] Write component tests for podium display and XP calculation.
 - [x] Task: Conductor — User Manual Verification 'Phase 4: Scoring, Leaderboard & Anti-Cheat' (Protocol in workflow.md)
 
-## Phase 5: Integration Testing & Polish
+## Phase 5: Integration Testing & Polish [checkpoint: 5f39039]
 
-- [~] Task: End-to-end multiplayer flow test.
-  - [~] Playwright test: 2 browser contexts, create room, join, play 1 round, verify scores.
-  - [~] Test disconnect/reconnect scenario.
-  - [~] Test host disconnect and auto-promotion.
-- [~] Task: Mobile viewport verification.
-  - [~] Verify all multiplayer UI (lobby, scoreboard, podium) fits within 390×844.
-  - [~] Test touch interactions for lobby and scoreboard.
-- [~] Task: Performance benchmarking.
-  - [~] Measure WebSocket message latency under load (4 players, 20Hz updates).
-  - [~] Verify <100ms state update latency target.
-- [~] Task: Conductor — User Manual Verification 'Phase 5: Integration Testing & Polish' (Protocol in workflow.md)
+- [x] Task: End-to-end multiplayer flow test. [ef2b944]
+  - [x] Playwright test: 2 browser contexts, create room, join, play 1 round, verify scores.
+  - [x] Test disconnect/reconnect scenario.
+  - [x] Test host disconnect and auto-promotion.
+- [x] Task: Mobile viewport verification. [ef2b944]
+  - [x] Verify all multiplayer UI (lobby, scoreboard, podium) fits within 390×844.
+  - [x] Test touch interactions for lobby and scoreboard.
+- [x] Task: Performance benchmarking. [ef2b944]
+  - [x] Measure WebSocket message latency under load (4 players, 20Hz updates).
+  - [x] Verify <100ms state update latency target.
+- [x] Task: Conductor — User Manual Verification 'Phase 5: Integration Testing & Polish' (Protocol in workflow.md)
