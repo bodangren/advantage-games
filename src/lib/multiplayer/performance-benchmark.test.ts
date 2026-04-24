@@ -1,5 +1,6 @@
 import { ScoringEngine } from './scoring-engine';
 import { GameSession } from './game-session';
+import { RoomManager } from './room-manager';
 import type { Room } from './room-manager';
 
 describe('Multiplayer Performance Benchmarks', () => {
@@ -105,7 +106,6 @@ describe('Multiplayer Performance Benchmarks', () => {
 
   describe('RoomManager Performance', () => {
     it('should create 100 rooms in under 10ms', () => {
-      const { RoomManager } = require('./room-manager');
       const manager = new RoomManager();
 
       const startTime = Date.now();
@@ -121,7 +121,6 @@ describe('Multiplayer Performance Benchmarks', () => {
     });
 
     it('should join 100 players in under 10ms', () => {
-      const { RoomManager } = require('./room-manager');
       const manager = new RoomManager({ maxPlayers: 200 });
       const room = manager.createRoom('host1', 'Host');
 
