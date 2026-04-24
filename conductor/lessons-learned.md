@@ -1,5 +1,27 @@
 # Lessons Learned
 
+## Track: Adaptive Difficulty Engine - Phase 4 (2026-04-25)
+
+### Summary
+- Completed calibration test suite with deterministic player session simulation
+- Implemented session-start hint persistence with localStorage fallback
+- Added performance benchmarks verifying sub-millisecond latency requirements
+- Total: 100 tests across adaptive difficulty modules with 99.1% coverage
+
+### Key Learnings
+- Calibration tests should simulate realistic player profiles (accuracy, speed, streak combinations)
+- EMA convergence to flow zone (40-80) depends heavily on player consistency, not just average performance
+- Session persistence requires graceful degradation: corrupted localStorage should never crash the game
+- Performance benchmarks in Jest need relaxed thresholds (50ms for 1000 ops) to account for test environment overhead
+- Coverage gaps in error handling paths (lines 17-18, 31-32, etc.) are easy to miss without explicit edge case tests
+
+### Technical Debt Resolved
+- Calibration and convergence tests: 13 tests covering flow zone verification
+- Session persistence: 24 tests with 100% coverage including corrupted data scenarios
+- Performance benchmarks: 8 tests verifying latency and memory bounds
+
+---
+
 ## Track: Adaptive Difficulty Engine - Phase 3 (2026-04-24)
 
 ### Summary
