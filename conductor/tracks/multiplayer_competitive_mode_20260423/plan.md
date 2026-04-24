@@ -35,23 +35,23 @@
   - [x] Write integration tests for create/join flow.
 - [x] Task: Conductor — User Manual Verification 'Phase 2: Room Management' (Protocol in workflow.md)
 
-## Phase 3: Game State Synchronization
+## Phase 3: Game State Synchronization [checkpoint: 3bdad72]
 
-- [~] Task: Implement server-authoritative game loop.
-  - [~] Create `lib/multiplayer/game-session.ts` with game state machine.
-  - [~] Server runs game tick at 20Hz, broadcasts state to all room clients.
-  - [~] Server validates player inputs (word selections, answers) and updates authoritative state.
-  - [~] Write unit tests for game state machine and input validation.
-- [~] Task: Implement client-side game state consumer.
-  - [~] Create `hooks/useMultiplayerGameState.ts` that receives server state and renders locally.
-  - [~] Send player inputs to server; display server-confirmed state.
-  - [~] Handle latency compensation: optimistic UI for own inputs, rollback on rejection.
-  - [~] Write unit tests for state consumption and input handling.
-- [~] Task: Build `MultiplayerGameWrapper` component.
-  - [~] Wraps existing game components, injecting server-authoritative state.
-  - [~] Replaces local game state with server state when in multiplayer mode.
-  - [~] Write component tests for wrapper integration.
-- [~] Task: Conductor — User Manual Verification 'Phase 3: Game State Synchronization' (Protocol in workflow.md)
+- [x] Task: Implement server-authoritative game loop. [db7866e]
+  - [x] Create `lib/multiplayer/game-session.ts` with game state machine.
+  - [x] Server runs game tick at 20Hz, broadcasts state to all room clients.
+  - [x] Server validates player inputs (word selections, answers) and updates authoritative state.
+  - [x] Write unit tests for game state machine and input validation.
+- [x] Task: Implement client-side game state consumer. [ca991c4]
+  - [x] Create `hooks/useMultiplayerGameState.ts` that receives server state and renders locally.
+  - [x] Send player inputs to server; display server-confirmed state.
+  - [x] Handle latency compensation: optimistic UI for own inputs, rollback on rejection.
+  - [x] Write unit tests for state consumption and input handling.
+- [x] Task: Build `MultiplayerGameWrapper` component. [3ed7e77]
+  - [x] Wraps existing game components, injecting server-authoritative state.
+  - [x] Replaces local game state with server state when in multiplayer mode.
+  - [x] Write component tests for wrapper integration.
+- [x] Task: Conductor — User Manual Verification 'Phase 3: Game State Synchronization' (Protocol in workflow.md)
 
 ## Phase 4: Scoring, Leaderboard & Anti-Cheat
 
