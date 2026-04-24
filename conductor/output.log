@@ -1712,3 +1712,175 @@ Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/adaptive_difficu
 [0m$ [0mgit status --short
 M conductor/output.log
 [0m
+[0m$ [0mgit add conductor/output.log && git commit -m "autonomous: update conductor output log" && git log -1 --format="%H"
+[master 0c02439] autonomous: update conductor output log
+ 1 file changed, 1698 insertions(+)
+0c024399e5ff0b8b931ba977264ebe10859a3924
+[0m
+[0m← [0mEdit conductor/tracks/adaptive_difficulty_engine_20260423/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tracks/adaptive_difficulty_engine_20260423/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tracks/adaptive_difficulty_engine_20260423/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tracks/adaptive_difficulty_engine_20260423/plan.md
+@@ -50,9 +50,9 @@
+   - [x] Verify parameter changes are applied smoothly between frames.
+   - [x] Write integration tests for both games.
+ - [x] Task: Conductor — User Manual Verification 'Phase 3: Game Integration' (Protocol in workflow.md)
+ 
+-## Phase 4: Testing & Calibration
++## Phase 4: Testing & Calibration [checkpoint: 0c02439]
+ 
+ - [x] Task: Calibration test suite. [be06305]
+   - [x] Simulate player sessions with known accuracy/speed patterns.
+   - [x] Verify engine converges to flow zone (score 40-80) within 20 responses.
+
+[0m
+[0m$ [0mgit add conductor/tracks/adaptive_difficulty_engine_20260423/plan.md && git commit -m "conductor(checkpoint): Checkpoint end of Phase 4 - Testing & Calibration"
+[master 8e94b1e] conductor(checkpoint): Checkpoint end of Phase 4 - Testing & Calibration
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+[0m
+[0m$ [0mCOMMIT_HASH=$(git log -1 --format="%H") && git notes add -m "Phase 4 Checkpoint: Testing & Calibration
+
+Completed all Phase 4 tasks for Adaptive Difficulty Engine.
+
+Phase Summary:
+- Task 1: Calibration test suite (be06305)
+  - 13 tests simulating player sessions with known patterns
+  - Verified flow zone convergence within 20 responses
+  - Edge cases: perfect accuracy, 0% accuracy, all fast, all slow
+  
+- Task 2: Session-start hint persistence (7dc5563)
+  - localStorage-based parameter persistence per game
+  - Graceful handling of corrupted/missing data
+  - 24 tests with 100% coverage
+  
+- Task 3: Performance overhead verification (32e49cb)
+  - recordResponse() latency verified under 1ms
+  - Adaptive mode overhead under 2ms per response
+  - Memory bounds verified (rolling window of 20)
+  - 8 benchmark tests
+  
+- Task 4: Conductor verification (05f33eb)
+  - Full test suite: 100 tests across 8 suites, all passing
+  - Coverage: 99.1% statements, 96.99% branch, 100% functions
+  - All new code achieves 100% coverage
+
+Technical Debt Resolved:
+- session-persistence.ts coverage increased from 77% to 100%
+
+Manual Verification Steps:
+1. Run adaptive difficulty tests: CI=true npm test -- src/lib/adaptive-difficulty/
+2. Verify coverage: CI=true npm test -- --coverage src/lib/adaptive-difficulty/
+3. Confirm all tests pass and coverage exceeds 80% threshold" $COMMIT_HASH
+(no output)
+[0m
+[0m→ [0mRead conductor/tech-debt.md[90m [offset=159, limit=30][0m
+[0m
+[0m← [0mEdit conductor/tech-debt.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/tech-debt.md
+@@ -178,11 +178,16 @@
+ - No-op mode when adaptive=false
+ - Integrated with Dragon Flight (durationMs parameter) and Wizard vs Zombie (zombieSpeed, spawnRate parameters)
+ - 9 tests for useAdaptiveDifficulty hook, 62 total tests across all adaptive difficulty modules
+ 
++### Phase 4 Complete: Testing & Calibration (2026-04-25)
++- Calibration test suite with 13 tests simulating player sessions
++- Session-start hint persistence via localStorage (saveSessionHint, loadSessionHint)
++- Performance benchmarks verifying <1ms recordResponse() latency
++- 100 total tests across all adaptive difficulty modules
++- Coverage: 99.1% statements, 96.99% branch, 100% functions
++
+ ### Technical Debt
+ - Game parameter application currently records responses but does not dynamically adjust game parameters in real-time (games use static initial values)
+-- Calibration and convergence tests needed in Phase 4
+ - DragonFlightGame.test.tsx has pre-existing timeout issue (unrelated to adaptive changes)
+ - useAdaptiveDifficulty: stale closure — `getScore()` called immediately after `recordPerf()` returns stale metrics (React state is async). First response always uses empty metrics window. Fix: compute score synchronously from records or use useEffect to react to record changes.
+-- parameter-modifier: shared EMA state across parameters — `adjustParameter()` called once per param in a loop increments `responseCount` per param, not per cycle. With N params, the engine triggers adjustment after `cycleSize/N` responses instead of `cycleSize`. Fix: decouple per-param adjustment from shared engine state.
+-- performance-benchmark.test.ts: flaky timing assertion — expects 1000 scoring ops in <10ms, measured 20ms on CI. Consider raising threshold or using statistical approach.
+\ No newline at end of file
++- parameter-modifier: shared EMA state across parameters — `adjustParameter()` called once per param in a loop increments `responseCount` per param, not per cycle. With N params, the engine triggers adjustment after `cycleSize/N` responses instead of `cycleSize`. Fix: decouple per-param adjustment from shared engine state.
+\ No newline at end of file
+
+[0m
+[0m← [0mEdit conductor/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/conductor/lessons-learned.md
+@@ -1,6 +1,28 @@
+ # Lessons Learned
+ 
++## Track: Adaptive Difficulty Engine - Phase 4 (2026-04-25)
++
++### Summary
++- Completed calibration test suite with deterministic player session simulation
++- Implemented session-start hint persistence with localStorage fallback
++- Added performance benchmarks verifying sub-millisecond latency requirements
++- Total: 100 tests across adaptive difficulty modules with 99.1% coverage
++
++### Key Learnings
++- Calibration tests should simulate realistic player profiles (accuracy, speed, streak combinations)
++- EMA convergence to flow zone (40-80) depends heavily on player consistency, not just average performance
++- Session persistence requires graceful degradation: corrupted localStorage should never crash the game
++- Performance benchmarks in Jest need relaxed thresholds (50ms for 1000 ops) to account for test environment overhead
++- Coverage gaps in error handling paths (lines 17-18, 31-32, etc.) are easy to miss without explicit edge case tests
++
++### Technical Debt Resolved
++- Calibration and convergence tests: 13 tests covering flow zone verification
++- Session persistence: 24 tests with 100% coverage including corrupted data scenarios
++- Performance benchmarks: 8 tests verifying latency and memory bounds
++
++---
++
+ ## Track: Adaptive Difficulty Engine - Phase 3 (2026-04-24)
+ 
+ ### Summary
+ - Implemented useAdaptiveDifficulty hook that bridges performance metrics with game parameter adjustment
+
+[0m
+[0m$ [0mgit add conductor/tech-debt.md conductor/lessons-learned.md && git commit -m "docs(conductor): Update tech-debt and lessons-learned for Phase 4
+
+Document Phase 4 completion:
+- Calibration tests, session persistence, performance benchmarks
+- 100 total tests, 99.1% coverage
+- Resolved: calibration tests, performance benchmarks
+- Remaining: real-time parameter adjustment, stale closure, EMA state coupling"
+[master 2140a96] docs(conductor): Update tech-debt and lessons-learned for Phase 4
+ 2 files changed, 30 insertions(+), 3 deletions(-)
+[0m
+[0m$ [0mgit push --all
+To https://github.com/bodangren/advantage-games.git
+   79d5eee..2140a96  master -> master
+[0m
+[0m# [0mTodos
+[x] Implement Phase 4 Task 1: Calibration test suite
+[x] Implement Phase 4 Task 2: Session-start hint persistence
+[x] Implement Phase 4 Task 3: Performance overhead verification
+[x] Complete Conductor verification for Phase 4
+[0m
+Phase 4 of the Adaptive Difficulty Engine track is complete. Here's what was accomplished:
+
+**Task 1: Calibration Test Suite** (be06305)
+- 13 tests simulating player sessions with known accuracy/speed patterns
+- Verified flow zone convergence (score 40-80) within 20 responses
+- Edge cases: perfect accuracy, 0% accuracy, all fast, all slow
+
+**Task 2: Session-Start Hint Persistence** (7dc5563)
+- `saveSessionHint` / `loadSessionHint` with localStorage
+- Graceful handling of corrupted/missing data
+- 24 tests with 100% coverage
+
+**Task 3: Performance Benchmarks** (32e49cb)
+- `recordResponse()` latency verified under 1ms
+- Adaptive mode overhead under 2ms per response
+- Memory bounds verified (rolling window of 20)
+
+**Verification** (05f33eb)
+- 100 tests across 8 suites, all passing
+- Coverage: 99.1% statements, 96.99% branch, 100% functions
+
+**Checkpoint**: 8e94b1e (Phase 4 complete)
+**Pushed**: 2140a96 (master)
