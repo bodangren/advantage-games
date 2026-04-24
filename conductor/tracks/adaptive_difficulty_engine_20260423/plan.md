@@ -58,7 +58,7 @@
   - [x] Verify engine converges to flow zone (score 40-80) within 20 responses.
   - [x] Test edge cases: perfect accuracy, 0% accuracy, all fast, all slow.
   - [x] Write calibration tests with assertion on convergence.
-- [x] Task: Optional session-start hint persistence. [COMMIT_PLACEHOLDER]
+- [x] Task: Optional session-start hint persistence. [7dc5563]
   - [x] Save last session's ending parameters to localStorage.
   - [x] On next session start, load as initial parameters (if available).
   - [x] Write unit tests for hint save/load and fallback to tier defaults.
