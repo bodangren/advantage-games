@@ -1,20 +1,20 @@
 # Implementation Plan: Adaptive Difficulty Engine
 
-## Phase 1: Performance Metrics Collection
+## Phase 1: Performance Metrics Collection [checkpoint: c54a982]
 
-- [~] Task: Define metrics types and interfaces.
-  - [ ] Create `types/adaptive-difficulty.ts` with `PerformanceMetrics`, `ResponseRecord`, and `DifficultyParams` types.
-  - [ ] Write unit tests for type construction and validation.
-- [ ] Task: Implement `usePerformanceMetrics` hook.
-  - [ ] Rolling window of last 20 responses (correctness, time-to-answer, streak).
-  - [ ] Composite performance score (0-100) with weighted formula: accuracy 50%, speed 30%, streak 20%.
-  - [ ] Expose `recordResponse(correct, timeMs)` and `getScore()` methods.
-  - [ ] Write unit tests: accuracy calculation, speed normalization, streak tracking, rolling window eviction.
-- [ ] Task: Implement `registerDifficultyParams` registration function.
-  - [ ] Games call `registerDifficultyParams(gameId, params)` to declare adjustable parameters with min/max bounds.
-  - [ ] Store parameter registry in a module-level Map.
-  - [ ] Write unit tests for parameter registration and retrieval.
-- [ ] Task: Conductor — User Manual Verification 'Phase 1: Performance Metrics Collection' (Protocol in workflow.md)
+- [x] Task: Define metrics types and interfaces. [af8b127]
+  - [x] Create `types/adaptive-difficulty.ts` with `PerformanceMetrics`, `ResponseRecord`, and `DifficultyParams` types.
+  - [x] Write unit tests for type construction and validation.
+- [x] Task: Implement `usePerformanceMetrics` hook. [05e4c0d]
+  - [x] Rolling window of last 20 responses (correctness, time-to-answer, streak).
+  - [x] Composite performance score (0-100) with weighted formula: accuracy 50%, speed 30%, streak 20%.
+  - [x] Expose `recordResponse(correct, timeMs)` and `getScore()` methods.
+  - [x] Write unit tests: accuracy calculation, speed normalization, streak tracking, rolling window eviction.
+- [x] Task: Implement `registerDifficultyParams` registration function. [c54a982]
+  - [x] Games call `registerDifficultyParams(gameId, params)` to declare adjustable parameters with min/max bounds.
+  - [x] Store parameter registry in a module-level Map.
+  - [x] Write unit tests for parameter registration and retrieval.
+- [x] Task: Conductor — User Manual Verification 'Phase 1: Performance Metrics Collection' (Protocol in workflow.md)
 
 ## Phase 2: Adjustment Algorithm
 
