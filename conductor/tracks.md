@@ -4,6 +4,15 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
+- [x] **Track: Visual Refresh: Define Unique Identity**
+*Link: [./conductor/tracks/visual_refresh_20260425/](./conductor/tracks/visual_refresh_20260425/)*
+*Description: Defined and implemented the "Obsidian Grimoire" visual identity, replacing generic AI slop with a high-contrast brutalist aesthetic.*
+*Priority: High*
+*Type: UI/UX*
+*Status: ✅ COMPLETE*
+
+---
+
 ## [x] Track: Castle Defense Game
 *Link: [./conductor/archive/castle-defense-20260115/](./conductor/archive/castle-defense-20260115/)*
 
@@ -396,3 +405,4 @@ This file tracks all major tracks for the project. Each track has its own detail
 - [ ] **Track: Teacher Dashboard v2** *Link: [./tracks/teacher_dashboard_v2_20260425/](./tracks/teacher_dashboard_v2_20260425/)*
 - [ ] **Track: Sentence Game Expansion v2** *Link: [./tracks/sentence_game_expansion_v2_20260425/](./tracks/sentence_game_expansion_v2_20260425/)*
 - [ ] **Track: Accessibility Layer** *Link: [./tracks/accessibility_layer_20260425/](./tracks/accessibility_layer_20260425/)*
+
