@@ -1,0 +1,5 @@
+Phase 2 Adjustment Algorithm
+- EMA-based adjustment engine with configurable alpha
+- Threshold: >80 increase, <40 decrease, 40-80 hold
+- Per-game engine persistence via module-level registry
+- 100% test coverage (34 tests)
