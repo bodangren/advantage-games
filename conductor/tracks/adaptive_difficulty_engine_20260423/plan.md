@@ -2,7 +2,7 @@
 
 ## Phase 1: Performance Metrics Collection
 
-- [ ] Task: Define metrics types and interfaces.
+- [~] Task: Define metrics types and interfaces.
   - [ ] Create `types/adaptive-difficulty.ts` with `PerformanceMetrics`, `ResponseRecord`, and `DifficultyParams` types.
   - [ ] Write unit tests for type construction and validation.
 - [ ] Task: Implement `usePerformanceMetrics` hook.
