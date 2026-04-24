@@ -115,7 +115,7 @@ export function LobbyScreen({
                     <div className="flex items-center gap-1">
                       <Button
                         variant="ghost"
-                        size="icon-sm"
+                        size="icon"
                         onClick={() => onTransferHost(player.id)}
                         title="Transfer host"
                         data-testid={`transfer-host-${player.id}`}
@@ -124,7 +124,7 @@ export function LobbyScreen({
                       </Button>
                       <Button
                         variant="ghost"
-                        size="icon-sm"
+                        size="icon"
                         onClick={() => onKickPlayer(player.id)}
                         title="Kick player"
                         data-testid={`kick-player-${player.id}`}
@@ -143,12 +143,12 @@ export function LobbyScreen({
 
             <div className="flex flex-col gap-2 pt-2">
               {isHost ? (
-                <Button
-                  onClick={onStartGame}
-                  disabled={connectedPlayers.length < 2 || isLoading}
-                  className="w-full"
-                  data-testid="start-game-btn"
-                >
+              <Button
+                onClick={onStartGame}
+                disabled={connectedPlayers.length < 2 || isLoading}
+                className="w-full min-h-11"
+                data-testid="start-game-btn"
+              >
                   {isLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -167,7 +167,7 @@ export function LobbyScreen({
                 variant="outline"
                 onClick={onLeaveRoom}
                 disabled={isLoading}
-                className="w-full"
+                className="w-full min-h-11"
               >
                 Leave Room
               </Button>
