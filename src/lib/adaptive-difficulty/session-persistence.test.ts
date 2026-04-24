@@ -3,6 +3,8 @@ import {
   loadSessionHint,
   clearSessionHint,
   hasSessionHint,
+  getAllSessionHints,
+  clearAllSessionHints,
   type SessionHint,
 } from './session-persistence';
 
@@ -213,6 +215,114 @@ describe('session-persistence', () => {
 
       const loaded = loadSessionHint(TEST_GAME_ID);
       expect(loaded?.params).toEqual({});
+    });
+
+    it('should handle non-object parsed data', () => {
+      localStorage.setItem(STORAGE_KEY, '"string-instead-of-object"');
+      
+      const loaded = loadSessionHint(TEST_GAME_ID);
+      expect(loaded).toBeNull();
+    });
+
+    it('should handle hint that is not an object', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        [TEST_GAME_ID]: 'not-an-object',
+      }));
+
+      const loaded = loadSessionHint(TEST_GAME_ID);
+      expect(loaded).toBeNull();
+    });
+
+    it('should handle missing gameId', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        [TEST_GAME_ID]: {
+          params: { speed: 1.5 },
+          timestamp: Date.now(),
+          // missing gameId
+        },
+      }));
+
+      const loaded = loadSessionHint(TEST_GAME_ID);
+      expect(loaded).toBeNull();
+    });
+
+    it('should handle non-number timestamp', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        [TEST_GAME_ID]: {
+          gameId: TEST_GAME_ID,
+          params: { speed: 1.5 },
+          timestamp: 'not-a-number',
+        },
+      }));
+
+      const loaded = loadSessionHint(TEST_GAME_ID);
+      expect(loaded).toBeNull();
+    });
+  });
+
+  describe('getAllSessionHints', () => {
+    it('should return all valid hints', () => {
+      const hint1: SessionHint = {
+        gameId: 'game1',
+        params: { speed: 1.5 },
+        timestamp: Date.now(),
+      };
+
+      const hint2: SessionHint = {
+        gameId: 'game2',
+        params: { speed: 2.0 },
+        timestamp: Date.now(),
+      };
+
+      saveSessionHint(hint1);
+      saveSessionHint(hint2);
+
+      const allHints = getAllSessionHints();
+      expect(Object.keys(allHints)).toHaveLength(2);
+      expect(allHints['game1']).toEqual(hint1);
+      expect(allHints['game2']).toEqual(hint2);
+    });
+
+    it('should filter out invalid hints', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        'valid-game': {
+          gameId: 'valid-game',
+          params: { speed: 1.5 },
+          timestamp: Date.now(),
+        },
+        'invalid-game': 'not-an-object',
+      }));
+
+      const allHints = getAllSessionHints();
+      expect(Object.keys(allHints)).toHaveLength(1);
+      expect(allHints['valid-game']).toBeDefined();
+      expect(allHints['invalid-game']).toBeUndefined();
+    });
+
+    it('should return empty object when no hints exist', () => {
+      const allHints = getAllSessionHints();
+      expect(Object.keys(allHints)).toHaveLength(0);
+    });
+  });
+
+  describe('clearAllSessionHints', () => {
+    it('should remove all hints', () => {
+      const hint: SessionHint = {
+        gameId: TEST_GAME_ID,
+        params: { speed: 1.5 },
+        timestamp: Date.now(),
+      };
+
+      saveSessionHint(hint);
+      clearAllSessionHints();
+
+      expect(loadSessionHint(TEST_GAME_ID)).toBeNull();
+      expect(hasSessionHint(TEST_GAME_ID)).toBe(false);
+    });
+
+    it('should handle clearing when no hints exist', () => {
+      expect(() => clearAllSessionHints()).not.toThrow();
+      expect(getAllSessionHints()).toEqual({});
     });
   });
 });

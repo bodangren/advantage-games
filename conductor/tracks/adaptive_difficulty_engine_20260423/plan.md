@@ -65,4 +65,4 @@
 - [x] Task: Performance overhead verification. [32e49cb]
   - [x] Benchmark `recordResponse()` latency — must be <1ms.
   - [x] Verify no frame drops when adaptive mode is enabled.
-- [ ] Task: Conductor — User Manual Verification 'Phase 4: Testing & Calibration' (Protocol in workflow.md)
+- [~] Task: Conductor — User Manual Verification 'Phase 4: Testing & Calibration' (Protocol in workflow.md)
