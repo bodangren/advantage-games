@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -49,13 +49,7 @@ export function RankingDialog({
   const [data, setData] = useState<RankingData | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (open) {
-      fetchRankings();
-    }
-  }, [open]);
-
-  const fetchRankings = async () => {
+  const fetchRankings = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(apiEndpoint);
@@ -68,7 +62,13 @@ export function RankingDialog({
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiEndpoint]);
+
+  useEffect(() => {
+    if (open) {
+      fetchRankings();
+    }
+  }, [open, fetchRankings]);
 
   const getRankIcon = (index: number) => {
     if (index === 0) return <Crown className="h-5 w-5 text-yellow-400" />;

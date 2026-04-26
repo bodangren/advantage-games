@@ -10,7 +10,7 @@ import React, {
 import Konva from "konva";
 import { Group, Image as KonvaImage, Layer, Rect, Stage } from "react-konva";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, Flame, Trophy, Timer } from "lucide-react";
+import { ArrowLeft, ArrowRight, Flame, Trophy } from "lucide-react";
 import { RankingDialog } from "./RankingDialog";
 import { useScopedI18n } from "@/locales/client";
 
@@ -443,7 +443,7 @@ export function DragonFlightGame({
   adaptive = false,
 }: DragonFlightGameProps) {
   const t = useScopedI18n("pages.student.gamesPage");
-  const DIFFICULTY_SETTINGS = useMemo(() => getDifficultySettings(t), [t]);
+  const [DIFFICULTY_SETTINGS] = useState(() => getDifficultySettings(t));
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [showRanking, setShowRanking] = useState(false);
@@ -464,7 +464,7 @@ export function DragonFlightGame({
     registerDifficultyParams('dragon-flight', {
       durationMs: { current: durationMs ?? DIFFICULTY_SETTINGS.normal.durationMs, min: 15000, max: 120000, default: DIFFICULTY_SETTINGS.normal.durationMs, step: 5000 },
     });
-  }, []);
+  }, [durationMs, DIFFICULTY_SETTINGS.normal.durationMs]);
 
   const { recordResponse: recordAdaptiveResponse } = useAdaptiveDifficulty({
     gameId: 'dragon-flight',
@@ -491,12 +491,13 @@ export function DragonFlightGame({
   useEffect(() => {
     if (!hasStarted) {
       const settings = DIFFICULTY_SETTINGS[difficulty];
-      setState((prev) => ({
-        ...prev,
-        durationMs: settings.durationMs,
-      }));
+      setState((prev) =>
+        prev.durationMs === settings.durationMs
+          ? prev
+          : { ...prev, durationMs: settings.durationMs },
+      );
     }
-  }, [difficulty, hasStarted]);
+  }, [difficulty, hasStarted, DIFFICULTY_SETTINGS]);
   const { playSound } = useSound();
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSelectionRef = useRef<PendingSelection | null>(null);
@@ -560,12 +561,10 @@ export function DragonFlightGame({
     setBossSequenceDone(false);
     pendingSelectionRef.current = null;
     playerTargetRef.current = null;
-  }, [vocabulary, difficulty, DIFFICULTY_SETTINGS]);
+  }, [vocabulary, difficulty, DIFFICULTY_SETTINGS, durationMs]);
 
-  useEffect(() => {
-    resetGame();
-    setHasStarted(false);
-  }, [resetGame]);
+  // Initialize game on mount only - do not auto-reset to avoid loops
+  // hasStarted is already false from useState(false)
 
   useEffect(() => {
     if (isLoading) return;
@@ -899,6 +898,7 @@ export function DragonFlightGame({
     state.dragonCount,
     state.elapsedMs,
     onComplete,
+    difficulty,
   ]);
 
   useEffect(() => {
@@ -997,33 +997,6 @@ export function DragonFlightGame({
       ? activePair.y + layout!.leftGate.height + 8
       : layout!.leftGate.top + layout!.leftGate.height + 8
     : 0;
-  const arrowSize = canRenderGame
-    ? clamp(layout!.leftGate.width * 0.45, 64, 120)
-    : 0;
-  const arrowOffsetX = canRenderGame
-    ? clamp(layout!.leftGate.width * 0.75, 110, 190)
-    : 0;
-  const arrowTop = canRenderGame
-    ? clamp(
-        layout!.playerY - arrowSize / 2,
-        140,
-        stageSize.height - arrowSize - 80,
-      )
-    : 0;
-  const leftArrowX = canRenderGame
-    ? clamp(
-        layout!.playerX - arrowOffsetX - arrowSize / 2,
-        12,
-        stageSize.width - arrowSize - 12,
-      )
-    : 0;
-  const rightArrowX = canRenderGame
-    ? clamp(
-        layout!.playerX + arrowOffsetX - arrowSize / 2,
-        12,
-        stageSize.width - arrowSize - 12,
-      )
-    : 0;
 
   return (
     <div
@@ -1076,7 +1049,14 @@ export function DragonFlightGame({
 
             {/* Center: Progress Bar */}
             <div className="mt-1 sm:mt-4 flex-1 max-w-2xl px-2 sm:px-4">
-              <div className="relative h-5 sm:h-6 w-full overflow-hidden rounded-full bg-black/30 backdrop-blur-sm border border-white/10">
+              <div
+                className="relative h-5 sm:h-6 w-full overflow-hidden rounded-full bg-black/30 backdrop-blur-sm border border-white/10"
+                role="progressbar"
+                aria-label="Run timer"
+                aria-valuenow={Math.max(0, Math.ceil((state.durationMs - state.elapsedMs) / 1000))}
+                aria-valuemin={0}
+                aria-valuemax={Math.ceil(state.durationMs / 1000)}
+              >
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 box-shadow-glow"
                   initial={{ width: "100%" }}
@@ -1104,6 +1084,7 @@ export function DragonFlightGame({
               </div>
               <motion.div
                 key={dragonCountDisplay}
+                data-testid="dragon-flight-dragon-count"
                 className="text-base sm:text-2xl font-bold text-white leading-none"
                 initial={{ scale: 0.9 }}
                 animate={{ scale: 1 }}
@@ -1778,7 +1759,7 @@ const DragonFlightCanvas = ({
         const now = Date.now();
 
         // Use ref for latest state to avoid loop restarts
-        const { bossY, bossHealth, showBoss, layout, dragonCount } =
+        const { bossY, bossHealth, showBoss, layout } =
           gameStateRef.current;
 
         // --- Parallax ---
@@ -1927,7 +1908,7 @@ const DragonFlightCanvas = ({
     return () => {
       animation.stop();
     };
-  }, [assets, stageSize.width]);
+  }, [assets, stageSize.width, stageSize.height]);
 
   const playerRow = Math.floor(playerFrame / 3);
   const playerCol = playerFrame % 3;

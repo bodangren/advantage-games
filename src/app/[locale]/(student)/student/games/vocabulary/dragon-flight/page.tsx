@@ -20,8 +20,8 @@ export default function DragonFlightPage() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [xpEarned, setXpEarned] = useState<number | null>(null);
-  const [results, setResults] = useState<DragonFlightResults | null>(null);
+  const [, setXpEarned] = useState<number | null>(null);
+  const [, setResults] = useState<DragonFlightResults | null>(null);
   const [gameKey, setGameKey] = useState(0);
   const hasFetchedRef = useRef(false);
 
