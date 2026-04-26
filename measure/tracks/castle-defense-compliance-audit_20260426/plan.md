@@ -48,7 +48,7 @@
 - [x] Task: Measure - User Manual Verification 'Phase 6' [12057db]
 
 ## Phase 7: Compliance Report
-- [~] Task: Write final compliance report to `report.md`.
-- [ ] Task: Update track metadata.json status to completed.
-- [ ] Task: Commit all changes with `chore(audit): Castle Defense compliance audit complete`.
-- [ ] Task: Measure - User Manual Verification 'Phase 7'
+- [x] Task: Write final compliance report to `report.md`. [b255078]
+- [x] Task: Update track metadata.json status to completed. [b255078]
+- [x] Task: Commit all changes with `chore(audit): Castle Defense compliance audit complete`. [b255078]
+- [x] Task: Measure - User Manual Verification 'Phase 7' [b255078]
