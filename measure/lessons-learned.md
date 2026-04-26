@@ -17,7 +17,7 @@
 
 ---
 
-## Previous Tracks (Condensed)
+**Storm Castle Tower:** Resolved fullscreen, accessibility, text sizes, calculateXP, difficulty naming ('normal'→'medium'), API route factories, i18n/session, hook deps, unused imports, component tests, assets. Coverage 89.26%.
 
 **Abyssal Well:** Resolved fullscreen, accessibility, text sizes, calculateXP, difficulty naming, hook deps, i18n/session, component tests, assets. Coverage 89.28%.
 

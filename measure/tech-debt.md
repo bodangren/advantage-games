@@ -19,7 +19,7 @@
 
 ---
 
-## Previous Tracks (Condensed)
+**Storm Castle Tower:** Resolved fullscreen, accessibility, text sizes, calculateXP, difficulty naming, API factories, i18n/session, hook deps, unused imports, component tests, assets. Remaining: none.
 
 **Haunted Library:** Resolved rAF loop, fullscreen, accessibility, text sizes, API factories, i18n/session, calculateXP, component tests, state schema. Remaining: none.
 
