@@ -28,6 +28,16 @@
 
 ---
 
+## Shadow Gate Dungeon Compliance Audit (2026-04-26)
+
+### Resolved
+- fullscreen, accessibility, text sizes, API factories, useSession/useScopedI18n, hook deps, component tests, asset dir, lint
+
+### Remaining
+- None
+
+---
+
 ## Spellweaver's Run Compliance Audit (2026-04-26)
 
 ### Resolved
