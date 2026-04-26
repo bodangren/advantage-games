@@ -1,6 +1,10 @@
-import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
 import { SPELLWEAVERS_RUN_CONFIG, GAME_HEIGHT, getDifficultyConfig } from './spellweaversRunConfig'
+
+export type SentenceItem = {
+  term: string
+  translation: string
+}
 
 export type Lane = 'left' | 'center' | 'right'
 
@@ -24,7 +28,7 @@ export type SpellweaversRunState = {
   collectedWords: string[]
   targetIndex: number
   orbs: WordOrb[]
-  currentSentence: VocabularyItem
+  currentSentence: SentenceItem
   words: string[]
   correctAnswers: number
   totalAttempts: number
@@ -48,7 +52,7 @@ const getLaneFromRng = (rng: () => number): Lane => {
 }
 
 export function createSpellweaversRunState(
-  vocabulary: VocabularyItem[],
+  vocabulary: SentenceItem[],
   config: SpellweaversRunConfig = {}
 ): SpellweaversRunState {
   if (vocabulary.length === 0) {
@@ -108,7 +112,7 @@ export function spawnOrb(
 
 export function tickSpellweaversRun(
   state: SpellweaversRunState,
-  vocabulary: VocabularyItem[],
+  vocabulary: SentenceItem[],
   deltaMs: number,
   rng: () => number = Math.random
 ): SpellweaversRunState {
@@ -209,4 +213,23 @@ export function collectOrb(
       status: newMana <= 0 ? 'defeat' : 'playing',
     }
   }
+}
+
+export function calculateSpellweaversRunXP(
+  state: SpellweaversRunState,
+  totalCorrect: number,
+  totalAttempts: number
+): number {
+  if (totalAttempts === 0) return 0
+
+  const accuracy = totalCorrect / totalAttempts
+  const baseXP = Math.min(5, totalCorrect)
+
+  let bonus = 0
+  if (accuracy === 1 && totalCorrect > 0) bonus += 2 // Perfect accuracy bonus
+  if (state.mana / SPELLWEAVERS_RUN_CONFIG.initialMana >= 0.5) bonus += 1 // Survival bonus
+  if (state.gameTime < 120000) bonus += 1 // Speed bonus (under 2 min)
+  if (state.sentencesCompleted >= 1) bonus += 1 // Progression bonus
+
+  return Math.min(10, baseXP + bonus)
 }

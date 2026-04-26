@@ -3,14 +3,15 @@ import {
   tickSpellweaversRun,
   collectOrb,
   spawnOrb,
+  calculateSpellweaversRunXP,
   type WordOrb,
   type Lane,
 } from './spellweaversRun'
-import type { VocabularyItem } from '@/store/useGameStore'
+import type { SentenceItem } from './spellweaversRun'
 import { SPELLWEAVERS_RUN_CONFIG, GAME_HEIGHT } from './spellweaversRunConfig'
 
 describe('spellweaversRun', () => {
-  const vocabulary: VocabularyItem[] = [
+  const vocabulary: SentenceItem[] = [
     { term: 'The cat sits', translation: 'Le chat est assis' },
     { term: 'I love you', translation: 'Je t\'aime' },
   ]
@@ -379,6 +380,42 @@ describe('spellweaversRun', () => {
       const stateWithOrb = { ...almostCompleteState, orbs: [orb] }
       const newState = collectOrb(stateWithOrb, 'left')
       expect(newState.status).toBe('victory')
+    })
+  })
+
+  describe('calculateSpellweaversRunXP', () => {
+    it('should return 0 when no attempts', () => {
+      const state = createSpellweaversRunState(vocabulary)
+      expect(calculateSpellweaversRunXP(state, 0, 0)).toBe(0)
+    })
+
+    it('should calculate base XP from correct answers', () => {
+      const state = createSpellweaversRunState(vocabulary)
+      expect(calculateSpellweaversRunXP(state, 3, 3)).toBeGreaterThanOrEqual(3)
+    })
+
+    it('should cap at 10 XP', () => {
+      const state = createSpellweaversRunState(vocabulary)
+      state.gameTime = 50000
+      state.sentencesCompleted = 1
+      expect(calculateSpellweaversRunXP(state, 10, 10)).toBeLessThanOrEqual(10)
+    })
+
+    it('should add perfect accuracy bonus', () => {
+      const state = createSpellweaversRunState(vocabulary)
+      state.gameTime = 50000
+      const perfectXP = calculateSpellweaversRunXP(state, 3, 3)
+      const imperfectXP = calculateSpellweaversRunXP(state, 3, 4)
+      expect(perfectXP).toBeGreaterThan(imperfectXP)
+    })
+
+    it('should add survival bonus for high mana', () => {
+      const state = createSpellweaversRunState(vocabulary)
+      state.gameTime = 50000
+      const highManaXP = calculateSpellweaversRunXP(state, 2, 2)
+      const lowManaState = { ...state, mana: 10 }
+      const lowManaXP = calculateSpellweaversRunXP(lowManaState, 2, 2)
+      expect(highManaXP).toBeGreaterThanOrEqual(lowManaXP)
     })
   })
 })

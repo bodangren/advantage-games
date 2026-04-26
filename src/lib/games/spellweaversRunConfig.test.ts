@@ -40,16 +40,16 @@ describe('spellweaversRunConfig', () => {
     })
 
     it('should have difficulty presets', () => {
-      expect(SPELLWEAVERS_RUN_CONFIG.difficulties.easy.name).toBe('Whisper Woods')
-      expect(SPELLWEAVERS_RUN_CONFIG.difficulties.normal.name).toBe('Mystic Mountain')
-      expect(SPELLWEAVERS_RUN_CONFIG.difficulties.hard.name).toBe('Void Passage')
+      expect(SPELLWEAVERS_RUN_CONFIG.difficulties.easy.name).toBe('Easy')
+      expect(SPELLWEAVERS_RUN_CONFIG.difficulties.normal.name).toBe('Medium')
+      expect(SPELLWEAVERS_RUN_CONFIG.difficulties.hard.name).toBe('Hard')
     })
   })
 
   describe('getDifficultyConfig', () => {
     it('should return easy config', () => {
       const config = getDifficultyConfig('easy')
-      expect(config.name).toBe('Whisper Woods')
+      expect(config.name).toBe('Easy')
       expect(config.scrollSpeed).toBe(60)
       expect(config.spawnInterval).toBe(2000)
       expect(config.maxWords).toBe(4)
@@ -57,7 +57,7 @@ describe('spellweaversRunConfig', () => {
 
     it('should return medium config', () => {
       const config = getDifficultyConfig('normal')
-      expect(config.name).toBe('Mystic Mountain')
+      expect(config.name).toBe('Medium')
       expect(config.scrollSpeed).toBe(90)
       expect(config.spawnInterval).toBe(1500)
       expect(config.maxWords).toBe(6)
@@ -65,7 +65,7 @@ describe('spellweaversRunConfig', () => {
 
     it('should return hard config', () => {
       const config = getDifficultyConfig('hard')
-      expect(config.name).toBe('Void Passage')
+      expect(config.name).toBe('Hard')
       expect(config.scrollSpeed).toBe(120)
       expect(config.spawnInterval).toBe(1000)
       expect(config.maxWords).toBe(8)

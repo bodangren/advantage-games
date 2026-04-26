@@ -6,8 +6,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
 import { useCurrentLocale } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { SentenceItem } from "@/lib/games/spellweaversRun";
 
 const SpellweaversRunGame = dynamic(
   () =>
@@ -28,15 +30,15 @@ type WarningStatus = {
 };
 
 export default function SpellweaversRunPage() {
-  const [sentences, setSentences] = useState<
-    { term: string; translation: string }[]
-  >([]);
+  const [sentences, setSentences] = useState<SentenceItem[]>([]);
   const setLastResult = useGameStore((state) => state.setLastResult);
   const [warningStatus, setWarningStatus] = useState<WarningStatus>({
     type: null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const locale = useCurrentLocale();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchSentences = async () => {
@@ -74,7 +76,7 @@ export default function SpellweaversRunPage() {
   }, [locale]);
 
   const handleComplete = useCallback(
-    async (results: { xp: number; accuracy: number }) => {
+    async (results: { xp: number; accuracy: number; difficulty: string }) => {
       setLastResult(results.xp, results.accuracy);
 
       try {
@@ -85,6 +87,7 @@ export default function SpellweaversRunPage() {
           },
           body: JSON.stringify({
             xpEarned: results.xp,
+            difficulty: results.difficulty,
             accuracy: results.accuracy,
             correctAnswers: Math.floor(results.accuracy * 10),
             totalAttempts: 10,

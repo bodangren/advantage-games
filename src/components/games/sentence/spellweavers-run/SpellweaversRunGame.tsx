@@ -6,26 +6,27 @@ import {
   createSpellweaversRunState,
   tickSpellweaversRun,
   collectOrb,
+  calculateSpellweaversRunXP,
   type SpellweaversRunState,
   type Lane,
+  type SentenceItem,
 } from '@/lib/games/spellweaversRun'
 import { GAME_WIDTH, GAME_HEIGHT, SPELLWEAVERS_RUN_CONFIG } from '@/lib/games/spellweaversRunConfig'
-import type { VocabularyItem } from '@/store/useGameStore'
-// rAF-based game loop — no useInterval needed
-import { calculateXP } from '@/lib/xp'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
-import { Wand2, Zap, BookOpen, AlertTriangle } from 'lucide-react'
+import { Wand2, BookOpen, AlertTriangle } from 'lucide-react'
 import type { Difficulty } from '@/store/useGameStore'
-import type Konva from 'konva'
 
 export type SpellweaversRunGameResult = {
   xp: number
   accuracy: number
+  difficulty: string
 }
 
 interface SpellweaversRunGameProps {
-  vocabulary: VocabularyItem[]
+  vocabulary: SentenceItem[]
   onComplete: (results: SpellweaversRunGameResult) => void
 }
 
@@ -38,18 +39,27 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
 
-  const containerRef = useRef<HTMLDivElement>(null)
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize } = useAccessibilitySettings()
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
-  const [totalXP, setTotalXP] = useState(0)
   const [totalCorrect, setTotalCorrect] = useState(0)
   const [totalAttempts, setTotalAttempts] = useState(0)
+
+  const gameStateRef = useRef(gameState)
+  const gamePhaseRef = useRef(gamePhase)
+  const totalCorrectRef = useRef(totalCorrect)
+  const totalAttemptsRef = useRef(totalAttempts)
+
+  useEffect(() => { gameStateRef.current = gameState }, [gameState])
+  useEffect(() => { gamePhaseRef.current = gamePhase }, [gamePhase])
+  useEffect(() => { totalCorrectRef.current = totalCorrect }, [totalCorrect])
+  useEffect(() => { totalAttemptsRef.current = totalAttempts }, [totalAttempts])
 
   const resetGame = useCallback(() => {
     if (vocabulary.length > 0) {
       setGameState(createSpellweaversRunState(vocabulary, { difficulty: selectedDifficulty }))
       setResults(null)
-      setTotalXP(0)
       setTotalCorrect(0)
       setTotalAttempts(0)
       hasReportedRef.current = false
@@ -89,10 +99,19 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
       clearInterval(interval)
       clearTimeout(timeout)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    if (gamePhase !== 'playing') return
+    if (gamePhase !== 'playing') {
+      if (gamePhase === 'ended') {
+        exitFullscreen()
+      }
+      return
+    }
+
+    enterFullscreen()
+    lastFrameRef.current = 0
 
     const loop = (timestamp: number) => {
       const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
@@ -110,18 +129,18 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
       cancelAnimationFrame(rafRef.current)
       lastFrameRef.current = 0
     }
-  }, [gamePhase, vocabulary])
+  }, [gamePhase, vocabulary, enterFullscreen, exitFullscreen])
 
   useEffect(() => {
     if (gameState?.status === 'victory' || gameState?.status === 'defeat') {
-      if (gamePhase !== 'ended') {
-        const accuracy = totalAttempts > 0 ? totalCorrect / totalAttempts : 0
-        const xp = calculateXP(totalCorrect, totalCorrect, totalAttempts)
-        setResults({ xp, accuracy })
+      if (gamePhaseRef.current !== 'ended') {
+        const accuracy = totalAttemptsRef.current > 0 ? totalCorrectRef.current / totalAttemptsRef.current : 0
+        const xp = gameStateRef.current ? calculateSpellweaversRunXP(gameStateRef.current, totalCorrectRef.current, totalAttemptsRef.current) : 0
+        setResults({ xp, accuracy, difficulty: selectedDifficulty })
         setGamePhase('ended')
       }
     }
-  }, [gameState?.status, gamePhase, totalCorrect, totalAttempts])
+  }, [gameState?.status, selectedDifficulty])
 
   useEffect(() => {
     if (gamePhase === 'ended' && results && !hasReportedRef.current) {
@@ -138,33 +157,30 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
   const laneWidth = GAME_WIDTH / SPELLWEAVERS_RUN_CONFIG.laneCount
 
   const handleLaneTap = useCallback((lane: Lane) => {
-    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
-      setGameState(prevState => {
-        if (!prevState || prevState.status !== 'playing') return prevState
-        const newState = collectOrb(prevState, lane)
-        if (newState.correctAnswers > prevState.correctAnswers) {
-          setTotalCorrect(c => c + 1)
-        }
-        if (newState.totalAttempts > prevState.totalAttempts) {
-          setTotalAttempts(a => a + 1)
-        }
-        return newState
-      })
-    }
-  }, [gameState, gamePhase])
+    if (gamePhaseRef.current !== 'playing') return
+    setGameState(prevState => {
+      if (!prevState || prevState.status !== 'playing') return prevState
+      const newState = collectOrb(prevState, lane)
+      if (newState.correctAnswers > prevState.correctAnswers) {
+        setTotalCorrect(c => c + 1)
+      }
+      if (newState.totalAttempts > prevState.totalAttempts) {
+        setTotalAttempts(a => a + 1)
+      }
+      return newState
+    })
+  }, [])
 
   const handleStageClick = useCallback((e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => {
     if (!containerRef.current || !dimensions.width || !dimensions.height) return
     
     const rect = containerRef.current.getBoundingClientRect()
-    let clientX: number, clientY: number
+    let clientX: number
     
     if ('touches' in e) {
       clientX = e.touches[0].clientX
-      clientY = e.touches[0].clientY
     } else {
       clientX = e.clientX
-      clientY = e.clientY
     }
     
     const x = clientX - rect.left
@@ -173,11 +189,12 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
     const lanes: Lane[] = ['left', 'center', 'right']
     const lane = lanes[Math.min(Math.max(laneIndex, 0), 2)]
     handleLaneTap(lane)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dimensions, scale, laneWidth, handleLaneTap])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (gamePhase !== 'playing') return
+      if (gamePhaseRef.current !== 'playing') return
       if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
         handleLaneTap('left')
       } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
@@ -188,7 +205,12 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [gamePhase, handleLaneTap])
+  }, [handleLaneTap])
+
+  const baseTextSize = 16
+  const effectiveTextSize = useMemo(() => getEffectiveTextSize(baseTextSize), [getEffectiveTextSize])
+  const smallTextSize = useMemo(() => Math.max(12, getEffectiveTextSize(14)), [getEffectiveTextSize])
+  const tinyTextSize = useMemo(() => Math.max(10, getEffectiveTextSize(12)), [getEffectiveTextSize])
 
   if (gamePhase === 'start') {
     return (
@@ -225,10 +247,9 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
               onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
               className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
             >
-              <option value="easy">Whisper Woods</option>
-              <option value="normal">Mystic Mountain</option>
-              <option value="hard">Void Passage</option>
-              <option value="extreme">Void Passage Extreme</option>
+              <option value="easy">Easy</option>
+              <option value="normal">Medium</option>
+              <option value="hard">Hard</option>
             </select>
           </div>
         </GameStartScreen>
@@ -274,7 +295,7 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
                   x={10}
                   y={20}
                   text={gameState.currentSentence.translation}
-                  fontSize={16}
+                  fontSize={effectiveTextSize}
                   fill="white"
                   fontStyle="bold"
                   width={GAME_WIDTH - 20}
@@ -285,7 +306,7 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
                   x={10}
                   y={SPELLWEAVERS_RUN_CONFIG.scrollHeight + 10}
                   text={gameState.collectedWords.join(' ')}
-                  fontSize={14}
+                  fontSize={smallTextSize}
                   fill="#a5b4fc"
                   fontStyle="bold"
                   width={GAME_WIDTH - 20}
@@ -322,7 +343,7 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
                         x={-SPELLWEAVERS_RUN_CONFIG.orbRadius}
                         y={-8}
                         text={orb.word}
-                        fontSize={12}
+                        fontSize={tinyTextSize}
                         fill="white"
                         fontStyle="bold"
                         width={SPELLWEAVERS_RUN_CONFIG.orbRadius * 2}
@@ -363,7 +384,7 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
                     x={GAME_WIDTH / 2 - 20}
                     y={2}
                     text={`Mana: ${gameState.mana}`}
-                    fontSize={10}
+                    fontSize={tinyTextSize}
                     fill="white"
                     fontStyle="bold"
                   />
@@ -373,7 +394,7 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
                   x={GAME_WIDTH - 80}
                   y={SPELLWEAVERS_RUN_CONFIG.scrollHeight + 30}
                   text={`Score: ${gameState.score}`}
-                  fontSize={14}
+                  fontSize={smallTextSize}
                   fill="white"
                   fontStyle="bold"
                 />
@@ -382,7 +403,7 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
                   x={GAME_WIDTH - 80}
                   y={SPELLWEAVERS_RUN_CONFIG.scrollHeight + 50}
                   text={`Combo: ${gameState.combo}`}
-                  fontSize={12}
+                  fontSize={tinyTextSize}
                   fill="#a5b4fc"
                 />
               </Group>

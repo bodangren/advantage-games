@@ -1,6 +1,4 @@
-import type { Difficulty } from '@/store/useGameStore'
-
-export type SpellweaversRunDifficulty = Difficulty
+export type SpellweaversRunDifficulty = 'easy' | 'normal' | 'hard'
 
 export type DifficultyConfig = {
   name: string
@@ -18,13 +16,11 @@ export const SPELLWEAVERS_RUN_CONFIG = {
     easy: 60,
     normal: 90,
     hard: 120,
-    extreme: 150,
   },
   spawnInterval: {
     easy: 2000,
     normal: 1500,
     hard: 1000,
-    extreme: 700,
   },
   collectionZoneHeight: 80,
   initialMana: 100,
@@ -37,28 +33,22 @@ export const SPELLWEAVERS_RUN_CONFIG = {
   scrollHeight: 60,
   difficulties: {
     easy: {
-      name: 'Whisper Woods',
+      name: 'Easy',
       scrollSpeed: 60,
       spawnInterval: 2000,
       maxWords: 4,
     },
     normal: {
-      name: 'Mystic Mountain',
+      name: 'Medium',
       scrollSpeed: 90,
       spawnInterval: 1500,
       maxWords: 6,
     },
     hard: {
-      name: 'Void Passage',
+      name: 'Hard',
       scrollSpeed: 120,
       spawnInterval: 1000,
       maxWords: 8,
-    },
-    extreme: {
-      name: 'Void Passage Extreme',
-      scrollSpeed: 150,
-      spawnInterval: 700,
-      maxWords: 10,
     },
   },
 }
