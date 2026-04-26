@@ -50,5 +50,5 @@
 ## Phase 7: Compliance Report
 - [x] Task: Write final compliance report to `report.md`.
 - [x] Task: Update track metadata.json status to completed.
-- [x] Task: Commit all changes with `chore(audit): Sorcerer Ziggurat compliance audit complete`.
+- [x] Task: Commit all changes with `chore(audit): Sorcerer Ziggurat compliance audit complete`. [e79c72b]
 - [x] Task: Measure - User Manual Verification 'Phase 7' — SKIPPED
