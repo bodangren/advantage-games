@@ -68,13 +68,8 @@ describe('RuneMatchPage', () => {
     expect(backLink).toHaveAttribute('href', '/student/games')
   })
 
-  it('renders StartScreen initially and RuneMatchGame after start', async () => {
+  it('renders RuneMatchGame directly', async () => {
     render(<RuneMatchPage />)
-    expect(screen.getByText(/Adventure awaits/i)).toBeInTheDocument()
-    
-    const startButton = screen.getByRole('button', { name: /Start Game/i })
-    fireEvent.click(startButton)
-    
     expect(screen.getByTestId('rune-match-game')).toBeInTheDocument()
   })
 

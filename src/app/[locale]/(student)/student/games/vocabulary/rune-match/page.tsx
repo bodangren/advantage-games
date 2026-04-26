@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import type { RuneMatchGameResult } from "@/components/games/vocabulary/rune-match/RuneMatchGame";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
@@ -28,8 +28,6 @@ export default function RuneMatchPage() {
   const setVocabulary = useGameStore((state) => state.setVocabulary);
   const setLastResult = useGameStore((state) => state.setLastResult);
 
-  const [isPlaying, setIsPlaying] = useState(false);
-
   useEffect(() => {
     const fetchVocabulary = async () => {
       try {
@@ -52,10 +50,6 @@ export default function RuneMatchPage() {
       fetchVocabulary();
     }
   }, [vocabulary.length, setVocabulary]);
-
-  const handleStart = useCallback(() => {
-    setIsPlaying(true);
-  }, []);
 
   const handleComplete = useCallback(
     async (results: RuneMatchGameResult) => {

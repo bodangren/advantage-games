@@ -10,6 +10,10 @@ import {
   applyMatchResult,
   type VocabularyRune,
   advanceTime,
+  applyGravity,
+  shuffleGrid,
+  freezeMonster,
+  findPossibleMoves,
 } from "./runeMatch";
 import { RUNE_MATCH_CONFIG } from "./runeMatchConfig";
 import type { VocabularyItem } from "@/store/useGameStore";
@@ -254,5 +258,263 @@ describe("createRuneMatchState", () => {
   it("creates initial state in selection screen", () => {
     const state = createRuneMatchState(SAMPLE_VOCAB);
     expect(state.status).toBe("selection");
+  });
+});
+
+describe("initializeEmptyGrid", () => {
+  it("creates a grid with vocabulary items", () => {
+    const grid = initializeEmptyGrid(SAMPLE_VOCAB);
+    expect(grid.length).toBe(RUNE_MATCH_CONFIG.grid.rows);
+    expect(grid[0].length).toBe(RUNE_MATCH_CONFIG.grid.columns);
+    expect(grid[0][0].type).toBe("vocabulary");
+  });
+});
+
+describe("applyGravity", () => {
+  it("fills empty spaces after matches", () => {
+    const grid = initializeEmptyGrid(SAMPLE_VOCAB);
+    const matchedCoords = [{ row: 0, col: 0 }, { row: 0, col: 1 }];
+    const newGrid = applyGravity(grid, matchedCoords, SAMPLE_VOCAB);
+    expect(newGrid[0][0]).not.toBeNull();
+    expect(newGrid[0][1]).not.toBeNull();
+  });
+});
+
+describe("processMatches", () => {
+  it("processes matches and applies gravity", () => {
+    const grid = initializeEmptyGrid(SAMPLE_VOCAB);
+    const rune = {
+      id: "test",
+      type: "vocabulary",
+      wordId: "Hello",
+      text: "สวัสดี",
+    } as Rune;
+    grid[5][0] = rune;
+    grid[5][1] = rune;
+
+    const result = processMatches(grid, SAMPLE_VOCAB);
+    expect(result.cascades).toBe(1);
+    expect(findMatches(result.grid)).toHaveLength(0);
+  });
+});
+
+describe("shuffleGrid", () => {
+  it("shuffles the grid when shuffle is available", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.specialMoves.shuffle = 1;
+    const originalGrid = state.grid;
+    const newState = shuffleGrid(state);
+    expect(newState.specialMoves.shuffle).toBe(0);
+    expect(newState.floatingTexts.some((ft) => ft.text === "SHUFFLE!")).toBe(true);
+  });
+
+  it("does nothing when no shuffle available", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.specialMoves.shuffle = 0;
+    const newState = shuffleGrid(state);
+    expect(newState).toBe(state);
+  });
+});
+
+describe("freezeMonster", () => {
+  it("freezes the monster when freeze is available", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.specialMoves.freeze = 1;
+    const newState = freezeMonster(state);
+    expect(newState.isFrozen).toBe(true);
+    expect(newState.specialMoves.freeze).toBe(0);
+    expect(newState.floatingTexts.some((ft) => ft.text === "FROZEN!")).toBe(true);
+  });
+
+  it("does nothing when no freeze available", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.specialMoves.freeze = 0;
+    const newState = freezeMonster(state);
+    expect(newState).toBe(state);
+  });
+});
+
+describe("findPossibleMoves", () => {
+  it("finds at least one possible move in a valid grid", () => {
+    const grid = initializeGrid(SAMPLE_VOCAB);
+    const moves = findPossibleMoves(grid);
+    expect(moves.length).toBeGreaterThan(0);
+  });
+});
+
+describe("calculateMatchDamage", () => {
+  it("calculates damage for a 4-match", () => {
+    const damage = calculateMatchDamage(4, false);
+    expect(damage).toBe(RUNE_MATCH_CONFIG.combat.match4Damage);
+  });
+
+  it("calculates damage for a 5+ match", () => {
+    const damage = calculateMatchDamage(5, false);
+    expect(damage).toBe(RUNE_MATCH_CONFIG.combat.match5Damage);
+  });
+});
+
+describe("applyMatchResult", () => {
+  it("sets victory when monster hp reaches 0", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.monster = { type: "goblin", hp: 3, maxHp: 50, attack: 2, xp: 3 };
+    state.grid = initializeEmptyGrid(SAMPLE_VOCAB);
+
+    const result = {
+      grid: state.grid,
+      cascades: 1,
+      groups: [
+        {
+          coords: [
+            { row: 0, col: 0 },
+            { row: 0, col: 1 },
+          ],
+          isSpecial: false,
+          type: "vocabulary" as const,
+          wordId: (state.grid[0][0] as VocabularyRune).wordId,
+          cascadeIndex: 0,
+        },
+      ],
+    };
+
+    const newState = applyMatchResult(state, result);
+    expect(newState.status).toBe("victory");
+    expect(newState.monsterState).toBe("death");
+  });
+
+  it("awards shield power-up", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.monster = { type: "goblin", hp: 50, maxHp: 50, attack: 2, xp: 3 };
+    state.grid = initializeEmptyGrid(SAMPLE_VOCAB);
+
+    const result = {
+      grid: state.grid,
+      cascades: 1,
+      groups: [
+        {
+          coords: [
+            { row: 0, col: 0 },
+            { row: 0, col: 1 },
+          ],
+          isSpecial: false,
+          type: "shield" as const,
+          cascadeIndex: 0,
+        },
+      ],
+    };
+
+    state.grid[0][0] = { id: "s1", type: "shield" };
+    state.grid[0][1] = { id: "s2", type: "shield" };
+
+    const newState = applyMatchResult(state, result);
+    expect(newState.player.hasShield).toBe(true);
+    expect(newState.floatingTexts).toContainEqual(
+      expect.objectContaining({ text: "SHIELD!" }),
+    );
+  });
+
+  it("adds cascade bonus for multiple cascades", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.monster = { type: "goblin", hp: 50, maxHp: 50, attack: 2, xp: 3 };
+    state.grid = initializeEmptyGrid(SAMPLE_VOCAB);
+
+    const result = {
+      grid: state.grid,
+      cascades: 2,
+      groups: [
+        {
+          coords: [{ row: 0, col: 0 }, { row: 0, col: 1 }],
+          isSpecial: false,
+          type: "vocabulary" as const,
+          wordId: (state.grid[0][0] as VocabularyRune).wordId,
+          cascadeIndex: 0,
+        },
+        {
+          coords: [{ row: 1, col: 0 }, { row: 1, col: 1 }],
+          isSpecial: false,
+          type: "vocabulary" as const,
+          wordId: (state.grid[1][0] as VocabularyRune).wordId,
+          cascadeIndex: 1,
+        },
+      ],
+    };
+
+    const newState = applyMatchResult(state, result);
+    expect(newState.floatingTexts.some((ft) => ft.text.includes("COMBO"))).toBe(true);
+  });
+});
+
+describe("advanceTime", () => {
+  it("decays monster state timer", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.monster = { type: "goblin", hp: 50, maxHp: 50, attack: 2, xp: 3 };
+    state.monsterState = "attack";
+    state.monsterStateTimer = 300;
+    const newState = advanceTime(state, 500);
+    expect(newState.monsterState).toBe("idle");
+    expect(newState.monsterStateTimer).toBe(0);
+  });
+
+  it("updates floating texts", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.floatingTexts = [
+      {
+        id: "test",
+        text: "TEST",
+        x: 0,
+        y: 0,
+        offsetX: 0,
+        offsetY: 0,
+        color: "#fff",
+        opacity: 1,
+        scale: 1,
+        duration: 1000,
+        maxDuration: 1000,
+      },
+    ];
+    const newState = advanceTime(state, 500);
+    expect(newState.floatingTexts[0].duration).toBe(500);
+    expect(newState.floatingTexts[0].offsetX).toBeGreaterThan(0);
+  });
+
+  it("removes expired floating texts", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.floatingTexts = [
+      {
+        id: "test",
+        text: "TEST",
+        x: 0,
+        y: 0,
+        offsetX: 0,
+        offsetY: 0,
+        color: "#fff",
+        opacity: 1,
+        scale: 1,
+        duration: 100,
+        maxDuration: 1000,
+      },
+    ];
+    const newState = advanceTime(state, 500);
+    expect(newState.floatingTexts).toHaveLength(0);
+  });
+
+  it("does not attack when frozen", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.monster = { type: "goblin", hp: 50, maxHp: 50, attack: 10, xp: 3 };
+    state.isFrozen = true;
+    state.nextAttackTimer = 500;
+    const newState = advanceTime(state, 1000);
+    expect(newState.player.hp).toBe(100);
+    // Timer should not decrement when frozen
+    expect(newState.nextAttackTimer).toBe(500);
   });
 });
