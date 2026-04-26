@@ -21,6 +21,16 @@
 
 ---
 
+## Castle Defense Compliance Audit (2026-04-26)
+
+### Resolved
+- rAF loop, useGameFullscreen, useAccessibilitySettings, text sizes, calculateXP, difficulty naming, SentenceItem typing, useSession, component tests, hook deps, duplicate test file
+
+### Remaining
+- None
+
+---
+
 ## RPG Battle Compliance Audit (2026-04-26)
 
 ### Resolved

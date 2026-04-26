@@ -31,4 +31,15 @@
   - Adding 18 tests raises coverage from 35% to 80% with focused test files
   - Global Difficulty type ('normal') conflicts with 'medium' label; use translations for display
 
+---
+
+## Track: Castle Defense Compliance Audit (2026-04-26)
+- Result: 25/25 passing after fixes (13 at start, 12 failures)
+- Fixes: rAF loop, fullscreen, accessibility, text sizes, calculateXP, difficulty tiers, SentenceItem typing, useSession, component tests, hook deps
+- Coverage: 80.45% overall (from 49.47%)
+- **Key Learnings:**
+  - Converting useInterval to rAF requires moving camera/animation/build-effects into the loop
+  - calculateCastleDefenseXP can reuse standard bonus pattern (accuracy + survival + speed + progression)
+  - Adding 15 component tests raises coverage from 49% to 80% with minimal effort
+
 **Previous audits (condensed):** Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, RPG Battle, Wizard vs Zombie, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.
