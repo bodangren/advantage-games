@@ -28,10 +28,10 @@
 
 ---
 
-## Enchanted Library Compliance Audit (2026-04-26)
+## Spellweaver's Run Compliance Audit (2026-04-26)
 
 ### Resolved
-- rAF loop, useGameFullscreen, text sizes, touch targets, useAccessibilitySettings, useCurrentLocale, useSession, calculateEnchantedLibraryXP, off-screen indicators, RankingDisplay tests
+- fullscreen, accessibility, text sizes, calculateSpellweaversRunXP, difficulty tiers, SentenceItem typing, API factories, useSession, component tests, hook deps, unused imports, asset dir, lint
 
 ### Remaining
 - None
