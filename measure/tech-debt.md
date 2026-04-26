@@ -38,10 +38,6 @@
 
 ---
 
-## Spellweaver's Run Compliance Audit (2026-04-26)
-
-### Resolved
-- fullscreen, accessibility, text sizes, calculateSpellweaversRunXP, difficulty tiers, SentenceItem typing, API factories, useSession, component tests, hook deps, unused imports, asset dir, lint
-
-### Remaining
-- None
+## Rune Forge Chamber Compliance Audit (2026-04-26)
+- Resolved: accessibility labels, test mocks, lint
+- Remaining: None

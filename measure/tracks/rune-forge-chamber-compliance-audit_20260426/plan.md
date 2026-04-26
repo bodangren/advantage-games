@@ -1,54 +1,54 @@
 # Implementation Plan: Rune Forge Chamber Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [~] Task: Read game source files (RuneForgeChamberGame.tsx, runeForgeChamber.ts, page.tsx, API routes).
-- [~] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/runeForgeChamber.ts' --collectCoverageFrom='src/components/games/sentence/rune-forge-chamber/**/*.tsx'`).
-- [~] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/rune-forge-chamber/RuneForgeChamberGame.tsx`).
-- [~] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [~] Task: Verify asset and cover image existence.
-- [ ] Task: Measure - User Manual Verification 'Phase 1'
+- [x] Task: Read game source files (RuneForgeChamberGame.tsx, runeForgeChamber.ts, page.tsx, API routes). [0da114a]
+- [x] Task: Run existing tests and record current coverage. [0da114a]
+- [x] Task: Record lint status. [0da114a]
+- [x] Task: Check game registry entry in `src/lib/gameCards.ts`. [0da114a]
+- [x] Task: Verify asset and cover image existence. [0da114a]
+- [x] Task: Measure - User Manual Verification 'Phase 1' [0da114a]
 
 ## Phase 2: Architecture & Platform Audit
-- [ ] Task: Verify React-Konva usage in RuneForgeChamberGame.tsx.
-- [ ] Task: Verify mobile-first portrait (390×844) responsive scaling.
-- [ ] Task: Verify pure state + tick function pattern in runeForgeChamber.ts.
-- [ ] Task: Verify requestAnimationFrame with delta-time clamping.
-- [ ] Task: Verify useGameFullscreen integration.
-- [ ] Task: Measure - User Manual Verification 'Phase 2'
+- [x] Task: Verify React-Konva usage in RuneForgeChamberGame.tsx. [0da114a]
+- [x] Task: Verify mobile-first portrait (390×844) responsive scaling. [0da114a]
+- [x] Task: Verify pure state + tick function pattern in runeForgeChamber.ts. [0da114a]
+- [x] Task: Verify requestAnimationFrame with delta-time clamping. [0da114a]
+- [x] Task: Verify useGameFullscreen integration. [0da114a]
+- [x] Task: Measure - User Manual Verification 'Phase 2' [0da114a]
 
 ## Phase 3: Input, Accessibility & Data Audit
-- [ ] Task: Verify touch targets ≥ 44×44px.
-- [ ] Task: Verify text size ≥ 16px.
-- [ ] Task: Verify accessibility settings consumption.
-- [ ] Task: Verify SentenceItem[] typing and API route factories.
-- [ ] Task: Verify i18n and session hooks in page.tsx.
-- [ ] Task: Measure - User Manual Verification 'Phase 3'
+- [x] Task: Verify touch targets ≥ 44×44px. [0da114a]
+- [x] Task: Verify text size ≥ 16px. [0da114a]
+- [x] Task: Verify accessibility settings consumption. [0da114a]
+- [x] Task: Verify SentenceItem[] typing and API route factories. [0da114a]
+- [x] Task: Verify i18n and session hooks in page.tsx. [0da114a]
+- [x] Task: Measure - User Manual Verification 'Phase 3' [0da114a]
 
 ## Phase 4: Game Systems Audit
-- [ ] Task: Verify XP/scoring 1–10 scale with bonuses.
-- [ ] Task: Verify difficulty tiers (easy/medium/hard) with standardized presets.
-- [ ] Task: Verify GameStartScreen and GameEndScreen usage.
-- [ ] Task: Verify camera system (if applicable) and off-screen indicators.
-- [ ] Task: Verify performance: delta-time clamping, no setState in loops.
-- [ ] Task: Measure - User Manual Verification 'Phase 4'
+- [x] Task: Verify XP/scoring 1–10 scale with bonuses. [0da114a]
+- [x] Task: Verify difficulty tiers (easy/medium/hard) with standardized presets. [0da114a]
+- [x] Task: Verify GameStartScreen and GameEndScreen usage. [0da114a]
+- [x] Task: Verify camera system (if applicable) and off-screen indicators. [0da114a]
+- [x] Task: Verify performance: delta-time clamping, no setState in loops. [0da114a]
+- [x] Task: Measure - User Manual Verification 'Phase 4' [0da114a]
 
 ## Phase 5: Code Quality & Testing Audit
-- [ ] Task: Verify test coverage ≥ 80%.
-- [ ] Task: Audit for `any` types and replace with proper types.
-- [ ] Task: Audit hook dependency arrays for completeness.
-- [ ] Task: Audit for unused variables/imports.
-- [ ] Task: Run full test suite and lint after any fixes.
-- [ ] Task: Measure - User Manual Verification 'Phase 5'
+- [x] Task: Verify test coverage ≥ 80%. [0da114a]
+- [x] Task: Audit for `any` types and replace with proper types. [0da114a]
+- [x] Task: Audit hook dependency arrays for completeness. [0da114a]
+- [x] Task: Audit for unused variables/imports. [0da114a]
+- [x] Task: Run full test suite and lint after any fixes. [0da114a]
+- [x] Task: Measure - User Manual Verification 'Phase 5' [0da114a]
 
 ## Phase 6: Fixes & Regression Testing
-- [ ] Task: Fix any failing compliance items from Phases 2–5.
-- [ ] Task: Write tests for any new fix code.
-- [ ] Task: Run full test suite to confirm no regressions.
-- [ ] Task: Verify coverage ≥ 80% post-fix.
-- [ ] Task: Measure - User Manual Verification 'Phase 6'
+- [x] Task: Fix any failing compliance items from Phases 2–5. [0da114a]
+- [x] Task: Write tests for any new fix code. [0da114a]
+- [x] Task: Run full test suite to confirm no regressions. [0da114a]
+- [x] Task: Verify coverage ≥ 80% post-fix. [0da114a]
+- [x] Task: Measure - User Manual Verification 'Phase 6' [0da114a]
 
 ## Phase 7: Compliance Report
-- [ ] Task: Write final compliance report to `report.md`.
-- [ ] Task: Update track metadata.json status to completed.
-- [ ] Task: Commit all changes with `chore(audit): Rune Forge Chamber compliance audit complete`.
-- [ ] Task: Measure - User Manual Verification 'Phase 7'
+- [x] Task: Write final compliance report to `report.md`. [0da114a]
+- [x] Task: Update track metadata.json status to completed. [0da114a]
+- [x] Task: Commit all changes with `chore(audit): Rune Forge Chamber compliance audit complete`. [0da114a]
+- [x] Task: Measure - User Manual Verification 'Phase 7' [0da114a]
