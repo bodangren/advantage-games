@@ -57,7 +57,7 @@ export default function EnchantedLibraryPage({
       try {
         setLoading(true);
         const response = await fetch(
-          `/api/v1/games/enchanted-library/vocabulary?locale=${locale}`,
+          `/api/v1/games/enchanted-library/vocabulary?locale=${currentLocale || locale}`,
         );
         const data = await response.json();
 
@@ -80,7 +80,7 @@ export default function EnchantedLibraryPage({
     };
 
     loadVocabulary();
-  }, [locale]);
+  }, [locale, currentLocale]);
 
   // Load rankings
   useEffect(() => {
@@ -197,6 +197,11 @@ export default function EnchantedLibraryPage({
             <BookOpen className="h-8 w-8 text-primary" />
           </Header>
 
+          {user && (
+            <div className="text-sm text-slate-600 dark:text-white/60">
+              Playing as {user.name}
+            </div>
+          )}
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg self-start">
             <button
               onClick={() => setActiveTab("game")}

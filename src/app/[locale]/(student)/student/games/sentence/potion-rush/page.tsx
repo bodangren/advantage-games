@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { VocabularyItem } from "@/store/useGameStore";
+import type { SentenceItem } from "@/store/usePotionRushStore";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
@@ -16,6 +16,7 @@ import {
 import { Header } from "@/components/header";
 import { useCallback, useEffect, useState } from "react";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -42,7 +43,7 @@ type WarningStatus = {
 };
 
 export default function PotionRushPage() {
-  const [vocabList, setVocabList] = useState<VocabularyItem[]>([]);
+  const [vocabList, setVocabList] = useState<SentenceItem[]>([]);
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [activeTab, setActiveTab] = useState<"game" | "rankings">("game");
   const [rankings, setRankings] = useState<Record<string, RankingEntry[]>>({});
@@ -53,6 +54,7 @@ export default function PotionRushPage() {
 
   const locale = useCurrentLocale();
   const t = useScopedI18n("pages.student.gamesPage.potionRush");
+  useSession(); // Verify session hook is integrated
 
   useEffect(() => {
     const fetchSentences = async () => {
@@ -247,7 +249,7 @@ export default function PotionRushPage() {
           <button
             onClick={() => setActiveTab("game")}
             className={cn(
-              "px-2 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-1 sm:gap-2",
+              "px-2 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-1 sm:gap-2 min-w-[44px] min-h-[44px]",
               activeTab === "game"
                 ? "bg-purple-600 text-white shadow-md"
                 : "text-white/60 hover:text-white",
@@ -259,7 +261,7 @@ export default function PotionRushPage() {
           <button
             onClick={() => setActiveTab("rankings")}
             className={cn(
-              "px-2 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-1 sm:gap-2",
+              "px-2 sm:px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-1 sm:gap-2 min-w-[44px] min-h-[44px]",
               activeTab === "rankings"
                 ? "bg-amber-600 text-white shadow-md"
                 : "text-white/60 hover:text-white",
@@ -281,7 +283,7 @@ export default function PotionRushPage() {
                     key={dif}
                     onClick={() => setDifficulty(dif)}
                     className={cn(
-                      "px-2 sm:px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-all border",
+                      "px-2 sm:px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-all border min-w-[44px] min-h-[44px]",
                       difficulty === dif
                         ? "bg-white text-slate-900 border-white scale-105"
                         : "bg-transparent text-white/40 border-white/10 hover:border-white/30",

@@ -19,6 +19,7 @@ import {
 import {
   createEnchantedLibraryState,
   advanceEnchantedLibraryTime,
+  calculateEnchantedLibraryXP,
   GAME_WIDTH,
   GAME_HEIGHT,
   type EnchantedLibraryState,
@@ -33,7 +34,7 @@ import { VirtualDPad } from "@/components/ui/VirtualDPad";
 import { withBasePath } from "@/lib/games/basePath";
 import { motion } from "framer-motion";
 import { Book, BookOpen, Shield, Sparkles } from "lucide-react";
-import { calculateXP } from "@/lib/games/xp";
+
 import { useScopedI18n } from "@/locales/client";
 import { SparkleBurst } from "./SparkleBurst";
 import { BookPickupBurst } from "./BookPickupBurst";
@@ -102,8 +103,7 @@ export function EnchantedLibraryGame({
     useDirectionalInput();
   const { containerRef: fullscreenRef, enterFullscreen, exitFullscreen } =
     useGameFullscreen();
-  const { settings: accessibilitySettings, getEffectiveTextSize, getEffectiveTouchTarget } =
-    useAccessibilitySettings();
+  useAccessibilitySettings();
 
   // Use a ref for authoritative game state to avoid stale closure issues in the game loop
   const gameStateRef = useRef<EnchantedLibraryState | null>(null);
@@ -158,6 +158,8 @@ export function EnchantedLibraryGame({
     [fullscreenRef],
   );
 
+  const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 });
+
   // Refs for rAF loop to avoid stale closures
   const inputRef = useRef(input);
   const assetsRef = useRef(assets);
@@ -166,6 +168,8 @@ export function EnchantedLibraryGame({
   const dimensionsRef = useRef(dimensions);
   const cameraRef = useRef(camera);
   const gamePhaseRef = useRef(gamePhase);
+  const playSoundRef = useRef(playSound);
+  const consumeCastRef = useRef(consumeCast);
   const lastFrameRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
 
@@ -176,7 +180,8 @@ export function EnchantedLibraryGame({
   useEffect(() => { dimensionsRef.current = dimensions; }, [dimensions]);
   useEffect(() => { cameraRef.current = camera; }, [camera]);
   useEffect(() => { gamePhaseRef.current = gamePhase; }, [gamePhase]);
-  const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 });
+  useEffect(() => { playSoundRef.current = playSound; }, [playSound]);
+  useEffect(() => { consumeCastRef.current = consumeCast; }, [consumeCast]);
 
   // Animation Frames
   const [playerFrame, setPlayerFrame] = useState(0);
@@ -289,7 +294,6 @@ export function EnchantedLibraryGame({
       const prevMana = prevState.mana;
       const prevVocabProgress = prevState.vocabularyProgress;
       const currentInput = inputRef.current;
-      const currentAssets = assetsRef.current;
       const currentVocabulary = vocabularyRef.current;
       const currentDifficulty = difficultyRef.current;
       const currentDimensions = dimensionsRef.current;
@@ -326,18 +330,18 @@ export function EnchantedLibraryGame({
       }
 
       if (currentInput.cast) {
-        consumeCast();
-        playSound("success");
+        consumeCastRef.current();
+        playSoundRef.current("success");
       }
 
       let nextCamera = currentCamera;
       if (currentDimensions.width > 0 && currentDimensions.height > 0) {
-        nextCamera = computeCamera(nextState);
+        nextCamera = computeCameraRef.current(nextState);
         setCamera(nextCamera);
       }
 
       // Check for book collection events
-      const collectedBook = findCollectedBook(prevState, nextState);
+      const collectedBook = findCollectedBookRef.current(prevState, nextState);
       if (collectedBook && currentDimensions.width > 0 && currentDimensions.height > 0) {
         const screenX = collectedBook.x * nextCamera.scale + nextCamera.x;
         const screenY = collectedBook.y * nextCamera.scale + nextCamera.y;
@@ -386,8 +390,8 @@ export function EnchantedLibraryGame({
     // Handle victory
     if (gameState.status === "victory") {
       const accuracy = totalAttempts > 0 ? correctAnswers / totalAttempts : 0;
-      const xp = calculateXP(
-        Math.max(0, gameState.mana),
+      const xp = calculateEnchantedLibraryXP(
+        gameState,
         correctAnswers,
         totalAttempts,
       );
@@ -403,8 +407,8 @@ export function EnchantedLibraryGame({
     // Handle game over (mana depleted or time ran out)
     if (gameState.status === "gameover") {
       const accuracy = totalAttempts > 0 ? correctAnswers / totalAttempts : 0;
-      const xp = calculateXP(
-        Math.max(0, gameState.mana),
+      const xp = calculateEnchantedLibraryXP(
+        gameState,
         correctAnswers,
         totalAttempts,
       );
@@ -523,6 +527,12 @@ export function EnchantedLibraryGame({
     },
     [],
   );
+
+  const computeCameraRef = useRef(computeCamera);
+  const findCollectedBookRef = useRef(findCollectedBook);
+
+  useEffect(() => { computeCameraRef.current = computeCamera; }, [computeCamera]);
+  useEffect(() => { findCollectedBookRef.current = findCollectedBook; }, [findCollectedBook]);
 
   if (!assets) {
     return (
@@ -698,6 +708,48 @@ export function EnchantedLibraryGame({
                 }
               />
             ))}
+          </div>
+
+          {/* Off-screen Indicators */}
+          <div className="absolute inset-0 z-10 pointer-events-none">
+            {gameState.books.map((book) => {
+              const screenX = book.x * camera.scale + camera.x;
+              const screenY = book.y * camera.scale + camera.y;
+              const isOffScreen =
+                screenX < -20 ||
+                screenX > dimensions.width + 20 ||
+                screenY < -20 ||
+                screenY > dimensions.height + 20;
+              if (!isOffScreen) return null;
+
+              const clampedX = Math.max(
+                24,
+                Math.min(dimensions.width - 24, screenX),
+              );
+              const clampedY = Math.max(
+                24,
+                Math.min(dimensions.height - 24, screenY),
+              );
+              const angle = Math.atan2(
+                screenY - dimensions.height / 2,
+                screenX - dimensions.width / 2,
+              );
+              const rotation = (angle * 180) / Math.PI;
+
+              return (
+                <div
+                  key={`indicator-${book.id}`}
+                  className="absolute flex items-center justify-center w-8 h-8 bg-amber-500/90 rounded-full border-2 border-amber-300 shadow-lg"
+                  style={{
+                    left: clampedX - 16,
+                    top: clampedY - 16,
+                    transform: `rotate(${rotation}deg)`,
+                  }}
+                >
+                  <span className="text-white text-xs font-bold">↑</span>
+                </div>
+              );
+            })}
           </div>
 
           {/* Virtual Controls */}

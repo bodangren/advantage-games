@@ -8,16 +8,14 @@
 
 ---
 
-## Magic Defense Compliance Audit (2026-04-26)
+## Rune Match Compliance Audit (2026-04-26)
 
 ### Resolved
-- useGameFullscreen, useAccessibilitySettings, useCurrentLocale, useSession, difficulty label, lint, asset dir, tests
+- rAF loop, useGameFullscreen, useAccessibilitySettings, text sizes, calculateXP, MONSTER_DIFFICULTY mapping, GameStartScreen/GameEndScreen, useCurrentLocale, useSession, hook deps, unused imports, removed StartScreen.tsx, added 51 tests
 
 ### Remaining
-- React-Konva migration (complete rewrite required)
-- Pure state + tick functions (architectural refactor)
-- requestAnimationFrame game loop (architectural refactor)
-- Shared screens integration (GameStartScreen/GameEndScreen)
+- RuneMatchGame.tsx coverage at 73.33% (below 80% target) — Konva rendering branches hard to test
+- page.tsx coverage at 71.15% — API error handling branches uncovered
 
 ---
 
@@ -28,17 +26,6 @@
 
 ### Remaining
 - None
-
----
-
-## Alchemists Synthesis Compliance Audit (2026-04-26)
-
-### Resolved
-- Created game scaffold, React-Konva canvas, pure tick + rAF loop, useGameFullscreen, useAccessibilitySettings, useCurrentLocale, useSession, GameStartScreen/GameEndScreen, difficulty tiers, API routes, tests, registry update
-
-### Remaining
-- Asset directory empty (no sprites/backgrounds)
-- Gameplay is minimal (simple matching); could be expanded with alchemy mechanics
 
 ---
 

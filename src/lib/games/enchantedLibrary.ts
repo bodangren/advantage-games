@@ -708,3 +708,21 @@ export const advanceEnchantedLibraryTime = (
 
   return newState;
 };
+
+export function calculateEnchantedLibraryXP(
+  state: EnchantedLibraryState,
+  correctAnswers: number,
+  totalAttempts: number,
+): number {
+  if (totalAttempts === 0) return 0;
+
+  const accuracy = correctAnswers / totalAttempts;
+  const baseXP = correctAnswers;
+
+  let bonus = 0;
+  if (accuracy === 1) bonus += 2;
+  if (state.mana / INITIAL_MANA >= 0.5) bonus += 1;
+  if (state.gameTime < 60000) bonus += 1;
+
+  return Math.min(10, baseXP + bonus);
+}

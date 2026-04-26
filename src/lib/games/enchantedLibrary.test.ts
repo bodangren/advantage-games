@@ -11,6 +11,7 @@ import {
   advanceEnchantedLibraryTime,
   activateShield,
   checkVictoryCondition,
+  calculateEnchantedLibraryXP,
   GAME_WIDTH,
   GAME_HEIGHT,
   INITIAL_MANA,
@@ -1264,6 +1265,52 @@ describe("enchantedLibrary", () => {
       const result = advanceEnchantedLibraryTime(withTimer, noInput, 16);
 
       expect(result.spiritSpawnTimer).toBe(1000 - 16);
+    });
+  });
+
+  describe("calculateEnchantedLibraryXP", () => {
+    it("returns 0 when no attempts", () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY);
+      expect(calculateEnchantedLibraryXP(state, 0, 0)).toBe(0);
+    });
+
+    it("calculates base XP from correct answers with default bonuses", () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY);
+      // Default state: full mana (survival bonus) + gameTime=0 (speed bonus)
+      // 3 base + 2 accuracy + 1 survival + 1 speed = 7
+      expect(calculateEnchantedLibraryXP(state, 3, 3)).toBe(7);
+    });
+
+    it("caps at 10 XP", () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY);
+      const highXP = calculateEnchantedLibraryXP(state, 15, 15);
+      expect(highXP).toBe(10);
+    });
+
+    it("adds survival bonus for high mana", () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY);
+      const highMana = { ...state, mana: 40 };
+      const xpHighMana = calculateEnchantedLibraryXP(highMana, 2, 2);
+      const lowMana = { ...state, mana: 10 };
+      const xpLowMana = calculateEnchantedLibraryXP(lowMana, 2, 2);
+      expect(xpHighMana).toBeGreaterThan(xpLowMana);
+    });
+
+    it("adds speed bonus for fast completion", () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY);
+      const fast = { ...state, gameTime: 30000 };
+      const slow = { ...state, gameTime: 120000 };
+      const xpFast = calculateEnchantedLibraryXP(fast, 2, 2);
+      const xpSlow = calculateEnchantedLibraryXP(slow, 2, 2);
+      expect(xpFast).toBeGreaterThan(xpSlow);
+    });
+
+    it("calculates XP with only survival and speed bonuses when accuracy is not perfect", () => {
+      const state = createEnchantedLibraryState(SAMPLE_VOCABULARY);
+      // Default state gives survival + speed bonuses even without perfect accuracy
+      // 2 base + 0 accuracy + 1 survival + 1 speed = 4
+      const xp = calculateEnchantedLibraryXP(state, 2, 4);
+      expect(xp).toBe(4);
     });
   });
 });

@@ -192,11 +192,11 @@ function IngredientItem({ item, onDrop, images, onDragStateChange }: {
                 <Text 
                     text={item.word} 
                     fill="white" 
-                    fontSize={14} 
+                    fontSize={16} 
                     fontStyle="bold"
                     align="center"
                     x={-item.word.length * 4}
-                    y={4}
+                    y={2}
                 />
             </Group>
         </Group>

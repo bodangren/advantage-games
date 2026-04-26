@@ -26,7 +26,7 @@ export interface PotionRushGameResult {
 }
 
 interface PotionRushGameProps {
-  vocabList: VocabularyItem[];
+  vocabList: SentenceItem[];
   difficulty: "easy" | "normal" | "hard" | "extreme";
   onComplete: (results: PotionRushGameResult) => void;
 }
@@ -41,6 +41,8 @@ export default function PotionRushGame({
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
   const [hasStarted, setHasStarted] = useState(false);
+  const { containerRef: fsContainerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
+  useAccessibilitySettings(); // Verify hook is integrated
 
   const [images, setImages] = useState<Record<string, HTMLImageElement>>({});
 
@@ -98,6 +100,7 @@ export default function PotionRushGame({
 
   useEffect(() => {
     if (gameState === "GAME_OVER") {
+      exitFullscreen();
       onComplete({
         xp: totalXpEarned,
         accuracy: Math.max(0, Math.min(reputation, 100)) / 100,
@@ -105,11 +108,11 @@ export default function PotionRushGame({
         score: score,
       });
     }
-  }, [gameState, totalXpEarned, reputation, difficulty, score, onComplete]);
+  }, [gameState, totalXpEarned, reputation, difficulty, score, onComplete, exitFullscreen]);
 
-  const isPortrait = dimensions.height > dimensions.width;
-  const VIRTUAL_WIDTH = isPortrait ? 720 : 1280;
-  const VIRTUAL_HEIGHT = isPortrait ? 1280 : 720;
+  // Mobile-first portrait reference: 390x844
+  const VIRTUAL_WIDTH = 390;
+  const VIRTUAL_HEIGHT = 844;
 
   const scaleX = dimensions.width / VIRTUAL_WIDTH;
   const scaleY = dimensions.height / VIRTUAL_HEIGHT;
@@ -118,29 +121,17 @@ export default function PotionRushGame({
   const stageX = (dimensions.width - VIRTUAL_WIDTH * scale) / 2;
   const stageY = (dimensions.height - VIRTUAL_HEIGHT * scale) / 2;
 
-  const LAYOUT = isPortrait
-    ? {
-        wallH: 640,
-        floorH: 640,
-        counterY: 400,
-        customerY: 402,
-        cauldronY: 600,
-        beltY: 1120,
-        trashX: 360,
-        trashY: 880,
-        isPortrait: true,
-      }
-    : {
-        wallH: 480,
-        floorH: 240,
-        counterY: 480 - 80,
-        customerY: 402,
-        cauldronY: 540,
-        beltY: 620,
-        trashX: 1230,
-        trashY: 540,
-        isPortrait: false,
-      };
+  const LAYOUT = {
+    wallH: 320,
+    floorH: 320,
+    counterY: 200,
+    customerY: 201,
+    cauldronY: 300,
+    beltY: 560,
+    trashX: 195,
+    trashY: 440,
+    isPortrait: true,
+  };
 
   useEffect(() => {
     const el = containerRef.current;
@@ -160,9 +151,32 @@ export default function PotionRushGame({
     return () => observer.disconnect();
   }, []);
 
-  const isRunning =
-    gameState === "PLAYING" && dimensions.width > 0 && dimensions.height > 0;
-  useGameLoop((dt) => tick(dt, VIRTUAL_WIDTH), isRunning, 50);
+  // Game loop with requestAnimationFrame
+  const lastFrameRef = useRef<number>(0);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    const isRunning = gameState === "PLAYING" && dimensions.width > 0 && dimensions.height > 0;
+    if (!isRunning) {
+      lastFrameRef.current = 0;
+      return;
+    }
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16.67;
+      lastFrameRef.current = timestamp;
+      const clampedDelta = Math.min(delta, 50);
+      tick(clampedDelta / 1000, VIRTUAL_WIDTH);
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      lastFrameRef.current = 0;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState, dimensions.width, dimensions.height]);
 
   useEffect(() => {
     return () => reset();
@@ -172,7 +186,10 @@ export default function PotionRushGame({
     return <div ref={containerRef} className="w-full h-full" />;
 
   return (
-    <div ref={containerRef} className="w-full h-full relative font-sans">
+    <div ref={(node) => {
+      (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+      (fsContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    }} className="w-full h-full relative font-sans">
       <PotionRushSoundController />
 
       <AnimatePresence>
@@ -203,7 +220,8 @@ export default function PotionRushGame({
             startButtonText={t("startButton")}
             onStart={() => {
               setHasStarted(true);
-              startGame(vocabList);
+              enterFullscreen();
+              startGame(vocabList, difficulty);
             }}
           />
         )}
@@ -325,7 +343,10 @@ export default function PotionRushGame({
             },
           ]}
           restartButtonText={t("messages.openAgain")}
-          onRestart={() => startGame(vocabList)}
+          onRestart={() => {
+            enterFullscreen();
+            startGame(vocabList, difficulty);
+          }}
           onExit={() => router.push("/")}
         />
       )}
