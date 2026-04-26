@@ -15,10 +15,8 @@ import { useSession } from "@/hooks/useSession";
 
 export default function ArchersRevengePage() {
   const t = useScopedI18n("pages.student.gamesPage");
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const locale = useCurrentLocale();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { data: session } = useSession();
+  useCurrentLocale();
+  useSession();
   const vocabulary = useGameStore((state) => state.vocabulary);
   const setVocabulary = useGameStore((state) => state.setVocabulary);
   const setLastResult = useGameStore((state) => state.setLastResult);

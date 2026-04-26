@@ -40,6 +40,7 @@ export function ArchersRevengeGame({
   const lastFrameRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
   const hasReportedRef = useRef(false);
+  const gameStateRef = useRef<ArchersRevengeState | null>(null);
 
   const startGame = useCallback(() => {
     try {
@@ -101,30 +102,35 @@ export function ArchersRevengeGame({
   }, [gamePhase]);
 
   useEffect(() => {
+    gameStateRef.current = gameState;
+  }, [gameState]);
+
+  useEffect(() => {
     if (gameState?.status === "defeat") {
       setGamePhase("ended");
     }
   }, [gameState?.status, setGamePhase]);
 
   useEffect(() => {
-    if (gamePhase === "ended" && gameState && !hasReportedRef.current) {
+    if (gamePhase === "ended" && gameStateRef.current && !hasReportedRef.current) {
       hasReportedRef.current = true;
-      const accuracy = gameState.totalAttempts > 0 
-        ? gameState.correctAnswers / gameState.totalAttempts 
+      const state = gameStateRef.current;
+      const accuracy = state.totalAttempts > 0 
+        ? state.correctAnswers / state.totalAttempts 
         : 0;
-      const xp = calculateXP(gameState);
+      const xp = calculateXP(state);
       onComplete?.({
-        score: Math.floor(gameState.score),
+        score: Math.floor(state.score),
         accuracy,
         xp,
-        correctAnswers: gameState.correctAnswers,
-        totalAttempts: gameState.totalAttempts,
-        wavesCompleted: gameState.wave,
-        timeTaken: Math.floor(gameState.gameTime / 1000),
-        difficulty: gameState.difficulty,
+        correctAnswers: state.correctAnswers,
+        totalAttempts: state.totalAttempts,
+        wavesCompleted: state.wave,
+        timeTaken: Math.floor(state.gameTime / 1000),
+        difficulty: state.difficulty,
       });
     }
-  }, [gamePhase, gameState, onComplete]);
+  }, [gamePhase, onComplete]);
 
   const scale = useMemo(() => {
     if (dimensions.width === 0 || dimensions.height === 0) return 1;
