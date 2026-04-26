@@ -33,3 +33,15 @@
 
 ### Remaining
 - SentenceItem[] typing: game uses VocabularyItem[] with identical {term, translation} shape. Type name differs from spec but runtime behavior is correct.
+
+---
+
+## Sorcerer Ziggurat Compliance Audit (2026-04-26)
+
+### Resolved
+- None — game not yet implemented
+
+### Remaining
+- Entire game implementation missing (component, logic, page, API, assets)
+- Registry status should change from `coming-soon` to `playable` after implementation
+- Recommend creating implementation track using vocab-game-builder skill

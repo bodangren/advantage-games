@@ -16,13 +16,6 @@
 - `useInterval` with fixed TICK_MS is acceptable but not ideal; rAF + delta-time clamping is the spec standard
 - Missing test attributes (data-testid, role, aria-label) are easy to fix and prevent test brittleness
 
-### Technical Debt Resolved
-- DragonFlightGame.tsx: Infinite loop on mount (removed resetGame from mount effect)
-- DragonFlightGame.tsx: 5 missing hook dependencies (react-hooks/exhaustive-deps)
-- DragonFlightGame.tsx: 6 unused variables/imports (eslint no-unused-vars)
-- RankingDialog.tsx: Missing fetchRankings in useEffect deps (wrapped in useCallback)
-- page.tsx: Unused xpEarned/results variables (suppressed with underscore prefix pattern)
-
 ---
 
 ## Track: Griffin Riders Escape Compliance Audit (2026-04-26)
@@ -40,11 +33,17 @@
 - Difficulty naming inconsistency (`normal` vs `medium`) is easy to miss in config objects
 - Cover image absence is a common compliance gap for games with existing assets
 
-### Technical Debt Resolved
-- griffin-riders-escape: Missing useGameFullscreen hook
-- griffin-riders-escape: Missing useAccessibilitySettings hook
-- griffin-riders-escape: text-xs labels below 16px minimum
-- griffin-riders-escape: calculateXP not on 1-10 scale
-- griffin-riders-escape: difficulty 'normal' instead of 'medium'
-- griffin-riders-escape: ESLint hook dependency warnings
-- griffin-riders-escape: Missing i18n/session hooks in page.tsx
+---
+
+## Track: Sorcerer Ziggurat Compliance Audit (2026-04-26)
+
+### Summary
+- Audited sorcerer-ziggurat against 25 shared game specifications
+- Result: 0/25 passing — game is not yet implemented
+- Only registry entry (status: `coming-soon`) and cover image exist
+- Recommendation: create implementation track before next audit
+
+### Key Learnings
+- Auditing a non-existent game is fast but yields zero actionable code fixes
+- `coming-soon` status in gameCards.ts is a reliable indicator of missing implementation
+- Compliance audits should be scheduled AFTER implementation tracks complete
