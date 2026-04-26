@@ -30,7 +30,6 @@ import { BattleScene } from "@/components/games/vocabulary/rpg-battle/BattleScen
 import { BattleLog } from "@/components/games/vocabulary/rpg-battle/BattleLog";
 import { HealthBar } from "@/components/games/vocabulary/rpg-battle/HealthBar";
 import { Sprite } from "@/components/games/vocabulary/rpg-battle/Sprite";
-import { BattleResults } from "@/components/games/vocabulary/rpg-battle/BattleResults";
 import { BattleEffects } from "@/components/games/vocabulary/rpg-battle/BattleEffects";
 import { BattleSelectionModal } from "@/components/games/vocabulary/rpg-battle/BattleSelectionModal";
 import { FloatingTextItem } from "@/components/games/vocabulary/rpg-battle/FloatingText";
@@ -42,7 +41,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
-import { useScopedI18n } from "@/locales/client";
+import { useScopedI18n, useCurrentLocale } from "@/locales/client";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
+import { useSession } from "@/hooks/useSession";
+import { GameEndScreen } from "@/components/games/game/GameEndScreen";
 
 const ACTION_COUNT = 3;
 const BASIC_DAMAGE = 10;
@@ -51,6 +53,11 @@ const MAX_TURNS = 12;
 
 export default function RpgBattlePage() {
   const t = useScopedI18n("pages.student.gamesPage");
+  const currentLocale = useCurrentLocale();
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
+
   const vocabulary = useGameStore((state) => state.vocabulary);
   const setVocabulary = useGameStore((state) => state.setVocabulary);
   const setLastResult = useGameStore((state) => state.setLastResult);
@@ -144,7 +151,9 @@ export default function RpgBattlePage() {
         setIsLoading(true);
         setError(null);
 
-        const response = await fetch("/api/v1/games/rpg-battle/vocabulary");
+        const response = await fetch(
+          `/api/v1/games/rpg-battle/vocabulary?locale=${currentLocale}`,
+        );
         const data = await response.json();
 
         if (!response.ok) {
@@ -166,8 +175,10 @@ export default function RpgBattlePage() {
       }
     };
 
-    fetchVocabulary();
-  }, [setVocabulary, gameKey, t]);
+    if (isAuthenticated) {
+      fetchVocabulary();
+    }
+  }, [setVocabulary, gameKey, t, currentLocale, isAuthenticated]);
 
   useEffect(() => {
     if (vocabulary.length > 0 && !showStartScreen) {
@@ -431,10 +442,12 @@ export default function RpgBattlePage() {
     // or just to reset internal state if components rely on mount.
     // For now effectively acting as a soft reload of the game logic.
     setGameKey((prev) => prev + 1);
+    exitFullscreen();
   };
 
   const handleStartBattle = () => {
     setShowStartScreen(false);
+    enterFullscreen();
   };
 
   if (isLoading) {
@@ -495,7 +508,7 @@ export default function RpgBattlePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div ref={containerRef} className="space-y-6">
       <Button variant="ghost" size="sm" asChild>
         <Link href="/student/games">
           <ChevronLeft className="mr-1 h-4 w-4" />
@@ -517,11 +530,15 @@ export default function RpgBattlePage() {
         </Card>
       ) : null}
       {showResults && (status === "victory" || status === "defeat") ? (
-        <BattleResults
-          outcome={status}
+        <GameEndScreen
+          status={status}
+          score={resultXp}
           xp={resultXp}
           accuracy={resultAccuracy}
           onRestart={handleRestart}
+          showLeaderboardLink
+          gameId="rpg-battle"
+          gameName="RPG Battle"
         />
       ) : !showStartScreen ? (
         <Card className="overflow-hidden border-2 shadow-xl bg-slate-900 border-slate-800">

@@ -4,8 +4,6 @@ import {
   Swords,
   BookOpen,
   Trophy,
-  Skull,
-  Flame,
   Shield,
   Sparkles,
 } from "lucide-react";
@@ -83,7 +81,7 @@ export function StartScreen({ vocabulary, onStart }: StartScreenProps) {
       <div className="relative z-20 flex h-full flex-col">
         {/* Header Section */}
         <div className="px-6 py-4 flex-none">
-          <div className="text-[10px] uppercase tracking-[0.3em] text-purple-300/60 mb-1 font-bold">
+          <div className="text-xs uppercase tracking-[0.3em] text-purple-300/60 mb-1 font-bold">
             RPG Battle
           </div>
           <div className="flex items-center justify-between">
@@ -95,7 +93,7 @@ export function StartScreen({ vocabulary, onStart }: StartScreenProps) {
                 {t("rpgBattle.reviewSpells")}
               </p>
             </div>
-            <div className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/70 backdrop-blur-sm">
+            <div className="rounded-md border border-white/10 bg-white/5 px-3 py-1.5 text-xs uppercase tracking-[0.2em] text-white/70 backdrop-blur-sm">
               {t("common.ready")}
             </div>
           </div>
@@ -152,7 +150,7 @@ export function StartScreen({ vocabulary, onStart }: StartScreenProps) {
                   <h3 className="text-lg font-bold text-white mb-2">
                     {t("rpgBattle.theBattleAwaits")}
                   </h3>
-                  <p className="text-xs leading-relaxed text-slate-300">
+                  <p className="text-sm leading-relaxed text-slate-300">
                     {t("rpgBattle.battleDescription")}
                   </p>
                 </div>
@@ -161,56 +159,56 @@ export function StartScreen({ vocabulary, onStart }: StartScreenProps) {
               {/* Right: Instructions */}
               <div className="flex flex-col gap-4 h-full min-h-0">
                 <div className="flex-1 flex flex-col rounded-3xl border border-white/10 bg-slate-900/80 p-6 backdrop-blur-md overflow-hidden">
-                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold mb-4">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-400 font-bold mb-4">
                     <Shield className="h-3 w-3" />
                     {t("common.howToPlay")}
                   </div>
 
                   <div className="space-y-4 text-sm text-slate-300">
                     <div className="flex gap-3">
-                      <div className="flex-none w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-xs">
+                      <div className="flex-none w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-sm">
                         1
                       </div>
                       <div>
                         <p className="font-semibold text-white mb-1">
                           {t("rpgBattle.instructions.step1Title")}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-sm text-slate-400">
                           {t("rpgBattle.instructions.step1Desc")}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex gap-3">
-                      <div className="flex-none w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-xs">
+                      <div className="flex-none w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-sm">
                         2
                       </div>
                       <div>
                         <p className="font-semibold text-white mb-1">
                           {t("rpgBattle.instructions.step2Title")}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-sm text-slate-400">
                           {t("rpgBattle.instructions.step2Desc")}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex gap-3">
-                      <div className="flex-none w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-xs">
+                      <div className="flex-none w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 font-bold text-sm">
                         3
                       </div>
                       <div>
                         <p className="font-semibold text-white mb-1">
                           {t("rpgBattle.instructions.step3Title")}
                         </p>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-sm text-slate-400">
                           {t("rpgBattle.instructions.step3Desc")}
                         </p>
                       </div>
                     </div>
 
                     <div className="mt-6 p-4 rounded-xl bg-purple-500/10 border border-purple-500/20">
-                      <p className="text-xs text-purple-300">
+                      <p className="text-sm text-purple-300">
                         <Sparkles className="inline h-3 w-3 mr-1" />
                         <strong>{t("common.tip")}:</strong>{" "}
                         {t("rpgBattle.instructions.tip")}
@@ -254,7 +252,7 @@ export function StartScreen({ vocabulary, onStart }: StartScreenProps) {
                       </div>
                       <span
                         className={cn(
-                          "text-xs font-bold uppercase tracking-wider",
+                          "text-sm font-bold uppercase tracking-wider",
                           isSelected ? "text-white" : "text-slate-400",
                         )}
                       >
@@ -268,7 +266,7 @@ export function StartScreen({ vocabulary, onStart }: StartScreenProps) {
               {/* Rankings List */}
               <div className="flex-1 flex flex-col rounded-3xl border border-white/10 bg-slate-900/80 backdrop-blur-md overflow-hidden min-h-0">
                 <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02]">
-                  <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-400 font-bold">
                     <Trophy className="h-3 w-3" />
                     {t("rpgBattle.topWarriors")} -{" "}
                     {battleEnemies.find((e) => e.id === selectedEnemy)?.label}
@@ -332,7 +330,7 @@ export function StartScreen({ vocabulary, onStart }: StartScreenProps) {
           {activeTab === "vocabulary" && (
             <div className="h-full flex flex-col rounded-3xl border border-white/10 bg-slate-900/80 backdrop-blur-md overflow-hidden max-h-[300px]">
               <div className="px-5 py-4 border-b border-white/5 bg-white/[0.02] flex-none">
-                <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-400 font-bold">
                   <BookOpen className="h-3 w-3" />
                   {t("rpgBattle.spellBook")} ({vocabulary.length}{" "}
                   {t("rpgBattle.spells")})

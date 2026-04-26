@@ -46,3 +46,14 @@
 
 ### Remaining
 - None
+
+---
+
+## RPG Battle Compliance Audit (2026-04-26)
+
+### Resolved
+- Added useGameFullscreen, useCurrentLocale, useSession, text sizes, GameEndScreen, removed unused imports
+
+### Remaining
+- DOM architecture non-compliant with React-Konva spec (accepted deviation)
+- page.tsx coverage at 70% (below 80% target) — extract game logic to hook

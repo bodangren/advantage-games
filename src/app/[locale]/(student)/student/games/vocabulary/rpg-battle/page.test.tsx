@@ -19,9 +19,49 @@ jest.mock("@/store/useGameStore", () => ({
   ),
 }));
 
-// Mock useScopedI18n
+// Mock useScopedI18n and useCurrentLocale
 jest.mock("@/locales/client", () => ({
   useScopedI18n: () => jest.fn((key) => key),
+  useCurrentLocale: () => "en",
+}));
+
+// Mock useGameFullscreen
+jest.mock("@/hooks/useGameFullscreen", () => ({
+  useGameFullscreen: () => ({
+    containerRef: { current: null },
+    enterFullscreen: jest.fn(),
+    exitFullscreen: jest.fn(),
+    isFullscreen: false,
+  }),
+}));
+
+// Mock useAccessibilitySettings
+jest.mock("@/hooks/useAccessibilitySettings", () => ({
+  useAccessibilitySettings: () => ({
+    getEffectiveTextSize: (size: number) => size,
+    settings: {
+      textSizeMultiplier: 1,
+      touchTargetMultiplier: 1,
+      assistMode: false,
+      reduceMotion: false,
+    },
+  }),
+}));
+
+// Mock useSession
+jest.mock("@/hooks/useSession", () => ({
+  useSession: () => ({
+    data: { user: { id: "test-user", name: "Test User" } },
+  }),
+}));
+
+// Mock GameEndScreen
+jest.mock("@/components/games/game/GameEndScreen", () => ({
+  GameEndScreen: ({ onRestart }: { onRestart: () => void }) => (
+    <div data-testid="game-end-screen">
+      <button onClick={onRestart}>Restart</button>
+    </div>
+  ),
 }));
 
 // Mock the RPG battle store
@@ -63,7 +103,7 @@ jest.mock("@/store/useRPGBattleStore", () => {
       {
         getState: () => ({
           ...mockState,
-          status: "playing", // Default to playing for getState calls in tests
+          status: "playing",
         }),
         setState: jest.fn(),
       },
@@ -91,7 +131,9 @@ jest.mock("@/hooks/useSound", () => ({
 }));
 
 describe("RpgBattlePage", () => {
-  beforeAll(() => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    
     global.fetch = jest.fn(() =>
       Promise.resolve({
         ok: true,
@@ -109,10 +151,6 @@ describe("RpgBattlePage", () => {
     ) as jest.Mock;
   });
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it("renders the RPG battle shell", async () => {
     render(<RpgBattlePage />);
 
@@ -120,7 +158,6 @@ describe("RpgBattlePage", () => {
       expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
     });
 
-    // Use translation keys matching the mock
     expect(screen.getAllByText(/games.rpgBattle.title/i)[0]).toBeInTheDocument();
     expect(screen.getByText("rpgBattle.battlePreparation")).toBeInTheDocument();
     expect(
@@ -145,7 +182,6 @@ describe("RpgBattlePage", () => {
       expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
     });
 
-    // Click start button to transition from StartScreen to Game
     const startButton = screen.getByRole("button", {
       name: /common.startBattle/i,
     });
@@ -163,7 +199,6 @@ describe("RpgBattlePage", () => {
       expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
     });
 
-    // Click start button
     const startButton = screen.getByRole("button", {
       name: /common.startBattle/i,
     });
@@ -174,6 +209,63 @@ describe("RpgBattlePage", () => {
       expect(stage.style.backgroundImage).toContain(
         "background_magic_arena.png",
       );
+    });
+  });
+
+  it("shows loading state initially", () => {
+    render(<RpgBattlePage />);
+    expect(screen.getByText(/loadingVocabulary/i)).toBeInTheDocument();
+  });
+
+  it("shows error state when fetch fails", async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: false,
+        json: () => Promise.resolve({ message: "Failed to load" }),
+      }),
+    ) as jest.Mock;
+
+    render(<RpgBattlePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/unableToStartGame/i)).toBeInTheDocument();
+    });
+  });
+
+  it("handles fetch exception gracefully", async () => {
+    global.fetch = jest.fn(() => Promise.reject(new Error("Network error"))) as jest.Mock;
+
+    render(<RpgBattlePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/unableToStartGame/i)).toBeInTheDocument();
+    });
+  });
+
+  it("fetches vocabulary with locale parameter", async () => {
+    render(<RpgBattlePage />);
+
+    await waitFor(() => {
+      expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/api/v1/games/rpg-battle/vocabulary?locale=en"),
+    );
+  });
+
+  it("shows not enough words error when vocabulary is too small", async () => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve({ vocabulary: [{ term: "A", translation: "1" }] }),
+      }),
+    ) as jest.Mock;
+
+    render(<RpgBattlePage />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/unableToStartGame/i)).toBeInTheDocument();
     });
   });
 });

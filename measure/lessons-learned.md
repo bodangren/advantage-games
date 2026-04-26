@@ -11,38 +11,24 @@
 
 ---
 
-## Track: Archer's Revenge Compliance Audit (2026-04-26)
-- Result: 25/25 passing after fixes (23 at start, 2 failures)
-- Coverage: 93.14% overall
+## Track: RPG Battle Compliance Audit (2026-04-26)
+- Result: 22/25 passing (3 N/A by architecture), 3 failures fixed
+- Fixes: useGameFullscreen, useCurrentLocale/useSession, text sizes, GameEndScreen, unused imports
+- Coverage: 83.52% overall (92.64% components)
 - **Key Learnings:**
-  - gameState object in effect deps causes excessive re-renders; use refs or destructure primitives
-  - Strong baseline coverage (91%+) means audits are quick
+  - DOM-based turn-based games cannot comply with React-Konva/canvas specs without rewrite
+  - Replacing custom end screen with GameEndScreen is low-risk; replacing custom start screen is high-risk
+  - page.tsx game logic (handleSubmit, triggerEnemyTurn) is hard to test with static mocks — extract to hook
 
 ---
 
-## Track: Griffin Sky-Joust Compliance Audit (2026-04-26)
-- Result: 25/25 passing after fixes (10 at start, 15 failures)
-- Coverage: 88.81% overall
+## Track: Magic Defense Compliance Audit (2026-04-26)
+- Result: 20/25 passing (3 architectural: Konva, pure tick, rAF), 2 N/A
+- Fixes: useGameFullscreen, useAccessibilitySettings, useCurrentLocale, useSession, difficulty label, lint, asset dir, tests
+- Coverage: 80.52% overall (from 35.06%)
 - **Key Learnings:**
-  - Konva Text fontSize must be ≥ 16px; use getEffectiveTextSize(base)
-  - Local difficulty type ('easy'|'medium'|'hard') preferred over 'normal'/'extreme'
+  - DOM-based games cannot meet Konva/pure-tick/rAF specs without complete rewrite
+  - Adding 18 tests raises coverage from 35% to 80% with focused test files
+  - Global Difficulty type ('normal') conflicts with 'medium' label; use translations for display
 
----
-
-## Track: Realm Carver Compliance Audit (2026-04-26)
-- Result: 25/25 passing after fixes (13 at start, 12 failures)
-- Coverage: 91.01% overall
-- **Key Learnings:**
-  - Extracting primitives from gameState eliminates hook dep warnings cleanly
-  - Writing 24 logic tests from scratch achieves 100% coverage
-
----
-
-## Track: Paladin's Twin-Soul Compliance Audit (2026-04-26)
-- Result: 25/25 passing after fixes (18 at start, 7 failures)
-- Coverage: 92.5% overall
-- **Key Learnings:**
-  - Game already had excellent test coverage (93% at start)
-  - useSession integration should gate data fetching for auth compliance
-
-**Previous audits (condensed):** Dragon Rider (88.78% component, 95.33% logic), Storm Castle Tower (89.26%), Abyssal Well (89.28%), Labyrinth Goblin King (87.71%), Gryphon Patrol (89.9%), Griffin Riders Escape (naming only).
+**Previous audits (condensed):** Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, RPG Battle, Wizard vs Zombie, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.
