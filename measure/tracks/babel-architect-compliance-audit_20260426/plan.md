@@ -1,12 +1,12 @@
 # Implementation Plan: Babel Architect Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (BabelArchitectGame.tsx, babelArchitect.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/babelArchitect.ts' --collectCoverageFrom='src/components/games/sentence/babel-architect/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/babel-architect/BabelArchitectGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
-- [ ] Task: Measure - User Manual Verification 'Phase 1'
+- [x] Task: Read game source files (BabelArchitectGame.tsx, babelArchitect.ts, page.tsx, API routes). **FINDING: No source files exist.**
+- [x] Task: Run existing tests and record current coverage. **FINDING: No tests exist. Coverage: 0%.**
+- [x] Task: Record lint status. **FINDING: No files to lint.**
+- [x] Task: Check game registry entry in `src/lib/gameCards.ts`. **FINDING: Registered as playable with correct metadata.**
+- [x] Task: Verify asset and cover image existence. **FINDING: Cover image exists. Game assets directory missing.**
+- [x] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit
 - [ ] Task: Verify React-Konva usage in BabelArchitectGame.tsx.
