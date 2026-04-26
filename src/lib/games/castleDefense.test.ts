@@ -601,15 +601,51 @@ describe("castleDefense", () => {
   });
 
   describe("calculateCastleDefenseXP", () => {
-    it("returns 0 when score is 0", () => {
-      expect(calculateCastleDefenseXP(0)).toBe(0);
+    it("returns 0 when no attempts made", () => {
+      const state = createCastleDefenseState([]);
+      expect(calculateCastleDefenseXP(state)).toBe(0);
     });
 
-    it("rounds up to the nearest integer", () => {
-      expect(calculateCastleDefenseXP(1)).toBe(1);
-      expect(calculateCastleDefenseXP(50)).toBe(1);
-      expect(calculateCastleDefenseXP(100)).toBe(1);
-      expect(calculateCastleDefenseXP(101)).toBe(2);
+    it("calculates base XP from correct collections", () => {
+      const state = {
+        ...createCastleDefenseState([{ term: "hello", translation: "hola" }]),
+        correctWordCollections: 3,
+        incorrectWordCollections: 0,
+        base: { ...createCastleDefenseState([]).base, hp: 100, maxHp: 100 },
+        gameTime: 60000,
+        wavesCompleted: 2,
+      };
+      expect(calculateCastleDefenseXP(state)).toBeGreaterThanOrEqual(3);
+    });
+
+    it("awards perfect accuracy bonus", () => {
+      const state = {
+        ...createCastleDefenseState([{ term: "hello", translation: "hola" }]),
+        correctWordCollections: 2,
+        incorrectWordCollections: 0,
+        base: { ...createCastleDefenseState([]).base, hp: 100, maxHp: 100 },
+        gameTime: 60000,
+        wavesCompleted: 2,
+      };
+      const xp = calculateCastleDefenseXP(state);
+      const noBonusState = {
+        ...state,
+        correctWordCollections: 2,
+        incorrectWordCollections: 1,
+      };
+      expect(xp).toBeGreaterThan(calculateCastleDefenseXP(noBonusState));
+    });
+
+    it("caps XP at 10", () => {
+      const state = {
+        ...createCastleDefenseState([{ term: "hello", translation: "hola" }]),
+        correctWordCollections: 10,
+        incorrectWordCollections: 0,
+        base: { ...createCastleDefenseState([]).base, hp: 100, maxHp: 100 },
+        gameTime: 10000,
+        wavesCompleted: 6,
+      };
+      expect(calculateCastleDefenseXP(state)).toBeLessThanOrEqual(10);
     });
   });
 

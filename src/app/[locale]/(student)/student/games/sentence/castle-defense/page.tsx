@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
 import { useCurrentLocale } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -20,6 +21,7 @@ const CastleDefenseGame = dynamic(
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, Shield } from "lucide-react";
 import { Header } from "@/components/header";
+import { SentenceItem } from "@/lib/games/castleDefense";
 
 type WarningStatus = {
   type: "NO_SENTENCES" | "INSUFFICIENT_SENTENCES" | null;
@@ -28,15 +30,15 @@ type WarningStatus = {
 };
 
 export default function CastleDefensePage() {
-  const [sentences, setSentences] = useState<
-    { term: string; translation: string }[]
-  >([]);
+  const [sentences, setSentences] = useState<SentenceItem[]>([]);
   const setLastResult = useGameStore((state) => state.setLastResult);
   const [warningStatus, setWarningStatus] = useState<WarningStatus>({
     type: null,
   });
   const [isLoading, setIsLoading] = useState(true);
   const locale = useCurrentLocale();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchSentences = async () => {

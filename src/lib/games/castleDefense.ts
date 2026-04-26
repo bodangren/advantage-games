@@ -132,9 +132,14 @@ export type Waypoint = {
 };
 
 // Main game state type
+export type SentenceItem = {
+  term: string;
+  translation: string;
+};
+
 export type CastleDefenseState = {
   status: "playing" | "gameover" | "victory";
-  difficulty: "easy" | "normal" | "hard" | "extreme"; // Add difficulty field
+  difficulty: "easy" | "medium" | "hard";
   player: Player;
   enemies: Enemy[];
   towers: Tower[];
@@ -185,10 +190,10 @@ const generateId = (): string =>
   `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 const pickRandomSentence = (
-  vocabulary: { term: string; translation: string }[],
+  vocabulary: SentenceItem[],
   currentTerm?: string,
   random: () => number = Math.random,
-): { term: string; translation: string } => {
+): SentenceItem => {
   if (vocabulary.length === 0) {
     return { term: "", translation: "" };
   }
@@ -396,9 +401,9 @@ export function getRoadTileInfo(
 
 // Create initial game state
 export function createCastleDefenseState(
-  vocabulary: { term: string; translation: string }[],
-  options: { difficulty: "easy" | "normal" | "hard" | "extreme" } = {
-    difficulty: "normal",
+  vocabulary: SentenceItem[],
+  options: { difficulty: "easy" | "medium" | "hard" } = {
+    difficulty: "medium",
   },
 ): CastleDefenseState {
   // Pick a random target word
@@ -420,7 +425,6 @@ export function createCastleDefenseState(
   let baseHp = BASE_HP;
   if (options.difficulty === "easy") baseHp = 150;
   if (options.difficulty === "hard") baseHp = 80;
-  if (options.difficulty === "extreme") baseHp = 50;
 
   const towerSlots = mapConfig.towerSlots.map((slot, i) => ({
     ...slot,
@@ -655,11 +659,20 @@ export function parseSentenceWords(sentence: string): string[] {
     .filter((word) => word.length > 0);
 }
 
-export function calculateCastleDefenseXP(score: number): number {
-  if (score <= 0) {
-    return 0;
-  }
-  return Math.ceil(score * 0.01);
+export function calculateCastleDefenseXP(state: CastleDefenseState): number {
+  const totalAttempts = state.correctWordCollections + state.incorrectWordCollections;
+  if (totalAttempts === 0) return 0;
+
+  const accuracy = state.correctWordCollections / totalAttempts;
+  const baseXP = Math.min(5, state.correctWordCollections);
+
+  let bonus = 0;
+  if (accuracy === 1 && state.correctWordCollections > 0) bonus += 2; // Perfect accuracy bonus
+  if (state.base.hp / state.base.maxHp >= 0.5) bonus += 1; // Survival bonus
+  if (state.gameTime < 120000) bonus += 1; // Speed bonus (under 2 min)
+  if (state.wavesCompleted >= 3) bonus += 1; // Wave progression bonus
+
+  return Math.min(10, baseXP + bonus);
 }
 
 // Validate sequential word collection based on sentence order
@@ -811,7 +824,7 @@ export function canBuildTower(state: CastleDefenseState): boolean {
 export function buildTowerAtSlot(
   state: CastleDefenseState,
   slotId: string,
-  vocabulary: { term: string; translation: string }[],
+  vocabulary: SentenceItem[],
 ): CastleDefenseState {
   const slot = state.towerSlots.find((candidate) => candidate.id === slotId);
   if (!slot) {
@@ -1056,7 +1069,7 @@ export function checkBaseDamage(
 
 // Spawn words on the map
 export function spawnWords(
-  vocabulary: { term: string; translation: string }[],
+  vocabulary: SentenceItem[],
   targetWord: string,
   random: () => number = Math.random,
 ): Word[] {
@@ -1104,7 +1117,7 @@ export function advanceCastleDefenseTime(
   state: CastleDefenseState,
   dt: number,
   input: InputState,
-  vocabulary: { term: string; translation: string }[],
+  vocabulary: SentenceItem[],
 ): CastleDefenseState {
   if (state.status !== "playing") {
     return state;

@@ -1,19 +1,19 @@
 # Implementation Plan: Castle Defense Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (CastleDefenseGame.tsx, castleDefense.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/castleDefense.ts' --collectCoverageFrom='src/components/games/sentence/castle-defense/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/castle-defense/CastleDefenseGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
-- [ ] Task: Measure - User Manual Verification 'Phase 1'
+- [x] Task: Read game source files (CastleDefenseGame.tsx, castleDefense.ts, page.tsx, API routes).
+- [x] Task: Run existing tests and record current coverage (`npx jest src/lib/games/castleDefense.test.ts --coverage --collectCoverageFrom='src/lib/games/castleDefense.ts'`).
+- [x] Task: Record lint status (`npx eslint src/components/games/sentence/castle-defense/CastleDefenseGame.tsx src/lib/games/castleDefense.ts "src/app/[locale]/(student)/student/games/sentence/castle-defense/page.tsx"`).
+- [x] Task: Check game registry entry in `src/lib/gameCards.ts`.
+- [x] Task: Verify asset and cover image existence.
+- [x] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit
-- [ ] Task: Verify React-Konva usage in CastleDefenseGame.tsx.
-- [ ] Task: Verify mobile-first portrait (390×844) responsive scaling.
-- [ ] Task: Verify pure state + tick function pattern in castleDefense.ts.
-- [ ] Task: Verify requestAnimationFrame with delta-time clamping.
-- [ ] Task: Verify useGameFullscreen integration.
+- [~] Task: Verify React-Konva usage in CastleDefenseGame.tsx.
+- [~] Task: Verify mobile-first portrait (390×844) responsive scaling.
+- [~] Task: Verify pure state + tick function pattern in castleDefense.ts.
+- [~] Task: Verify requestAnimationFrame with delta-time clamping.
+- [~] Task: Verify useGameFullscreen integration.
 - [ ] Task: Measure - User Manual Verification 'Phase 2'
 
 ## Phase 3: Input, Accessibility & Data Audit
