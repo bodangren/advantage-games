@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import WizardZombiePage from './page'
 import type { VocabularyItem } from '@/store/useGameStore'
 
@@ -49,13 +49,8 @@ describe('WizardZombiePage', () => {
     expect(screen.getByText(/Collect healing orbs/i)).toBeInTheDocument()
   })
 
-  it('renders StartScreen initially and transitions to game', async () => {
+  it('renders the game component directly', async () => {
     render(<WizardZombiePage />)
-    expect(screen.getByText(/Arcane Defense/i)).toBeInTheDocument()
-    
-    const startButton = screen.getByRole('button', { name: /Start Game/i })
-    fireEvent.click(startButton)
-    
     await waitFor(() => {
       expect(screen.getByTestId('wizard-zombie-game')).toBeInTheDocument()
     })

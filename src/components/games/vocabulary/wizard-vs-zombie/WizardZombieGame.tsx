@@ -34,17 +34,13 @@ import { useGameDimensions } from "@/hooks/useGameDimensions";
 import { VirtualDPad } from "@/components/ui/VirtualDPad";
 import { calculateIndicators } from "@/lib/games/wizardZombieIndicators";
 import { withBasePath } from "@/lib/games/basePath";
-import { motion, AnimatePresence } from "framer-motion";
+import { GameStartScreen } from "@/components/games/game/GameStartScreen";
+import { GameEndScreen } from "@/components/games/game/GameEndScreen";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
 import {
   Shield,
   Zap,
-  BookOpen,
-  Trophy,
-  Target,
-  Sparkles,
-  Home,
-  RotateCcw,
-  Skull,
+  Sword,
 } from "lucide-react";
 import { calculateXP } from "@/lib/games/xp";
 import { useScopedI18n } from "@/locales/client";
@@ -54,6 +50,7 @@ export type WizardZombieGameResult = {
   accuracy: number;
   correctAnswers: number;
   totalAttempts: number;
+  difficulty: Difficulty;
 };
 
 type FloatingText = {
@@ -68,7 +65,6 @@ type FloatingText = {
 
 interface WizardZombieGameProps {
   vocabulary: VocabularyItem[];
-  difficulty: Difficulty;
   onComplete: (results: WizardZombieGameResult) => void;
   adaptive?: boolean;
 }
@@ -89,7 +85,6 @@ const getSpriteCrop = (fw: number, fh: number, col: number, row: number) => ({
 
 export function WizardZombieGame({
   vocabulary,
-  difficulty,
   onComplete,
   adaptive = false,
 }: WizardZombieGameProps) {
@@ -99,25 +94,28 @@ export function WizardZombieGame({
     useDirectionalInput();
   const { getEffectiveTouchTarget, getEffectiveTextSize } =
     useAccessibilitySettings();
-  const [gameState, setGameState] = useState<WizardZombieState | null>(() =>
-    createWizardZombieState(vocabulary, { difficulty }),
-  );
-  const [hasStarted, setHasStarted] = useState(false);
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
+
+  const [gamePhase, setGamePhase] = useState<"start" | "playing" | "ended">("start");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("medium");
+
+  const [gameState, setGameState] = useState<WizardZombieState | null>(null);
+  const gameStateRef = useRef(gameState);
+  useEffect(() => { gameStateRef.current = gameState; }, [gameState]);
 
   // Register adaptive difficulty params for wizard-vs-zombie
   useMemo(() => {
     const difficultyModifiers = {
       easy: { speed: 0.8, spawnRate: 1.2 },
-      normal: { speed: 1.0, spawnRate: 1.0 },
+      medium: { speed: 1.0, spawnRate: 1.0 },
       hard: { speed: 1.2, spawnRate: 0.8 },
-      extreme: { speed: 1.5, spawnRate: 0.6 },
     };
-    const modifiers = difficultyModifiers[difficulty] || difficultyModifiers.normal;
+    const modifiers = difficultyModifiers[selectedDifficulty] || difficultyModifiers.medium;
     registerDifficultyParams('wizard-vs-zombie', {
       zombieSpeed: { current: modifiers.speed, min: 0.5, max: 2.0, default: 1.0, step: 0.1 },
       spawnRate: { current: modifiers.spawnRate, min: 0.4, max: 1.5, default: 1.0, step: 0.1 },
     });
-  }, [difficulty]);
+  }, [selectedDifficulty]);
 
   const { recordResponse: recordAdaptiveResponse } = useAdaptiveDifficulty({
     gameId: 'wizard-vs-zombie',
@@ -133,8 +131,9 @@ export function WizardZombieGame({
     orb: HTMLImageElement;
     floor: HTMLImageElement;
   } | null>(null);
+  const assetsRef = useRef(assets);
+  useEffect(() => { assetsRef.current = assets; }, [assets]);
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const dimensions = useGameDimensions(containerRef);
   const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 });
 
@@ -145,10 +144,16 @@ export function WizardZombieGame({
 
   // Juice State
   const [floatingTexts, setFloatingTexts] = useState<FloatingText[]>([]);
-  const [screenShake, setScreenShake] = useState(0);
+  const floatingTextsRef = useRef(floatingTexts);
+  useEffect(() => { floatingTextsRef.current = floatingTexts; }, [floatingTexts]);
+
+  const [, setScreenShake] = useState(0);
   const [screenShakeOffset, setScreenShakeOffset] = useState({ x: 0, y: 0 });
   const [damageFlash, setDamageFlash] = useState(0); // opacity
   const [shockwaveRing, setShockwaveRing] = useState(0); // scale/opacity
+
+  const inputRef = useRef(input);
+  useEffect(() => { inputRef.current = input; }, [input]);
 
   // Asset Loading
   useEffect(() => {
@@ -186,152 +191,215 @@ export function WizardZombieGame({
     };
   }, []);
 
-  const resetGame = useCallback(() => {
+  const startGame = useCallback(() => {
     if (vocabulary.length > 0) {
-      setGameState(createWizardZombieState(vocabulary));
+      const state = createWizardZombieState(vocabulary, { difficulty: selectedDifficulty });
+      setGameState(state);
+      setGamePhase("playing");
+      setFloatingTexts([]);
+      setScreenShake(0);
+      setScreenShakeOffset({ x: 0, y: 0 });
+      setDamageFlash(0);
+      setShockwaveRing(0);
     }
-  }, [vocabulary]);
+  }, [vocabulary, selectedDifficulty]);
+
+  const handleRestart = useCallback(() => {
+    setGamePhase("start");
+    setGameState(null);
+  }, []);
+
+  const handleExit = useCallback(() => {
+    if (gameStateRef.current) {
+      const state = gameStateRef.current;
+      const results: WizardZombieGameResult = {
+        xp: calculateXP(
+          state.score,
+          state.correctAnswers,
+          state.totalAttempts,
+        ),
+        accuracy:
+          state.totalAttempts > 0
+            ? state.correctAnswers / state.totalAttempts
+            : 0,
+        correctAnswers: state.correctAnswers,
+        totalAttempts: state.totalAttempts,
+        difficulty: selectedDifficulty,
+      };
+      onComplete(results);
+    }
+    setGamePhase("start");
+    setGameState(null);
+  }, [onComplete, selectedDifficulty]);
 
   useEffect(() => {
-    resetGame();
-  }, [resetGame]);
+    if (gamePhase === "playing") {
+      enterFullscreen();
+    } else {
+      exitFullscreen();
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen]);
 
-  // Animation Loop
+  // Animation Loop (sprite frames)
   useInterval(() => {
-    if (hasStarted) {
+    if (gamePhase === "playing") {
       setPlayerFrame((f) => (f + 1) % 3);
       setZombieFrame((f) => (f + 1) % 3);
       setOrbFrame((f) => (f + 1) % 3);
     }
   }, 150);
 
+  // Game Loop with requestAnimationFrame
+  useEffect(() => {
+    if (gamePhase !== "playing") return;
+
+    let rafId: number;
+    let lastTime = 0;
+
+    const loop = (timestamp: number) => {
+      const dt = lastTime ? timestamp - lastTime : 16.6;
+      lastTime = timestamp;
+      const clampedDt = Math.min(dt, 50);
+
+      const currentState = gameStateRef.current;
+      const currentInput = inputRef.current;
+      const currentAssets = assetsRef.current;
+
+      if (!currentState || currentState.status !== "playing" || !currentAssets) {
+        rafId = requestAnimationFrame(loop);
+        return;
+      }
+
+      const nextState = advanceWizardZombieTime(
+        currentState,
+        clampedDt,
+        currentInput,
+        vocabulary,
+      );
+
+      // Diffing for Juice
+      // Damage check
+      if (nextState.player.hp < currentState.player.hp) {
+        setScreenShake(10);
+        setDamageFlash(0.5);
+        setFloatingTexts((prev) => [
+          ...prev,
+          {
+            id: Math.random().toString(),
+            x: nextState.player.x,
+            y: nextState.player.y - 20,
+            text: `-${currentState.player.hp - nextState.player.hp}`,
+            color: "#ef4444",
+            life: 1.0,
+            velocity: { x: (Math.random() - 0.5) * 2, y: -3 },
+          },
+        ]);
+      }
+      // Score check
+      if (nextState.score > currentState.score) {
+        setFloatingTexts((prev) => [
+          ...prev,
+          {
+            id: Math.random().toString(),
+            x: nextState.player.x,
+            y: nextState.player.y - 40,
+            text: `+${nextState.score - currentState.score}`,
+            color: "#fbbf24",
+            life: 1.0,
+            velocity: { x: (Math.random() - 0.5) * 2, y: -4 },
+          },
+        ]);
+      }
+      // Penalty check
+      if (nextState.score < currentState.score) {
+        setFloatingTexts((prev) => [
+          ...prev,
+          {
+            id: Math.random().toString(),
+            x: nextState.player.x,
+            y: nextState.player.y - 40,
+            text: `${nextState.score - currentState.score}`,
+            color: "#ef4444",
+            life: 1.0,
+            velocity: { x: (Math.random() - 0.5) * 2, y: -2 },
+          },
+        ]);
+      }
+      // Adaptive difficulty: track orb collection
+      if (nextState.totalAttempts > currentState.totalAttempts) {
+        const isCorrect = nextState.correctAnswers > currentState.correctAnswers;
+        recordAdaptiveResponse(isCorrect, 1000);
+      }
+
+      // Update Juice
+      setScreenShake((prev) => {
+        if (prev > 0) {
+          setScreenShakeOffset({
+            x: (Math.random() - 0.5) * prev,
+            y: (Math.random() - 0.5) * prev,
+          });
+          return Math.max(0, prev - 1);
+        } else {
+          setScreenShakeOffset({ x: 0, y: 0 });
+          return 0;
+        }
+      });
+      setDamageFlash((prev) => Math.max(0, prev - 0.05));
+      setShockwaveRing((prev) => Math.max(0, prev - 0.1));
+      setFloatingTexts((prev) =>
+        prev
+          .map((ft) => ({
+            ...ft,
+            life: ft.life - 0.02,
+            x: ft.x + ft.velocity.x,
+            y: ft.y + ft.velocity.y,
+          }))
+          .filter((ft) => ft.life > 0),
+      );
+
+      setGameState(nextState);
+
+      if (currentInput.cast) {
+        consumeCast();
+        playSound("success");
+        setShockwaveRing(1.0);
+      }
+
+      if (dimensions.width > 0 && dimensions.height > 0) {
+        const scaleY = dimensions.height / GAME_HEIGHT;
+        const scale = Math.max(scaleY, 0.8);
+
+        let camX = dimensions.width / 2 - nextState.player.x * scale;
+        let camY = dimensions.height / 2 - nextState.player.y * scale;
+
+        const minX = dimensions.width - GAME_WIDTH * scale;
+        const minY = dimensions.height - GAME_HEIGHT * scale;
+
+        if (minX > 0) camX = (dimensions.width - GAME_WIDTH * scale) / 2;
+        else camX = Math.max(minX, Math.min(0, camX));
+
+        if (minY > 0) camY = (dimensions.height - GAME_HEIGHT * scale) / 2;
+        else camY = Math.max(minY, Math.min(0, camY));
+
+        setCamera({ x: camX, y: camY, scale });
+      }
+
+      if (nextState.status === "gameover") {
+        setGamePhase("ended");
+      }
+
+      rafId = requestAnimationFrame(loop);
+    };
+
+    rafId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafId);
+  }, [gamePhase, vocabulary, dimensions.width, dimensions.height, consumeCast, playSound, recordAdaptiveResponse]);
+
   // Calculate indicators
   const indicators =
     gameState && dimensions.width > 0
       ? calculateIndicators(gameState.orbs, camera, dimensions)
       : [];
-
-  // Game Loop
-  useInterval(
-    () => {
-      if (gameState && gameState.status === "playing" && assets && hasStarted) {
-        const nextState = advanceWizardZombieTime(
-          gameState,
-          50,
-          input,
-          vocabulary,
-        );
-
-        // Diffing for Juice
-        if (gameState) {
-          // Damage check
-          if (nextState.player.hp < gameState.player.hp) {
-            setScreenShake(10);
-            setDamageFlash(0.5);
-            setFloatingTexts((prev) => [
-              ...prev,
-              {
-                id: Math.random().toString(),
-                x: nextState.player.x,
-                y: nextState.player.y - 20,
-                text: `-${gameState.player.hp - nextState.player.hp}`,
-                color: "#ef4444", // red-500
-                life: 1.0,
-                velocity: { x: (Math.random() - 0.5) * 2, y: -3 },
-              },
-            ]);
-          }
-          // Score check
-          if (nextState.score > gameState.score) {
-            setFloatingTexts((prev) => [
-              ...prev,
-              {
-                id: Math.random().toString(),
-                x: nextState.player.x,
-                y: nextState.player.y - 40,
-                text: `+${nextState.score - gameState.score}`,
-                color: "#fbbf24", // amber-400
-                life: 1.0,
-                velocity: { x: (Math.random() - 0.5) * 2, y: -4 },
-              },
-            ]);
-          }
-          // Penalty check
-          if (nextState.score < gameState.score) {
-            setFloatingTexts((prev) => [
-              ...prev,
-              {
-                id: Math.random().toString(),
-                x: nextState.player.x,
-                y: nextState.player.y - 40,
-                text: `${nextState.score - gameState.score}`,
-                color: "#ef4444", // red-500
-                life: 1.0,
-                velocity: { x: (Math.random() - 0.5) * 2, y: -2 },
-              },
-            ]);
-          }
-          // Adaptive difficulty: track orb collection
-          if (nextState.totalAttempts > gameState.totalAttempts) {
-            const isCorrect = nextState.correctAnswers > gameState.correctAnswers;
-            recordAdaptiveResponse(isCorrect, 1000);
-          }
-        }
-
-        // Update Juice
-        if (screenShake > 0) {
-          setScreenShake((prev) => Math.max(0, prev - 1));
-          setScreenShakeOffset({
-            x: (Math.random() - 0.5) * screenShake,
-            y: (Math.random() - 0.5) * screenShake,
-          });
-        } else if (screenShakeOffset.x !== 0 || screenShakeOffset.y !== 0) {
-          setScreenShakeOffset({ x: 0, y: 0 });
-        }
-        if (damageFlash > 0) setDamageFlash((prev) => Math.max(0, prev - 0.05));
-        if (shockwaveRing > 0)
-          setShockwaveRing((prev) => Math.max(0, prev - 0.1));
-        setFloatingTexts((prev) =>
-          prev
-            .map((ft) => ({
-              ...ft,
-              life: ft.life - 0.02,
-              x: ft.x + ft.velocity.x,
-              y: ft.y + ft.velocity.y,
-            }))
-            .filter((ft) => ft.life > 0),
-        );
-
-        setGameState(nextState);
-
-        if (input.cast) {
-          consumeCast();
-          playSound("success");
-          setShockwaveRing(1.0);
-        }
-
-        if (dimensions.width > 0 && dimensions.height > 0) {
-          const scaleY = dimensions.height / GAME_HEIGHT;
-          const scale = Math.max(scaleY, 0.8);
-
-          let camX = dimensions.width / 2 - nextState.player.x * scale;
-          let camY = dimensions.height / 2 - nextState.player.y * scale;
-
-          const minX = dimensions.width - GAME_WIDTH * scale;
-          const minY = dimensions.height - GAME_HEIGHT * scale;
-
-          if (minX > 0) camX = (dimensions.width - GAME_WIDTH * scale) / 2;
-          else camX = Math.max(minX, Math.min(0, camX));
-
-          if (minY > 0) camY = (dimensions.height - GAME_HEIGHT * scale) / 2;
-          else camY = Math.max(minY, Math.min(0, camY));
-
-          setCamera({ x: camX, y: camY, scale });
-        }
-      }
-    },
-    gameState?.status === "playing" && hasStarted ? 50 : null,
-  );
 
   // Memoize sprite grids
   const grids = useMemo(() => {
@@ -357,251 +425,84 @@ export function WizardZombieGame({
     );
   }
 
+  if (gamePhase === "start") {
+    return (
+      <div ref={containerRef} className="relative h-full w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none">
+        <GameStartScreen
+          gameTitle="Wizard vs Zombie"
+          gameSubtitle="Arcane Defense"
+          vocabulary={vocabulary}
+          instructions={[
+            { step: 1, text: "The horde is endless. Survive as long as possible by collecting Healing Orbs.", icon: Shield },
+            { step: 2, text: "Match the Target Word shown at the bottom to heal (+10 HP).", icon: Zap },
+            { step: 3, text: "Picking the Wrong Orb reshuffles the field and costs 5 points.", icon: Shield },
+            { step: 4, text: "Each correct orb grants one Shockwave charge. Use it to blast zombies back!", icon: Zap },
+          ]}
+          proTip="Use Shockwave when surrounded to create space for an escape!"
+          controls={[
+            { label: "Move", keys: "Arrows / WASD", color: "bg-blue-500" },
+            { label: "Cast", keys: "Space / Enter", color: "bg-yellow-500" },
+          ]}
+          startButtonText={t("common.startSurvival")}
+          icon={Sword}
+          onStart={startGame}
+        >
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-slate-400" style={{ fontSize: getEffectiveTextSize(16) }}>Difficulty:</span>
+            <div className="flex gap-2">
+              {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setSelectedDifficulty(d)}
+                  className={`rounded-lg px-4 py-2 text-sm font-bold uppercase tracking-wider transition-colors min-h-[44px] min-w-[44px] ${
+                    selectedDifficulty === d
+                      ? "bg-emerald-500 text-white"
+                      : "bg-slate-800 text-slate-400 hover:bg-slate-700"
+                  }`}
+                >
+                  {d}
+                </button>
+              ))}
+            </div>
+          </div>
+        </GameStartScreen>
+      </div>
+    );
+  }
+
   return (
     <div
       ref={containerRef}
       style={{ minHeight: "400px", height: "100%" }}
       className="relative w-full overflow-hidden rounded-3xl bg-slate-900 shadow-2xl ring-1 ring-white/10 touch-none"
     >
-      <AnimatePresence>
-        {!hasStarted && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex flex-col bg-slate-950/90 text-white overflow-hidden"
-          >
-            <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8">
-              <div className="flex items-center justify-between">
-                <h2
-                  className="font-bold tracking-tight text-white"
-                  style={{ fontSize: `${textScale * 1.875}rem` }}
-                >
-                  Arcane Defense
-                </h2>
-                <div
-                  className="px-4 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold uppercase tracking-wider"
-                  style={{ fontSize: `${textScale * 0.75}rem` }}
-                >
-                  Ready to Cast
-                </div>
-              </div>
-
-              <div className="grid gap-8 lg:grid-cols-2">
-                <div className="space-y-6">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm space-y-4">
-                    <h3 className="flex items-center gap-2 font-bold text-lg text-white">
-                      <Shield className="w-5 h-5 text-blue-400" /> Game Rules
-                    </h3>
-                    <ul className="space-y-3 text-sm text-slate-300">
-                      <li className="flex gap-3">
-                        <span className="text-blue-400 font-bold">01.</span>
-                        <span>
-                          The horde is endless. Survive as long as possible by
-                          collecting <b>Healing Orbs</b>.
-                        </span>
-                      </li>
-                      <li className="flex gap-3">
-                        <span className="text-blue-400 font-bold">02.</span>
-                        <span>
-                          Match the <b>Target Word</b> shown at the bottom to
-                          heal (+10 HP).
-                        </span>
-                      </li>
-                      <li className="flex gap-3">
-                        <span className="text-blue-400 font-bold">03.</span>
-                        <span>
-                          Picking the <b>Wrong Orb</b> reshuffles the field and
-                          costs <b>5 points</b>.
-                        </span>
-                      </li>
-                      <li className="flex gap-3">
-                        <span className="text-blue-400 font-bold">04.</span>
-                        <span>
-                          Each correct orb grants one <b>Shockwave</b> charge.
-                          Use it to blast zombies back!
-                        </span>
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="flex items-center gap-4 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4 text-sm text-blue-200">
-                    <Zap className="w-6 h-6 text-yellow-400 shrink-0" />
-                    <p>
-                      <b>Pro Tip:</b> Use Shockwave when surrounded to create
-                      space for an escape!
-                    </p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <h3 className="flex items-center gap-2 font-bold text-lg text-white">
-                      <BookOpen className="w-5 h-5 text-emerald-400" /> Grimoire
-                      Preview
-                    </h3>
-                    <span className="text-xs text-white/40">
-                      {vocabulary.length} Arcane Words
-                    </span>
-                  </div>
-                  <div className="max-h-[240px] overflow-y-auto rounded-2xl border border-white/10 bg-slate-900/50 scrollbar-thin scrollbar-thumb-white/10">
-                    {vocabulary.length === 0 ? (
-                      <div className="p-8 text-center text-white/40 italic">
-                        Grimoire is empty...
-                      </div>
-                    ) : (
-                      <div className="divide-y divide-white/5">
-                        {vocabulary.map((item, i) => (
-                          <div
-                            key={i}
-                            className="flex items-center justify-between p-3 px-4 hover:bg-white/5 transition-colors"
-                          >
-                            <span className="font-medium text-white">
-                              {item.term}
-                            </span>
-                            <span className="text-slate-400 text-sm">
-                              {item.translation}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <footer className="p-4 sm:p-6 md:p-8 border-t border-white/10 bg-slate-900/80 backdrop-blur-md flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6">
-              <div className="flex items-center gap-4 sm:gap-6 text-xs uppercase tracking-[0.2em] text-white/50">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" /> Move:
-                  Arrows / WASD
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-yellow-500" /> Cast:
-                  Space / Enter
-                </div>
-              </div>
-              <button
-                onClick={() => {
-                  resetGame();
-                  setHasStarted(true);
-                }}
-                className="group relative w-full sm:w-auto px-8 sm:px-10 py-3 sm:py-4 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold rounded-full transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(16,185,129,0.4)]"
-              >
-                <span className="relative z-10">
-                  {t("common.startSurvival")}
-                </span>
-                <div className="absolute inset-0 rounded-full bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
-              </button>
-            </footer>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {hasStarted && gameState && grids && (
+      {gameState && grids && (
         <>
           {/* Game Over Overlay */}
-          <AnimatePresence>
-            {gameState.status === "gameover" && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-6"
-              >
-                <motion.div
-                  initial={{ scale: 0.9, y: 20 }}
-                  animate={{ scale: 1, y: 0 }}
-                  className="w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl shadow-2xl p-8 text-center space-y-8"
-                >
-                  <header className="space-y-2">
-                    <div className="w-20 h-20 bg-red-500/20 text-red-400 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Skull className="w-10 h-10" />
-                    </div>
-                    <h2 className="text-3xl font-bold text-white">
-                      Survival Failed
-                    </h2>
-                    <p className="text-slate-400">
-                      The horde has overwhelmed you.
-                    </p>
-                  </header>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-white/5 rounded-2xl p-4 space-y-1">
-                      <div className="text-xs uppercase tracking-wider text-slate-500 font-bold flex items-center justify-center gap-1">
-                        <Trophy className="w-3 h-3" /> {t("common.score")}
-                      </div>
-                      <div className="text-2xl font-bold text-white">
-                        {gameState.score}
-                      </div>
-                    </div>
-                    <div className="bg-white/5 rounded-2xl p-4 space-y-1">
-                      <div className="text-xs uppercase tracking-wider text-slate-500 font-bold flex items-center justify-center gap-1">
-                        <Target className="w-3 h-3" /> {t("common.accuracy")}
-                      </div>
-                      <div className="text-2xl font-bold text-white">
-                        {gameState.totalAttempts > 0
-                          ? Math.round(
-                              (gameState.correctAnswers /
-                                gameState.totalAttempts) *
-                                100,
-                            )
-                          : 0}
-                        %
-                      </div>
-                    </div>
-                    <div className="col-span-2 bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 space-y-1">
-                      <div className="text-xs uppercase tracking-wider text-blue-400 font-bold flex items-center justify-center gap-1">
-                        <Sparkles className="w-3 h-3" /> XP Gained
-                      </div>
-                      <div className="text-3xl font-black text-blue-400">
-                        +
-                        {calculateXP(
-                          gameState.score,
-                          gameState.correctAnswers,
-                          gameState.totalAttempts,
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-3">
-                    <button
-                      onClick={() => {
-                        resetGame();
-                        setHasStarted(true);
-                      }}
-                      className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-bold rounded-2xl transition-all flex items-center justify-center gap-2"
-                    >
-                      <RotateCcw className="w-5 h-5" /> {t("common.playAgain")}
-                    </button>
-                    <button
-                      onClick={() => {
-                        const results: WizardZombieGameResult = {
-                          xp: calculateXP(
-                            gameState.score,
-                            gameState.correctAnswers,
-                            gameState.totalAttempts,
-                          ),
-                          accuracy:
-                            gameState.totalAttempts > 0
-                              ? gameState.correctAnswers /
-                                gameState.totalAttempts
-                              : 0,
-                          correctAnswers: gameState.correctAnswers,
-                          totalAttempts: gameState.totalAttempts,
-                        };
-                        onComplete(results);
-                      }}
-                      className="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-2xl transition-all flex items-center justify-center gap-2"
-                    >
-                      <Home className="w-5 h-5" /> Exit to Menu
-                    </button>
-                  </div>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          {gamePhase === "ended" && (
+            <GameEndScreen
+              status="defeat"
+              score={gameState.score}
+              xp={calculateXP(
+                gameState.score,
+                gameState.correctAnswers,
+                gameState.totalAttempts,
+              )}
+              accuracy={
+                gameState.totalAttempts > 0
+                  ? gameState.correctAnswers / gameState.totalAttempts
+                  : 0
+              }
+              onRestart={handleRestart}
+              onExit={handleExit}
+              title="Survival Failed"
+              subtitle="The horde has overwhelmed you."
+              restartButtonText={t("common.playAgain")}
+              showLeaderboardLink
+              gameId="wizard-vs-zombie"
+              gameName="Wizard vs Zombie"
+            />
+          )}
 
           {/* HUD Overlay */}
           <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10 flex flex-col gap-0.5 sm:gap-1 text-white font-bold text-sm sm:text-lg pointer-events-none drop-shadow-md">

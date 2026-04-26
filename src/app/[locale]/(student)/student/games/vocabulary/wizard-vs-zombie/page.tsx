@@ -1,6 +1,5 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import React, { useCallback, useEffect, useState } from "react";
 import { useSession } from "@/hooks/useSession";
 import {
@@ -12,17 +11,13 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { VocabularyItem } from "@/store/useGameStore";
-import { StartScreen } from "@/components/games/vocabulary/wizard-vs-zombie/StartScreen";
-import { Difficulty } from "@/lib/games/wizardZombie";
-import { AnimatePresence, motion } from "framer-motion";
-import { useScopedI18n } from "@/locales/client";
+import { useScopedI18n, useCurrentLocale } from "@/locales/client";
 
 export default function WizardZombiePage() {
   const t = useScopedI18n("pages.student.gamesPage");
+  useCurrentLocale();
   const { data: session } = useSession();
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
 
   useEffect(() => {
     // Fetch Vocabulary
@@ -57,15 +52,8 @@ export default function WizardZombiePage() {
     fetchVocab();
   }, []);
 
-  const handleStart = useCallback((selectedDifficulty: Difficulty) => {
-    setDifficulty(selectedDifficulty);
-    setIsPlaying(true);
-  }, []);
-
   const handleComplete = useCallback(
     async (results: WizardZombieGameResult) => {
-      setIsPlaying(false); // Return to start screen
-
       try {
         await fetch("/api/v1/games/wizard-vs-zombie/complete", {
           method: "POST",
@@ -77,14 +65,14 @@ export default function WizardZombiePage() {
             correctAnswers: results.correctAnswers,
             totalAttempts: results.totalAttempts,
             accuracy: results.accuracy * 100,
-            difficulty: difficulty,
+            difficulty: results.difficulty,
           }),
         });
       } catch (error) {
         console.error("Failed to submit results", error);
       }
     },
-    [difficulty],
+    [],
   );
 
   return (
@@ -123,35 +111,10 @@ export default function WizardZombiePage() {
         </div>
 
         <div className="relative z-10 w-full h-full flex flex-col justify-center">
-          <AnimatePresence mode="wait">
-            {!isPlaying ? (
-              <motion.div
-                key="start-screen"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-                className="w-full h-full"
-              >
-                <StartScreen vocabulary={vocabulary} onStart={handleStart} />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="game"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="w-full h-full flex items-center justify-center"
-              >
-                <WizardZombieGame
-                  vocabulary={vocabulary}
-                  difficulty={difficulty}
-                  onComplete={handleComplete}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <WizardZombieGame
+            vocabulary={vocabulary}
+            onComplete={handleComplete}
+          />
         </div>
       </div>
     </div>

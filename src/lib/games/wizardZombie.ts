@@ -30,7 +30,7 @@ export type Orb = Entity & {
   isCorrect: boolean;
 };
 
-export type Difficulty = "easy" | "normal" | "hard" | "extreme";
+export type Difficulty = "easy" | "medium" | "hard";
 
 export type WizardZombieState = {
   status: "playing" | "gameover";
@@ -68,14 +68,13 @@ export const DIFFICULTY_MODIFIERS: Record<
   { speed: number; spawnRate: number }
 > = {
   easy: { speed: 0.8, spawnRate: 1.2 },
-  normal: { speed: 1.0, spawnRate: 1.0 },
+  medium: { speed: 1.0, spawnRate: 1.0 },
   hard: { speed: 1.2, spawnRate: 0.8 },
-  extreme: { speed: 1.5, spawnRate: 0.6 },
 };
 
 export const createWizardZombieState = (
   vocabulary: VocabularyItem[],
-  { rng = Math.random, difficulty = "normal" }: WizardZombieConfig = {},
+  { rng = Math.random, difficulty = "medium" }: WizardZombieConfig = {},
 ): WizardZombieState => {
   if (vocabulary.length === 0) {
     throw new Error("Vocabulary cannot be empty");
@@ -292,7 +291,7 @@ function updateZombies(
   spawnTimer += dt;
 
   const modifiers =
-    DIFFICULTY_MODIFIERS[difficulty] || DIFFICULTY_MODIFIERS["normal"];
+    DIFFICULTY_MODIFIERS[difficulty] || DIFFICULTY_MODIFIERS["medium"];
   const spawnRate = BASE_SPAWN_RATE_MS * modifiers.spawnRate;
 
   // Spawn Logic (Cap at 50)
