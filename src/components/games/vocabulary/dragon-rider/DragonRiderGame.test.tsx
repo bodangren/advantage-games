@@ -3,8 +3,32 @@ import type { ReactNode } from "react";
 import { DragonRiderGame } from "./DragonRiderGame";
 import type { VocabularyItem } from "@/store/useGameStore";
 
+const mockEnterFullscreen = jest.fn();
+const mockExitFullscreen = jest.fn();
+
 jest.mock("@/hooks/useSound", () => ({
   useSound: () => ({ playSound: jest.fn() }),
+}));
+
+jest.mock("@/hooks/useGameFullscreen", () => ({
+  useGameFullscreen: () => ({
+    containerRef: { current: null },
+    enterFullscreen: mockEnterFullscreen,
+    exitFullscreen: mockExitFullscreen,
+  }),
+}));
+
+jest.mock("@/hooks/useAccessibilitySettings", () => ({
+  useAccessibilitySettings: () => ({
+    settings: {
+      textSizeMultiplier: 1,
+      touchTargetMultiplier: 1,
+      assistMode: false,
+      reduceMotion: false,
+    },
+    getEffectiveTextSize: (base: number) => base,
+    getEffectiveTouchTarget: (base: number) => base,
+  }),
 }));
 
 jest.mock("react-konva", () => {
@@ -74,6 +98,8 @@ beforeEach(() => {
     },
     configurable: true,
   });
+  mockEnterFullscreen.mockClear();
+  mockExitFullscreen.mockClear();
 });
 
 describe("DragonRiderGame", () => {
@@ -172,9 +198,65 @@ describe("DragonRiderGame", () => {
       "data-status",
       "results",
     );
-    expect(screen.getByText(/defeated/i)).toBeInTheDocument();
+    expect(screen.getByText(/Failure/i)).toBeInTheDocument();
 
     randomSpy.mockRestore();
     jest.useRealTimers();
+  });
+
+  it("enters fullscreen when game starts and exits when ended", () => {
+    jest.useFakeTimers();
+    const randomSpy = mockRandomSequence([0.1, 0.9, 0.2]);
+    render(
+      <DragonRiderGame
+        vocabulary={vocabulary}
+        durationMs={100}
+        preloadedAssets={assets}
+        onComplete={jest.fn()}
+      />,
+    );
+
+    expect(mockEnterFullscreen).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: /start adventure/i }));
+    expect(mockEnterFullscreen).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      jest.advanceTimersByTime(120);
+    });
+    act(() => {
+      jest.advanceTimersByTime(8000);
+    });
+    act(() => {
+      jest.advanceTimersByTime(8000);
+    });
+    act(() => {
+      jest.advanceTimersByTime(8000);
+    });
+    act(() => {
+      jest.advanceTimersByTime(3000);
+    });
+
+    expect(mockExitFullscreen).toHaveBeenCalledTimes(1);
+
+    randomSpy.mockRestore();
+    jest.useRealTimers();
+  });
+
+  it("renders only easy, medium, and hard difficulty buttons", () => {
+    render(
+      <DragonRiderGame
+        vocabulary={vocabulary}
+        preloadedAssets={assets}
+        onComplete={jest.fn()}
+      />,
+    );
+
+    expect(screen.getByRole("button", { name: /easy/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /medium/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /hard/i })).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /extreme/i }),
+    ).not.toBeInTheDocument();
   });
 });

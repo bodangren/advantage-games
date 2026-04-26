@@ -6,6 +6,8 @@ import { DragonRiderGame } from "@/components/games/vocabulary/dragon-rider/Drag
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCurrentLocale } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 
 export default function DragonRiderPage({
   params,
@@ -13,6 +15,9 @@ export default function DragonRiderPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = use(params);
+  const currentLocale = useCurrentLocale();
+  const pageLocale = locale || currentLocale;
+  useSession();
   const vocabulary = useGameStore((state) => state.vocabulary);
   const setVocabulary = useGameStore((state) => state.setVocabulary);
   const setLastResult = useGameStore((state) => state.setLastResult);
@@ -24,7 +29,7 @@ export default function DragonRiderPage({
       setLoading(true);
       try {
         const vocabRes = await fetch(
-          `/api/v1/games/dragon-rider/vocabulary?locale=${locale}`,
+          `/api/v1/games/dragon-rider/vocabulary?locale=${pageLocale}`,
         );
         const vocabData = await vocabRes.json();
 
@@ -51,7 +56,7 @@ export default function DragonRiderPage({
     };
 
     loadData();
-  }, [setVocabulary, locale]);
+  }, [setVocabulary, pageLocale]);
 
   const handleComplete = useCallback(
     async (results: { xp: number; accuracy: number }) => {

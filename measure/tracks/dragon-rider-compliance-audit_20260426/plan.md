@@ -1,12 +1,12 @@
 # Implementation Plan: Dragon Rider Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (DragonRiderGame.tsx, dragonRider.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/dragonRider.ts' --collectCoverageFrom='src/components/games/vocabulary/dragon-rider/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/vocabulary/dragon-rider/DragonRiderGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
-- [ ] Task: Measure - User Manual Verification 'Phase 1'
+- [~] Task: Read game source files (DragonRiderGame.tsx, dragonRider.ts, page.tsx, API routes).
+- [~] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/dragonRider.ts' --collectCoverageFrom='src/components/games/vocabulary/dragon-rider/**/*.tsx'`).
+- [~] Task: Record lint status (`npm run lint -- --file src/components/games/vocabulary/dragon-rider/DragonRiderGame.tsx`).
+- [~] Task: Check game registry entry in `src/lib/gameCards.ts`.
+- [~] Task: Verify asset and cover image existence.
+- [~] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit
 - [ ] Task: Verify React-Konva usage in DragonRiderGame.tsx.

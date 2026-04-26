@@ -36,6 +36,8 @@ import type {
 import type { VocabularyItem } from "@/store/useGameStore";
 import { useInterval } from "@/hooks/useInterval";
 import { useSound } from "@/hooks/useSound";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
+import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
 import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { RankingDialog } from "@/components/games/vocabulary/dragon-flight/RankingDialog";
@@ -52,7 +54,7 @@ type DragonRiderAssets = {
   loadingBackground: HTMLImageElement | null;
 };
 
-export type Difficulty = "easy" | "normal" | "hard" | "extreme";
+export type Difficulty = "easy" | "medium" | "hard";
 
 export type DragonRiderGameProps = {
   vocabulary: VocabularyItem[];
@@ -152,7 +154,6 @@ const ASSETS = {
 
 const DEFAULT_STAGE: StageSize = { width: 960, height: 540 };
 const TICK_MS = 60;
-const GATE_ANIM_MS = 160;
 // const GATE_TRAVEL_MS = 7200 // Moved to dynamic calculation
 const PLAYER_LERP = 0.22;
 const PLAYER_ANIM_MS = 120;
@@ -385,14 +386,15 @@ export function DragonRiderGame({
   durationMs,
 }: DragonRiderGameProps) {
   const t = useScopedI18n("pages.student.gamesPage.dragonRider");
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
+  const { getEffectiveTextSize } = useAccessibilitySettings();
 
-  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
+  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [gamePhase, setGamePhase] = useState<"start" | "playing" | "ended">(
     "start",
   );
   const [showRanking, setShowRanking] = useState(false);
   const [results, setResults] = useState<DragonRiderResults | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
   const [stageSize, setStageSize] = useState<StageSize>(DEFAULT_STAGE);
   const [assets, setAssets] = useState<DragonRiderAssets | null>(
     preloadedAssets ?? null,
@@ -435,7 +437,7 @@ export function DragonRiderGame({
         ? prev
         : { width: nextWidth, height: nextHeight },
     );
-  }, []);
+  }, [containerRef]);
 
   useEffect(() => {
     let isMounted = true;
@@ -458,7 +460,7 @@ export function DragonRiderGame({
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [preloadedAssets]);
 
   const resetGame = useCallback(() => {
     const nextState = createDragonRiderState(vocabulary, {
@@ -478,12 +480,20 @@ export function DragonRiderGame({
     setBossBattleStarted(false);
     pendingSelectionRef.current = null;
     playerTargetRef.current = null;
-  }, [vocabulary]);
+  }, [vocabulary, durationMs]);
 
   useEffect(() => {
     resetGame();
     setGamePhase("start");
   }, [resetGame]);
+
+  useEffect(() => {
+    if (gamePhase === "playing") {
+      enterFullscreen();
+    } else if (gamePhase === "ended") {
+      exitFullscreen();
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen]);
 
   useEffect(() => {
     if (isLoading) return;
@@ -527,7 +537,7 @@ export function DragonRiderGame({
         viewport.removeEventListener("scroll", handleResize);
       }
     };
-  }, [isLoading, measureStage]);
+  }, [isLoading, measureStage, containerRef]);
 
   const gateGrid = useMemo(
     () =>
@@ -595,7 +605,6 @@ export function DragonRiderGame({
       let travelMs = 7200;
       if (difficulty === "easy") travelMs = 9000;
       else if (difficulty === "hard") travelMs = 5500;
-      else if (difficulty === "extreme") travelMs = 4000;
 
       const gateSpeed = (gateEndY - gateStartY) / (travelMs / 1000);
       const deltaSeconds = TICK_MS / 1000;
@@ -706,7 +715,6 @@ export function DragonRiderGame({
       let travelMs = 7200;
       if (difficulty === "easy") travelMs = 9000;
       else if (difficulty === "hard") travelMs = 5500;
-      else if (difficulty === "extreme") travelMs = 4000;
 
       const gateSpeed = (gateEndY - gateStartY) / (travelMs / 1000);
       const deltaSeconds = TICK_MS / 1000;
@@ -968,7 +976,7 @@ export function DragonRiderGame({
         <div className="absolute inset-0 z-10 pointer-events-none">
           <div className="flex items-start justify-between p-2 sm:p-4 md:p-6">
             <div className="max-w-[60%] rounded-2xl border border-white/10 bg-white/10 px-3 py-1.5 sm:px-5 sm:py-3 backdrop-blur">
-              <div className="text-[10px] sm:text-xs uppercase tracking-[0.2em] text-white/70">
+              <div className="text-xs sm:text-sm uppercase tracking-[0.2em] text-white/70" style={{ fontSize: getEffectiveTextSize(12) }}>
                 Prompt
               </div>
               <div className="text-base sm:text-xl md:text-2xl font-semibold text-white">
@@ -980,7 +988,7 @@ export function DragonRiderGame({
                 className="h-3 w-3 sm:h-4 sm:w-4 text-amber-300"
                 aria-hidden="true"
               />
-              <span className="hidden xs:inline text-xs uppercase tracking-[0.2em] text-white/70">
+              <span className="hidden xs:inline text-base uppercase tracking-[0.2em] text-white/70" style={{ fontSize: getEffectiveTextSize(16) }}>
                 Dragons
               </span>
               <motion.span
@@ -1051,19 +1059,21 @@ export function DragonRiderGame({
           {gateLabels && layout && (
             <>
               <div
-                className="absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-base md:text-2xl font-semibold text-white shadow-lg max-w-[120px] sm:max-w-[180px] md:max-w-none truncate sm:truncate-none"
+                className="absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-base sm:text-lg md:text-2xl font-semibold text-white shadow-lg max-w-[120px] sm:max-w-[180px] md:max-w-none truncate sm:truncate-none"
                 style={{
                   left: layout.leftGate.left + layout.leftGate.width / 2,
                   top: gateLabelTop,
+                  fontSize: getEffectiveTextSize(16),
                 }}
               >
                 {gateLabels?.left}
               </div>
               <div
-                className="absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-xs sm:text-base md:text-2xl font-semibold text-white shadow-lg max-w-[120px] sm:max-w-[180px] md:max-w-none truncate sm:truncate-none"
+                className="absolute -translate-x-1/2 rounded-xl border border-white/10 bg-black/80 px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 md:py-2 text-base sm:text-lg md:text-2xl font-semibold text-white shadow-lg max-w-[120px] sm:max-w-[180px] md:max-w-none truncate sm:truncate-none"
                 style={{
                   left: layout.rightGate.left + layout.rightGate.width / 2,
                   top: gateLabelTop,
+                  fontSize: getEffectiveTextSize(16),
                 }}
               >
                 {gateLabels?.right}
@@ -1074,7 +1084,8 @@ export function DragonRiderGame({
           <AnimatePresence>
             {feedback && (
               <motion.div
-                className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white backdrop-blur"
+                className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-base font-semibold text-white backdrop-blur"
+                style={{ fontSize: getEffectiveTextSize(16) }}
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
@@ -1093,7 +1104,8 @@ export function DragonRiderGame({
             {state.status === "boss" && bossBattleStarted && !showResults && (
               <React.Fragment key="boss-battle">
                 <motion.div
-                  className="absolute inset-x-0 top-12 sm:top-16 mx-auto flex w-fit items-center gap-2 sm:gap-3 rounded-full border border-red-500/40 bg-red-950/70 px-3 sm:px-6 py-2 sm:py-3 text-sm sm:text-xl font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] text-red-200"
+                  className="absolute inset-x-0 top-12 sm:top-16 mx-auto flex w-fit items-center gap-2 sm:gap-3 rounded-full border border-red-500/40 bg-red-950/70 px-3 sm:px-6 py-2 sm:py-3 text-base sm:text-xl font-bold uppercase tracking-[0.1em] sm:tracking-[0.2em] text-red-200"
+                  style={{ fontSize: getEffectiveTextSize(16) }}
                   initial={{ opacity: 0, scale: 0.8, y: -20 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.8 }}
@@ -1109,7 +1121,7 @@ export function DragonRiderGame({
                   transition={{ duration: 0.3, delay: 0.2 }}
                 >
                   <div className="rounded-lg border border-white/10 bg-slate-900/70 p-2 sm:p-3 backdrop-blur">
-                    <div className="text-xs uppercase tracking-[0.2em] text-white/70 mb-1">
+                    <div className="text-base uppercase tracking-[0.2em] text-white/70 mb-1" style={{ fontSize: getEffectiveTextSize(16) }}>
                       Boss Health
                     </div>
                     <div className="h-4 w-full overflow-hidden rounded-full bg-white/10">
@@ -1122,7 +1134,7 @@ export function DragonRiderGame({
                         transition={{ duration: 0.3 }}
                       />
                     </div>
-                    <div className="mt-1 text-xs text-white/60 text-center">
+                    <div className="mt-1 text-base text-white/60 text-center" style={{ fontSize: getEffectiveTextSize(16) }}>
                       {bossHealth} / {calculateBossPower(state.attempts)}
                     </div>
                   </div>
@@ -1175,16 +1187,17 @@ export function DragonRiderGame({
         >
           <div className="flex items-center gap-2">
             <div className="flex gap-1 bg-slate-900/80 p-1 rounded-lg border border-white/10">
-              {(["easy", "normal", "hard", "extreme"] as Difficulty[]).map(
+              {(["easy", "medium", "hard"] as Difficulty[]).map(
                 (d) => (
                   <button
                     key={d}
                     onClick={() => setDifficulty(d)}
-                    className={`px-3 py-1.5 rounded-md text-[10px] uppercase font-bold tracking-wider transition-colors ${
+                    className={`px-3 py-1.5 rounded-md text-base uppercase font-bold tracking-wider transition-colors ${
                       difficulty === d
                         ? "bg-amber-500 text-slate-900"
                         : "text-slate-400 hover:text-white hover:bg-white/10"
                     }`}
+                    style={{ fontSize: getEffectiveTextSize(16) }}
                   >
                     {t(
                       `startScreen.difficulty${d.charAt(0).toUpperCase() + d.slice(1)}`,

@@ -6,11 +6,11 @@ import React from "react";
 // Mock React.use to handle the params promise
 jest.mock("react", () => ({
   ...jest.requireActual("react"),
-  use: (promise: any) => {
-    if (promise && typeof promise.then === "function") {
+  use: (promise: Promise<{ locale: string }> | { locale: string }) => {
+    if (promise && typeof promise === "object" && "then" in promise && typeof promise.then === "function") {
       return { locale: "en" }; // Return resolved value directly
     }
-    return promise;
+    return promise as { locale: string };
   },
 }));
 
