@@ -1,5 +1,27 @@
 # Lessons Learned
 
+## Track: Devourer Slime Compliance Audit (2026-04-26)
+
+### Summary
+- Audited devourer-slime against 25 shared game specifications
+- Result: 21/25 passing, 3 failed, 1 N/A
+- Fixes: GameStartScreen/GameEndScreen integration, calculateXP, useAccessibilitySettings, off-screen indicators, i18n/session hooks
+- Final coverage: 92.66% overall (component 88.86%, logic 97.9%)
+
+### Key Learnings
+- E2E test mocks must match API route factory output shape (sentences, not vocabulary)
+- GameStartScreen overlay covers full viewport but Header text remains visible above it
+- Off-screen indicators only needed for target orb (next word), not all entities
+- Shared calculateXP normalizes scores to 1-10 scale consistently across games
+
+### Technical Debt Resolved
+- devourer-slime: Missing GameStartScreen/GameEndScreen
+- devourer-slime: Raw score XP replaced with shared calculateXP
+- devourer-slime: Missing accessibility settings hook
+- devourer-slime: E2E mock API returned wrong key (vocabulary → sentences)
+
+---
+
 ## Track: Babel Architect Compliance Audit (2026-04-26)
 
 ### Summary
@@ -34,6 +56,33 @@
 ### Technical Debt Identified
 - astral-mage: Complete game implementation missing
 - astral-mage: Cover image at wrong filename path
+
+---
+
+## Track: Griffin Riders Escape Compliance Audit (2026-04-26)
+
+### Summary
+- Audited griffin-riders-escape against 25 shared game specifications
+- Result: 24/25 passing after fixes (14 passing at start, 11 failures)
+- Fixes: useGameFullscreen, useAccessibilitySettings, text sizes, calculateXP, difficulty tiers, hook deps, i18n/session, cover image
+- Final coverage: 87.99% overall (logic 98.44%, component 79.11%)
+
+### Key Learnings
+- Game loops should avoid `gameState` in effect deps; use functional setState or refs
+- `useGameFullscreen` integration pattern: enter on 'playing', exit on 'ended'/'start'
+- Accessibility text scaling via `getEffectiveTextSize(base)` preserves base layout
+- Difficulty naming inconsistency (`normal` vs `medium`) is easy to miss in config objects
+- Cover image absence is a common compliance gap for games with existing assets
+
+### Technical Debt Resolved
+- griffin-riders-escape: Missing useGameFullscreen hook
+- griffin-riders-escape: Missing useAccessibilitySettings hook
+- griffin-riders-escape: text-xs labels below 16px minimum
+- griffin-riders-escape: calculateXP not on 1-10 scale (added game-specific function)
+- griffin-riders-escape: difficulty 'normal' instead of 'medium'
+- griffin-riders-escape: ESLint hook dependency warnings
+- griffin-riders-escape: Missing i18n/session hooks in page.tsx
+- griffin-riders-escape: Missing cover image
 
 ---
 
