@@ -36,3 +36,13 @@
 
 ### Remaining
 - None
+
+---
+
+## Dragon Rider Compliance Audit (2026-04-26)
+
+### Resolved
+- Missing useGameFullscreen, useAccessibilitySettings, text sizes, difficulty tiers (normal→medium, removed extreme), hook deps, i18n/session, unused vars, `any` types
+
+### Remaining
+- None

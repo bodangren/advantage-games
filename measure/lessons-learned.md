@@ -42,4 +42,14 @@
   - Asset directory + symlink pattern consistently satisfies directory-structure compliance
   - useSession integration should gate data fetching for auth compliance
 
+---
+
+## Track: Dragon Rider Compliance Audit (2026-04-26)
+- Result: 25/25 passing after fixes (16 at start, 9 failures)
+- Fixes: useGameFullscreen, useAccessibilitySettings, text sizes, difficulty tiers, hook deps, i18n/session, unused vars, `any` types
+- Coverage: 88.78% component, 95.33% logic
+- **Key Learnings:**
+  - HTML overlay games benefit from inline `style={{ fontSize: getEffectiveTextSize(16) }}` for accessibility
+  - containerRef from useGameFullscreen replaces manual ref; add to hook deps
+
 **Previous audits (condensed):** Storm Castle Tower (89.26%), Abyssal Well (89.28%), Labyrinth Goblin King (87.71%), Gryphon Patrol (89.9%), Griffin Riders Escape (remaining: VocabularyItem[] vs SentenceItem[] naming only).
