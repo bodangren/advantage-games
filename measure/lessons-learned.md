@@ -47,4 +47,13 @@
   - Mock ResizeObserver must use stable containerRef to prevent infinite re-render loops in tests
   - Starting from 0% coverage, 49 tests across 4 files reaches 82% efficiently
 
+## Track: Village Guardian Compliance Audit (2026-04-26)
+- Result: 24/25 passing (1 partial: SentenceItem typing)
+- Fixes: useGameFullscreen, useAccessibilitySettings, text sizes, API factories, useSession/useScopedI18n, hook deps, lint warnings, component tests, asset dir
+- Coverage: 94.58% overall (from 54.08%)
+- **Key Learnings:**
+  - Merging fullscreen ref with containerRef for ResizeObserver works cleanly
+  - GameState ref pattern prevents stale closures without triggering re-renders
+  - 12 component tests raise coverage from 54% to 94% efficiently
+
 **Previous audits (condensed):** Dungeon Liberator, Potion Rush, Rune Match, Castle Defense, Alchemists Synthesis, Wizard vs Zombie, RPG Battle, Magic Defense, Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.

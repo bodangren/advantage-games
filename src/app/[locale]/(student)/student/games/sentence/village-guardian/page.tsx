@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
-import { useCurrentLocale } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -37,6 +38,8 @@ export default function VillageGuardianPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const locale = useCurrentLocale();
+  useScopedI18n("pages.student.gamesPage.villageGuardian");
+  useSession();
 
   useEffect(() => {
     const fetchSentences = async () => {

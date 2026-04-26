@@ -17,7 +17,10 @@ import type { OpponentType } from '@/lib/games/villageGuardianConfig'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
-import { Shield, BookOpen, AlertTriangle, Heart, Clock, Users } from 'lucide-react'
+import { Shield, BookOpen, AlertTriangle, Heart, Users } from 'lucide-react'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useScopedI18n } from '@/locales/client'
 
 export type VillageGuardianGameResult = {
   xp: number
@@ -40,7 +43,10 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
 
-  const containerRef = useRef<HTMLDivElement>(null)
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize } = useAccessibilitySettings()
+  useScopedI18n('pages.student.gamesPage.villageGuardian')
+
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
@@ -59,6 +65,14 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
       resetGame()
     }
   }, [vocabulary, gamePhase, resetGame])
+
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      enterFullscreen()
+    } else {
+      exitFullscreen()
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -87,7 +101,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [])
+  }, [containerRef])
 
   useEffect(() => {
     if (gamePhase !== 'playing') return
@@ -110,18 +124,21 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
     }
   }, [gamePhase])
 
+  const gameStateRef = useRef(gameState)
+  gameStateRef.current = gameState
+
   useEffect(() => {
-    if (gameState?.status === 'defeat') {
-      if (gamePhase !== 'ended') {
-        const accuracy = gameState.correctAnswers + gameState.wrongAnswers > 0
-          ? gameState.correctAnswers / (gameState.correctAnswers + gameState.wrongAnswers)
-          : 0
-        const xp = calculateXP(gameState)
-        setResults({ xp, accuracy })
-        setGamePhase('ended')
-      }
+    if (gameState?.status === 'defeat' && gamePhase !== 'ended') {
+      const currentState = gameStateRef.current
+      if (!currentState) return
+      const accuracy = currentState.correctAnswers + currentState.wrongAnswers > 0
+        ? currentState.correctAnswers / (currentState.correctAnswers + currentState.wrongAnswers)
+        : 0
+      const xp = calculateXP(currentState)
+      setResults({ xp, accuracy })
+      setGamePhase('ended')
     }
-  }, [gameState?.status, gamePhase, gameState])
+  }, [gameState?.status, gamePhase])
 
   useEffect(() => {
     if (gamePhase === 'ended' && results && !hasReportedRef.current) {
@@ -200,6 +217,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+                aria-label="Difficulty"
               >
                 <option value="easy">Scout Party</option>
                 <option value="normal">War Band</option>
@@ -213,6 +231,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                 value={selectedOpponent}
                 onChange={(e) => setSelectedOpponent(e.target.value as OpponentType)}
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
+                aria-label="Opponent"
               >
                 <option value="bandits">Bandits (Wander)</option>
                 <option value="goblins">Goblins (Chase)</option>
@@ -260,7 +279,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   x={10}
                   y={10}
                   text={gameState.currentSentence.translation}
-                  fontSize={14}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                   fontStyle="bold"
                   width={GAME_WIDTH - 20}
@@ -272,7 +291,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   x={10}
                   y={35}
                   text={gameState.collectedWords.join(' ')}
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="#22c55e"
                   fontStyle="bold"
                   width={GAME_WIDTH - 20}
@@ -283,7 +302,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   x={10}
                   y={52}
                   text={`Words: ${gameState.collectedWords.length}/${gameState.words.length}`}
-                  fontSize={10}
+                  fontSize={getEffectiveTextSize(14)}
                   fill="#a3a3a3"
                   width={GAME_WIDTH - 20}
                   align="center"
@@ -301,7 +320,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   x={gameState.sanctuary.x - 30}
                   y={gameState.sanctuary.y - 8}
                   text="SAFE"
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="#22c55e"
                   fontStyle="bold"
                   width={60}
@@ -326,7 +345,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                         x={-VILLAGE_GUARDIAN_CONFIG.villagerSize / 2}
                         y={-VILLAGE_GUARDIAN_CONFIG.villagerSize / 2 - 18}
                         text={villager.word}
-                        fontSize={10}
+                        fontSize={getEffectiveTextSize(14)}
                         fill="white"
                         fontStyle="bold"
                         width={VILLAGE_GUARDIAN_CONFIG.villagerSize}
@@ -336,7 +355,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   )
                 })}
 
-                {gameState.trail.map((segment, index) => (
+                {gameState.trail.map((segment) => (
                   <Group key={segment.id} x={segment.x} y={segment.y}>
                     <Circle
                       x={0}
@@ -349,13 +368,13 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                     <Text
                       x={-VILLAGE_GUARDIAN_CONFIG.villagerSize / 2 + 2}
                       y={-6}
-                      text={segment.word}
-                      fontSize={8}
-                      fill="white"
-                      fontStyle="bold"
-                      width={VILLAGE_GUARDIAN_CONFIG.villagerSize - 4}
-                      align="center"
-                    />
+                        text={segment.word}
+                        fontSize={getEffectiveTextSize(14)}
+                        fill="white"
+                        fontStyle="bold"
+                        width={VILLAGE_GUARDIAN_CONFIG.villagerSize - 4}
+                        align="center"
+                      />
                   </Group>
                 ))}
 
@@ -409,7 +428,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                     x={5}
                     y={2}
                     text={`Time: ${Math.ceil(gameState.timer / 1000)}s`}
-                    fontSize={10}
+                    fontSize={getEffectiveTextSize(14)}
                     fill="white"
                     fontStyle="bold"
                   />
@@ -436,7 +455,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                     x={5}
                     y={2}
                     text={`Lives: ${gameState.knight.lives}`}
-                    fontSize={10}
+                    fontSize={getEffectiveTextSize(14)}
                     fill="white"
                     fontStyle="bold"
                   />
@@ -446,7 +465,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   x={GAME_WIDTH - 60}
                   y={GAME_HEIGHT - 35}
                   text={`Score: ${gameState.correctAnswers * 10}`}
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                   fontStyle="bold"
                 />
@@ -455,7 +474,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   x={GAME_WIDTH / 2 - 30}
                   y={GAME_HEIGHT - 35}
                   text={`Level ${gameState.level}`}
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="#fbbf24"
                   fontStyle="bold"
                 />

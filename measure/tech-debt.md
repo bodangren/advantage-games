@@ -4,7 +4,17 @@
 - fullscreen, accessibility, text sizes, calculateXP, difficulty naming, API factories, i18n/session, hook deps, unused imports, component tests, assets.
 
 ## Remaining
-- VocabularyItem[] vs SentenceItem[] naming consistency (Griffin Riders Escape, Gryphon Patrol).
+- VocabularyItem[] vs SentenceItem[] naming consistency (Griffin Riders Escape, Gryphon Patrol, Village Guardian).
+
+---
+
+## Village Guardian Compliance Audit (2026-04-26)
+
+### Resolved
+- useGameFullscreen, useAccessibilitySettings, text sizes, API factories, useSession/useScopedI18n, hook deps, unused imports, component tests, asset dir, lint
+
+### Remaining
+- None
 
 ---
 
