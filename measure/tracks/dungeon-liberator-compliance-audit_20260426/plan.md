@@ -1,11 +1,11 @@
 # Implementation Plan: Dungeon Liberator Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [x] Task: Read game source files (DungeonLiberatorGame.tsx, dungeonLiberator.ts, page.tsx, API routes). [a1b2c3d]
-- [x] Task: Run existing tests and record current coverage (0% baseline, no unit tests). [a1b2c3d]
-- [x] Task: Record lint status (1 warning: unused getEffectiveTextSize). [a1b2c3d]
-- [x] Task: Check game registry entry in `src/lib/gameCards.ts` (registered, correct type/status). [a1b2c3d]
-- [x] Task: Verify asset and cover image existence (assets in wrong dir, cover exists). [a1b2c3d]
+- [x] Task: Read game source files (DungeonLiberatorGame.tsx, dungeonLiberator.ts, page.tsx, API routes). [ecd82bb]
+- [x] Task: Run existing tests and record current coverage (0% baseline, no unit tests). [ecd82bb]
+- [x] Task: Record lint status (1 warning: unused getEffectiveTextSize). [ecd82bb]
+- [x] Task: Check game registry entry in `src/lib/gameCards.ts` (registered, correct type/status). [ecd82bb]
+- [x] Task: Verify asset and cover image existence (assets in wrong dir, cover exists). [ecd82bb]
 - [x] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit
