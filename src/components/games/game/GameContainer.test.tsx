@@ -63,4 +63,43 @@ describe('GameContainer', () => {
     render(<GameContainer />)
     expect(screen.getByText(/Game Over/i)).toBeInTheDocument()
   })
+
+  it('calls onComplete when game ends', () => {
+    const onComplete = jest.fn()
+    const missedWords = [{ term: 'Apple', translation: 'Manzana' }];
+    mockUseGameStore.mockReturnValue({
+      status: 'game-over',
+      vocabulary: [],
+      score: 100,
+      correctAnswers: 5,
+      totalAttempts: 10,
+      resetGame: jest.fn(),
+      missedWords,
+    })
+    mockUseGameStore.getState = jest.fn(() => ({ missedWords }))
+
+    render(<GameContainer onComplete={onComplete} />)
+    expect(onComplete).toHaveBeenCalled()
+  })
+
+  it('displays missed words on results screen', () => {
+    const missedWords = [
+      { term: 'Apple', translation: 'Manzana' },
+      { term: 'Banana', translation: 'Plátano' },
+    ];
+    mockUseGameStore.mockReturnValue({
+      status: 'game-over',
+      vocabulary: [],
+      score: 100,
+      correctAnswers: 5,
+      totalAttempts: 10,
+      resetGame: jest.fn(),
+      missedWords,
+    })
+    mockUseGameStore.getState = jest.fn(() => ({ missedWords }))
+
+    render(<GameContainer />)
+    expect(screen.getByText('Apple')).toBeInTheDocument()
+    expect(screen.getByText('Manzana')).toBeInTheDocument()
+  })
 })

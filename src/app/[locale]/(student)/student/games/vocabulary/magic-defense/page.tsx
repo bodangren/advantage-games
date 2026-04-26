@@ -9,10 +9,15 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
-import { useScopedI18n } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 
 export default function MagicDefensePage() {
   const t = useScopedI18n("pages.student.gamesPage");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const locale = useCurrentLocale();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: session } = useSession();
   const setVocabulary = useGameStore((state) => state.setVocabulary);
   const setLastResult = useGameStore((state) => state.setLastResult);
   const [isLoading, setIsLoading] = useState(true);
@@ -47,6 +52,7 @@ export default function MagicDefensePage() {
     };
 
     fetchVocabulary();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setVocabulary]);
 
   const handleComplete = useCallback(

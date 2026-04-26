@@ -7,15 +7,15 @@ import {
   CastleId,
   MAX_CASTLE_HP,
 } from "@/store/useGameStore";
-import { withBasePath } from "@/lib/games/basePath";
 import {
   CASTLE_CONFIG,
   GAME_CONSTANTS,
   SCALING_CONFIG,
-  getInitialSettings,
 } from "@/lib/games/magicDefenseConfig";
 import { useInterval } from "@/hooks/useInterval";
 import { useSound } from "@/hooks/useSound";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
+import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 import { nanoid } from "nanoid";
 import { InputController } from "./InputController";
 import { AnimatePresence, motion } from "framer-motion";
@@ -131,6 +131,9 @@ export function GameEngine({ difficulty = "normal" }: GameEngineProps) {
     mana,
   } = useGameStore();
   const { playSound } = useSound();
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { getEffectiveTextSize } = useAccessibilitySettings();
   const [activeMissiles, setActiveMissiles] = useState<ActiveMissile[]>([]);
   const handledHitsRef = useRef<Set<string>>(new Set());
   const [explosions, setExplosions] = useState<ActiveExplosion[]>([]);
@@ -142,6 +145,15 @@ export function GameEngine({ difficulty = "normal" }: GameEngineProps) {
   // Timer State (60 seconds)
   const [timeRemaining, setTimeRemaining] = useState(60);
   const { endGame } = useGameStore();
+
+  // Fullscreen management
+  useEffect(() => {
+    if (status === "playing") {
+      enterFullscreen();
+    } else {
+      exitFullscreen();
+    }
+  }, [status, enterFullscreen, exitFullscreen]);
 
   useInterval(() => {
     if (status === "playing") {
@@ -256,9 +268,6 @@ export function GameEngine({ difficulty = "normal" }: GameEngineProps) {
 
         // Remove missiles
         setActiveMissiles((prev) => prev.filter((m) => m.state !== "falling"));
-
-        // Find center castle to fire from
-        const casterX = CASTLE_CONFIG.positions["center"];
 
         // Optional: Add visual effect for global attack
       }
@@ -430,6 +439,7 @@ export function GameEngine({ difficulty = "normal" }: GameEngineProps) {
 
   return (
     <div
+      ref={containerRef}
       data-testid="game-stage"
       className="relative w-full h-full overflow-hidden bg-slate-900"
       style={{
