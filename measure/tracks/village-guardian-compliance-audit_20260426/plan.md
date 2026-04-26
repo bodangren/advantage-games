@@ -50,5 +50,5 @@
 ## Phase 7: Compliance Report
 - [x] Task: Write final compliance report to `report.md`.
 - [x] Task: Update track metadata.json status to completed.
-- [x] Task: Commit all changes with `chore(audit): Village Guardian compliance audit complete`.
+- [x] Task: Commit all changes with `chore(audit): Village Guardian compliance audit complete`. [c513109]
 - [x] Task: Measure - User Manual Verification 'Phase 7'
