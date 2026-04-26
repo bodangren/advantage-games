@@ -33,8 +33,8 @@ describe('griffinSkyJoust', () => {
       let state = createGriffinSkyJoustState(mockVocabulary);
       state = startGame(state);
       const flapped = flap(state, 1);
-      expect(flapped.player.vy).toBe(GRIFFIN_SKY_JOUST_CONFIG.difficulties.normal.flapImpulse);
-      expect(flapped.player.vx).toBe(GRIFFIN_SKY_JOUST_CONFIG.difficulties.normal.horizontalSpeed);
+      expect(flapped.player.vy).toBe(GRIFFIN_SKY_JOUST_CONFIG.difficulties.medium.flapImpulse);
+      expect(flapped.player.vx).toBe(GRIFFIN_SKY_JOUST_CONFIG.difficulties.medium.horizontalSpeed);
     });
 
     it('should not flap if not playing', () => {

@@ -1,9 +1,14 @@
-import type { VocabularyItem, Difficulty } from "@/store/useGameStore";
-import type { GriffinSkyJoustDifficultySettings } from './griffinSkyJoustConfig'
+import type { GriffinSkyJoustDifficulty, GriffinSkyJoustDifficultySettings } from './griffinSkyJoustConfig'
 import {
   GRIFFIN_SKY_JOUST_CONFIG,
   getDifficultySettings,
 } from "./griffinSkyJoustConfig";
+
+export interface SentenceItem {
+  term: string;
+  translation: string;
+  id?: string;
+}
 
 export type Entity = {
   x: number;
@@ -31,30 +36,30 @@ export type GriffinSkyJoustState = {
   status: "start" | "playing" | "victory" | "defeat";
   player: Player;
   enemies: EnemyKnight[];
-  currentSentence: VocabularyItem;
+  currentSentence: SentenceItem;
   words: string[];
   targetIndex: number;
   score: number;
   gameTime: number;
   totalAttempts: number;
   correctAnswers: number;
-  difficulty: Difficulty;
+  difficulty: GriffinSkyJoustDifficulty;
 };
 
 export type GriffinSkyJoustConfig = {
-  difficulty?: Difficulty;
+  difficulty?: GriffinSkyJoustDifficulty;
   rng?: () => number;
 };
 
 export function createGriffinSkyJoustState(
-  vocabulary: VocabularyItem[],
+  vocabulary: SentenceItem[],
   config: GriffinSkyJoustConfig = {}
 ): GriffinSkyJoustState {
   if (vocabulary.length === 0) {
     throw new Error("Vocabulary cannot be empty");
   }
 
-  const difficulty = config.difficulty || "normal";
+  const difficulty = config.difficulty || "medium";
   const rng = config.rng || Math.random;
   const settings = getDifficultySettings(difficulty);
 

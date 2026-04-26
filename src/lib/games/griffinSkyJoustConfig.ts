@@ -1,4 +1,4 @@
-import type { Difficulty } from "@/store/useGameStore";
+export type GriffinSkyJoustDifficulty = 'easy' | 'medium' | 'hard';
 
 export type GriffinSkyJoustDifficultySettings = {
   gravity: number;
@@ -49,7 +49,7 @@ export const GRIFFIN_SKY_JOUST_CONFIG = {
       initialHp: 5,
       wordCount: 4,
     },
-    normal: {
+    medium: {
       gravity: 800,
       flapImpulse: -350,
       horizontalSpeed: 150,
@@ -69,19 +69,9 @@ export const GRIFFIN_SKY_JOUST_CONFIG = {
       initialHp: 2,
       wordCount: 6,
     },
-    extreme: {
-      gravity: 1200,
-      flapImpulse: -450,
-      horizontalSpeed: 250,
-      friction: 0.96,
-      maxVY: 1000,
-      enemySpeed: 180,
-      initialHp: 1,
-      wordCount: 8,
-    },
   },
 };
 
-export function getDifficultySettings(difficulty: Difficulty): GriffinSkyJoustDifficultySettings {
-  return GRIFFIN_SKY_JOUST_CONFIG.difficulties[difficulty] || GRIFFIN_SKY_JOUST_CONFIG.difficulties.normal;
+export function getDifficultySettings(difficulty: GriffinSkyJoustDifficulty): GriffinSkyJoustDifficultySettings {
+  return GRIFFIN_SKY_JOUST_CONFIG.difficulties[difficulty] || GRIFFIN_SKY_JOUST_CONFIG.difficulties.medium;
 }

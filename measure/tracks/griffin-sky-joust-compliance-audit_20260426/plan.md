@@ -1,11 +1,11 @@
 # Implementation Plan: Griffin Sky-Joust Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (GriffinSkyJoustGame.tsx, griffinSkyJoust.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/griffinSkyJoust.ts' --collectCoverageFrom='src/components/games/sentence/griffin-sky-joust/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/griffin-sky-joust/GriffinSkyJoustGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
+- [~] Task: Read game source files (GriffinSkyJoustGame.tsx, griffinSkyJoust.ts, page.tsx, API routes).
+- [~] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/griffinSkyJoust.ts' --collectCoverageFrom='src/components/games/sentence/griffin-sky-joust/**/*.tsx'`).
+- [~] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/griffin-sky-joust/GriffinSkyJoustGame.tsx`).
+- [~] Task: Check game registry entry in `src/lib/gameCards.ts`.
+- [~] Task: Verify asset and cover image existence.
 - [ ] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit

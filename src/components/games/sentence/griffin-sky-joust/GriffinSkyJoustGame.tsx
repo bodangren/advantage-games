@@ -10,12 +10,15 @@ import {
   startGame,
   calculateXP,
   type GriffinSkyJoustState,
+  type SentenceItem,
 } from '@/lib/games/griffinSkyJoust'
 import { GRIFFIN_SKY_JOUST_CONFIG } from '@/lib/games/griffinSkyJoustConfig'
-import type { VocabularyItem, Difficulty } from '@/store/useGameStore'
+import type { GriffinSkyJoustDifficulty } from '@/lib/games/griffinSkyJoustConfig'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { useSound } from '@/hooks/useSound'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 import { Bird, Shield, Sword } from 'lucide-react'
 
 export type GriffinSkyJoustGameResult = {
@@ -24,7 +27,7 @@ export type GriffinSkyJoustGameResult = {
 }
 
 interface GriffinSkyJoustGameProps {
-  vocabulary: VocabularyItem[]
+  vocabulary: SentenceItem[]
   onComplete: (results: GriffinSkyJoustGameResult) => void
 }
 
@@ -33,12 +36,13 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
   const [gameState, setGameState] = useState<GriffinSkyJoustState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<GriffinSkyJoustGameResult | null>(null)
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal')
+  const [selectedDifficulty, setSelectedDifficulty] = useState<GriffinSkyJoustDifficulty>('medium')
   const hasReportedRef = useRef(false)
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
 
-  const containerRef = useRef<HTMLDivElement>(null)
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize } = useAccessibilitySettings()
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
@@ -80,10 +84,11 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
     return () => {
       observer.disconnect()
     }
-  }, [])
+  }, [containerRef])
 
   useEffect(() => {
     if (gamePhase !== 'playing') return
+    enterFullscreen()
 
     const loop = (timestamp: number) => {
       const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
@@ -102,40 +107,47 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
     return () => {
       cancelAnimationFrame(rafRef.current)
       lastFrameRef.current = 0
+      exitFullscreen()
     }
-  }, [gamePhase])
+  }, [gamePhase, enterFullscreen, exitFullscreen])
+
+  const gameStateRef = useRef<GriffinSkyJoustState | null>(null)
+  gameStateRef.current = gameState
 
   useEffect(() => {
-    if (gameState?.status === 'victory' || gameState?.status === 'defeat') {
+    if (!gameStateRef.current) return
+    const status = gameStateRef.current.status
+    if (status === 'victory' || status === 'defeat') {
       if (gamePhase !== 'ended') {
-        if (gameState.status === 'victory') playSound('success')
+        if (status === 'victory') playSound('success')
         else playSound('error')
         
-        const accuracy = gameState.totalAttempts > 0
-          ? gameState.correctAnswers / gameState.totalAttempts
+        const accuracy = gameStateRef.current.totalAttempts > 0
+          ? gameStateRef.current.correctAnswers / gameStateRef.current.totalAttempts
           : 0
-        const xp = calculateXP(gameState)
+        const xp = calculateXP(gameStateRef.current)
         setResults({ xp, accuracy })
         setGamePhase('ended')
       }
     }
-  }, [gameState?.status, gamePhase, gameState, playSound])
+  }, [gameState?.status, gamePhase, playSound])
 
   const prevCorrectCount = useRef(0)
   const prevHp = useRef(0)
 
+  const correctAnswers = gameState?.correctAnswers ?? 0
+  const playerHp = gameState?.player.hp ?? 0
+
   useEffect(() => {
-    if (gameState) {
-      if (gameState.correctAnswers > prevCorrectCount.current) {
-        playSound('cash-register') // collect sound
-      }
-      if (gameState.player.hp < prevHp.current) {
-        playSound('angry-grunt') // hit sound
-      }
-      prevCorrectCount.current = gameState.correctAnswers
-      prevHp.current = gameState.player.hp
+    if (correctAnswers > prevCorrectCount.current) {
+      playSound('cash-register') // collect sound
     }
-  }, [gameState, playSound])
+    if (playerHp < prevHp.current) {
+      playSound('angry-grunt') // hit sound
+    }
+    prevCorrectCount.current = correctAnswers
+    prevHp.current = playerHp
+  }, [correctAnswers, playerHp, playSound])
 
   useEffect(() => {
     if (gamePhase === 'ended' && results && !hasReportedRef.current) {
@@ -224,13 +236,12 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
             <span className="text-sm font-medium text-slate-400">Difficulty:</span>
             <select
               value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
+              onChange={(e) => setSelectedDifficulty(e.target.value as GriffinSkyJoustDifficulty)}
               className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
             >
               <option value="easy">Fledgling (Low Gravity)</option>
-              <option value="normal">Rider (Standard)</option>
+              <option value="medium">Rider (Standard)</option>
               <option value="hard">Veteran (Heavy Gravity)</option>
-              <option value="extreme">Elite (Brutal)</option>
             </select>
           </div>
         </GameStartScreen>
@@ -326,7 +337,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
               x={10}
               y={15}
               text={gameState.currentSentence.translation}
-              fontSize={14}
+              fontSize={getEffectiveTextSize(16)}
               fill="white"
               width={GRIFFIN_SKY_JOUST_CONFIG.gameWidth - 20}
               align="center"
@@ -336,7 +347,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
               x={10}
               y={60}
               text={`Target: ${targetWord}`}
-              fontSize={20}
+              fontSize={getEffectiveTextSize(20)}
               fontStyle="bold"
               fill="#fbbf24"
               width={GRIFFIN_SKY_JOUST_CONFIG.gameWidth - 20}
@@ -347,7 +358,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
             <Group x={10} y={10}>
               <Text
                 text={`❤️ ${gameState.player.hp}`}
-                fontSize={16}
+                fontSize={getEffectiveTextSize(16)}
                 fill="#f87171"
                 fontStyle="bold"
               />
@@ -357,7 +368,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
             <Group x={GRIFFIN_SKY_JOUST_CONFIG.gameWidth - 80} y={10}>
               <Text
                 text={`Score: ${gameState.score}`}
-                fontSize={14}
+                fontSize={getEffectiveTextSize(16)}
                 fill="#fbbf24"
                 align="right"
                 width={70}
@@ -379,7 +390,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
                   x={-enemy.radius}
                   y={enemy.radius + 5}
                   text={enemy.word}
-                  fontSize={14}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                   fontStyle="bold"
                   width={enemy.radius * 2}
