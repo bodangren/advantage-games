@@ -53,7 +53,9 @@ export default function GryphonPatrolPage() {
   });
 
   const locale = useCurrentLocale();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const t = useScopedI18n("games");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { data: session } = useSession();
 
   useEffect(() => {
