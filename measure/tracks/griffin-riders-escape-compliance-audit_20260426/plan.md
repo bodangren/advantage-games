@@ -1,20 +1,20 @@
 # Implementation Plan: Griffin Riders Escape Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (GriffinRidersEscapeGame.tsx, griffinRidersEscape.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/griffinRidersEscape.ts' --collectCoverageFrom='src/components/games/sentence/griffin-riders-escape/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
-- [ ] Task: Measure - User Manual Verification 'Phase 1'
+- [x] Task: Read game source files (GriffinRidersEscapeGame.tsx, griffinRidersEscape.ts, page.tsx, API routes). [c8d4e2f]
+- [x] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/griffinRidersEscape.ts' --collectCoverageFrom='src/components/games/sentence/griffin-riders-escape/**/*.tsx'`). [c8d4e2f]
+- [x] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.tsx`). [c8d4e2f]
+- [x] Task: Check game registry entry in `src/lib/gameCards.ts`. [c8d4e2f]
+- [x] Task: Verify asset and cover image existence. [c8d4e2f]
+- [x] Task: Measure - User Manual Verification 'Phase 1' [c8d4e2f]
 
 ## Phase 2: Architecture & Platform Audit
-- [ ] Task: Verify React-Konva usage in GriffinRidersEscapeGame.tsx.
-- [ ] Task: Verify mobile-first portrait (390×844) responsive scaling.
-- [ ] Task: Verify pure state + tick function pattern in griffinRidersEscape.ts.
-- [ ] Task: Verify requestAnimationFrame with delta-time clamping.
-- [ ] Task: Verify useGameFullscreen integration.
-- [ ] Task: Measure - User Manual Verification 'Phase 2'
+- [~] Task: Verify React-Konva usage in GriffinRidersEscapeGame.tsx.
+- [~] Task: Verify mobile-first portrait (390×844) responsive scaling.
+- [~] Task: Verify pure state + tick function pattern in griffinRidersEscape.ts.
+- [~] Task: Verify requestAnimationFrame with delta-time clamping.
+- [~] Task: Verify useGameFullscreen integration.
+- [~] Task: Measure - User Manual Verification 'Phase 2'
 
 ## Phase 3: Input, Accessibility & Data Audit
 - [ ] Task: Verify touch targets ≥ 44×44px.

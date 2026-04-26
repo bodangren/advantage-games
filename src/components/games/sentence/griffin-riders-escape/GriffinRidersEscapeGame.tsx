@@ -7,6 +7,7 @@ import {
   createGriffinRidersEscapeState,
   tickGriffinRidersEscape,
   switchLane,
+  calculateXP,
   type GriffinRiderState,
   type Lane,
 } from '@/lib/games/griffinRidersEscape'
@@ -14,9 +15,10 @@ import { GAME_WIDTH, GAME_HEIGHT, GRIFFIN_RIDERS_ESCAPE_CONFIG } from '@/lib/gam
 import type { VocabularyItem, Difficulty } from '@/store/useGameStore'
 import { useSound } from '@/hooks/useSound'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
-import { calculateXP } from '@/lib/xp'
 import { Heart } from 'lucide-react'
 
 type GameProps = {
@@ -27,11 +29,12 @@ type GameProps = {
 type GamePhase = 'start' | 'playing' | 'ended'
 
 export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null)
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize } = useAccessibilitySettings()
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const [gameState, setGameState] = useState<GriffinRiderState | null>(null)
   const [gamePhase, setGamePhase] = useState<GamePhase>('start')
-  const [selectedDifficulty] = useState<Difficulty>('normal')
+  const [selectedDifficulty] = useState<Difficulty>('medium')
   const [playerVisualX, setPlayerVisualX] = useState(GAME_WIDTH / 2)
   const [shake, setShake] = useState(0)
   const [flash, setFlash] = useState<string | null>(null)
@@ -42,17 +45,18 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
 
   // Measure stage dimensions
   useEffect(() => {
-    if (!containerRef.current) return
+    const el = containerRef.current
+    if (!el) return
     const updateDimensions = () => {
-      if (!containerRef.current) return
-      const { width, height } = containerRef.current.getBoundingClientRect()
+      if (!el) return
+      const { width, height } = el.getBoundingClientRect()
       if (width > 0 && height > 0) setDimensions({ width, height })
     }
     const observer = new ResizeObserver(updateDimensions)
-    observer.observe(containerRef.current)
+    observer.observe(el)
     updateDimensions()
     return () => observer.disconnect()
-  }, [])
+  }, [containerRef])
 
   const resetGame = useCallback(() => {
     if (vocabulary.length > 0) {
@@ -71,7 +75,7 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
   const lerpRafRef = useRef<number>(0)
 
   useEffect(() => {
-    if (gamePhase !== 'playing' || !gameState) return
+    if (gamePhase !== 'playing') return
 
     const loop = (timestamp: number) => {
       const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
@@ -99,7 +103,6 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
       })
 
       setShake(s => Math.max(0, s - 1))
-      // Flash decay is handled in useEffect or just by setting it once
     }
 
     rafRef.current = requestAnimationFrame(loop)
@@ -127,7 +130,7 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
 
   // Input Handling
   useEffect(() => {
-    if (gamePhase !== 'playing' || !gameState) return
+    if (gamePhase !== 'playing') return
 
     if (input.dx !== 0 && input.dx !== lastInputDx.current) {
       if (input.dx < 0) setGameState(prev => prev ? switchLane(prev, 'left') : null)
@@ -135,6 +138,15 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
     }
     lastInputDx.current = input.dx
   }, [input.dx, gamePhase])
+
+  // Fullscreen handling
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      enterFullscreen()
+    } else if (gamePhase === 'ended' || gamePhase === 'start') {
+      exitFullscreen()
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen])
 
   // Result Handling
   useEffect(() => {
@@ -146,7 +158,13 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
   useEffect(() => {
     if (gamePhase === 'ended' && gameState) {
       const accuracy = gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0
-      const xp = calculateXP(gameState.score, gameState.correctAnswers, gameState.totalAttempts)
+      const xp = calculateXP({
+        correctAnswers: gameState.correctAnswers,
+        totalAttempts: gameState.totalAttempts,
+        lives: gameState.lives,
+        initialLives: GRIFFIN_RIDERS_ESCAPE_CONFIG.initialLives,
+        gameTime: gameState.gameTime,
+      })
       onComplete?.({ accuracy, xp })
     }
   }, [gamePhase, gameState, onComplete])
@@ -259,19 +277,19 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
                 ))}
              </div>
              <div className="bg-black/40 backdrop-blur px-4 py-2 rounded-xl border border-white/20">
-                <div className="text-xs text-white/60 uppercase">Score</div>
+                <div className="text-base text-white/60 uppercase" style={{ fontSize: getEffectiveTextSize(16) }}>Score</div>
                 <div className="text-2xl font-bold text-white leading-tight">{gameState.score}</div>
              </div>
           </div>
 
           <div className="mt-4 w-full bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/20">
-             <div className="text-xs text-amber-300 uppercase font-bold tracking-wider mb-1">Translate</div>
-             <div className="text-xl text-white font-medium">{gameState.currentSentence.translation}</div>
+             <div className="text-base text-amber-300 uppercase font-bold tracking-wider mb-1" style={{ fontSize: getEffectiveTextSize(16) }}>Translate</div>
+             <div className="text-xl text-white font-medium" style={{ fontSize: getEffectiveTextSize(20) }}>{gameState.currentSentence.translation}</div>
           </div>
 
           <div className="mt-auto mb-12 flex flex-wrap gap-2 justify-center">
             {gameState.words.map((word, i) => (
-              <span key={i} className={`px-3 py-1 rounded-lg text-sm font-bold border ${i < gameState.targetIndex ? 'bg-emerald-500/80 border-emerald-400 text-white' : 'bg-black/40 border-white/10 text-white/40'}`}>
+              <span key={i} className={`px-3 py-1 rounded-lg text-sm font-bold border ${i < gameState.targetIndex ? 'bg-emerald-500/80 border-emerald-400 text-white' : 'bg-black/40 border-white/10 text-white/40'}`} style={{ fontSize: getEffectiveTextSize(14) }}>
                 {word}
               </span>
             ))}
@@ -302,9 +320,18 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
           <GameEndScreen
             status={gameState.status === 'victory' ? 'victory' : 'defeat'}
             score={gameState.score}
-            xp={calculateXP(gameState.score, gameState.correctAnswers, gameState.totalAttempts)}
+            xp={calculateXP({
+              correctAnswers: gameState.correctAnswers,
+              totalAttempts: gameState.totalAttempts,
+              lives: gameState.lives,
+              initialLives: GRIFFIN_RIDERS_ESCAPE_CONFIG.initialLives,
+              gameTime: gameState.gameTime,
+            })}
             accuracy={gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0}
             onRestart={handleRestart}
+            gameId="griffin-riders-escape"
+            gameName="Griffin Rider's Escape"
+            showLeaderboardLink
           />
         )}
       </AnimatePresence>

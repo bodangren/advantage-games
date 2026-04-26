@@ -52,7 +52,7 @@ export function createGriffinRidersEscapeState(
   }
 
   const rng = config.rng ?? Math.random
-  const difficulty = config.difficulty ?? 'normal'
+  const difficulty = config.difficulty ?? 'medium'
 
   const sentenceIndex = Math.floor(rng() * vocabulary.length)
   const currentSentence = vocabulary[sentenceIndex]
@@ -215,6 +215,26 @@ export function tickGriffinRidersEscape(
   }
 
   return newState
+}
+
+export function calculateXP(params: {
+  correctAnswers: number
+  totalAttempts: number
+  lives: number
+  initialLives: number
+  gameTime: number
+}): number {
+  if (params.totalAttempts === 0) return 0
+
+  const accuracy = params.correctAnswers / params.totalAttempts
+  const baseXP = params.correctAnswers
+
+  let bonus = 0
+  if (accuracy === 1) bonus += 2 // Perfect accuracy bonus
+  if (params.lives / params.initialLives >= 0.5) bonus += 1 // Survival bonus
+  if (params.gameTime < 30000) bonus += 1 // Speed bonus (under 30s)
+
+  return Math.min(10, baseXP + bonus)
 }
 
 export function switchLane(state: GriffinRiderState, direction: 'left' | 'right'): GriffinRiderState {
