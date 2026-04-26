@@ -33,6 +33,17 @@
 
 ---
 
+## Track: Alchemists Synthesis Compliance Audit (2026-04-26)
+- Result: 23/25 passing (2 partial: empty asset dir, minimal gameplay)
+- Fixes: Created full game scaffold from scratch (was 'coming-soon' with no code)
+- Coverage: 100% logic, 81.36% component
+- **Key Learnings:**
+  - Building a compliant game skeleton first, then iterating, is faster than retrofitting
+  - Pure tick + rAF pattern is straightforward for simple turn-based games
+  - React-Konva mocking strategy: mock Stage/Layer/Group as div wrappers
+
+---
+
 ## Track: Castle Defense Compliance Audit (2026-04-26)
 - Result: 25/25 passing after fixes (13 at start, 12 failures)
 - Fixes: rAF loop, fullscreen, accessibility, text sizes, calculateXP, difficulty tiers, SentenceItem typing, useSession, component tests, hook deps

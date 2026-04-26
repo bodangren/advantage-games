@@ -1,4 +1,7 @@
-import type { VocabularyItem } from '@/store/useGameStore'
+export type SentenceItem = {
+  term: string
+  translation: string
+}
 
 export type Point = { x: number; y: number }
 
@@ -40,6 +43,7 @@ export type GamePhase = 'start' | 'playing' | 'victory' | 'defeat'
 
 export type DungeonLiberatorState = {
   phase: GamePhase
+  difficulty: Difficulty
   player: Player
   prisoners: Prisoner[]
   trail: TrailSegment[]
@@ -54,8 +58,11 @@ export type DungeonLiberatorState = {
   level: number
 }
 
+export type Difficulty = 'easy' | 'medium' | 'hard'
+
 export type DungeonLiberatorConfig = {
   rng?: () => number
+  difficulty?: Difficulty
 }
 
 export const GAME_WIDTH = 800
@@ -70,7 +77,7 @@ export const INVULNERABILITY_DURATION = 1000
 export const BASE_MONSTER_SPEED = 0.45
 
 export function createDungeonLiberatorState(
-  vocabulary: VocabularyItem[],
+  vocabulary: SentenceItem[],
   config: DungeonLiberatorConfig = {}
 ): DungeonLiberatorState {
   if (vocabulary.length === 0) {
@@ -105,6 +112,7 @@ export function createDungeonLiberatorState(
 
   return {
     phase: 'playing',
+    difficulty: config.difficulty ?? 'medium',
     player,
     prisoners,
     trail: [],
@@ -443,7 +451,7 @@ function checkVictoryCondition(state: DungeonLiberatorState): DungeonLiberatorSt
 
 function spawnPrisoners(
   words: string[],
-  sentence: VocabularyItem,
+  sentence: SentenceItem,
   rng: () => number
 ): Prisoner[] {
   const margin = 80
@@ -505,9 +513,25 @@ export function spawnMonsterForLevel(level: number, rng: () => number = Math.ran
   }
 }
 
+export function calculateDungeonLiberatorXP(state: DungeonLiberatorState): number {
+  const totalAttempts = state.correctWords + (state.totalAttempts - state.correctWords)
+  if (totalAttempts === 0) return 0
+
+  const accuracy = state.correctWords / totalAttempts
+  const baseXP = Math.min(5, state.correctWords)
+
+  let bonus = 0
+  if (accuracy === 1 && state.correctWords > 0) bonus += 2 // Perfect accuracy bonus
+  if (state.player.lives / state.player.maxLives >= 0.5) bonus += 1 // Survival bonus
+  if (state.gameTime < 120000) bonus += 1 // Speed bonus (under 2 min)
+  if (state.level >= 3) bonus += 1 // Progression bonus
+
+  return Math.min(10, baseXP + bonus)
+}
+
 export function advanceToNextLevel(
   state: DungeonLiberatorState,
-  vocabulary: VocabularyItem[],
+  vocabulary: SentenceItem[],
   rng: () => number = Math.random
 ): DungeonLiberatorState {
   if (vocabulary.length === 0) return state

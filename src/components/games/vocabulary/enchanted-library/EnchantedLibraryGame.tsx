@@ -27,6 +27,8 @@ import type { VocabularyItem } from "@/store/useGameStore";
 import { useSound } from "@/hooks/useSound";
 import { useInterval } from "@/hooks/useInterval";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
+import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 import { VirtualDPad } from "@/components/ui/VirtualDPad";
 import { withBasePath } from "@/lib/games/basePath";
 import { motion } from "framer-motion";
@@ -98,6 +100,10 @@ export function EnchantedLibraryGame({
   const { playSound } = useSound();
   const { input, setVirtualInput, triggerCast, consumeCast } =
     useDirectionalInput();
+  const { containerRef: fullscreenRef, enterFullscreen, exitFullscreen } =
+    useGameFullscreen();
+  const { settings: accessibilitySettings, getEffectiveTextSize, getEffectiveTouchTarget } =
+    useAccessibilitySettings();
 
   // Use a ref for authoritative game state to avoid stale closure issues in the game loop
   const gameStateRef = useRef<EnchantedLibraryState | null>(null);
@@ -142,6 +148,34 @@ export function EnchantedLibraryGame({
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  // Merge container ref with fullscreen ref
+  const mergedContainerRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      containerRef.current = node;
+      (fullscreenRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+    },
+    [fullscreenRef],
+  );
+
+  // Refs for rAF loop to avoid stale closures
+  const inputRef = useRef(input);
+  const assetsRef = useRef(assets);
+  const vocabularyRef = useRef(vocabulary);
+  const difficultyRef = useRef(difficulty);
+  const dimensionsRef = useRef(dimensions);
+  const cameraRef = useRef(camera);
+  const gamePhaseRef = useRef(gamePhase);
+  const lastFrameRef = useRef<number>(0);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => { inputRef.current = input; }, [input]);
+  useEffect(() => { assetsRef.current = assets; }, [assets]);
+  useEffect(() => { vocabularyRef.current = vocabulary; }, [vocabulary]);
+  useEffect(() => { difficultyRef.current = difficulty; }, [difficulty]);
+  useEffect(() => { dimensionsRef.current = dimensions; }, [dimensions]);
+  useEffect(() => { cameraRef.current = camera; }, [camera]);
+  useEffect(() => { gamePhaseRef.current = gamePhase; }, [gamePhase]);
   const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 });
 
   // Animation Frames
@@ -209,6 +243,15 @@ export function EnchantedLibraryGame({
     setGamePhase("start");
   }, [resetGame]);
 
+  // Fullscreen management
+  useEffect(() => {
+    if (gamePhase === "playing") {
+      enterFullscreen();
+    } else if (gamePhase === "ended") {
+      exitFullscreen();
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen]);
+
   // Animation Loop
   useInterval(() => {
     if (gamePhase === "playing") {
@@ -217,102 +260,125 @@ export function EnchantedLibraryGame({
     }
   }, 150);
 
-  // Game Loop
-  useInterval(
-    () => {
-      if (
-        gameStateRef.current &&
-        gameStateRef.current.status === "playing" &&
-        assets &&
-        gamePhase === "playing"
-      ) {
-        const prevState = gameStateRef.current;
-        const prevMana = prevState.mana;
-        const prevVocabProgress = prevState.vocabularyProgress; // Map ref stays same, but values change
+  // Game Loop with requestAnimationFrame
+  useEffect(() => {
+    if (
+      !gameStateRef.current ||
+      gameStateRef.current.status !== "playing" ||
+      !assetsRef.current ||
+      gamePhaseRef.current !== "playing"
+    ) {
+      return;
+    }
 
-        const directionalInput = mapInputVectorToDirectional(input);
+    lastFrameRef.current = 0;
 
-        // Advance authoritative state
-        const nextState = advanceEnchantedLibraryTime(
-          prevState,
-          directionalInput,
-          50,
-          { vocabulary, difficulty },
-        );
-        gameStateRef.current = nextState;
-        setGameState(nextState);
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current
+        ? timestamp - lastFrameRef.current
+        : 16;
+      lastFrameRef.current = timestamp;
+      const clampedDelta = Math.min(delta, 50);
 
-        // Track attempts and accuracy
-        if (nextState.mana !== prevMana) {
-          // Check if vocabulary progress increased (correct answer)
-          let progressIncreased = false;
-          for (const [word, count] of nextState.vocabularyProgress.entries()) {
-            if (count > (prevVocabProgress.get(word) || 0)) {
-              progressIncreased = true;
-              break;
-            }
-          }
+      const prevState = gameStateRef.current;
+      if (!prevState || prevState.status !== "playing") {
+        rafRef.current = requestAnimationFrame(loop);
+        return;
+      }
 
-          if (progressIncreased) {
-            setCorrectAnswers((c) => c + 1);
-            setTotalAttempts((a) => a + 1);
-          } else if (nextState.mana < prevMana) {
-            // Mana decreased but no progress, so it was a wrong answer or spirit hit
-            // Only count as attempt if it was a wrong answer (not spirit hit)
-            // We can infer this if books changed but progress didn't
-            // But simplified logic: any mana drop without progress is a "mistake" or "hit"
-            setTotalAttempts((a) => a + 1);
+      const prevMana = prevState.mana;
+      const prevVocabProgress = prevState.vocabularyProgress;
+      const currentInput = inputRef.current;
+      const currentAssets = assetsRef.current;
+      const currentVocabulary = vocabularyRef.current;
+      const currentDifficulty = difficultyRef.current;
+      const currentDimensions = dimensionsRef.current;
+      const currentCamera = cameraRef.current;
+
+      const directionalInput = mapInputVectorToDirectional(currentInput);
+
+      // Advance authoritative state
+      const nextState = advanceEnchantedLibraryTime(
+        prevState,
+        directionalInput,
+        clampedDelta,
+        { vocabulary: currentVocabulary, difficulty: currentDifficulty },
+      );
+      gameStateRef.current = nextState;
+      setGameState(nextState);
+
+      // Track attempts and accuracy
+      if (nextState.mana !== prevMana) {
+        let progressIncreased = false;
+        for (const [word, count] of nextState.vocabularyProgress.entries()) {
+          if (count > (prevVocabProgress.get(word) || 0)) {
+            progressIncreased = true;
+            break;
           }
         }
 
-        if (input.cast) {
-          consumeCast();
-          playSound("success");
-        }
-
-        let nextCamera = camera;
-        if (dimensions.width > 0 && dimensions.height > 0) {
-          nextCamera = computeCamera(nextState);
-          setCamera(nextCamera);
-        }
-
-        // Check for book collection events
-        const collectedBook = findCollectedBook(prevState, nextState);
-        if (collectedBook && dimensions.width > 0 && dimensions.height > 0) {
-          const screenX = collectedBook.x * nextCamera.scale + nextCamera.x;
-          const screenY = collectedBook.y * nextCamera.scale + nextCamera.y;
-          const percentX = Math.max(
-            0,
-            Math.min(100, (screenX / dimensions.width) * 100),
-          );
-          const percentY = Math.max(
-            0,
-            Math.min(100, (screenY / dimensions.height) * 100),
-          );
-
-          const pickupId = pickupIdRef.current++;
-          const variant = collectedBook.isCorrect ? "glow" : "close";
-          const frameIndex = collectedBook.isCorrect
-            ? BOOK_FRAME_GLOW
-            : BOOK_FRAME_CLOSED;
-
-          setPickupBursts((prev) => [
-            ...prev,
-            { id: pickupId, x: percentX, y: percentY, frameIndex, variant },
-          ]);
-
-          if (collectedBook.isCorrect) {
-            const sparkleId = sparkleIdRef.current++;
-            setSparkles((prev) => [
-              ...prev,
-              { id: sparkleId, x: percentX, y: percentY },
-            ]);
-          }
+        if (progressIncreased) {
+          setCorrectAnswers((c) => c + 1);
+          setTotalAttempts((a) => a + 1);
+        } else if (nextState.mana < prevMana) {
+          setTotalAttempts((a) => a + 1);
         }
       }
-    },
-    gameState?.status === "playing" && gamePhase === "playing" ? 50 : null,
-  );
+
+      if (currentInput.cast) {
+        consumeCast();
+        playSound("success");
+      }
+
+      let nextCamera = currentCamera;
+      if (currentDimensions.width > 0 && currentDimensions.height > 0) {
+        nextCamera = computeCamera(nextState);
+        setCamera(nextCamera);
+      }
+
+      // Check for book collection events
+      const collectedBook = findCollectedBook(prevState, nextState);
+      if (collectedBook && currentDimensions.width > 0 && currentDimensions.height > 0) {
+        const screenX = collectedBook.x * nextCamera.scale + nextCamera.x;
+        const screenY = collectedBook.y * nextCamera.scale + nextCamera.y;
+        const percentX = Math.max(
+          0,
+          Math.min(100, (screenX / currentDimensions.width) * 100),
+        );
+        const percentY = Math.max(
+          0,
+          Math.min(100, (screenY / currentDimensions.height) * 100),
+        );
+
+        const pickupId = pickupIdRef.current++;
+        const variant = collectedBook.isCorrect ? "glow" : "close";
+        const frameIndex = collectedBook.isCorrect
+          ? BOOK_FRAME_GLOW
+          : BOOK_FRAME_CLOSED;
+
+        setPickupBursts((prev) => [
+          ...prev,
+          { id: pickupId, x: percentX, y: percentY, frameIndex, variant },
+        ]);
+
+        if (collectedBook.isCorrect) {
+          const sparkleId = sparkleIdRef.current++;
+          setSparkles((prev) => [
+            ...prev,
+            { id: sparkleId, x: percentX, y: percentY },
+          ]);
+        }
+      }
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+    };
+  }, [gamePhase, assets, gameState?.status]);
 
   useEffect(() => {
     if (!gameState) return;
@@ -461,10 +527,10 @@ export function EnchantedLibraryGame({
   if (!assets) {
     return (
       <div
-        ref={containerRef}
+        ref={mergedContainerRef}
         className="relative h-[50vh] sm:h-[60vh] w-full overflow-hidden rounded-2xl bg-gradient-to-b from-amber-100 to-amber-200 flex items-center justify-center border border-amber-300 md:aspect-video md:h-auto"
       >
-        <div className="text-amber-800 animate-pulse font-mono tracking-widest uppercase text-sm sm:text-base">
+        <div className="text-amber-800 animate-pulse font-mono tracking-widest uppercase text-base">
           Loading Library...
         </div>
       </div>
@@ -473,7 +539,7 @@ export function EnchantedLibraryGame({
 
   return (
     <div
-      ref={containerRef}
+      ref={mergedContainerRef}
       style={{ minHeight: "320px" }}
       className="relative h-[80vh] sm:h-[70vh] w-full overflow-hidden rounded-3xl bg-slate-950 shadow-2xl touch-none md:aspect-video md:h-auto"
     >
@@ -539,7 +605,7 @@ export function EnchantedLibraryGame({
           className="absolute inset-0"
         >
           {/* HUD Overlay */}
-          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10 flex flex-col gap-1 text-amber-900 font-bold text-sm sm:text-base md:text-xl pointer-events-none drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)]">
+          <div className="absolute top-2 sm:top-4 left-2 sm:left-4 z-10 flex flex-col gap-1 text-amber-900 font-bold text-base md:text-xl pointer-events-none drop-shadow-[0_2px_4px_rgba(255,255,255,0.8)]">
             <div className="bg-white/80 px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg">
               {t("hud.mana")}: {gameState.mana}
             </div>
@@ -555,7 +621,7 @@ export function EnchantedLibraryGame({
                 Math.floor((gameState.timeRemaining % 60000) / 1000),
               ).padStart(2, "0")}
             </div>
-            <div className="bg-white/80 px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg text-blue-600 text-sm sm:text-base flex items-center gap-0.5 sm:gap-1">
+            <div className="bg-white/80 px-2 py-0.5 sm:px-3 sm:py-1 rounded-lg text-blue-600 text-base flex items-center gap-0.5 sm:gap-1">
               {t("hud.shields")}:{" "}
               {Array(gameState.player.maxShieldCharges)
                 .fill(0)
@@ -575,7 +641,7 @@ export function EnchantedLibraryGame({
           </div>
 
           <div className="absolute top-2 sm:top-4 left-1/2 -translate-x-1/2 z-10 bg-gradient-to-r from-yellow-400 to-amber-500 px-3 py-1.5 sm:px-6 sm:py-3 rounded-full border-2 border-yellow-300 backdrop-blur-sm pointer-events-none shadow-lg max-w-[55%] sm:max-w-none text-center">
-            <span className="text-white/90 mr-1 sm:mr-2 text-xs sm:text-sm">
+            <span className="text-white/90 mr-1 sm:mr-2 text-base">
               Find:
             </span>
             <span className="text-base sm:text-xl md:text-2xl font-bold text-white drop-shadow-md">
@@ -586,10 +652,10 @@ export function EnchantedLibraryGame({
           <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-20">
             <button
               onClick={() => setShowGrimoire(true)}
-              className="bg-white/90 p-2 sm:p-3 rounded-full text-amber-900 shadow-lg border-2 border-amber-300 hover:scale-110 transition-transform active:scale-95"
+              className="bg-white/90 p-2 sm:p-3 rounded-full text-amber-900 shadow-lg border-2 border-amber-300 hover:scale-110 transition-transform active:scale-95 min-w-[44px] min-h-[44px] flex items-center justify-center"
               title="My Grimoire"
             >
-              <Book className="w-4 h-4 sm:w-6 sm:h-6" />
+              <Book className="w-6 h-6" />
             </button>
           </div>
 
@@ -639,7 +705,7 @@ export function EnchantedLibraryGame({
             <button
               onClick={() => triggerCast()}
               disabled={gameState.player.shieldCharges === 0}
-              className={`w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 flex items-center justify-center font-bold text-xs sm:text-sm transition-all active:scale-95 ${
+              className={`w-14 h-14 sm:w-20 sm:h-20 rounded-full border-2 flex items-center justify-center font-bold text-base transition-all active:scale-95 ${
                 gameState.player.shieldCharges > 0
                   ? "bg-blue-600 border-blue-400 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]"
                   : "bg-slate-400 border-slate-300 text-slate-600 opacity-50"

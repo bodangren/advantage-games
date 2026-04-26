@@ -1,5 +1,14 @@
 export type MonsterType = "goblin" | "skeleton" | "orc" | "dragon";
 
+export type Difficulty = "easy" | "medium" | "hard";
+
+export const MONSTER_DIFFICULTY: Record<MonsterType, Difficulty> = {
+  goblin: "easy",
+  skeleton: "medium",
+  orc: "hard",
+  dragon: "hard",
+};
+
 export type MonsterConfig = {
   hp: number;
   attack: number;

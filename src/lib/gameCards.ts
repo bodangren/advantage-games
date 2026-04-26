@@ -80,7 +80,7 @@ export const gameCards: GameCard[] = [
     description: 'Master the art of alchemy by matching and merging vocabulary to synthesize powerful spells!',
     cover: withBasePath('/games/cover/cover-alchemists-synthesis.png'),
     href: '/en/student/games/vocabulary/alchemists-synthesis',
-    status: 'coming-soon',
+    status: 'playable',
   },
   {
     id: 'potion-rush',

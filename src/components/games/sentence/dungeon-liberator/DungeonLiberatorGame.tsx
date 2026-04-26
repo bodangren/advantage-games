@@ -6,6 +6,7 @@ import {
   createDungeonLiberatorState,
   advanceDungeonLiberatorTime,
   advanceToNextLevel,
+  calculateDungeonLiberatorXP,
   GAME_WIDTH,
   GAME_HEIGHT,
   PLAYER_RADIUS,
@@ -13,15 +14,13 @@ import {
   MONSTER_RADIUS,
   PORTAL_RADIUS,
   type DungeonLiberatorState,
+  type SentenceItem,
 } from '@/lib/games/dungeonLiberator'
 import { calculateIndicators } from '@/lib/games/dungeonLiberatorIndicators'
-import type { VocabularyItem } from '@/store/useGameStore'
-import { useInterval } from '@/hooks/useInterval'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
-import { calculateXP } from '@/lib/xp'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { Shield, Sword, Users, AlertTriangle } from 'lucide-react'
@@ -45,10 +44,11 @@ function loadSprite(src: string): Promise<HTMLImageElement> {
 export type DungeonLiberatorGameResult = {
   xp: number
   accuracy: number
+  difficulty: string
 }
 
 interface DungeonLiberatorGameProps {
-  vocabulary: VocabularyItem[]
+  vocabulary: SentenceItem[]
   onComplete: (results: DungeonLiberatorGameResult) => void
 }
 
@@ -68,6 +68,8 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
   } | null>(null)
   const [animFrame, setAnimFrame] = useState(0)
 
+  const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
+
   // Camera state (scrolling viewport)
   const [camera, setCamera] = useState({ x: 0, y: 0, scale: 1 })
 
@@ -75,6 +77,18 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  // rAF refs
+  const rafRef = useRef<number>(0)
+  const lastFrameRef = useRef<number>(0)
+  const gameStateRef = useRef(gameState)
+  const inputRef = useRef(input)
+  const assetsRef = useRef(assets)
+  const animTimerRef = useRef<number>(0)
+
+  useEffect(() => { gameStateRef.current = gameState }, [gameState])
+  useEffect(() => { inputRef.current = input }, [input])
+  useEffect(() => { assetsRef.current = assets }, [assets])
 
   // Calculate off-screen indicators
   const indicators = useMemo(
@@ -89,10 +103,10 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
   useEffect(() => {
     const load = async () => {
       const [background, player, prisoner, slime] = await Promise.all([
-        loadSprite('/games/dungeon-liberator/background.png'),
-        loadSprite('/games/dungeon-liberator/player-sheet.png'),
-        loadSprite('/games/dungeon-liberator/prisoner-sheet.png'),
-        loadSprite('/games/dungeon-liberator/slime-sheet.png'),
+        loadSprite('/games/sentence/dungeon-liberator/background.png'),
+        loadSprite('/games/sentence/dungeon-liberator/player-sheet.png'),
+        loadSprite('/games/sentence/dungeon-liberator/prisoner-sheet.png'),
+        loadSprite('/games/sentence/dungeon-liberator/slime-sheet.png'),
       ])
       setAssets({ background, player, prisoner, slime })
     }
@@ -111,14 +125,13 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
 
   const resetGame = useCallback(() => {
     if (vocabulary.length > 0) {
-      setGameState(createDungeonLiberatorState(vocabulary))
+      setGameState(createDungeonLiberatorState(vocabulary, { difficulty }))
       setResults(null)
       setTotalXP(0)
       setTotalCorrect(0)
-      setTotalAttempts(0)
       hasReportedRef.current = false
     }
-  }, [vocabulary])
+  }, [vocabulary, difficulty])
 
   useEffect(() => {
     if (vocabulary.length > 0 && gamePhase === 'start') {
@@ -158,44 +171,67 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
 
   const [totalXP, setTotalXP] = useState(0)
   const [totalCorrect, setTotalCorrect] = useState(0)
-  const [totalAttempts, setTotalAttempts] = useState(0)
 
-  // Game loop with camera update
-  useInterval(() => {
-    if (gameState && gameState.phase === 'playing' && gamePhase === 'playing') {
-      const nextState = advanceDungeonLiberatorTime(gameState, 50, { dx: input.dx, dy: input.dy })
+  // Animation frame counter using rAF
+  useEffect(() => {
+    if (gamePhase !== 'playing') return
+    let frame = 0
+    let lastAnim = 0
+    const animLoop = (ts: number) => {
+      if (ts - lastAnim >= 200) {
+        lastAnim = ts
+        frame = (frame + 1) % 3
+        setAnimFrame(frame)
+      }
+      animTimerRef.current = requestAnimationFrame(animLoop)
+    }
+    animTimerRef.current = requestAnimationFrame(animLoop)
+    return () => cancelAnimationFrame(animTimerRef.current)
+  }, [gamePhase])
+
+  // Game loop with requestAnimationFrame
+  useEffect(() => {
+    if (!gameState || gameState.phase !== 'playing' || gamePhase !== 'playing') return
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16.67
+      lastFrameRef.current = timestamp
+      const clampedDelta = Math.min(delta, 50)
+
+      const prevState = gameStateRef.current
+      if (!prevState || prevState.phase !== 'playing') {
+        rafRef.current = requestAnimationFrame(loop)
+        return
+      }
+
+      const currentInput = inputRef.current
+      const nextState = advanceDungeonLiberatorTime(prevState, clampedDelta, { dx: currentInput.dx, dy: currentInput.dy })
 
       if (nextState.phase === 'victory') {
-        const levelCorrect = nextState.correctWords
-        const levelAttempts = nextState.totalAttempts
-        const levelXP = calculateXP(levelCorrect, levelCorrect, levelAttempts)
+        const levelXP = calculateDungeonLiberatorXP(nextState)
 
         setTotalXP(prev => prev + levelXP)
-        setTotalCorrect(prev => prev + levelCorrect)
-        setTotalAttempts(prev => prev + levelAttempts)
+        setTotalCorrect(prev => prev + nextState.correctWords)
 
         const nextLevelState = advanceToNextLevel(nextState, vocabulary)
         setGameState(nextLevelState)
+        gameStateRef.current = nextLevelState
       } else if (nextState.phase === 'defeat') {
-        const levelCorrect = nextState.correctWords
-        const levelAttempts = nextState.totalAttempts
-
-        setTotalCorrect(prev => prev + levelCorrect)
-        setTotalAttempts(prev => prev + levelAttempts)
-
-        const finalAccuracy = (totalCorrect + levelCorrect) > 0
-          ? (totalCorrect + levelCorrect) / (totalAttempts + levelAttempts)
-          : 0
-        const finalResults = { xp: totalXP, accuracy: finalAccuracy }
+        const finalTotalCorrect = totalCorrect + nextState.correctWords
+        const finalTotalAttempts = nextState.totalAttempts
+        const finalAccuracy = finalTotalAttempts > 0 ? finalTotalCorrect / finalTotalAttempts : 0
+        const finalResults = { xp: totalXP, accuracy: finalAccuracy, difficulty }
         setResults(finalResults)
         if (!hasReportedRef.current) {
           onComplete(finalResults)
           hasReportedRef.current = true
         }
+
         setGamePhase('ended')
         exitFullscreen()
       } else {
         setGameState(nextState)
+        gameStateRef.current = nextState
       }
 
       // Update camera — follow player, clamp to world bounds
@@ -217,8 +253,15 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
 
         setCamera({ x: camX, y: camY, scale })
       }
+
+      rafRef.current = requestAnimationFrame(loop)
     }
-  }, gameState?.phase === 'playing' && gamePhase === 'playing' ? 50 : null)
+
+    lastFrameRef.current = 0
+    rafRef.current = requestAnimationFrame(loop)
+    return () => cancelAnimationFrame(rafRef.current)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gamePhase, gameState?.phase, dimensions.width, dimensions.height, vocabulary, difficulty, totalXP, onComplete, exitFullscreen])
 
   if (gamePhase === 'start') {
     return (
@@ -246,7 +289,24 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
             setGamePhase('playing')
             enterFullscreen()
           }}
-        />
+        >
+          <div className="flex gap-1 bg-slate-900/80 p-1 rounded-lg border border-white/10">
+            {(['easy', 'medium', 'hard'] as const).map((d) => (
+              <button
+                key={d}
+                onClick={() => setDifficulty(d)}
+                className={`px-3 py-1.5 rounded-md text-[10px] uppercase font-bold tracking-wider transition-colors ${
+                  difficulty === d
+                    ? 'bg-amber-500 text-slate-900'
+                    : 'text-slate-400 hover:text-white hover:bg-white/10'
+                }`}
+                style={{ minHeight: getEffectiveTouchTarget(44), minWidth: getEffectiveTouchTarget(44) }}
+              >
+                {d}
+              </button>
+            ))}
+          </div>
+        </GameStartScreen>
       </div>
     )
   }
@@ -357,13 +417,13 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
                     strokeWidth={3}
                     opacity={0.2}
                   />
-                  <Text
+                   <Text
                     text="EXIT"
-                    fontSize={12}
+                    fontSize={getEffectiveTextSize(16)}
                     fill="white"
                     fontStyle="bold"
-                    offsetX={12}
-                    offsetY={6}
+                    offsetX={getEffectiveTextSize(16) * 0.75}
+                    offsetY={getEffectiveTextSize(16) * 0.375}
                   />
                 </Group>
               )}
@@ -400,12 +460,12 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
                       )}
                       <Text
                         text={prisoner.word}
-                        fontSize={10}
+                        fontSize={getEffectiveTextSize(16)}
                         fill="white"
                         fontStyle="bold"
-                        offsetX={prisoner.word.length * 2.5}
-                        offsetY={4}
-                        y={SPRITE_SIZE.prisoner / 2 + 4}
+                        offsetX={prisoner.word.length * getEffectiveTextSize(4)}
+                        offsetY={getEffectiveTextSize(4)}
+                        y={SPRITE_SIZE.prisoner / 2 + getEffectiveTextSize(4)}
                       />
                     </Group>
                   )
@@ -469,13 +529,13 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
                     )}
                     <Text
                       text={segment.word}
-                      fontSize={8}
+                      fontSize={getEffectiveTextSize(16)}
                       fill="white"
                       fontStyle="bold"
-                      offsetX={segment.word.length * 2}
-                      offsetY={3}
+                      offsetX={segment.word.length * getEffectiveTextSize(3)}
+                      offsetY={getEffectiveTextSize(3)}
                       x={segment.x}
-                      y={segment.y + SPRITE_SIZE.prisoner / 2 + 4}
+                      y={segment.y + SPRITE_SIZE.prisoner / 2 + getEffectiveTextSize(4)}
                     />
                   </Group>
                 )})}

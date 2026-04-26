@@ -57,5 +57,5 @@
 ## Phase 7: Compliance Report
 - [x] Task: Write final compliance report to `report.md`. [6fe989a]
 - [x] Task: Update track metadata.json status to completed.
-- [x] Task: Commit all changes with `chore(audit): Wizard vs Zombie compliance audit complete`. [6fe989a]
+- [x] Task: Commit all changes with `chore(audit): Wizard vs Zombie compliance audit complete`. [6fe989a, 28a59e6]
 - [x] Task: Measure - User Manual Verification 'Phase 7'

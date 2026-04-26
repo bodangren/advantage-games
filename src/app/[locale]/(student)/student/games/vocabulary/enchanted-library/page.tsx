@@ -12,6 +12,8 @@ import { Header } from "@/components/header";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { useCurrentLocale } from "@/hooks/useCurrentLocale";
+import { useSession } from "@/hooks/useSession";
 
 const EnchantedLibraryGame = dynamic(
   () =>
@@ -45,6 +47,9 @@ export default function EnchantedLibraryPage({
     hard: [],
     extreme: [],
   });
+
+  const currentLocale = useCurrentLocale();
+  const { user } = useSession();
 
   // Load vocabulary from API
   useEffect(() => {

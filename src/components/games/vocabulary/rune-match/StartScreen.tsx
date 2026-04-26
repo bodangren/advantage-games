@@ -1,11 +1,8 @@
 import { VocabularyItem } from "@/store/useGameStore";
-import { BookOpen, Swords, Trophy, Shield, Sparkles } from "lucide-react";
+import { BookOpen, Swords, Trophy, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import {
-  RUNE_MATCH_CONFIG,
-  type MonsterType,
-} from "@/lib/games/runeMatchConfig";
+import { type MonsterType } from "@/lib/games/runeMatchConfig";
 import { withBasePath } from "@/lib/games/basePath";
 import { useScopedI18n } from "@/locales/client";
 

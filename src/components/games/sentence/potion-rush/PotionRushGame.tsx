@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { Stage, Layer, Image as KonvaImage } from "react-konva";
-import { usePotionRushStore } from "@/store/usePotionRushStore";
-import { VocabularyItem } from "@/store/useGameStore";
+import { usePotionRushStore, SentenceItem } from "@/store/usePotionRushStore";
 import { withBasePath } from "@/lib/games/basePath";
-import { useGameLoop } from "@/hooks/useGameLoop";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Beaker } from "lucide-react";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
 import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { useScopedI18n } from "@/locales/client";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
+import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 
 import ConveyorBelt from "./ConveyorBelt";
 import CauldronStation from "./CauldronStation";

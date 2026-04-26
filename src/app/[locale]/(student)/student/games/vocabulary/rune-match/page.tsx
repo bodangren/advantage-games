@@ -2,16 +2,15 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import type { RuneMatchGameResult } from "@/components/games/vocabulary/rune-match/RuneMatchGame";
-import { StartScreen } from "@/components/games/vocabulary/rune-match/StartScreen";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import { ChevronLeft, Swords } from "lucide-react";
 import { SAMPLE_VOCABULARY } from "@/lib/games/sampleVocabulary";
 import { useGameStore } from "@/store/useGameStore";
-import { useScopedI18n } from "@/locales/client";
+import { useScopedI18n, useCurrentLocale } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 
 const RuneMatchGame = dynamic(
   () =>
@@ -23,7 +22,8 @@ const RuneMatchGame = dynamic(
 
 export default function RuneMatchPage() {
   const t = useScopedI18n("pages.student.gamesPage");
-  const router = useRouter();
+  const locale = useCurrentLocale();
+  const { data: session } = useSession();
   const vocabulary = useGameStore((state) => state.vocabulary);
   const setVocabulary = useGameStore((state) => state.setVocabulary);
   const setLastResult = useGameStore((state) => state.setLastResult);
@@ -73,6 +73,8 @@ export default function RuneMatchPage() {
             totalAttempts: results.totalAttempts,
             accuracy: results.accuracy,
             difficulty: results.monsterType || "NORMAL",
+            locale,
+            userId: session?.user?.id,
           }),
         });
       } catch (error) {
@@ -80,9 +82,8 @@ export default function RuneMatchPage() {
       }
 
       setIsPlaying(false);
-      // router.push('/') // Removed redirect to keep user in game loop
     },
-    [setLastResult],
+    [setLastResult, locale, session],
   );
 
   return (
@@ -102,11 +103,7 @@ export default function RuneMatchPage() {
       </Header>
 
       <div className="w-full max-w-6xl mx-auto overflow-hidden rounded-xl border-2 border-slate-800 bg-slate-900/50 shadow-2xl backdrop-blur-sm md:aspect-video">
-        {isPlaying ? (
-          <RuneMatchGame vocabulary={vocabulary} onComplete={handleComplete} />
-        ) : (
-          <StartScreen vocabulary={vocabulary} onStart={handleStart} />
-        )}
+        <RuneMatchGame vocabulary={vocabulary} onComplete={handleComplete} />
       </div>
     </div>
   );
