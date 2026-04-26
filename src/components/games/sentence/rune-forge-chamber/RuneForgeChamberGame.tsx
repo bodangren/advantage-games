@@ -213,8 +213,9 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
         >
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wider text-white/50">Difficulty:</span>
+              <label htmlFor="difficulty-select" className="text-xs uppercase tracking-wider text-white/50">Difficulty:</label>
               <select
+                id="difficulty-select"
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -226,8 +227,9 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wider text-white/50">Rune Type:</span>
+              <label htmlFor="rune-type-select" className="text-xs uppercase tracking-wider text-white/50">Rune Type:</label>
               <select
+                id="rune-type-select"
                 value={selectedRuneType}
                 onChange={(e) => setSelectedRuneType(e.target.value as RuneType)}
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"

@@ -26,7 +26,12 @@ jest.mock('@/hooks/useSession', () => ({
 // Mock locales
 jest.mock('@/locales/client', () => ({
   useCurrentLocale: () => 'en',
-  useScopedI18n: () => (key: string) => key,
+  useScopedI18n: () => (key: string) => {
+    const translations: Record<string, string> = {
+      title: 'Rune Forge Chamber',
+    }
+    return translations[key] || key
+  },
 }))
 
 // Mock the Game Component to avoid canvas/complex render issues in page test
