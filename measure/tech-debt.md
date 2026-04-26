@@ -29,11 +29,30 @@
 
 ---
 
-## RPG Battle Compliance Audit (2026-04-26)
+## Potion Rush Compliance Audit (2026-04-26)
 
 ### Resolved
-- useGameFullscreen, useCurrentLocale, useSession, text sizes, GameEndScreen, removed unused imports
+- rAF loop, useGameFullscreen, useAccessibilitySettings, text sizes, calculateXP, difficulty tiers, SentenceItem typing, useSession, component tests, touch targets
 
 ### Remaining
-- DOM architecture non-compliant with React-Konva spec (accepted deviation)
-- page.tsx coverage at 70% (below 80% target) — extract game logic to hook
+- TrashPortal.tsx still uses useInterval (cosmetic; deferred)
+- PotionRushEffectsLayer.tsx coverage at 43.79% — particle rendering hard to mock
+
+---
+## Dungeon Liberator Compliance Audit (2026-04-26)
+
+### Resolved
+- rAF loop, text sizes, SentenceItem typing, API factories, useSession, calculateDungeonLiberatorXP, difficulty tiers, asset dir, tests, lint
+
+### Remaining
+- None
+
+---
+
+## Enchanted Library Compliance Audit (2026-04-26)
+
+### Resolved
+- rAF loop, useGameFullscreen, text sizes, touch targets, useAccessibilitySettings, useCurrentLocale, useSession, calculateEnchantedLibraryXP, off-screen indicators, RankingDisplay tests
+
+### Remaining
+- None
