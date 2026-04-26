@@ -35,6 +35,7 @@ export interface LibraryState {
   doors: Door[]
   floors: { y: number; height: number }[]
   lives: number
+  initialLives: number
   score: number
   accuracy: number
   totalAttempts: number
@@ -42,6 +43,7 @@ export interface LibraryState {
   phase: 'playing' | 'victory' | 'defeat'
   time: number
   lastEvent: 'correct' | 'incorrect' | 'damage' | 'victory' | 'defeat' | null
+  difficulty: 'easy' | 'medium' | 'hard'
 }
 
 export const GAME_WIDTH = 390
@@ -145,6 +147,7 @@ export function createLibraryState(
     doors,
     floors,
     lives: config.difficulty === 'easy' ? 5 : 3,
+    initialLives: config.difficulty === 'easy' ? 5 : 3,
     score: 0,
     accuracy: 0,
     totalAttempts: 0,
@@ -152,6 +155,7 @@ export function createLibraryState(
     phase: 'playing',
     time: 0,
     lastEvent: null,
+    difficulty: config.difficulty,
   }
 }
 
@@ -162,6 +166,21 @@ export const JUMP_FORCE = -500
 export const TRAMPOLINE_FORCE = -700
 export const GHOST_SPEED = 80
 export const BAT_SPEED = 120
+export const INITIAL_LIVES = { easy: 5, medium: 3, hard: 3 } as const
+
+export function calculateXP(state: LibraryState): number {
+  if (state.totalAttempts === 0) return 0
+
+  const accuracy = state.correctAnswers / state.totalAttempts
+  const baseXP = state.correctAnswers
+
+  let bonus = 0
+  if (accuracy === 1) bonus += 2
+  if (state.lives / state.initialLives >= 0.5) bonus += 1
+  if (state.time < 60000) bonus += 1
+
+  return Math.min(10, baseXP + bonus)
+}
 
 export function tickLibrary(state: LibraryState, delta: number, input: { dx: number; dy: number }): LibraryState {
   if (state.phase !== 'playing') return state

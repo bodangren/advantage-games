@@ -1,71 +1,74 @@
-"use client";
+'use client'
 
-import dynamic from "next/dynamic";
-import { useCallback, useEffect, useState } from "react";
-import { useGameStore } from "@/store/useGameStore";
-import { AlertTriangle, Loader2 } from "lucide-react";
-import { useCurrentLocale } from "@/locales/client";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Header } from "@/components/header";
-import Link from "next/link";
+import React, { useEffect, useState, useCallback } from 'react'
+import dynamic from 'next/dynamic'
+import { useGameStore } from '@/store/useGameStore'
+import { AlertTriangle, Loader2 } from 'lucide-react'
+import { useCurrentLocale, useScopedI18n } from '@/locales/client'
+import { useSession } from '@/hooks/useSession'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Header } from '@/components/header'
+import Link from 'next/link'
 
 const HauntedLibraryGame = dynamic(
   () =>
-    import("@/components/games/sentence/haunted-library/HauntedLibraryGame").then(
+    import('@/components/games/sentence/haunted-library/HauntedLibraryGame').then(
       (mod) => mod.HauntedLibraryGame,
     ),
   { ssr: false },
-);
+)
 
 type WarningStatus = {
-  type: "NO_SENTENCES" | "INSUFFICIENT_SENTENCES" | null;
-  requiredCount?: number;
-  currentCount?: number;
-};
+  type: 'NO_SENTENCES' | 'INSUFFICIENT_SENTENCES' | null
+  requiredCount?: number
+  currentCount?: number
+}
 
 export default function HauntedLibraryPage() {
   const [sentences, setSentences] = useState<
     { term: string; translation: string }[]
-  >([]);
-  const setLastResult = useGameStore((state) => state.setLastResult);
+  >([])
+  const setLastResult = useGameStore((state) => state.setLastResult)
   const [warningStatus, setWarningStatus] = useState<WarningStatus>({
     type: null,
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const locale = useCurrentLocale();
+  })
+  const [isLoading, setIsLoading] = useState(true)
+  const locale = useCurrentLocale()
+  const t = useScopedI18n('pages.student.gamesPage')
+  const { data: session } = useSession()
 
   useEffect(() => {
     const fetchSentences = async () => {
       try {
-        setIsLoading(true);
+        setIsLoading(true)
         const res = await fetch(
           `/api/v1/games/haunted-library/sentences?locale=${locale}`,
-        );
-        const data = await res.json();
+        )
+        const data = await res.json()
 
-        if (data.warning === "NO_SENTENCES") {
-          setWarningStatus({ type: "NO_SENTENCES" });
-        } else if (data.warning === "INSUFFICIENT_SENTENCES") {
+        if (data.warning === 'NO_SENTENCES') {
+          setWarningStatus({ type: 'NO_SENTENCES' })
+        } else if (data.warning === 'INSUFFICIENT_SENTENCES') {
           setWarningStatus({
-            type: "INSUFFICIENT_SENTENCES",
+            type: 'INSUFFICIENT_SENTENCES',
             requiredCount: data.requiredCount,
             currentCount: data.currentCount,
-          });
+          })
         } else {
-          setWarningStatus({ type: null });
-          setSentences(data.sentences || []);
+          setWarningStatus({ type: null })
+          setSentences(data.sentences || [])
         }
       } catch (error) {
-        console.error("Failed to load sentences:", error);
-        setWarningStatus({ type: "NO_SENTENCES" });
+        console.error('Failed to load sentences:', error)
+        setWarningStatus({ type: 'NO_SENTENCES' })
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchSentences();
-  }, [locale]);
+    fetchSentences()
+  }, [locale])
 
   const handleComplete = useCallback(
     async (results: { 
@@ -74,27 +77,28 @@ export default function HauntedLibraryPage() {
       correctAnswers: number; 
       totalAttempts: number 
     }) => {
-      setLastResult(results.xp, results.accuracy);
+      setLastResult(results.xp, results.accuracy)
 
       try {
-        await fetch("/api/v1/games/haunted-library/complete", {
-          method: "POST",
+        await fetch('/api/v1/games/haunted-library/complete', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             xpEarned: results.xp,
             accuracy: results.accuracy,
             correctAnswers: results.correctAnswers,
             totalAttempts: results.totalAttempts,
+            userId: session?.user?.id,
           }),
-        });
+        })
       } catch (e) {
-        console.error("Failed to submit game results", e);
+        console.error('Failed to submit game results', e)
       }
     },
-    [setLastResult],
-  );
+    [setLastResult, session],
+  )
 
   if (isLoading) {
     return (
@@ -104,12 +108,12 @@ export default function HauntedLibraryPage() {
           <div className="text-center space-y-4">
             <Loader2 className="h-12 w-12 animate-spin text-blue-500 mx-auto" />
             <p className="text-blue-300 animate-pulse font-medium">
-              Searching the Restricted Section...
+              {t('loading') || 'Searching the Restricted Section...'}
             </p>
           </div>
         </main>
       </div>
-    );
+    )
   }
 
   if (warningStatus.type) {
@@ -125,13 +129,13 @@ export default function HauntedLibraryPage() {
               
               <div className="space-y-2">
                 <h2 className="text-2xl font-bold text-blue-100">
-                  {warningStatus.type === "NO_SENTENCES"
-                    ? "Library Catalog Empty"
-                    : "Missing Tomes"}
+                  {warningStatus.type === 'NO_SENTENCES'
+                    ? 'Library Catalog Empty'
+                    : 'Missing Tomes'}
                 </h2>
                 <p className="text-blue-200/80">
-                  {warningStatus.type === "NO_SENTENCES"
-                    ? "No sentences found in the library. Add some to start your study!"
+                  {warningStatus.type === 'NO_SENTENCES'
+                    ? 'No sentences found in the library. Add some to start your study!'
                     : `You need at least ${warningStatus.requiredCount} sentences to play. You currently have ${warningStatus.currentCount}.`}
                 </p>
               </div>
@@ -143,7 +147,7 @@ export default function HauntedLibraryPage() {
           </Card>
         </main>
       </div>
-    );
+    )
   }
 
   return (
@@ -156,5 +160,5 @@ export default function HauntedLibraryPage() {
         />
       </main>
     </div>
-  );
+  )
 }

@@ -1,19 +1,21 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { Stage, Layer, Rect, Text, Group, Circle } from 'react-konva'
 import {
   createLibraryState,
   tickLibrary,
+  calculateXP,
   GAME_WIDTH,
   GAME_HEIGHT,
   TRAMPOLINE_HEIGHT,
   type LibraryState,
 } from '@/lib/games/hauntedLibrary'
 import type { VocabularyItem } from '@/store/useGameStore'
-import { useInterval } from '@/hooks/useInterval'
 import { useSound } from '@/hooks/useSound'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
@@ -30,11 +32,15 @@ interface HauntedLibraryGameProps {
 }
 
 export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGameProps) {
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize } = useAccessibilitySettings()
   const [gameState, setGameState] = useState<LibraryState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
   const { playSound } = useSound()
   const { input, setVirtualInput } = useDirectionalInput()
+  const lastFrameRef = useRef<number>(0)
+  const rafRef = useRef<number>(0)
 
   const startGame = useCallback(() => {
     if (sentences.length > 0) {
@@ -46,24 +52,49 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
   const endGame = useCallback((finalState: LibraryState) => {
     setGamePhase('ended')
     onComplete({ 
-      xp: Math.min(10, Math.floor(finalState.score / 100)), 
+      xp: calculateXP(finalState), 
       accuracy: finalState.totalAttempts > 0 ? finalState.correctAnswers / finalState.totalAttempts : 0,
       correctAnswers: finalState.correctAnswers,
       totalAttempts: finalState.totalAttempts
     })
   }, [onComplete])
 
-  useInterval(() => {
-    if (gameState && gamePhase === 'playing') {
-      if (gameState.phase !== 'playing') {
-        endGame(gameState)
-        return
-      }
-      const nextState = tickLibrary(gameState, 16.6, { dx: input.dx, dy: input.dy })
-      if (nextState.phase !== 'playing') endGame(nextState)
-      setGameState(nextState)
+  // Game Loop with requestAnimationFrame
+  useEffect(() => {
+    if (gamePhase !== 'playing') return
+
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16
+      lastFrameRef.current = timestamp
+      const clampedDelta = Math.min(delta, 50)
+
+      setGameState(prev => {
+        if (!prev || prev.phase !== 'playing') return prev
+        const nextState = tickLibrary(prev, clampedDelta, { dx: input.dx, dy: input.dy })
+        if (nextState.phase !== 'playing') {
+          endGame(nextState)
+        }
+        return nextState
+      })
+
+      rafRef.current = requestAnimationFrame(loop)
     }
-  }, gamePhase === 'playing' ? 16.6 : null)
+
+    rafRef.current = requestAnimationFrame(loop)
+    return () => {
+      cancelAnimationFrame(rafRef.current)
+      lastFrameRef.current = 0
+    }
+  }, [gamePhase, input.dx, input.dy, endGame])
+
+  // Fullscreen handling
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      enterFullscreen()
+    } else if (gamePhase === 'ended' || gamePhase === 'start') {
+      exitFullscreen()
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen])
 
   useEffect(() => {
     if (gameState?.lastEvent) {
@@ -79,7 +110,7 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
 
   if (gamePhase === 'start') {
     return (
-      <div className="absolute inset-0 z-50 bg-slate-950">
+      <div className="absolute inset-0 z-50 bg-slate-950" ref={containerRef}>
         <GameStartScreen
           gameTitle="The Haunted Library"
           gameSubtitle="A Spooky Word Adventure"
@@ -100,11 +131,12 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
           ]}
         >
           <div className="flex items-center gap-2">
-            <span className="text-xs uppercase tracking-wider text-white/50">Difficulty:</span>
+            <span className="text-sm uppercase tracking-wider text-white/50" style={{ fontSize: getEffectiveTextSize(16) }}>Difficulty:</span>
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value as 'easy' | 'medium' | 'hard')}
-              className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-base text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
+              style={{ fontSize: getEffectiveTextSize(16) }}
             >
               <option value="easy">Novice Scholarly</option>
               <option value="medium">Master Archivist</option>
@@ -119,14 +151,16 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
 
   if (gamePhase === 'ended' && gameState) {
     return (
-      <GameEndScreen
-        status={gameState.phase === 'victory' ? 'victory' : 'defeat'}
-        score={gameState.score}
-        xp={Math.min(10, Math.floor(gameState.score / 100))}
-        accuracy={gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0}
-        onRestart={startGame}
-        title="The Haunted Library"
-      />
+      <div ref={containerRef} className="absolute inset-0 z-50">
+        <GameEndScreen
+          status={gameState.phase === 'victory' ? 'victory' : 'defeat'}
+          score={gameState.score}
+          xp={calculateXP(gameState)}
+          accuracy={gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0}
+          onRestart={startGame}
+          title="The Haunted Library"
+        />
+      </div>
     )
   }
 
@@ -134,7 +168,7 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
   if (!gameState) return null
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[600px] bg-slate-900 rounded-lg overflow-hidden shadow-2xl border-4 border-slate-700 relative">
+    <div ref={containerRef} className="flex flex-col items-center justify-center min-h-[600px] bg-slate-900 rounded-lg overflow-hidden shadow-2xl border-4 border-slate-700 relative">
       <Stage width={GAME_WIDTH} height={GAME_HEIGHT}>
         <Layer>
           {/* Background */}
@@ -184,7 +218,7 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
               {door.isOpen && door.word && (
                 <Text
                   text={door.word}
-                  fontSize={14}
+                  fontSize={getEffectiveTextSize(16)}
                   fontStyle="bold"
                   fill="white"
                   width={60}
@@ -209,7 +243,7 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
               {ghost.state === 'stunned' && (
                 <Text
                   text="ZZZ"
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                   x={10}
                   y={-10}
@@ -247,10 +281,10 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
 
       {/* HUD */}
       <div className="absolute top-0 left-0 right-0 p-4 bg-black/50 text-white backdrop-blur-sm">
-        <div className="text-center font-bold mb-2 text-xl">
+        <div className="text-center font-bold mb-2" style={{ fontSize: getEffectiveTextSize(20) }}>
           {gameState.currentSentence.translation}
         </div>
-        <div className="flex justify-between text-sm items-center">
+        <div className="flex justify-between items-center" style={{ fontSize: getEffectiveTextSize(16) }}>
           <div className="flex gap-4">
             <span className="flex items-center gap-1 font-bold">
               <Book className="w-4 h-4 text-blue-400" /> {gameState.lives}
@@ -275,4 +309,3 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
     </div>
   )
 }
-

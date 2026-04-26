@@ -1,6 +1,7 @@
 import {
   createLibraryState,
   tickLibrary,
+  calculateXP,
   GAME_WIDTH,
   GAME_HEIGHT,
 } from './hauntedLibrary'
@@ -16,6 +17,8 @@ describe('Haunted Library Logic', () => {
     expect(state.phase).toBe('playing')
     expect(state.words.length).toBe(3)
     expect(state.lives).toBe(3)
+    expect(state.initialLives).toBe(3)
+    expect(state.difficulty).toBe('medium')
     expect(state.player.x).toBeCloseTo(GAME_WIDTH / 2 - 24)
     expect(state.doors.length).toBeGreaterThanOrEqual(3)
     expect(state.floors.length).toBe(4)
@@ -207,6 +210,71 @@ describe('Haunted Library Logic', () => {
     state = tickLibrary(state, 16.6, { dx: 0, dy: 0 })
     expect(state.phase).toBe('defeat')
     expect(state.lastEvent).toBe('defeat')
+  })
+
+  it('should set easy difficulty initial lives to 5', () => {
+    const state = createLibraryState(mockSentences, { difficulty: 'easy' })
+    expect(state.lives).toBe(5)
+    expect(state.initialLives).toBe(5)
+    expect(state.difficulty).toBe('easy')
+  })
+
+  describe('calculateXP', () => {
+    it('should return 0 when no attempts', () => {
+      const state = createLibraryState(mockSentences)
+      state.totalAttempts = 0
+      expect(calculateXP(state)).toBe(0)
+    })
+
+    it('should calculate base XP from correct answers', () => {
+      const state = createLibraryState(mockSentences)
+      state.correctAnswers = 3
+      state.totalAttempts = 5
+      state.lives = 1
+      state.initialLives = 3
+      state.time = 70000
+      expect(calculateXP(state)).toBe(3)
+    })
+
+    it('should add perfect accuracy bonus', () => {
+      const state = createLibraryState(mockSentences)
+      state.correctAnswers = 3
+      state.totalAttempts = 3
+      state.lives = 1
+      state.initialLives = 3
+      state.time = 70000
+      expect(calculateXP(state)).toBe(5) // 3 + 2 perfect accuracy only
+    })
+
+    it('should add survival bonus for >=50% lives', () => {
+      const state = createLibraryState(mockSentences)
+      state.correctAnswers = 2
+      state.totalAttempts = 3
+      state.lives = 2
+      state.initialLives = 3
+      state.time = 70000
+      expect(calculateXP(state)).toBe(3) // 2 + 1 survival (no speed)
+    })
+
+    it('should add speed bonus for under 60s', () => {
+      const state = createLibraryState(mockSentences)
+      state.correctAnswers = 2
+      state.totalAttempts = 3
+      state.lives = 1
+      state.initialLives = 3
+      state.time = 50000
+      expect(calculateXP(state)).toBe(3) // 2 + 1 speed (no survival)
+    })
+
+    it('should cap XP at 10', () => {
+      const state = createLibraryState(mockSentences)
+      state.correctAnswers = 10
+      state.totalAttempts = 10
+      state.lives = 3
+      state.initialLives = 3
+      state.time = 50000
+      expect(calculateXP(state)).toBe(10)
+    })
   })
 })
 
