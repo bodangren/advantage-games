@@ -50,5 +50,5 @@
 ## Phase 7: Compliance Report
 - [x] Task: Write final compliance report to `report.md`. **Complete: report.md written with full 25-spec audit results.**
 - [x] Task: Update track metadata.json status to completed. **Complete.**
-- [x] Task: Commit all changes with `chore(audit): Astral Mage compliance audit complete`. **Complete.**
+- [x] Task: Commit all changes with `chore(audit): Astral Mage compliance audit complete`. **Complete. [4c4278d]**
 - [x] Task: Measure - User Manual Verification 'Phase 7'
