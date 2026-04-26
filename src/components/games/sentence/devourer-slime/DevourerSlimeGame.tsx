@@ -15,7 +15,11 @@ import type { VocabularyItem } from '@/store/useGameStore'
 import { useInterval } from '@/hooks/useInterval'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { useSound } from '@/hooks/useSound'
-import { Move } from 'lucide-react'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { GameStartScreen } from '@/components/games/game/GameStartScreen'
+import { GameEndScreen } from '@/components/games/game/GameEndScreen'
+import { Move, Zap, Target, Shield } from 'lucide-react'
 
 const VIEWPORT_WIDTH = 390
 const VIEWPORT_HEIGHT = 844
@@ -28,8 +32,11 @@ interface DevourerSlimeGameProps {
 
 export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete }: DevourerSlimeGameProps) {
   const [gameState, setGameState] = useState<SlimeState | null>(null)
+  const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const { input, setVirtualInput } = useDirectionalInput()
   const { playSound } = useSound()
+  const { getEffectiveTouchTarget } = useAccessibilitySettings()
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
 
   const [grassPatches] = useState(() => 
     Array.from({ length: 40 }, (_, i) => ({
@@ -41,15 +48,23 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
     }))
   )
 
-  useEffect(() => {
-    if (sentences.length > 0 && !gameState) {
-      setGameState(createSlimeState(sentences, { difficulty }))
-    }
-  }, [sentences, difficulty, gameState])
+  const handleStart = useCallback(() => {
+    const initialState = createSlimeState(sentences, { difficulty })
+    setGameState(initialState)
+    setGamePhase('playing')
+    enterFullscreen()
+  }, [sentences, difficulty, enterFullscreen])
+
+  const handleRestart = useCallback(() => {
+    setGamePhase('start')
+    setGameState(null)
+  }, [])
 
   const endGame = useCallback((finalState: SlimeState) => {
+    exitFullscreen()
+    setGamePhase('ended')
     onComplete(finalState)
-  }, [onComplete])
+  }, [onComplete, exitFullscreen])
 
   // Sound effects
   useEffect(() => {
@@ -90,6 +105,76 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
     }
   }, gameState?.phase === 'playing' ? 16.6 : null)
 
+  // Calculate off-screen indicators for orbs and enemies
+  const getIndicators = useCallback(() => {
+    if (!gameState) return []
+    const indicators: { x: number; y: number; label: string; color: string }[] = []
+    
+    const cameraX = Math.max(0, Math.min(ARENA_WIDTH - VIEWPORT_WIDTH, gameState.slime.pos.x - VIEWPORT_WIDTH / 2))
+    const cameraY = Math.max(0, Math.min(ARENA_HEIGHT - VIEWPORT_HEIGHT, gameState.slime.pos.y - VIEWPORT_HEIGHT / 2))
+    
+    // Target orb indicator
+    const targetOrb = gameState.orbs.find(o => !o.isEaten && o.index === gameState.targetWordIndex)
+    if (targetOrb) {
+      const screenX = targetOrb.pos.x - cameraX
+      const screenY = targetOrb.pos.y - cameraY
+      if (screenX < 0 || screenX > VIEWPORT_WIDTH || screenY < 0 || screenY > VIEWPORT_HEIGHT) {
+        indicators.push({
+          x: Math.max(20, Math.min(VIEWPORT_WIDTH - 20, screenX)),
+          y: Math.max(20, Math.min(VIEWPORT_HEIGHT - 20, screenY)),
+          label: targetOrb.word,
+          color: '#fbbf24'
+        })
+      }
+    }
+    
+    return indicators
+  }, [gameState])
+
+  if (gamePhase === 'start') {
+    return (
+      <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-emerald-950">
+        <GameStartScreen
+          gameTitle="Devourer Slime"
+          gameSubtitle="Eat words, grow big, devour knights!"
+          icon={Zap}
+          vocabulary={sentences}
+          instructions={[
+            { step: 1, text: "Move with WASD / Arrow Keys or Virtual D-Pad", icon: Move },
+            { step: 2, text: "Eat word orbs in the correct sentence order", icon: Target },
+            { step: 3, text: "Grow bigger to devour enemy knights", icon: Shield }
+          ]}
+          controls={[
+            { label: "Move", keys: "WASD / Arrows", color: "bg-emerald-500" },
+            { label: "Dash", keys: "Shift", color: "bg-blue-500" }
+          ]}
+          startButtonText="START DEVOURING"
+          onStart={handleStart}
+        />
+      </div>
+    )
+  }
+
+  if (gamePhase === 'ended' && gameState) {
+    const accuracy = gameState.totalAttempts > 0
+      ? Math.round((gameState.correctAnswers / gameState.totalAttempts) * 100)
+      : 0
+    return (
+      <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-emerald-950">
+        <GameEndScreen
+          status={gameState.phase === 'victory' ? 'victory' : 'defeat'}
+          score={gameState.score}
+          xp={Math.floor(gameState.correctAnswers * (gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0))}
+          accuracy={accuracy}
+          onRestart={handleRestart}
+          gameId="devourer-slime"
+          gameName="Devourer Slime"
+          showLeaderboardLink
+        />
+      </div>
+    )
+  }
+
   if (!gameState) return null
 
   const currentSentence = gameState.sentences[gameState.currentSentenceIndex]
@@ -99,8 +184,12 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
   const cameraX = Math.max(0, Math.min(ARENA_WIDTH - VIEWPORT_WIDTH, gameState.slime.pos.x - VIEWPORT_WIDTH / 2))
   const cameraY = Math.max(0, Math.min(ARENA_HEIGHT - VIEWPORT_HEIGHT, gameState.slime.pos.y - VIEWPORT_HEIGHT / 2))
 
+  const indicators = getIndicators()
+  const dpadSize = getEffectiveTouchTarget(64)
+  const dpadScale = dpadSize / 64
+
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-emerald-950 touch-none">
+    <div ref={containerRef} className="relative h-screen w-full overflow-hidden bg-emerald-950 touch-none">
       {/* HUD: Translation */}
       <div className="absolute top-6 left-0 right-0 z-10 px-6">
         <div className="bg-emerald-950/40 backdrop-blur-md border border-emerald-500/30 rounded-2xl p-4 text-center">
@@ -138,6 +227,23 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
         </div>
       </div>
 
+      {/* Off-screen Indicators */}
+      {indicators.map((ind, i) => (
+        <div
+          key={i}
+          className="absolute z-20 pointer-events-none"
+          style={{
+            left: ind.x,
+            top: ind.y,
+            transform: 'translate(-50%, -50%)'
+          }}
+        >
+          <div className="bg-amber-500/80 text-black text-xs font-bold px-2 py-1 rounded-full animate-pulse">
+            {ind.label}
+          </div>
+        </div>
+      ))}
+
       <Stage width={VIEWPORT_WIDTH} height={VIEWPORT_HEIGHT}>
         <Layer x={-cameraX} y={-cameraY}>
           {/* Forest Floor */}
@@ -169,7 +275,7 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
               <Text 
                 text={orb.word} 
                 fill="white" 
-                fontSize={14} 
+                fontSize={16} 
                 fontStyle="bold"
                 align="center" 
                 verticalAlign="middle"
@@ -247,7 +353,7 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
 
       {/* Virtual DPad */}
       <div className="absolute bottom-10 left-10 z-10 pointer-events-none">
-        <div className="grid grid-cols-3 gap-2 pointer-events-auto">
+        <div className="grid grid-cols-3 gap-2 pointer-events-auto" style={{ transform: `scale(${dpadScale})`, transformOrigin: 'bottom left' }}>
           <div />
           <button 
             onPointerDown={() => setVirtualInput(v => ({ ...v, dy: -1 }))}

@@ -4,6 +4,9 @@ import {
   fireProjectile,
   rotatePlayer,
   getLanePosition,
+  spawnEnemy,
+  startGame,
+  calculateXP,
   type Enemy,
   type Projectile,
 } from '../abyssalWell'
@@ -47,6 +50,16 @@ describe('abyssalWell', () => {
 
     it('should throw if vocabulary is empty', () => {
       expect(() => createAbyssalWellState([], { rng: mockRng([0.5]) })).toThrow('Vocabulary cannot be empty')
+    })
+
+    it('should default difficulty to medium', () => {
+      const state = createAbyssalWellState(mockVocabulary, { rng: mockRng([0.5]) })
+      expect(state.difficulty).toBe('medium')
+    })
+
+    it('should allow setting difficulty to easy', () => {
+      const state = createAbyssalWellState(mockVocabulary, { rng: mockRng([0.5]), difficulty: 'easy' })
+      expect(state.difficulty).toBe('easy')
     })
   })
 
@@ -311,6 +324,88 @@ describe('abyssalWell', () => {
       const newState = advanceAbyssalWellTime(playingState, 16)
       
       expect(newState.phase).toBe('victory')
+    })
+  })
+
+  describe('spawnEnemy', () => {
+    it('should spawn an enemy when playing', () => {
+      const state = createAbyssalWellState(mockVocabulary, { rng: mockRng([0.5]) })
+      const playingState = { ...state, phase: 'playing' as const }
+      const newState = spawnEnemy(playingState, mockRng([0.3, 0.2]))
+      
+      expect(newState.enemies.length).toBe(1)
+      expect(newState.enemies[0].word).toBeDefined()
+    })
+
+    it('should not spawn if all words already have enemies', () => {
+      const state = createAbyssalWellState(mockVocabulary, { rng: mockRng([0.5]) })
+      const playingState = { 
+        ...state, 
+        phase: 'playing' as const,
+        enemies: state.words.map((word, i) => ({
+          id: `enemy-${i}`,
+          lane: i,
+          depth: 0.5,
+          word,
+          wordIndex: i,
+          type: 'cave-spider' as const,
+        }))
+      }
+      const newState = spawnEnemy(playingState, mockRng([0.5]))
+      
+      expect(newState.enemies.length).toBe(playingState.enemies.length)
+    })
+
+    it('should not spawn if not playing', () => {
+      const state = createAbyssalWellState(mockVocabulary, { rng: mockRng([0.5]) })
+      const newState = spawnEnemy(state, mockRng([0.5]))
+      
+      expect(newState.enemies.length).toBe(0)
+    })
+  })
+
+  describe('startGame', () => {
+    it('should set phase to playing', () => {
+      const state = createAbyssalWellState(mockVocabulary, { rng: mockRng([0.5]) })
+      const newState = startGame(state)
+      
+      expect(newState.phase).toBe('playing')
+      expect(newState.gameTime).toBe(0)
+    })
+  })
+
+  describe('calculateXP', () => {
+    it('should return 0 if no attempts', () => {
+      const xp = calculateXP({ correctWords: 0, totalAttempts: 0, lives: 3, initialLives: 3, gameTime: 1000 })
+      expect(xp).toBe(0)
+    })
+
+    it('should calculate base XP from correct words', () => {
+      const xp = calculateXP({ correctWords: 5, totalAttempts: 5, lives: 3, initialLives: 3, gameTime: 1000 })
+      expect(xp).toBeGreaterThanOrEqual(5)
+    })
+
+    it('should cap XP at 10', () => {
+      const xp = calculateXP({ correctWords: 15, totalAttempts: 15, lives: 3, initialLives: 3, gameTime: 1000 })
+      expect(xp).toBe(10)
+    })
+
+    it('should add perfect accuracy bonus', () => {
+      const xpPerfect = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 3, initialLives: 3, gameTime: 1000 })
+      const xpImperfect = calculateXP({ correctWords: 3, totalAttempts: 5, lives: 3, initialLives: 3, gameTime: 1000 })
+      expect(xpPerfect).toBeGreaterThan(xpImperfect)
+    })
+
+    it('should add survival bonus for lives >= 50%', () => {
+      const xpHighHealth = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 2, initialLives: 3, gameTime: 1000 })
+      const xpLowHealth = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 1, initialLives: 3, gameTime: 1000 })
+      expect(xpHighHealth).toBeGreaterThan(xpLowHealth)
+    })
+
+    it('should add speed bonus for games under 30s', () => {
+      const xpFast = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 3, initialLives: 3, gameTime: 15000 })
+      const xpSlow = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 3, initialLives: 3, gameTime: 45000 })
+      expect(xpFast).toBeGreaterThan(xpSlow)
     })
   })
 })

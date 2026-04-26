@@ -1,6 +1,4 @@
-import type { Difficulty } from '@/store/useGameStore'
-
-export type AbyssalWellDifficulty = Difficulty
+export type AbyssalWellDifficulty = 'easy' | 'medium' | 'hard'
 
 export type DifficultyConfig = {
   name: string
@@ -37,22 +35,15 @@ export const ABYSSAL_WELL_CONFIG = {
 
   difficulties: {
     easy: { name: 'Shallow Well', wordCount: 4 },
-    normal: { name: 'Deep Chasm', wordCount: 5 },
+    medium: { name: 'Deep Chasm', wordCount: 5 },
     hard: { name: 'Abyss', wordCount: 6 },
-    extreme: { name: 'Abyss', wordCount: 7 },
   },
 
   lives: 3,
-
-  xp: {
-    perCorrectWord: 1,
-    accuracyBonus: 1,
-    maxXP: 10,
-  },
 }
 
 export function getDifficultyConfig(difficulty: AbyssalWellDifficulty): DifficultyConfig {
-  return ABYSSAL_WELL_CONFIG.difficulties[difficulty] ?? ABYSSAL_WELL_CONFIG.difficulties.normal
+  return ABYSSAL_WELL_CONFIG.difficulties[difficulty] ?? ABYSSAL_WELL_CONFIG.difficulties.medium
 }
 
 export function getCreatureSpeed(creatureType: CreatureType): number {

@@ -4,7 +4,8 @@ import {
   handleGryphonPatrolInput,
   spawnGryphonPatrolEnemies,
   hitGryphonPatrolEnemy,
-  shootGryphonPatrolProjectile
+  shootGryphonPatrolProjectile,
+  calculateXP
 } from './gryphonPatrol';
 import { GRYPHON_PATROL_CONFIG } from './gryphonPatrolConfig';
 
@@ -232,6 +233,29 @@ describe('GryphonPatrol Logic', () => {
       state = tickGryphonPatrol(state, 0.1);
       
       expect(state.status).toBe('lost');
+    });
+  });
+
+  describe('XP Calculation', () => {
+    it('should return 0 when totalWords is 0', () => {
+      const xp = calculateXP({ collectedWords: 0, totalWords: 0, hp: 3, maxHp: 3, time: 0 });
+      expect(xp).toBe(0);
+    });
+
+    it('should cap XP at 10', () => {
+      const xp = calculateXP({ collectedWords: 10, totalWords: 10, hp: 3, maxHp: 3, time: 10 });
+      expect(xp).toBeLessThanOrEqual(10);
+    });
+
+    it('should floor XP at 1', () => {
+      const xp = calculateXP({ collectedWords: 1, totalWords: 10, hp: 0, maxHp: 3, time: 120 });
+      expect(xp).toBeGreaterThanOrEqual(1);
+    });
+
+    it('should give higher XP for perfect run', () => {
+      const perfect = calculateXP({ collectedWords: 10, totalWords: 10, hp: 3, maxHp: 3, time: 30 });
+      const poor = calculateXP({ collectedWords: 5, totalWords: 10, hp: 1, maxHp: 3, time: 120 });
+      expect(perfect).toBeGreaterThan(poor);
     });
   });
 });

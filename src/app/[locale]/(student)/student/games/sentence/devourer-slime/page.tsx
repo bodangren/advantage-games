@@ -4,11 +4,13 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { useCurrentLocale } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import Link from "next/link";
+import { calculateXP } from "@/lib/xp";
 import type { SlimeState } from "@/lib/games/devourerSlime";
 
 const DevourerSlimeGame = dynamic(
@@ -35,6 +37,8 @@ export default function DevourerSlimePage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const locale = useCurrentLocale();
+  useSession();
+  useScopedI18n("pages.student.gamesPage.devourerSlime");
 
   useEffect(() => {
     const fetchSentences = async () => {
@@ -70,7 +74,7 @@ export default function DevourerSlimePage() {
 
   const handleComplete = useCallback(
     async (state: SlimeState) => {
-      const xp = state.score;
+      const xp = calculateXP(state.score, state.correctAnswers, state.totalAttempts);
       const accuracy = state.totalAttempts > 0
         ? Math.round((state.correctAnswers / state.totalAttempts) * 100)
         : 0;

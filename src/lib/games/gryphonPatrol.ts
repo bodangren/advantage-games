@@ -286,3 +286,24 @@ export const handleGryphonPatrolInput = (state: GameState, input: { dx: number, 
     }
   };
 };
+
+export interface XPParams {
+  collectedWords: number;
+  totalWords: number;
+  hp: number;
+  maxHp: number;
+  time: number;
+}
+
+export const calculateXP = (params: XPParams): number => {
+  const { collectedWords, totalWords, hp, maxHp, time } = params;
+  if (totalWords === 0) return 0;
+
+  const accuracy = collectedWords / totalWords;
+  const survivalBonus = hp / maxHp;
+  const speedBonus = Math.max(0, 1 - time / 120); // Bonus for completing under 2 minutes
+
+  let xp = Math.round((accuracy * 5 + survivalBonus * 3 + speedBonus * 2));
+  xp = Math.max(1, Math.min(10, xp));
+  return xp;
+};

@@ -69,7 +69,7 @@ describe('Devourer Slime Logic', () => {
   })
 
   it('should eat enemy when larger', () => {
-    let state = createSlimeState(mockSentences)
+    let state = createSlimeState(mockSentences, { rng: () => 0.1 })
     state.slime.radius = 50 // Larger than knight (35)
     state.enemies[0].pos = { ...state.slime.pos }
     

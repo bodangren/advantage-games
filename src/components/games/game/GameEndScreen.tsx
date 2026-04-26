@@ -6,6 +6,7 @@ import { RotateCcw, Shield, Swords, Target, Trophy } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
+import { Button } from "@/components/ui/button";
 
 export interface GameStat {
   label: React.ReactNode;
@@ -43,37 +44,33 @@ const STATUS_STYLES: Record<
 > = {
   victory: {
     title: "Victory!",
-    subtitle: "The realm stands strong.",
-    icon: Shield,
-    containerBorder: "border-emerald-500/30",
-    iconShell: "bg-emerald-500/20 text-emerald-400",
-    titleColor: "text-emerald-400",
-    xpShell: "border-emerald-500/30 bg-emerald-500/10 text-emerald-200",
+    subtitle: "Objectives reached.",
+    icon: Trophy,
+    containerBorder: "border-border",
+    iconShell: "bg-foreground text-background",
+    titleColor: "text-foreground",
+    xpShell: "border-border bg-secondary text-foreground",
   },
   defeat: {
-    title: "Defeated",
-    subtitle: "The journey ends here.",
+    title: "Failure",
+    subtitle: "System offline.",
     icon: Swords,
-    containerBorder: "border-rose-500/30",
-    iconShell: "bg-rose-500/20 text-rose-400",
-    titleColor: "text-rose-400",
-    xpShell: "border-rose-500/30 bg-rose-500/10 text-rose-200",
+    containerBorder: "border-destructive/30",
+    iconShell: "bg-destructive text-white",
+    titleColor: "text-destructive",
+    xpShell: "border-destructive/20 bg-destructive/10 text-destructive",
   },
   complete: {
-    title: "Complete!",
-    subtitle: "Quest objectives achieved.",
-    icon: Trophy,
-    containerBorder: "border-amber-500/30",
-    iconShell: "bg-amber-500/20 text-amber-400",
-    titleColor: "text-amber-400",
-    xpShell: "border-amber-500/30 bg-amber-500/10 text-amber-200",
+    title: "Complete",
+    subtitle: "Process finalized.",
+    icon: Shield,
+    containerBorder: "border-border",
+    iconShell: "bg-foreground text-background",
+    titleColor: "text-foreground",
+    xpShell: "border-border bg-secondary text-foreground",
   },
 };
 
-/**
- * Shared RPG-themed end screen for vocabulary games.
- * Displays score, accuracy, XP, and optional custom stats.
- */
 export function GameEndScreen({
   status,
   score,
@@ -84,7 +81,7 @@ export function GameEndScreen({
   customStats,
   title,
   subtitle,
-  restartButtonText = "Play Again",
+  restartButtonText = "Restart",
   showLeaderboardLink = false,
   gameId,
   gameName,
@@ -105,7 +102,7 @@ export function GameEndScreen({
   }, [xp, gameId, gameName, score, safeAccuracy, recordSession]);
 
   const statCards: GameStat[] = [
-    { label: "Final Score", value: score, icon: Trophy },
+    { label: "Score", value: score, icon: Trophy },
     { label: "Accuracy", value: `${accuracyPercent}%`, icon: Target },
     ...extraStats,
   ];
@@ -114,23 +111,23 @@ export function GameEndScreen({
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/85 backdrop-blur-sm p-6 text-white"
+      className="absolute inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-md p-6"
     >
       <motion.div
-        initial={{ scale: 0.95, y: 20 }}
+        initial={{ scale: 0.95, y: 10 }}
         animate={{ scale: 1, y: 0 }}
-        className={`w-full max-w-xl rounded-3xl border ${statusStyle.containerBorder} bg-slate-900/90 p-8 shadow-2xl`}
+        className={`w-full max-w-lg rounded-xl border ${statusStyle.containerBorder} bg-card p-8 shadow-xl`}
       >
-        <header className="text-center space-y-2">
+        <header className="text-center space-y-3">
           <div
-            className={`mx-auto flex h-20 w-20 items-center justify-center rounded-full ${statusStyle.iconShell}`}
+            className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full ${statusStyle.iconShell}`}
           >
-            <StatusIcon className="h-9 w-9" />
+            <StatusIcon className="h-8 w-8" />
           </div>
-          <h2 className={`text-4xl font-black ${statusStyle.titleColor}`}>
+          <h2 className={`text-4xl font-bold tracking-tight ${statusStyle.titleColor}`}>
             {title ?? statusStyle.title}
           </h2>
-          <p className="text-sm uppercase tracking-[0.3em] text-white/50">
+          <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
             {subtitle ?? statusStyle.subtitle}
           </p>
         </header>
@@ -141,50 +138,47 @@ export function GameEndScreen({
             return (
               <div
                 key={index}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4 text-center"
+                className="rounded-lg border border-border bg-secondary/30 p-4 text-center"
               >
-                <div className="text-xs uppercase tracking-wider text-slate-400 font-bold flex items-center justify-center gap-1">
+                <div className="text-xs text-muted-foreground font-medium flex items-center justify-center gap-1 mb-1">
                   {StatIcon ? <StatIcon className="h-3 w-3" /> : null}
                   {stat.label}
                 </div>
-                <div className="text-3xl font-black text-white">
+                <div className="text-3xl font-bold text-foreground">
                   {stat.value}
                 </div>
               </div>
             );
           })}
           <div
-            className={`sm:col-span-2 rounded-2xl border p-4 text-center ${statusStyle.xpShell}`}
+            className={`sm:col-span-2 rounded-lg border p-4 text-center font-semibold ${statusStyle.xpShell}`}
           >
-            <div className="text-xs uppercase tracking-wider font-bold">
-              XP Earned: {xp}
-            </div>
+            XP Earned: {xp}
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <button
+          <Button
             onClick={onRestart}
-            className="flex-1 rounded-2xl bg-white py-4 text-slate-950 font-black uppercase tracking-widest shadow-lg transition-all hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+            className="flex-1 h-12 rounded-lg"
           >
-            <span className="flex items-center justify-center gap-2">
-              <RotateCcw className="h-5 w-5" /> {restartButtonText}
-            </span>
-          </button>
+            <RotateCcw className="h-4 w-4 mr-2" /> {restartButtonText}
+          </Button>
           {onExit ? (
-            <button
+            <Button
+              variant="outline"
               onClick={onExit}
-              className="flex-1 rounded-2xl border border-white/10 bg-slate-800/70 py-4 text-white font-bold uppercase tracking-widest transition-all hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
+              className="flex-1 h-12 rounded-lg"
             >
               Exit
-            </button>
+            </Button>
           ) : null}
         </div>
         {showLeaderboardLink && gameId && gameName ? (
-          <div className="mt-4 flex justify-center">
+          <div className="mt-6 flex justify-center">
             <Link
               href="/student/leaderboard"
-              className="text-sm text-white/50 uppercase tracking-wider hover:text-white transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider"
             >
               View Leaderboard
             </Link>

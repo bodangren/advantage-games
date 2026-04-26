@@ -48,7 +48,7 @@
 - [x] Task: Measure - User Manual Verification 'Phase 6'
 
 ## Phase 7: Compliance Report
-- [x] Task: Write final compliance report to `report.md`.
-- [x] Task: Update track metadata.json status to completed.
-- [x] Task: Commit all changes with `chore(audit): Haunted Library compliance audit complete`.
+- [x] Task: Write final compliance report to `report.md`. [ba3c3f0]
+- [x] Task: Update track metadata.json status to completed. [ba3c3f0]
+- [x] Task: Commit all changes with `chore(audit): Haunted Library compliance audit complete`. [ba3c3f0]
 - [x] Task: Measure - User Manual Verification 'Phase 7'

@@ -80,7 +80,7 @@ export const gameCards: GameCard[] = [
     description: 'Master the art of alchemy by matching and merging vocabulary to synthesize powerful spells!',
     cover: withBasePath('/games/cover/cover-alchemists-synthesis.png'),
     href: '/en/student/games/vocabulary/alchemists-synthesis',
-    status: 'playable',
+    status: 'coming-soon',
   },
   {
     id: 'potion-rush',
@@ -200,7 +200,7 @@ export const gameCards: GameCard[] = [
     description: 'Navigate the magical void and shoot word crystals in the correct order to complete sentences!',
     cover: withBasePath('/games/cover/cover-astral-mage.png'),
     href: '/en/student/games/sentence/astral-mage',
-    status: 'playable',
+    status: 'coming-soon',
   },
   {
     id: 'devourer-slime',
@@ -224,7 +224,7 @@ export const gameCards: GameCard[] = [
     description: 'Jump through an isometric pyramid of cubes to complete ancient rituals in the correct sentence order!',
     cover: withBasePath('/games/cover/cover-sorcerers-ziggurat.png'),
     href: '/en/student/games/sentence/sorcerer-ziggurat',
-    status: 'playable',
+    status: 'coming-soon',
   },
   {
     id: 'haunted-library',

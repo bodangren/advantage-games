@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Stage, Layer, Text, Group, Rect, Circle, Line, Ring } from 'react-konva'
+import { Stage, Layer, Text, Group, Rect, Circle } from 'react-konva'
 import {
   createAbyssalWellState,
   advanceAbyssalWellTime,
@@ -10,16 +10,17 @@ import {
   spawnEnemy,
   startGame,
   getLanePosition,
+  calculateXP,
   type AbyssalWellState,
 } from '@/lib/games/abyssalWell'
 import { ABYSSAL_WELL_CONFIG } from '@/lib/games/abyssalWellConfig'
 import type { VocabularyItem } from '@/store/useGameStore'
-import type { Difficulty } from '@/store/useGameStore'
-import type { CreatureType } from '@/lib/games/abyssalWellConfig'
-// rAF-based game loop — no useInterval needed
+import type { CreatureType, AbyssalWellDifficulty } from '@/lib/games/abyssalWellConfig'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
-import { Flame, BookOpen, AlertTriangle, Heart, Target } from 'lucide-react'
+import { Flame, BookOpen, AlertTriangle, Target } from 'lucide-react'
 
 export type AbyssalWellGameResult = {
   xp: number
@@ -32,17 +33,18 @@ interface AbyssalWellGameProps {
 }
 
 export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps) {
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize } = useAccessibilitySettings()
   const [gameState, setGameState] = useState<AbyssalWellState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<AbyssalWellGameResult | null>(null)
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal')
+  const [selectedDifficulty, setSelectedDifficulty] = useState<AbyssalWellDifficulty>('medium')
   const [selectedCreature, setSelectedCreature] = useState<CreatureType>('cave-spider')
   const hasReportedRef = useRef(false)
   const lastSpawnRef = useRef(0)
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
 
-  const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
@@ -90,7 +92,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [])
+  }, [containerRef])
 
   useEffect(() => {
     if (gamePhase !== 'playing') return
@@ -122,12 +124,26 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
   }, [gamePhase])
 
   useEffect(() => {
+    if (gamePhase === 'playing') {
+      enterFullscreen()
+    } else {
+      exitFullscreen()
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen])
+
+  useEffect(() => {
     if (gameState?.phase === 'victory' || gameState?.phase === 'defeat') {
       if (gamePhase !== 'ended') {
         const accuracy = gameState.totalAttempts > 0
           ? gameState.correctWords / gameState.totalAttempts
           : 0
-        const xp = Math.min(10, Math.floor(gameState.correctWords * ABYSSAL_WELL_CONFIG.xp.perCorrectWord + accuracy * ABYSSAL_WELL_CONFIG.xp.accuracyBonus))
+        const xp = calculateXP({
+          correctWords: gameState.correctWords,
+          totalAttempts: gameState.totalAttempts,
+          lives: gameState.player.lives,
+          initialLives: ABYSSAL_WELL_CONFIG.lives,
+          gameTime: gameState.gameTime,
+        })
         setResults({ xp, accuracy })
         setGamePhase('ended')
       }
@@ -198,7 +214,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
     } else {
       handleFire()
     }
-  }, [gamePhase, handleRotate, handleFire])
+  }, [gamePhase, handleRotate, handleFire, containerRef])
 
   if (gamePhase === 'start') {
     return (
@@ -231,19 +247,19 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
         >
           <div className="flex flex-col gap-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wider text-white/50">Well Depth:</span>
+              <span className="text-sm uppercase tracking-wider text-white/50">Well Depth:</span>
               <select
                 value={selectedDifficulty}
-                onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
+                onChange={(e) => setSelectedDifficulty(e.target.value as AbyssalWellDifficulty)}
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
               >
                 <option value="easy">Shallow Well</option>
-                <option value="normal">Deep Chasm</option>
+                <option value="medium">Deep Chasm</option>
                 <option value="hard">Abyss</option>
               </select>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs uppercase tracking-wider text-white/50">Enemy Type:</span>
+              <span className="text-sm uppercase tracking-wider text-white/50">Enemy Type:</span>
               <select
                 value={selectedCreature}
                 onChange={(e) => setSelectedCreature(e.target.value as CreatureType)}
@@ -319,7 +335,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
               x={10}
               y={15}
               text={gameState.sentence.translation}
-              fontSize={14}
+              fontSize={getEffectiveTextSize(16)}
               fill="#94a3b8"
               width={ABYSSAL_WELL_CONFIG.gameWidth - 20}
               align="center"
@@ -329,7 +345,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
               x={10}
               y={70}
               text={`Target: ${targetWord}`}
-              fontSize={16}
+              fontSize={getEffectiveTextSize(18)}
               fill="#22d3ee"
               width={ABYSSAL_WELL_CONFIG.gameWidth - 20}
               align="center"
@@ -348,7 +364,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
                 x={15}
                 y={17}
                 text={`❤️ ${gameState.player.lives}`}
-                fontSize={14}
+                fontSize={getEffectiveTextSize(16)}
                 fill="#f87171"
               />
             </Group>
@@ -402,7 +418,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
                     x={pos.x - 30}
                     y={pos.y - 8}
                     text={enemy.word}
-                    fontSize={12}
+                    fontSize={getEffectiveTextSize(16)}
                     fill="white"
                     width={60}
                     align="center"
@@ -427,7 +443,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
                     x={playerPos.x - 10}
                     y={playerPos.y - 6}
                     text="🔥"
-                    fontSize={16}
+                    fontSize={getEffectiveTextSize(18)}
                   />
                 </Group>
               )
@@ -436,7 +452,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
         </Stage>
       )}
       
-      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4 text-xs text-white/50">
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-4 text-sm text-white/50">
         <span>← → Rotate</span>
         <span>Space = Fire</span>
       </div>

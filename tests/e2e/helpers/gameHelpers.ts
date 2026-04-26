@@ -512,10 +512,10 @@ export async function mockDevourerSlimeApis(
   sentences = DEVOURER_SLIME_SAMPLE_SENTENCES
 ) {
   await page.route("**/api/v1/games/devourer-slime/sentences**", async (route) => {
-    const response: ApiResponse = {
+    const response = {
       status: 200,
       message: "Sentences retrieved successfully",
-      vocabulary: sentences,
+      sentences,
     };
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(response) });
   });

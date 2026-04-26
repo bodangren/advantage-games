@@ -31,25 +31,25 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <main className="min-h-screen px-3 py-4 md:px-6 md:py-8 text-white">
-      <div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+    <main className="min-h-screen px-4 py-8 text-foreground">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-8">
         <div className="flex items-center justify-between">
           <Link
-            href="/student/games"
-            className="inline-flex items-center text-sm uppercase tracking-[0.2em] text-white/60 transition hover:text-white"
+            href="/"
+            className="inline-flex items-center text-sm font-medium text-muted-foreground transition hover:text-foreground"
           >
             <ChevronLeft className="mr-1 h-4 w-4" />
-            Back to Games
+            Back to Arcade
           </Link>
           {showConfirm ? (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-white/60">Clear all history?</span>
+              <span className="text-sm text-muted-foreground">Clear all history?</span>
               <Button
                 variant="destructive"
                 size="sm"
                 onClick={handleClear}
               >
-                Yes, clear
+                Clear
               </Button>
               <Button
                 variant="ghost"
@@ -64,62 +64,58 @@ export default function LeaderboardPage() {
               variant="ghost"
               size="sm"
               onClick={() => setShowConfirm(true)}
-              className="text-white/60 hover:text-white"
+              className="text-muted-foreground hover:text-foreground"
             >
-              <Trash2 className="mr-1 h-4 w-4" />
+              <Trash2 className="mr-2 h-4 w-4" />
               Clear History
             </Button>
           )}
         </div>
 
-        <div className="rounded-3xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-orange-500/10 p-8 text-center">
-          <div className="text-xs uppercase tracking-[0.3em] text-amber-400/70 font-bold mb-2">
+        <div className="rounded-xl border border-border bg-card p-12 text-center shadow-sm">
+          <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-4">
             Total XP Earned
           </div>
-          <div className="text-5xl font-black text-amber-400">
+          <div className="text-6xl font-bold tracking-tighter text-foreground">
             {leaderboard.totalXp.toLocaleString()}
           </div>
         </div>
 
         {highScoreList.length > 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-            <div className="border-b border-white/10 px-6 py-4">
-              <h2 className="text-lg font-bold uppercase tracking-wider text-white/70">
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="border-b border-border px-6 py-4 bg-secondary/30">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
                 High Scores
               </h2>
             </div>
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-border">
               {highScoreList.map((game, index) => (
                 <div
                   key={game.gameId}
-                  className="flex items-center justify-between px-6 py-4"
+                  className="flex items-center justify-between px-6 py-4 hover:bg-secondary/20 transition-colors"
                 >
                   <div className="flex items-center gap-4">
                     <div
-                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold ${
+                      className={`flex h-8 w-8 items-center justify-center rounded-md text-xs font-bold border ${
                         index === 0
-                          ? 'bg-amber-500/20 text-amber-400'
-                          : index === 1
-                            ? 'bg-slate-400/20 text-slate-300'
-                            : index === 2
-                              ? 'bg-orange-600/20 text-orange-400'
-                              : 'bg-white/5 text-white/40'
+                          ? 'border-foreground bg-foreground text-background'
+                          : 'border-border bg-secondary text-muted-foreground'
                       }`}
                     >
                       {index + 1}
                     </div>
                     <div>
-                      <div className="font-semibold text-white">
+                      <div className="font-semibold text-foreground">
                         {game.gameName}
                       </div>
-                      <div className="text-xs text-white/50">
+                      <div className="text-xs text-muted-foreground">
                         Best: {game.bestScore.toLocaleString()} pts ·{' '}
                         {game.bestXp.toLocaleString()} XP
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-xs text-white/40">
+                    <div className="text-xs text-muted-foreground">
                       {formatDate(game.lastPlayed)}
                     </div>
                   </div>
@@ -130,35 +126,35 @@ export default function LeaderboardPage() {
         ) : null}
 
         {leaderboard.sessions.length > 0 ? (
-          <div className="rounded-2xl border border-white/10 bg-white/5 overflow-hidden">
-            <div className="border-b border-white/10 px-6 py-4">
-              <h2 className="text-lg font-bold uppercase tracking-wider text-white/70">
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="border-b border-border px-6 py-4 bg-secondary/30">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
                 Recent Sessions
               </h2>
             </div>
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-border">
               {leaderboard.sessions.map((session) => (
                 <div
                   key={session.id}
-                  className="flex items-center justify-between px-6 py-4"
+                  className="flex items-center justify-between px-6 py-4 hover:bg-secondary/20 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <Trophy className="h-5 w-5 text-amber-500/50" />
+                    <Trophy className="h-4 w-4 text-muted-foreground" />
                     <div>
-                      <div className="font-semibold text-white">
+                      <div className="font-semibold text-foreground">
                         {session.gameName}
                       </div>
-                      <div className="text-xs text-white/50">
+                      <div className="text-xs text-muted-foreground">
                         Score: {session.score.toLocaleString()} ·{' '}
                         {session.accuracy}% accuracy
                       </div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-medium text-emerald-400">
+                    <div className="text-sm font-bold text-foreground">
                       +{session.xp} XP
                     </div>
-                    <div className="text-xs text-white/40">
+                    <div className="text-xs text-muted-foreground">
                       {formatDate(session.timestamp)}
                     </div>
                   </div>
@@ -167,16 +163,16 @@ export default function LeaderboardPage() {
             </div>
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
-            <Trophy className="mx-auto mb-4 h-12 w-12 text-white/20" />
-            <h3 className="text-xl font-bold text-white/60 mb-2">
-              No sessions yet
+          <div className="rounded-xl border border-border bg-card p-12 text-center">
+            <Trophy className="mx-auto mb-4 h-10 w-10 text-muted-foreground/20" />
+            <h3 className="text-xl font-bold text-muted-foreground mb-2">
+              No sessions recorded
             </h3>
-            <p className="text-white/40">
-              Play some games to see your history here!
+            <p className="text-sm text-muted-foreground">
+              Complete any challenge to see your history.
             </p>
-            <Link href="/student/games">
-              <Button className="mt-6">Browse Games</Button>
+            <Link href="/">
+              <Button className="mt-6 px-8 rounded-full">Explore Games</Button>
             </Link>
           </div>
         )}

@@ -52,11 +52,11 @@ export function RankingDialog({ open, onOpenChange }: RankingDialogProps) {
   };
 
   const getRankIcon = (index: number) => {
-    if (index === 0) return <Crown className="h-5 w-5 text-yellow-400" />;
-    if (index === 1) return <Medal className="h-5 w-5 text-slate-300" />;
-    if (index === 2) return <Medal className="h-5 w-5 text-amber-600" />;
+    if (index === 0) return <Crown className="h-5 w-5 text-foreground" />;
+    if (index === 1) return <Medal className="h-5 w-5 text-muted-foreground" />;
+    if (index === 2) return <Medal className="h-5 w-5 text-muted-foreground/60" />;
     return (
-      <span className="text-sm font-bold text-white/50">#{index + 1}</span>
+      <span className="text-xs font-bold text-muted-foreground/40">#{index + 1}</span>
     );
   };
 
@@ -71,12 +71,12 @@ export function RankingDialog({ open, onOpenChange }: RankingDialogProps) {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="flex items-center gap-4 rounded-lg bg-white/5 p-3"
+              className="flex items-center gap-4 rounded-lg border border-border bg-secondary/20 p-3"
             >
-              <div className="h-8 w-8 rounded-full bg-white/10 animate-pulse" />
+              <div className="h-8 w-8 rounded-full bg-secondary animate-pulse" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-24 bg-white/10 rounded animate-pulse" />
-                <div className="h-3 w-16 bg-white/5 rounded animate-pulse" />
+                <div className="h-4 w-24 bg-secondary rounded animate-pulse" />
+                <div className="h-3 w-16 bg-secondary/50 rounded animate-pulse" />
               </div>
             </div>
           ))}
@@ -86,10 +86,10 @@ export function RankingDialog({ open, onOpenChange }: RankingDialogProps) {
 
     if (rankings.length === 0) {
       return (
-        <div className="flex flex-col items-center justify-center py-12 text-center text-white/40">
-          <Trophy className="h-12 w-12 mb-2 opacity-20" />
-          <p>No wizards yet.</p>
-          <p className="text-xs">Be the first to defend the kingdom!</p>
+        <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+          <Trophy className="h-10 w-10 mb-2 opacity-20" />
+          <p className="text-sm">No rankings available.</p>
+          <p className="text-xs">Be the first to set a score!</p>
         </div>
       );
     }
@@ -101,32 +101,30 @@ export function RankingDialog({ open, onOpenChange }: RankingDialogProps) {
             <div
               key={user.userId}
               className={cn(
-                "flex items-center gap-4 rounded-xl border p-3 transition-colors",
-                index === 0
-                  ? "border-yellow-500/30 bg-yellow-500/10"
-                  : "border-purple-500/10 bg-purple-900/10 hover:bg-purple-900/20"
+                "flex items-center gap-4 rounded-lg border border-border p-3 transition-colors hover:bg-secondary/50",
+                index === 0 && "bg-secondary border-foreground/20"
               )}
             >
               <div className="flex h-8 w-8 items-center justify-center shrink-0">
                 {getRankIcon(index)}
               </div>
 
-              <Avatar className="h-10 w-10 border border-purple-500/20">
+              <Avatar className="h-10 w-10 border border-border">
                 <AvatarImage src={user.image || undefined} />
-                <AvatarFallback className="bg-purple-900 text-purple-100 text-xs">
+                <AvatarFallback className="bg-secondary text-muted-foreground text-xs">
                   {user.name.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
 
               <div className="flex-1 min-w-0">
-                <div className="truncate text-sm font-medium text-purple-100">
+                <div className="truncate text-sm font-semibold text-foreground">
                   {user.name}
                 </div>
-                <div className="text-xs text-purple-300/50">Wizard</div>
+                <div className="text-xs text-muted-foreground">Candidate</div>
               </div>
 
               <div className="text-right">
-                <div className="text-sm font-bold text-emerald-400">
+                <div className="text-sm font-bold text-foreground">
                   {user.xp.toLocaleString()} XP
                 </div>
               </div>
@@ -139,21 +137,21 @@ export function RankingDialog({ open, onOpenChange }: RankingDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-slate-950 border-purple-500/20 text-white shadow-[0_0_50px_rgba(168,85,247,0.15)]">
+      <DialogContent className="sm:max-w-md bg-background border-border shadow-xl">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-xl text-purple-100">
-            <Trophy className="h-5 w-5 text-yellow-500" />
-            Hall of Wizards
+          <DialogTitle className="flex items-center gap-2 text-xl font-bold tracking-tight">
+            <Trophy className="h-5 w-5" />
+            Hall of Records
           </DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="normal" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-purple-900/20">
+          <TabsList className="grid w-full grid-cols-4 bg-secondary">
             {difficulties.map((diff) => (
               <TabsTrigger
                 key={diff}
                 value={diff}
-                className="uppercase text-[10px] data-[state=active]:bg-purple-600 data-[state=active]:text-white text-purple-300/50"
+                className="text-[10px] font-semibold uppercase tracking-wider"
               >
                 {diff}
               </TabsTrigger>

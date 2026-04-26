@@ -54,7 +54,7 @@ export function createAbyssalWellState(
   }
 
   const rng = config.rng ?? Math.random
-  const difficulty = config.difficulty ?? 'normal'
+  const difficulty = config.difficulty ?? 'medium'
   const creatureType = config.creatureType ?? 'cave-spider'
 
   const sentenceIndex = Math.floor(rng() * vocabulary.length)
@@ -286,4 +286,24 @@ export function startGame(state: AbyssalWellState): AbyssalWellState {
     phase: 'playing',
     gameTime: 0,
   }
+}
+
+export function calculateXP(params: {
+  correctWords: number
+  totalAttempts: number
+  lives: number
+  initialLives: number
+  gameTime: number
+}): number {
+  if (params.totalAttempts === 0) return 0
+
+  const accuracy = params.correctWords / params.totalAttempts
+  const baseXP = params.correctWords
+
+  let bonus = 0
+  if (accuracy === 1) bonus += 2 // Perfect accuracy bonus
+  if (params.lives / params.initialLives >= 0.5) bonus += 1 // Survival bonus
+  if (params.gameTime < 30000) bonus += 1 // Speed bonus (under 30s)
+
+  return Math.min(10, baseXP + bonus)
 }

@@ -54,4 +54,29 @@ describe('gameCards', () => {
 
     expect(new Set(ids).size).toBe(ids.length);
   });
+
+  it('marks only implemented games as playable', async () => {
+    const gameCards = await loadGameCards();
+    const fs = await import('fs');
+    const path = await import('path');
+
+    const playableCards = gameCards.filter((card) => card.status === 'playable');
+    const missingGames: string[] = [];
+
+    playableCards.forEach((card) => {
+      const gameId = card.id;
+      const componentPath = path.join(process.cwd(), 'src/components/games', gameId.includes('vocabulary') || gameId === 'dragon-flight' || gameId === 'rpg-battle' || gameId === 'magic-defense' || gameId === 'wizard-vs-zombie' || gameId === 'rune-match' || gameId === 'archers-revenge' ? 'vocabulary' : 'sentence', gameId);
+      const logicPath = path.join(process.cwd(), 'src/lib/games');
+      
+      const hasComponent = fs.existsSync(componentPath);
+      const logicFiles = fs.readdirSync(logicPath).filter((f: string) => f.toLowerCase().includes(gameId.toLowerCase().replace(/-/g, '')));
+      const hasLogic = logicFiles.length > 0;
+
+      if (!(hasComponent || hasLogic)) {
+        missingGames.push(gameId);
+      }
+    });
+
+    expect(missingGames).toEqual([]);
+  });
 });

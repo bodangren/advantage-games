@@ -8,10 +8,13 @@ import {
   handleGryphonPatrolInput, 
   spawnGryphonPatrolEnemies,
   shootGryphonPatrolProjectile,
+  calculateXP,
   GameState 
 } from '@/lib/games/gryphonPatrol';
 import { VocabularyItem } from '@/store/useGameStore';
 import { useDirectionalInput } from '@/hooks/useDirectionalInput';
+import { useGameFullscreen } from '@/hooks/useGameFullscreen';
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings';
 import { GameStartScreen } from '@/components/games/game/GameStartScreen';
 import { GameEndScreen } from '@/components/games/game/GameEndScreen';
 import { Bird, Shield, Target } from 'lucide-react';
@@ -28,8 +31,10 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
   );
   
   const [dimensions, setDimensions] = useState({ width: 390, height: 844 });
-  const containerRef = useRef<HTMLDivElement>(null);
-  const lastTickTime = useRef<number>(Date.now());
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
+  const { getEffectiveTextSize } = useAccessibilitySettings();
+  const lastFrameRef = useRef<number>(0);
+  const rafRef = useRef<number>(0);
   const { input, consumeCast } = useDirectionalInput();
 
   useEffect(() => {
@@ -44,49 +49,78 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [containerRef]);
 
-  const update = useCallback(() => {
-    if (gameState.status !== 'playing') return;
+  // Game Loop with requestAnimationFrame
+  useEffect(() => {
+    if (gameState.status !== 'playing') {
+      lastFrameRef.current = 0;
+      return;
+    }
 
-    const now = Date.now();
-    const deltaTime = (now - lastTickTime.current) / 1000;
-    lastTickTime.current = now;
+    const loop = (timestamp: number) => {
+      const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16;
+      lastFrameRef.current = timestamp;
+      const clampedDelta = Math.min(delta, 50);
+      const deltaTime = clampedDelta / 1000;
 
-    setGameState((prev) => {
-      let next = tickGryphonPatrol(prev, deltaTime);
-      if (input.dx !== 0 || input.dy !== 0) {
-        next = handleGryphonPatrolInput(next, { dx: input.dx, dy: input.dy });
-      }
-      if (input.cast) {
-        next = shootGryphonPatrolProjectile(next);
-        consumeCast();
-      }
-      return next;
-    });
+      setGameState((prev) => {
+        let next = tickGryphonPatrol(prev, deltaTime);
+        if (input.dx !== 0 || input.dy !== 0) {
+          next = handleGryphonPatrolInput(next, { dx: input.dx, dy: input.dy });
+        }
+        if (input.cast) {
+          next = shootGryphonPatrolProjectile(next);
+          consumeCast();
+        }
+        return next;
+      });
+
+      rafRef.current = requestAnimationFrame(loop);
+    };
+
+    rafRef.current = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      lastFrameRef.current = 0;
+    };
   }, [gameState.status, input, consumeCast]);
 
+  // Fullscreen handling
   useEffect(() => {
-    const interval = setInterval(update, 1000 / 60);
-    return () => clearInterval(interval);
-  }, [update]);
+    if (gameState.status === 'playing') {
+      enterFullscreen();
+    } else if (gameState.status === 'won' || gameState.status === 'lost') {
+      exitFullscreen();
+    }
+  }, [gameState.status, enterFullscreen, exitFullscreen]);
 
   useEffect(() => {
     if (gameState.status === 'won' || gameState.status === 'lost') {
+      const accuracy = gameState.sentence.length > 0 
+        ? gameState.collectedWords.length / gameState.sentence.length 
+        : 0;
+      const xp = calculateXP({
+        collectedWords: gameState.collectedWords.length,
+        totalWords: gameState.sentence.length,
+        hp: gameState.player.hp,
+        maxHp: gameState.player.maxHp,
+        time: gameState.time,
+      });
       onComplete({
-        xp: gameState.xp,
-        accuracy: gameState.collectedWords.length / gameState.sentence.length,
+        xp,
+        accuracy,
         difficulty,
         score: gameState.score
       });
     }
-  }, [gameState.status, gameState.xp, gameState.score, gameState.collectedWords.length, gameState.sentence.length, difficulty, onComplete]);
+  }, [gameState.status, gameState.xp, gameState.score, gameState.collectedWords.length, gameState.sentence.length, gameState.player.hp, gameState.player.maxHp, gameState.time, difficulty, onComplete]);
 
   const handleStart = () => {
     const initialState = createInitialGryphonPatrolState(vocabList[0]?.term?.split(' ') || []);
     const withEnemies = spawnGryphonPatrolEnemies(initialState);
     setGameState({ ...withEnemies, status: 'playing' });
-    lastTickTime.current = Date.now();
+    lastFrameRef.current = 0;
   };
 
   const scale = Math.min(dimensions.width / 390, dimensions.height / 844);
@@ -161,7 +195,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
                     width={100}
                     align="center"
                     fill="white"
-                    fontSize={14}
+                    fontSize={getEffectiveTextSize(16)}
                     fontStyle="bold"
                   />
                 </Group>
@@ -203,7 +237,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
                     width={100}
                     align="center"
                     fill="#f1c40f"
-                    fontSize={16}
+                    fontSize={getEffectiveTextSize(16)}
                     fontStyle="bold"
                   />
                 </Group>
@@ -238,12 +272,12 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
               <Text 
                 text={gameState.sentence.join(' ')}
                 x={10} y={10} width={350} align="center"
-                fontSize={16} fill="white" opacity={0.5}
+                fontSize={getEffectiveTextSize(16)} fill="white" opacity={0.5}
               />
               <Text 
                 text={gameState.collectedWords.join(' ')}
                 x={10} y={40} width={350} align="center"
-                fontSize={20} fill="#2ecc71" fontStyle="bold"
+                fontSize={getEffectiveTextSize(20)} fill="#2ecc71" fontStyle="bold"
               />
             </Group>
 
@@ -273,7 +307,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
               {/* Target Indicator */}
               <Text 
                 text="MINI-MAP"
-                x={0} y={-15} fontSize={10} fill="white" opacity={0.5}
+                x={0} y={-15} fontSize={getEffectiveTextSize(16)} fill="white" opacity={0.5}
               />
             </Group>
 

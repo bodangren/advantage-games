@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
-import { useCurrentLocale } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -37,6 +38,8 @@ export default function AbyssalWellPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const locale = useCurrentLocale();
+  const t = useScopedI18n("pages.student.gamesPage");
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchSentences = async () => {
@@ -88,13 +91,14 @@ export default function AbyssalWellPage() {
             accuracy: results.accuracy,
             correctAnswers: Math.floor(results.accuracy * 10),
             totalAttempts: 10,
+            userId: session?.user?.id,
           }),
         });
       } catch (e) {
         console.error("Failed to submit game results", e);
       }
     },
-    [setLastResult],
+    [setLastResult, session],
   );
 
   if (isLoading) {
@@ -103,7 +107,7 @@ export default function AbyssalWellPage() {
         <CardContent className="flex flex-col items-center justify-center py-16">
           <Loader2 className="mb-4 h-10 w-10 animate-spin text-primary" />
           <p className="text-lg font-medium text-muted-foreground">
-            {"กำลังโหลด"}
+            {t('loading') || 'Loading...'}
           </p>
         </CardContent>
       </Card>

@@ -39,7 +39,7 @@ describe('abyssalWellConfig', () => {
 
     it('should have difficulties defined', () => {
       expect(ABYSSAL_WELL_CONFIG.difficulties.easy).toBeDefined()
-      expect(ABYSSAL_WELL_CONFIG.difficulties.normal).toBeDefined()
+      expect(ABYSSAL_WELL_CONFIG.difficulties.medium).toBeDefined()
       expect(ABYSSAL_WELL_CONFIG.difficulties.hard).toBeDefined()
     })
   })
@@ -51,8 +51,8 @@ describe('abyssalWellConfig', () => {
       expect(config.wordCount).toBe(4)
     })
 
-    it('should return normal config for normal difficulty', () => {
-      const config = getDifficultyConfig('normal')
+    it('should return medium config for medium difficulty', () => {
+      const config = getDifficultyConfig('medium')
       expect(config.name).toBe('Deep Chasm')
       expect(config.wordCount).toBe(5)
     })
@@ -63,7 +63,7 @@ describe('abyssalWellConfig', () => {
       expect(config.wordCount).toBe(6)
     })
 
-    it('should fallback to normal for unknown difficulty', () => {
+    it('should fallback to medium for unknown difficulty', () => {
       const config = getDifficultyConfig('unknown' as AbyssalWellDifficulty)
       expect(config.name).toBe('Deep Chasm')
     })

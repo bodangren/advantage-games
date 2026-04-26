@@ -15,7 +15,8 @@ import {
 } from "lucide-react";
 import { Header } from "@/components/header";
 import { useCallback, useEffect, useState } from "react";
-import { useCurrentLocale } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,7 +27,7 @@ const GryphonPatrolGame = dynamic(
   { ssr: false },
 );
 
-type Difficulty = "easy" | "normal" | "hard" | "extreme";
+type Difficulty = "easy" | "medium" | "hard" | "extreme";
 
 type RankingEntry = {
   userId: string;
@@ -43,7 +44,7 @@ type WarningStatus = {
 
 export default function GryphonPatrolPage() {
   const [vocabList, setVocabList] = useState<VocabularyItem[]>([]);
-  const [difficulty, setDifficulty] = useState<Difficulty>("normal");
+  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [activeTab, setActiveTab] = useState<"game" | "rankings">("game");
   const [rankings, setRankings] = useState<Record<string, RankingEntry[]>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +53,9 @@ export default function GryphonPatrolPage() {
   });
 
   const locale = useCurrentLocale();
+  const t = useScopedI18n("games");
+  const { data: session } = useSession();
+
   useEffect(() => {
     const fetchSentences = async () => {
       try {
@@ -269,7 +273,7 @@ export default function GryphonPatrolPage() {
         {activeTab === "game" ? (
           <div className="flex-1 min-h-0 flex flex-col">
             <div className="bg-slate-900/80 border-b border-white/5 py-2 px-3 sm:px-6 flex flex-wrap justify-center gap-1 sm:gap-2">
-              {(["easy", "normal", "hard", "extreme"] as Difficulty[]).map(
+              {(["easy", "medium", "hard", "extreme"] as Difficulty[]).map(
                 (dif) => (
                   <button
                     key={dif}
@@ -305,7 +309,7 @@ export default function GryphonPatrolPage() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
-              {(["easy", "normal", "hard", "extreme"] as Difficulty[]).map(
+              {(["easy", "medium", "hard", "extreme"] as Difficulty[]).map(
                 (dif) => (
                   <div
                     key={dif}
