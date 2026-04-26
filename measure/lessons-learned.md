@@ -38,13 +38,13 @@
   - jest coverage merging fails for paths with brackets ([locale]); verify isolation
   - Zustand store can host both state logic and calculateXP; no separate logic file needed
   - Adding 24 tests across 5 files raises coverage from 33% to 85% efficiently
-## Track: Enchanted Library Compliance Audit (2026-04-26)
-- Result: 25/25 passing after fixes (16 at start, 9 failures)
-- Fixes: rAF loop, useGameFullscreen, text sizes, touch targets, useAccessibilitySettings, useCurrentLocale, useSession, calculateEnchantedLibraryXP, off-screen indicators, RankingDisplay tests
-- Coverage: 91.27% overall (from 84.81%), 88.31% components (from 78.14%)
+## Track: Dungeon Liberator Compliance Audit (2026-04-26)
+- Result: 25/25 passing after fixes (13 at start, 12 failures)
+- Fixes: rAF loop, text sizes, SentenceItem typing, API factories, useSession, calculateDungeonLiberatorXP, difficulty tiers, asset dir, tests
+- Coverage: 82.05% overall (from 0%)
 - **Key Learnings:**
-  - rAF conversion requires refs for callback dependencies (computeCamera, findCollectedBook) to avoid stale closures
-  - Moving refs after function declarations prevents temporal dead zone errors
-  - Adding 12 RankingDisplay tests raises component coverage ~10% instantly
+  - Converting useInterval to rAF requires refs for gameState/input to avoid stale closures in the loop
+  - Mock ResizeObserver must use stable containerRef to prevent infinite re-render loops in tests
+  - Starting from 0% coverage, 49 tests across 4 files reaches 82% efficiently
 
 **Previous audits (condensed):** Dungeon Liberator, Potion Rush, Rune Match, Castle Defense, Alchemists Synthesis, Wizard vs Zombie, RPG Battle, Magic Defense, Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.
