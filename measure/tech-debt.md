@@ -1,32 +1,45 @@
 # Technical Debt
 
-## Griffin Sky-Joust Compliance Audit (2026-04-26)
+## Resolved (all audited games)
+- fullscreen, accessibility, text sizes, calculateXP, difficulty naming, API factories, i18n/session, hook deps, unused imports, component tests, assets.
+
+## Remaining
+- VocabularyItem[] vs SentenceItem[] naming consistency (Griffin Riders Escape, Gryphon Patrol).
+
+---
+
+## Realm Carver Compliance Audit (2026-04-26)
 
 ### Resolved
 - Missing useGameFullscreen — integrated with enter/exit on phase changes
 - Missing useAccessibilitySettings — added getEffectiveTextSize for all text
-- Text size below 16px — increased base fontSize from 14 to 16px
+- Text size below 16px — increased base fontSize from 10/14 to 16px
+- Missing calculateXP — implemented 1-10 scale with accuracy/speed/survival bonuses
+- Difficulty 'normal' → 'medium', added easy/medium/hard presets
+- Hook dependencies — fixed using destructured primitives (targetWordIndex, playerHp)
 - API routes — switched to createSentencesRoute / createCompleteRoute
-- Missing i18n/session — added useScopedI18n, useCurrentLocale, useSession
-- Difficulty tiers — created local GriffinSkyJoustDifficulty ('easy'|'medium'|'hard'), removed 'extreme'
-- Hook dependencies — fixed gameState object in deps using refs and primitives
-- Component tests — wrote GriffinSkyJoustGame.test.tsx (0% → 81.79%)
-- SentenceItem typing — replaced VocabularyItem with local SentenceItem interface
-- Assets — created asset directory and cover image symlink
+- Missing i18n/session — added useCurrentLocale, useSession to page.tsx
+- Component tests — expanded to 7 tests; logic tests 24 tests (100% logic coverage)
+- Assets — created asset directory at public/games/sentence/realm-carver/
 
 ### Remaining
 - None
 
 ---
 
-**Storm Castle Tower:** Resolved fullscreen, accessibility, text sizes, calculateXP, difficulty naming, API factories, i18n/session, hook deps, unused imports, component tests, assets. Remaining: none.
+## Paladin's Twin-Soul Compliance Audit (2026-04-26)
 
-**Haunted Library:** Resolved rAF loop, fullscreen, accessibility, text sizes, API factories, i18n/session, calculateXP, component tests, state schema. Remaining: none.
+### Resolved
+- Missing useGameFullscreen — integrated with enter/exit on phase changes
+- Missing useAccessibilitySettings — added getEffectiveTextSize for all text
+- Text size below 16px — increased base fontSize from 12/14 to 16px
+- Missing calculateXP — implemented 1-10 scale with accuracy/speed/survival bonuses
+- Difficulty 'normal' → 'medium', removed 'extreme' tier
+- Hook dependencies — fixed using destructured primitives (playerHp, wave)
+- Unused imports/vars — removed Zap, setSelectedDifficulty, locale
+- Missing i18n/session — added useCurrentLocale, useSession to page.tsx
+- Component tests — added calculateXP tests (26 total tests, 92.5% coverage)
+- Assets — created asset directory and cover image symlink
 
-**Abyssal Well:** Resolved fullscreen, accessibility, text sizes, calculateXP, difficulty naming, hook deps, i18n/session, component tests, assets. Remaining: none.
-
-**Labyrinth Goblin King:** Resolved fullscreen, accessibility, text sizes, hook deps, unused imports, i18n/session, component tests. Remaining: none.
-
-**Gryphon Patrol:** Resolved rAF game loop, fullscreen, accessibility, text sizes, calculateXP, difficulty naming, hook deps, i18n/session, component tests, assets. Remaining: difficulty presets not yet wired to logic, VocabularyItem[] vs SentenceItem[] naming.
-
-**Griffin Riders Escape:** Resolved fullscreen, accessibility, text sizes, calculateXP, difficulty naming, hook deps, i18n/session, cover image. Remaining: VocabularyItem[] vs SentenceItem[] naming only.
+### Remaining
+- None

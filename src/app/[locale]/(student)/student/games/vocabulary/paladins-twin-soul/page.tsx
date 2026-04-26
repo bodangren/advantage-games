@@ -27,6 +27,8 @@ export default function PaladinsTwinSoulPage({
   const { locale } = use(params);
   const t = useScopedI18n("pages.student.gamesPage");
   const currentLocale = useCurrentLocale();
+  // Use locale from params to ensure it's available
+  const pageLocale = locale || currentLocale;
   const { data: session } = useSession();
   const setLastResult = useGameStore((state) => state.setLastResult);
   
@@ -42,7 +44,7 @@ export default function PaladinsTwinSoulPage({
       try {
         setIsLoading(true);
         setError(null);
-        const res = await fetch(`/api/v1/games/paladins-twin-soul/vocabulary?locale=${currentLocale}`);
+        const res = await fetch(`/api/v1/games/paladins-twin-soul/vocabulary?locale=${pageLocale}`);
         const data = await res.json();
 
         if (res.ok && data.vocabulary && data.vocabulary.length > 0) {
@@ -58,8 +60,10 @@ export default function PaladinsTwinSoulPage({
       }
     };
 
-    fetchVocabulary();
-  }, [locale]);
+    if (isAuthenticated) {
+      fetchVocabulary();
+    }
+  }, [pageLocale, isAuthenticated]);
 
   const handleComplete = useCallback(async (results: { xp: number; accuracy: number }) => {
     setLastResult(results.xp, results.accuracy);
