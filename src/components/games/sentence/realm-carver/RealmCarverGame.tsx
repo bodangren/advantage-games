@@ -5,6 +5,7 @@ import { Stage, Layer, Rect, Text, Circle, Group } from "react-konva";
 import {
   createRealmCarverState,
   tickRealmCarver,
+  calculateXP,
   type RealmCarverState,
   SentenceItem,
 } from "@/lib/games/realmCarver";
@@ -15,6 +16,9 @@ import { Map as MapIcon, Shield, Target, Heart, Award } from "lucide-react";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
 import { VirtualDPad } from "@/components/ui/VirtualDPad";
 import { useSound } from "@/hooks/useSound";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
+import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import type { VocabularyItem } from "@/store/useGameStore";
 
 interface RealmCarverGameProps {
   sentences: SentenceItem[];
@@ -33,6 +37,8 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
 
   const { input, setVirtualInput } = useDirectionalInput();
   const { playSound } = useSound();
+  const { enterFullscreen, exitFullscreen } = useGameFullscreen();
+  const { getEffectiveTextSize } = useAccessibilitySettings();
 
   const startGame = useCallback(() => {
     try {
@@ -42,10 +48,11 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
       hasReportedRef.current = false;
       lastFrameRef.current = 0;
       playSound("success");
+      enterFullscreen();
     } catch (error) {
       console.error("Failed to start game:", error);
     }
-  }, [sentences, playSound]);
+  }, [sentences, playSound, enterFullscreen]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -110,31 +117,34 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
       cancelAnimationFrame(rafRef.current);
       lastFrameRef.current = 0;
     };
-  }, [gamePhase, input.dx, input.dy, !!gameState]);
+  }, [gamePhase, input.dx, input.dy, gameState]);
 
   useEffect(() => {
     if (gameState?.status === "victory" || gameState?.status === "defeat") {
       setGamePhase("ended");
+      exitFullscreen();
       if (gameState.status === "victory") playSound("success");
       else playSound("error");
     }
-  }, [gameState?.status, playSound]);
+  }, [gameState?.status, playSound, exitFullscreen]);
 
+  const targetWordIndex = gameState?.targetWordIndex ?? -1;
   const prevTargetIndex = useRef(0);
   useEffect(() => {
-    if (gameState && gameState.targetWordIndex > prevTargetIndex.current) {
+    if (targetWordIndex > prevTargetIndex.current) {
       playSound("success");
-      prevTargetIndex.current = gameState.targetWordIndex;
+      prevTargetIndex.current = targetWordIndex;
     }
-  }, [gameState?.targetWordIndex, playSound]);
+  }, [targetWordIndex, playSound]);
 
+  const playerHp = gameState?.player.hp ?? -1;
   const prevHp = useRef(3);
   useEffect(() => {
-    if (gameState && gameState.player.hp < prevHp.current) {
+    if (playerHp >= 0 && playerHp < prevHp.current) {
       playSound("error");
-      prevHp.current = gameState.player.hp;
+      prevHp.current = playerHp;
     }
-  }, [gameState?.player.hp, playSound]);
+  }, [playerHp, playSound]);
 
   useEffect(() => {
     if (gamePhase === "ended" && gameState && !hasReportedRef.current) {
@@ -142,7 +152,13 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
       const accuracy = gameState.fullSentence.length > 0 
         ? gameState.targetWordIndex / gameState.fullSentence.length 
         : 0;
-      const xp = Math.min(10, gameState.targetWordIndex + 2);
+      const xp = calculateXP({
+        targetWordIndex: gameState.targetWordIndex,
+        fullSentenceLength: gameState.fullSentence.length,
+        hp: gameState.player.hp,
+        maxHp: gameState.player.maxHp,
+        gameTime: gameState.gameTime,
+      });
       onComplete?.({ xp, accuracy });
     }
   }, [gamePhase, gameState, onComplete]);
@@ -160,7 +176,7 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
         <GameStartScreen
           gameTitle="Realm Carver"
           gameSubtitle="Magical Cartographer"
-          vocabulary={sentences as any}
+          vocabulary={sentences as VocabularyItem[]}
           instructions={[
             { step: 1, text: "Move to draw lines and claim territory.", icon: MapIcon },
             { step: 2, text: "Enclose words to capture them in order.", icon: Target },
@@ -196,22 +212,22 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
               <div className="h-4 w-px bg-white/10" />
               <div className="flex items-center gap-1.5">
                 <Target className="h-4 w-4 text-amber-400" />
-                <span className="text-sm font-bold text-white tabular-nums">
+                <span className="font-bold text-white tabular-nums" style={{ fontSize: getEffectiveTextSize(16) }}>
                   {gameState.targetWordIndex} / {gameState.fullSentence.length}
                 </span>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
               <Award className="h-4 w-4 text-amber-400" />
-              <span className="text-sm font-bold text-white tabular-nums">{gameState.score}</span>
+              <span className="font-bold text-white tabular-nums" style={{ fontSize: getEffectiveTextSize(16) }}>{gameState.score}</span>
             </div>
           </div>
 
           {/* Current Target Word */}
           <div className="absolute top-20 left-1/2 -translate-x-1/2 z-10 px-6 py-2 bg-amber-500/20 border border-amber-500/40 rounded-full backdrop-blur-sm">
             <div className="flex flex-col items-center">
-              <span className="text-[10px] uppercase tracking-widest text-amber-400 font-bold mb-0.5">Find</span>
-              <span className="text-xl font-black text-amber-500 drop-shadow-sm">
+              <span className="uppercase tracking-widest text-amber-400 font-bold mb-0.5" style={{ fontSize: getEffectiveTextSize(16) }}>Find</span>
+              <span className="font-black text-amber-500 drop-shadow-sm" style={{ fontSize: getEffectiveTextSize(20) }}>
                 {gameState.currentSentence.term}
               </span>
             </div>
@@ -255,7 +271,7 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
                       />
                       <Text
                         text={word.term}
-                        fontSize={14}
+                        fontSize={getEffectiveTextSize(16)}
                         fontStyle="bold"
                         fill="white"
                         align="center"

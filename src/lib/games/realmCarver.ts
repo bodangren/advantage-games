@@ -27,6 +27,8 @@ export interface SentenceItem {
   translation: string;
 }
 
+export type RealmCarverDifficulty = "easy" | "medium" | "hard";
+
 export interface RealmCarverState {
   grid: CellState[][];
   player: {
@@ -45,13 +47,31 @@ export interface RealmCarverState {
   score: number;
   status: "playing" | "victory" | "defeat";
   gameTime: number;
-  difficulty: string;
+  difficulty: RealmCarverDifficulty;
+}
+
+function getDifficultySettings(difficulty: string) {
+  switch (difficulty) {
+    case "easy":
+      return { monsterCount: 1, playerHp: 5, monsterSpeed: 80 };
+    case "hard":
+      return { monsterCount: 4, playerHp: 2, monsterSpeed: 120 };
+    case "medium":
+    default:
+      return { monsterCount: 2, playerHp: 3, monsterSpeed: 100 };
+  }
 }
 
 export function createRealmCarverState(
   fullSentence: SentenceItem[],
   options: { difficulty?: string } = {},
 ): RealmCarverState {
+  const rawDifficulty = options.difficulty || "medium";
+  const difficulty: RealmCarverDifficulty = ["easy", "medium", "hard"].includes(rawDifficulty)
+    ? (rawDifficulty as RealmCarverDifficulty)
+    : "medium";
+  const settings = getDifficultySettings(difficulty);
+
   const grid: CellState[][] = Array(GRID_SIZE)
     .fill(null)
     .map(() => Array(GRID_SIZE).fill("wild"));
@@ -64,7 +84,7 @@ export function createRealmCarverState(
   }
 
   const monsters: RealmCarverMonster[] = [];
-  for (let i = 0; i < REALM_CARVER_CONFIG.monster.count; i++) {
+  for (let i = 0; i < settings.monsterCount; i++) {
     monsters.push({
       id: `monster-${i}`,
       x: GRID_SIZE / 2 + (Math.random() - 0.5) * 20,
@@ -90,8 +110,8 @@ export function createRealmCarverState(
       y: 0,
       vx: 0,
       vy: 0,
-      hp: REALM_CARVER_CONFIG.player.initialHp,
-      maxHp: REALM_CARVER_CONFIG.player.initialHp,
+      hp: settings.playerHp,
+      maxHp: settings.playerHp,
     },
     monsters,
     words,
@@ -101,7 +121,7 @@ export function createRealmCarverState(
     score: 0,
     status: "playing",
     gameTime: 0,
-    difficulty: options.difficulty || "normal",
+    difficulty,
   };
 }
 
@@ -275,4 +295,24 @@ export function tickRealmCarver(state: RealmCarverState, delta: number): RealmCa
     score: nextScore,
     gameTime: state.gameTime + delta,
   };
+}
+
+export function calculateXP(params: {
+  targetWordIndex: number;
+  fullSentenceLength: number;
+  hp: number;
+  maxHp: number;
+  gameTime: number;
+}): number {
+  if (params.fullSentenceLength === 0) return 0;
+
+  const accuracy = params.targetWordIndex / params.fullSentenceLength;
+  const baseXP = params.targetWordIndex;
+
+  let bonus = 0;
+  if (accuracy === 1 && params.targetWordIndex > 0) bonus += 2; // Perfect accuracy bonus
+  if (params.hp / params.maxHp >= 0.5) bonus += 1; // Survival bonus
+  if (params.gameTime < 30000) bonus += 1; // Speed bonus (under 30s)
+
+  return Math.min(10, baseXP + bonus);
 }

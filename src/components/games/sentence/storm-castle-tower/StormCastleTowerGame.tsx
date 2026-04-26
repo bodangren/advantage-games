@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Stage, Layer, Text, Group, Rect, Circle, Line } from 'react-konva'
+import { Stage, Layer, Text, Group, Rect, Circle } from 'react-konva'
 import {
   createStormCastleTowerState,
   advanceStormCastleTowerTime,
@@ -13,13 +13,14 @@ import {
   type StormCastleTowerState,
 } from '@/lib/games/stormCastleTower'
 import { STORM_CASTLE_TOWER_CONFIG } from '@/lib/games/stormCastleTowerConfig'
-import type { VocabularyItem } from '@/store/useGameStore'
-import type { Difficulty } from '@/store/useGameStore'
+import type { VocabularyItem, Difficulty } from '@/store/useGameStore'
 import type { GuardType } from '@/lib/games/stormCastleTowerConfig'
-// rAF-based game loop — no useInterval needed
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
-import { Shield, BookOpen, AlertTriangle, Heart, Target, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { calculateXP } from '@/lib/games/xp'
+import { Shield, BookOpen, AlertTriangle, Target, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react'
 
 export type StormCastleTowerGameResult = {
   xp: number
@@ -35,14 +36,15 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
   const [gameState, setGameState] = useState<StormCastleTowerState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<StormCastleTowerGameResult | null>(null)
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal')
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('medium')
   const [selectedGuard, setSelectedGuard] = useState<GuardType>('alert-sentry')
   const hasReportedRef = useRef(false)
   const lastHazardRef = useRef(0)
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
 
-  const containerRef = useRef<HTMLDivElement>(null)
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize } = useAccessibilitySettings()
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
@@ -90,7 +92,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [])
+  }, [containerRef])
 
   useEffect(() => {
     if (gamePhase !== 'playing') return
@@ -122,17 +124,26 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
   }, [gamePhase])
 
   useEffect(() => {
+    if (gamePhase === 'playing') {
+      enterFullscreen()
+    } else if (gamePhase === 'ended') {
+      exitFullscreen()
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen])
+
+  useEffect(() => {
     if (gameState?.phase === 'victory' || gameState?.phase === 'defeat') {
       if (gamePhase !== 'ended') {
-        const accuracy = gameState.totalAttempts > 0
-          ? gameState.correctWords / gameState.totalAttempts
-          : 0
-        const xp = Math.min(10, Math.floor(gameState.correctWords * STORM_CASTLE_TOWER_CONFIG.xp.perCorrectWord + accuracy * STORM_CASTLE_TOWER_CONFIG.xp.accuracyBonus))
+        const correctWords = gameState!.correctWords
+        const totalAttempts = gameState!.totalAttempts
+        const accuracy = totalAttempts > 0 ? correctWords / totalAttempts : 0
+        const xp = calculateXP(correctWords, correctWords, totalAttempts)
         setResults({ xp, accuracy })
         setGamePhase('ended')
       }
     }
-  }, [gameState?.phase, gamePhase, gameState])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState?.phase, gamePhase])
 
   useEffect(() => {
     if (gamePhase === 'ended' && results && !hasReportedRef.current) {
@@ -147,22 +158,20 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
   }, [dimensions])
 
   const handleMove = useCallback((direction: 'up' | 'down' | 'left' | 'right') => {
-    if (gameState && gameState.phase === 'playing' && gamePhase === 'playing') {
-      setGameState(prevState => {
-        if (!prevState || prevState.phase !== 'playing') return prevState
-        return movePlayer(prevState, direction)
-      })
-    }
-  }, [gameState, gamePhase])
+    if (gamePhase !== 'playing') return
+    setGameState(prevState => {
+      if (!prevState || prevState.phase !== 'playing') return prevState
+      return movePlayer(prevState, direction)
+    })
+  }, [gamePhase])
 
   const handleCollect = useCallback(() => {
-    if (gameState && gameState.phase === 'playing' && gamePhase === 'playing') {
-      setGameState(prevState => {
-        if (!prevState || prevState.phase !== 'playing') return prevState
-        return collectWindow(prevState)
-      })
-    }
-  }, [gameState, gamePhase])
+    if (gamePhase !== 'playing') return
+    setGameState(prevState => {
+      if (!prevState || prevState.phase !== 'playing') return prevState
+      return collectWindow(prevState)
+    })
+  }, [gamePhase])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -229,7 +238,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
               >
                 <option value="easy">Squire&apos;s Tower (4 words)</option>
-                <option value="normal">Knight&apos;s Keep (5 words)</option>
+                <option value="medium">Knight&apos;s Keep (5 words)</option>
                 <option value="hard">Lord&apos;s Citadel (6 words)</option>
               </select>
             </div>
@@ -309,7 +318,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
               x={10}
               y={15}
               text={gameState.sentence.translation}
-              fontSize={14}
+              fontSize={getEffectiveTextSize(16)}
               fill="#94a3b8"
               width={STORM_CASTLE_TOWER_CONFIG.gameWidth - 20}
               align="center"
@@ -319,7 +328,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
               x={10}
               y={70}
               text={`Target: ${targetWord}`}
-              fontSize={16}
+              fontSize={getEffectiveTextSize(18)}
               fill="#fbbf24"
               width={STORM_CASTLE_TOWER_CONFIG.gameWidth - 20}
               align="center"
@@ -336,9 +345,9 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
               />
               <Text
                 x={15}
-                y={17}
+                y={15}
                 text={`Lives: ${gameState.player.lives}`}
-                fontSize={14}
+                fontSize={getEffectiveTextSize(16)}
                 fill="#f87171"
               />
             </Group>
@@ -364,12 +373,12 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
                   />
                   {win.state === 'open' && (
                     <Text
-                      x={pos.x - 25}
-                      y={pos.y - 6}
+                      x={pos.x - 30}
+                      y={pos.y - 8}
                       text={win.word}
-                      fontSize={11}
+                      fontSize={getEffectiveTextSize(16)}
                       fill={isTarget ? '#fef3c7' : '#e2e8f0'}
-                      width={50}
+                      width={60}
                       align="center"
                     />
                   )}

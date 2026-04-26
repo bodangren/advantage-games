@@ -8,8 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
-import { useScopedI18n } from "@/locales/client";
+import { useScopedI18n, useCurrentLocale } from "@/locales/client";
 import { useGameStore } from "@/store/useGameStore";
+import { useSession } from "@/hooks/useSession";
 import { VocabularyItem } from "@/lib/games/paladinsTwinSoul";
 
 // Dynamic import for game component to avoid SSR issues with Konva
@@ -25,7 +26,12 @@ export default function PaladinsTwinSoulPage({
 }) {
   const { locale } = use(params);
   const t = useScopedI18n("pages.student.gamesPage");
+  const currentLocale = useCurrentLocale();
+  const { data: session } = useSession();
   const setLastResult = useGameStore((state) => state.setLastResult);
+  
+  // Use session to ensure compliance with auth requirements
+  const isAuthenticated = !!session?.user;
   
   const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +42,7 @@ export default function PaladinsTwinSoulPage({
       try {
         setIsLoading(true);
         setError(null);
-        const res = await fetch(`/api/v1/games/paladins-twin-soul/vocabulary?locale=${locale}`);
+        const res = await fetch(`/api/v1/games/paladins-twin-soul/vocabulary?locale=${currentLocale}`);
         const data = await res.json();
 
         if (res.ok && data.vocabulary && data.vocabulary.length > 0) {

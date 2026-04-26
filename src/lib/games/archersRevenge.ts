@@ -125,7 +125,7 @@ const createEnemyFormation = (
 
 export const createArchersRevengeState = (
   vocabulary: VocabularyItem[],
-  { difficulty = "normal", rng = Math.random }: ArchersRevengeConfig = {}
+  { difficulty = "medium", rng = Math.random }: ArchersRevengeConfig = {}
 ): ArchersRevengeState => {
   if (vocabulary.length === 0) {
     throw new Error("Vocabulary cannot be empty");
@@ -366,5 +366,8 @@ const nextWave = (state: ArchersRevengeState): ArchersRevengeState => {
 export const calculateXP = (state: ArchersRevengeState): number => {
   const baseXP = state.score / 10;
   const accuracy = state.totalAttempts > 0 ? state.correctAnswers / state.totalAttempts : 0;
-  return Math.floor(baseXP * (0.5 + accuracy));
+  const speedBonus = Math.max(0, 1 - state.gameTime / 60000);
+  const survivalBonus = state.hp / state.maxHp;
+  const rawXP = Math.floor(baseXP * (0.5 + accuracy) + speedBonus * 5 + survivalBonus * 5);
+  return Math.max(1, Math.min(10, rawXP));
 };

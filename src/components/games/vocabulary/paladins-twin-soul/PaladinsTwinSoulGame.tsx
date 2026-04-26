@@ -5,15 +5,18 @@ import { Stage, Layer, Rect, Text, Circle, Group, Line } from "react-konva";
 import {
   createPaladinsTwinSoulState,
   tickPaladinsTwinSoul,
+  calculateXP,
   type PaladinsTwinSoulState,
   type VocabularyItem,
 } from "@/lib/games/paladinsTwinSoul";
 import { GAME_WIDTH, GAME_HEIGHT, PALADINS_TWIN_SOUL_CONFIG } from "@/lib/games/paladinsTwinSoulConfig";
 import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
-import { Sword, Shield, Heart, Target, Zap } from "lucide-react";
+import { Sword, Shield, Heart, Target } from "lucide-react";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
 import { useSound } from "@/hooks/useSound";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
+import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 import { VirtualDPad } from "@/components/ui/VirtualDPad";
 
 interface PaladinsTwinSoulGameProps {
@@ -22,12 +25,13 @@ interface PaladinsTwinSoulGameProps {
 }
 
 export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSoulGameProps) {
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
+  const { getEffectiveTextSize } = useAccessibilitySettings();
   const [gameState, setGameState] = useState<PaladinsTwinSoulState | null>(null);
   const [gamePhase, setGamePhase] = useState<"start" | "playing" | "ended">("start");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "normal" | "hard" | "extreme">("normal");
+  const [selectedDifficulty] = useState<"easy" | "medium" | "hard">("medium");
   const [dpadVelocity, setDpadVelocity] = useState({ x: 0, y: 0 });
   
-  const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const lastFrameRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
@@ -68,10 +72,11 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
     updateDimensions();
 
     return () => observer.disconnect();
-  }, []);
+  }, [containerRef]);
 
+  const hasGameState = !!gameState;
   useEffect(() => {
-    if (gamePhase !== "playing" || !gameState) return;
+    if (gamePhase !== "playing" || !hasGameState) return;
 
     const loop = (timestamp: number) => {
       const delta = lastFrameRef.current ? timestamp - lastFrameRef.current : 16;
@@ -91,7 +96,15 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
       cancelAnimationFrame(rafRef.current);
       lastFrameRef.current = 0;
     };
-  }, [gamePhase, velocity.x, !!gameState]);
+  }, [gamePhase, velocity.x, hasGameState]);
+
+  useEffect(() => {
+    if (gamePhase === "playing") {
+      enterFullscreen();
+    } else {
+      exitFullscreen();
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen]);
 
   useEffect(() => {
     if (gameState?.status === "victory" || gameState?.status === "defeat") {
@@ -101,27 +114,37 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
     }
   }, [gameState?.status, playSound]);
 
+  const playerHp = gameState?.player.hp;
   const prevHp = useRef(3);
   useEffect(() => {
-    if (gameState && gameState.player.hp < prevHp.current) {
+    if (playerHp !== undefined && playerHp < prevHp.current) {
       playSound("error");
-      prevHp.current = gameState.player.hp;
+      prevHp.current = playerHp;
     }
-  }, [gameState?.player.hp, playSound]);
+  }, [playerHp, playSound]);
 
+  const wave = gameState?.wave;
   const prevWave = useRef(1);
   useEffect(() => {
-    if (gameState && gameState.wave > prevWave.current) {
+    if (wave !== undefined && wave > prevWave.current) {
       playSound("success");
-      prevWave.current = gameState.wave;
+      prevWave.current = wave;
     }
-  }, [gameState?.wave, playSound]);
+  }, [wave, playSound]);
 
   useEffect(() => {
     if (gamePhase === "ended" && gameState && !hasReportedRef.current) {
       hasReportedRef.current = true;
-      const accuracy = 1.0; 
-      const xp = Math.min(10, gameState.targetWordIndex + 2);
+      const accuracy = gameState.totalAttempts > 0
+        ? gameState.correctAnswers / gameState.totalAttempts
+        : 0;
+      const xp = calculateXP({
+        correctWords: gameState.correctAnswers,
+        totalAttempts: gameState.totalAttempts,
+        lives: gameState.player.hp,
+        initialLives: gameState.player.maxHp,
+        gameTime: gameState.gameTime,
+      });
       onComplete?.({ xp, accuracy });
     }
   }, [gamePhase, gameState, onComplete]);
@@ -185,7 +208,7 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
                   x={GAME_WIDTH / 2}
                   y={12}
                   text={currentTarget?.translation || ""}
-                  fontSize={18}
+                  fontSize={getEffectiveTextSize(18)}
                   fill="#fbbf24"
                   align="center"
                   width={GAME_WIDTH}
@@ -226,7 +249,7 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
                       x={-40}
                       y={20}
                       text={enemy.term}
-                      fontSize={12}
+                      fontSize={getEffectiveTextSize(16)}
                       fill="white"
                       align="center"
                       width={80}
@@ -287,12 +310,12 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
               {/* HUD Stats */}
               <Group y={20}>
                 <Group x={30} y={0}>
-                  <Text text={`WAVE ${gameState.wave}`} fill="white" fontSize={14} opacity={0.7} />
-                  <Text y={20} text={`Score: ${gameState.score}`} fill="#22c55e" fontSize={18} fontStyle="bold" />
+                  <Text text={`WAVE ${gameState.wave}`} fill="white" fontSize={getEffectiveTextSize(16)} opacity={0.7} />
+                  <Text y={20} text={`Score: ${gameState.score}`} fill="#22c55e" fontSize={getEffectiveTextSize(18)} fontStyle="bold" />
                 </Group>
                 <Group x={GAME_WIDTH - 80} y={0}>
-                  <Text text="HP" fill="#ef4444" fontSize={14} opacity={0.7} />
-                  <Text y={20} text={gameState.player.hp.toString()} fill="#ef4444" fontSize={24} fontStyle="bold" />
+                  <Text text="HP" fill="#ef4444" fontSize={getEffectiveTextSize(16)} opacity={0.7} />
+                  <Text y={20} text={gameState.player.hp.toString()} fill="#ef4444" fontSize={getEffectiveTextSize(24)} fontStyle="bold" />
                 </Group>
               </Group>
             </Layer>
@@ -311,8 +334,14 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
           title={gameState.status === "victory" ? "Defense Successful!" : "Realm Overrun!"}
           subtitle={gameState.status === "victory" ? "The gargoyles have been repelled." : "The twin souls have been lost."}
           score={gameState.score}
-          xp={Math.min(10, gameState.targetWordIndex + 2)}
-          accuracy={1.0}
+          xp={calculateXP({
+            correctWords: gameState.correctAnswers,
+            totalAttempts: gameState.totalAttempts,
+            lives: gameState.player.hp,
+            initialLives: gameState.player.maxHp,
+            gameTime: gameState.gameTime,
+          })}
+          accuracy={gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0}
           onRestart={() => {
             setGamePhase("start");
             setGameState(null);

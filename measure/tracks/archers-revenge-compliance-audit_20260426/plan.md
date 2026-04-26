@@ -1,12 +1,12 @@
 # Implementation Plan: Archer's Revenge Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (ArchersRevengeGame.tsx, archersRevenge.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/archersRevenge.ts' --collectCoverageFrom='src/components/games/vocabulary/archers-revenge/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/vocabulary/archers-revenge/ArchersRevengeGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
-- [ ] Task: Measure - User Manual Verification 'Phase 1'
+- [~] Task: Read game source files (ArchersRevengeGame.tsx, archersRevenge.ts, page.tsx, API routes).
+- [~] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/archersRevenge.ts' --collectCoverageFrom='src/components/games/vocabulary/archers-revenge/**/*.tsx'`).
+- [~] Task: Record lint status (`npm run lint -- --file src/components/games/vocabulary/archers-revenge/ArchersRevengeGame.tsx`).
+- [~] Task: Check game registry entry in `src/lib/gameCards.ts`.
+- [~] Task: Verify asset and cover image existence.
+- [~] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit
 - [ ] Task: Verify React-Konva usage in ArchersRevengeGame.tsx.

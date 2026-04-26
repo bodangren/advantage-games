@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
-import { useScopedI18n } from "@/locales/client";
+import { useScopedI18n, useCurrentLocale } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import { useGameStore } from "@/store/useGameStore";
 import { SentenceItem } from "@/lib/games/realmCarver";
 
@@ -25,6 +26,8 @@ export default function RealmCarverPage({
 }) {
   const { locale } = use(params);
   const t = useScopedI18n("pages.student.gamesPage");
+  const currentLocale = useCurrentLocale();
+  const { data: session } = useSession();
   const setLastResult = useGameStore((state) => state.setLastResult);
   
   const [sentences, setSentences] = useState<SentenceItem[]>([]);

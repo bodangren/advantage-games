@@ -17,12 +17,13 @@ import { ARCHERS_REVENGE_CONFIG } from "@/lib/games/archersRevengeConfig";
 import type { VocabularyItem, Difficulty } from "@/store/useGameStore";
 import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
+import { useGameFullscreen } from "@/hooks/useGameFullscreen";
+import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 import { Target, Shield, Zap, Sword, Heart, Clock, Award } from "lucide-react";
 
 type ArchersRevengeGameProps = {
   vocabulary: VocabularyItem[];
   onComplete?: (results: ArchersRevengeResults) => void;
-  onRestart?: () => void;
 };
 
 export function ArchersRevengeGame({
@@ -31,9 +32,10 @@ export function ArchersRevengeGame({
 }: ArchersRevengeGameProps) {
   const [gameState, setGameState] = useState<ArchersRevengeState | null>(null);
   const [gamePhase, setGamePhase] = useState<"start" | "playing" | "ended">("start");
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("normal");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>("medium");
   
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
+  const { getEffectiveTextSize } = useAccessibilitySettings();
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const lastFrameRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
@@ -65,7 +67,15 @@ export function ArchersRevengeGame({
     updateDimensions();
 
     return () => observer.disconnect();
-  }, []);
+  }, [containerRef]);
+
+  useEffect(() => {
+    if (gamePhase === "playing") {
+      enterFullscreen();
+    } else {
+      exitFullscreen();
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen]);
 
   useEffect(() => {
     if (gamePhase !== "playing") return;
@@ -94,7 +104,7 @@ export function ArchersRevengeGame({
     if (gameState?.status === "defeat") {
       setGamePhase("ended");
     }
-  }, [gameState?.status]);
+  }, [gameState?.status, setGamePhase]);
 
   useEffect(() => {
     if (gamePhase === "ended" && gameState && !hasReportedRef.current) {
@@ -152,13 +162,13 @@ export function ArchersRevengeGame({
           onStart={startGame}
         >
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-slate-400">Difficulty:</span>
+            <span className="text-sm font-medium text-slate-400" style={{ fontSize: getEffectiveTextSize(16) }}>Difficulty:</span>
             <div className="flex gap-2">
-              {(["easy", "normal", "hard", "extreme"] as Difficulty[]).map((d) => (
+              {(["easy", "medium", "hard"] as Difficulty[]).map((d) => (
                 <button
                   key={d}
                   onClick={() => setSelectedDifficulty(d)}
-                  className={`rounded-lg px-3 py-1 text-xs font-bold uppercase tracking-wider transition-colors ${
+                  className={`rounded-lg px-4 py-2 text-sm font-bold uppercase tracking-wider transition-colors min-h-[44px] min-w-[44px] ${
                     selectedDifficulty === d
                       ? "bg-amber-500 text-white"
                       : "bg-slate-800 text-slate-400 hover:bg-slate-700"
@@ -206,7 +216,7 @@ export function ArchersRevengeGame({
                   x={GAME_WIDTH / 2}
                   y={55}
                   text="Target Translation"
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="#94a3b8"
                   align="center"
                   width={GAME_WIDTH}
@@ -239,7 +249,7 @@ export function ArchersRevengeGame({
                     x={-40}
                     y={25}
                     text={enemy.translation}
-                    fontSize={14}
+                    fontSize={getEffectiveTextSize(16)}
                     fontStyle="bold"
                     fill="white"
                     width={80}

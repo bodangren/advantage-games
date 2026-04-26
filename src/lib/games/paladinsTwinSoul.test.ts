@@ -1,4 +1,4 @@
-import { createPaladinsTwinSoulState, tickPaladinsTwinSoul } from "./paladinsTwinSoul";
+import { createPaladinsTwinSoulState, tickPaladinsTwinSoul, calculateXP } from "./paladinsTwinSoul";
 import { GAME_WIDTH, PALADINS_TWIN_SOUL_CONFIG } from "./paladinsTwinSoulConfig";
 
 describe("paladinsTwinSoul logic", () => {
@@ -192,6 +192,43 @@ describe("paladinsTwinSoul logic", () => {
       expect(state.wave).toBe(2);
       expect(state.targetWordIndex).toBe(1);
       expect(state.enemies.length).toBeGreaterThan(0);
+      expect(state.correctAnswers).toBe(1);
+      expect(state.totalAttempts).toBe(1);
+    });
+  });
+
+  describe("calculateXP", () => {
+    it("returns 0 when no attempts", () => {
+      const xp = calculateXP({ correctWords: 0, totalAttempts: 0, lives: 3, initialLives: 3, gameTime: 0 });
+      expect(xp).toBe(0);
+    });
+
+    it("calculates base XP from correct words", () => {
+      const xp = calculateXP({ correctWords: 5, totalAttempts: 5, lives: 3, initialLives: 3, gameTime: 60000 });
+      expect(xp).toBe(8); // 5 base + 2 perfect accuracy + 1 survival
+    });
+
+    it("adds perfect accuracy bonus", () => {
+      const xpWithoutBonus = calculateXP({ correctWords: 3, totalAttempts: 4, lives: 3, initialLives: 3, gameTime: 60000 });
+      const xpWithBonus = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 3, initialLives: 3, gameTime: 60000 });
+      expect(xpWithBonus).toBe(xpWithoutBonus + 2);
+    });
+
+    it("adds survival bonus for >= 50% health", () => {
+      const xpLowHealth = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 1, initialLives: 3, gameTime: 60000 });
+      const xpHighHealth = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 2, initialLives: 3, gameTime: 60000 });
+      expect(xpHighHealth).toBe(xpLowHealth + 1);
+    });
+
+    it("adds speed bonus for under 30s", () => {
+      const xpSlow = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 3, initialLives: 3, gameTime: 60000 });
+      const xpFast = calculateXP({ correctWords: 3, totalAttempts: 3, lives: 3, initialLives: 3, gameTime: 10000 });
+      expect(xpFast).toBe(xpSlow + 1);
+    });
+
+    it("caps XP at 10", () => {
+      const xp = calculateXP({ correctWords: 15, totalAttempts: 15, lives: 3, initialLives: 3, gameTime: 10000 });
+      expect(xp).toBe(10);
     });
   });
 });

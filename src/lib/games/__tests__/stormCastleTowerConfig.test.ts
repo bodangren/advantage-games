@@ -40,11 +40,16 @@ describe('stormCastleTowerConfig', () => {
       expect(config.hazardSpeedMult).toBe(0.7)
     })
 
-    it('should return normal config', () => {
-      const config = getDifficultyConfig('normal')
+    it('should return medium config', () => {
+      const config = getDifficultyConfig('medium')
       expect(config.name).toBe("Knight's Keep")
       expect(config.wordCount).toBe(5)
       expect(config.hazardSpeedMult).toBe(1.0)
+    })
+
+    it('should return medium for undefined difficulty', () => {
+      const config = getDifficultyConfig(undefined as StormCastleTowerDifficulty)
+      expect(config.name).toBe("Knight's Keep")
     })
 
     it('should return hard config', () => {
@@ -52,11 +57,6 @@ describe('stormCastleTowerConfig', () => {
       expect(config.name).toBe("Lord's Citadel")
       expect(config.wordCount).toBe(6)
       expect(config.hazardSpeedMult).toBe(1.3)
-    })
-
-    it('should return normal for undefined difficulty', () => {
-      const config = getDifficultyConfig(undefined as StormCastleTowerDifficulty)
-      expect(config.name).toBe("Knight's Keep")
     })
   })
 

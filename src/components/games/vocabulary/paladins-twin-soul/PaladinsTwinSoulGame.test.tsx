@@ -16,6 +16,21 @@ jest.mock("@/hooks/useSound", () => ({
   useSound: jest.fn(() => ({ playSound: jest.fn() })),
 }));
 
+jest.mock("@/hooks/useGameFullscreen", () => ({
+  useGameFullscreen: jest.fn(() => ({
+    containerRef: { current: null },
+    enterFullscreen: jest.fn(),
+    exitFullscreen: jest.fn(),
+  })),
+}));
+
+jest.mock("@/hooks/useAccessibilitySettings", () => ({
+  useAccessibilitySettings: jest.fn(() => ({
+    getEffectiveTextSize: jest.fn((size: number) => size),
+    getEffectiveTouchTarget: jest.fn((size: number) => size),
+  })),
+}));
+
 jest.mock("react-konva", () => ({
   Stage: ({ children }: { children: React.ReactNode }) => <div data-testid="konva-stage">{children}</div>,
   Layer: ({ children }: { children: React.ReactNode }) => <div data-testid="konva-layer">{children}</div>,

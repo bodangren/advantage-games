@@ -1,12 +1,12 @@
 # Implementation Plan: Paladin's Twin-Soul Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (PaladinsTwinSoulGame.tsx, paladinsTwinSoul.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/paladinsTwinSoul.ts' --collectCoverageFrom='src/components/games/vocabulary/paladins-twin-soul/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
-- [ ] Task: Measure - User Manual Verification 'Phase 1'
+- [x] Task: Read game source files (PaladinsTwinSoulGame.tsx, paladinsTwinSoul.ts, page.tsx, API routes).
+- [x] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/paladinsTwinSoul.ts' --collectCoverageFrom='src/components/games/vocabulary/paladins-twin-soul/**/*.tsx'`).
+- [x] Task: Record lint status (`npm run lint -- --file src/components/games/vocabulary/paladins-twin-soul/PaladinsTwinSoulGame.tsx`).
+- [x] Task: Check game registry entry in `src/lib/gameCards.ts`.
+- [x] Task: Verify asset and cover image existence.
+- [x] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit
 - [ ] Task: Verify React-Konva usage in PaladinsTwinSoulGame.tsx.

@@ -1,10 +1,6 @@
-import { NextResponse } from "next/server";
+import { createCompleteRoute } from "@/lib/games/api";
 
-export const dynamic = "force-static";
+const { POST } = createCompleteRoute();
 
-export async function POST() {
-  return NextResponse.json({
-    success: true,
-    xpEarned: 5, // Mock XP
-  });
-}
+export { POST };
+export const dynamic = "force-static" as const;

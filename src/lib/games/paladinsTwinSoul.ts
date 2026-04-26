@@ -45,6 +45,8 @@ export interface PaladinsTwinSoulState {
   waveDirection: 1 | -1;
   gameTime: number;
   difficulty: string;
+  correctAnswers: number;
+  totalAttempts: number;
 }
 
 export function createPaladinsTwinSoulState(
@@ -93,7 +95,9 @@ export function createPaladinsTwinSoulState(
     wave: 1,
     waveDirection: 1,
     gameTime: 0,
-    difficulty: options.difficulty || "normal",
+    difficulty: options.difficulty || "medium",
+    correctAnswers: 0,
+    totalAttempts: 0,
   };
 }
 
@@ -236,9 +240,13 @@ export function tickPaladinsTwinSoul(
   // Wave Progression
   let nextWave = state.wave;
   let nextTargetWordIndex = state.targetWordIndex;
+  let nextCorrectAnswers = state.correctAnswers;
+  let nextTotalAttempts = state.totalAttempts;
   if (nextEnemies.length === 0 && nextStatus === "playing") {
     nextWave += 1;
     nextTargetWordIndex += 1;
+    nextCorrectAnswers += 1;
+    nextTotalAttempts += 1;
     if (nextTargetWordIndex >= state.vocabulary.length) {
       nextStatus = "victory";
     } else {
@@ -266,5 +274,27 @@ export function tickPaladinsTwinSoul(
     wave: nextWave,
     targetWordIndex: nextTargetWordIndex,
     gameTime: currentTime,
+    correctAnswers: nextCorrectAnswers,
+    totalAttempts: nextTotalAttempts,
   };
+}
+
+export function calculateXP(params: {
+  correctWords: number;
+  totalAttempts: number;
+  lives: number;
+  initialLives: number;
+  gameTime: number;
+}): number {
+  if (params.totalAttempts === 0) return 0;
+
+  const accuracy = params.correctWords / params.totalAttempts;
+  const baseXP = params.correctWords;
+
+  let bonus = 0;
+  if (accuracy === 1) bonus += 2; // Perfect accuracy bonus
+  if (params.lives / params.initialLives >= 0.5) bonus += 1; // Survival bonus
+  if (params.gameTime < 30000) bonus += 1; // Speed bonus (under 30s)
+
+  return Math.min(10, baseXP + bonus);
 }

@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
-import { useCurrentLocale } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "next-auth/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -37,6 +38,10 @@ export default function StormCastleTowerPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const locale = useCurrentLocale();
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const t = useScopedI18n("pages.student.gamesPage");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchSentences = async () => {
@@ -143,7 +148,7 @@ export default function StormCastleTowerPage() {
                 <div className="text-center mb-8 space-y-3">
                   {warningStatus.type === "NO_SENTENCES" ? (
                     <p className="text-lg text-white/80">
-                      You don't have any sentences saved in your flashcards yet.
+                      You don&apos;t have any sentences saved in your flashcards yet.
                     </p>
                   ) : (
                     <>

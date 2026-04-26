@@ -27,8 +27,8 @@ describe("archersRevenge", () => {
     });
 
     it("should handle small vocabulary by repeating if necessary", () => {
-      // Small vocab, but normal difficulty needs 15 enemies (5x3)
-      const state = createArchersRevengeState(mockVocabulary, { difficulty: "normal" });
+      // Small vocab, but medium difficulty needs 15 enemies (5x3)
+      const state = createArchersRevengeState(mockVocabulary, { difficulty: "medium" });
       expect(state.enemies.length).toBe(15);
     });
   });
@@ -141,14 +141,28 @@ describe("archersRevenge", () => {
   });
 
   describe("calculateXP", () => {
-    it("should return XP based on score and accuracy", () => {
+    it("should return XP based on score and accuracy capped at 1-10", () => {
       const state = createArchersRevengeState(mockVocabulary);
       state.score = 1000;
       state.correctAnswers = 10;
       state.totalAttempts = 10; // 100% accuracy
       
       const xp = calculateXP(state);
-      expect(xp).toBe(Math.floor(100 * 1.5));
+      expect(xp).toBeGreaterThanOrEqual(1);
+      expect(xp).toBeLessThanOrEqual(10);
+    });
+
+    it("should return at least 1 XP for minimal performance", () => {
+      const state = createArchersRevengeState(mockVocabulary);
+      state.score = 0;
+      state.correctAnswers = 0;
+      state.totalAttempts = 0;
+      state.hp = 1;
+      state.maxHp = 5;
+      state.gameTime = 120000;
+      
+      const xp = calculateXP(state);
+      expect(xp).toBe(1);
     });
   });
 });
