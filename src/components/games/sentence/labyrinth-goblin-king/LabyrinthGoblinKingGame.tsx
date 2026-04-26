@@ -18,7 +18,9 @@ import type { GoblinType } from '@/lib/games/labyrinthGoblinKingConfig'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
-import { Skull, Heart, BookOpen, AlertTriangle, Zap, Target, Clock } from 'lucide-react'
+import { Skull, Heart, BookOpen, AlertTriangle, Zap, Target } from 'lucide-react'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 
 export type LabyrinthGoblinKingGameResult = {
   xp: number
@@ -31,6 +33,8 @@ interface LabyrinthGoblinKingGameProps {
 }
 
 export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGoblinKingGameProps) {
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize } = useAccessibilitySettings()
   const [gameState, setGameState] = useState<LabyrinthGoblinKingState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<LabyrinthGoblinKingGameResult | null>(null)
@@ -41,7 +45,6 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
 
-  const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
@@ -88,7 +91,7 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [])
+  }, [containerRef])
 
   useEffect(() => {
     if (gamePhase !== 'playing') return
@@ -112,17 +115,30 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
   }, [gamePhase])
 
   useEffect(() => {
-    if (gameState?.status === 'victory' || gameState?.status === 'defeat') {
+    if (gamePhase === 'playing') {
+      enterFullscreen()
+    } else if (gamePhase === 'ended' || gamePhase === 'start') {
+      exitFullscreen()
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen])
+
+  const gameStatus = gameState?.status
+  const correctAnswers = gameState?.correctAnswers ?? 0
+  const wrongAnswers = gameState?.wrongAnswers ?? 0
+  const goblinsEaten = gameState?.goblinsEaten ?? 0
+
+  useEffect(() => {
+    if (gameStatus === 'victory' || gameStatus === 'defeat') {
       if (gamePhase !== 'ended') {
-        const accuracy = gameState.correctAnswers + gameState.wrongAnswers > 0
-          ? gameState.correctAnswers / (gameState.correctAnswers + gameState.wrongAnswers)
+        const accuracy = correctAnswers + wrongAnswers > 0
+          ? correctAnswers / (correctAnswers + wrongAnswers)
           : 0
-        const xp = calculateLabyrinthXP(gameState)
+        const xp = calculateLabyrinthXP({ correctAnswers, wrongAnswers, goblinsEaten } as unknown as LabyrinthGoblinKingState)
         setResults({ xp, accuracy })
         setGamePhase('ended')
       }
     }
-  }, [gameState?.status, gamePhase, gameState])
+  }, [gameStatus, gamePhase, correctAnswers, wrongAnswers, goblinsEaten])
 
   useEffect(() => {
     if (gamePhase === 'ended' && results && !hasReportedRef.current) {
@@ -152,7 +168,7 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
       else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') inputRef.current = { dx: 0, dy: 1 }
     }
 
-    const handleKeyUp = (_e: KeyboardEvent) => {
+    const handleKeyUp = () => {
       // Don't clear input on keyup — Pac-Man style: player keeps moving in last direction
     }
 
@@ -287,9 +303,9 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
                       />
                       <Text
                         x={orb.x - 30}
-                        y={orb.y - 8}
+                        y={orb.y - 10}
                         text={orb.word}
-                        fontSize={10}
+                        fontSize={getEffectiveTextSize(16)}
                         fill="white"
                         width={60}
                         align="center"
@@ -319,9 +335,9 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
                 <Rect x={0} y={0} width={GAME_WIDTH} height={40} fill="rgba(0,0,0,0.8)" />
                 <Text
                   x={10}
-                  y={12}
+                  y={10}
                   text={gameState.currentSentence.translation}
-                  fontSize={14}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                   width={GAME_WIDTH - 20}
                 />
@@ -346,7 +362,7 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
                   x={10}
                   y={GAME_HEIGHT - 30}
                   text={`Words: ${gameState.collectedWords.length}/${gameState.wordOrbs.length} | Goblins Eaten: ${gameState.goblinsEaten}`}
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                 />
               </Group>
