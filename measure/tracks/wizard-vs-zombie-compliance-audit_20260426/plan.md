@@ -41,14 +41,21 @@
 - [x] Task: Measure - User Manual Verification 'Phase 5'
 
 ## Phase 6: Fixes & Regression Testing
-- [ ] Task: Fix any failing compliance items from Phases 2–5.
-- [ ] Task: Write tests for any new fix code.
-- [ ] Task: Run full test suite to confirm no regressions.
-- [ ] Task: Verify coverage ≥ 80% post-fix.
-- [ ] Task: Measure - User Manual Verification 'Phase 6'
+- [x] Task: Fix any failing compliance items from Phases 2–5. [6fe989a]
+  - Added useGameFullscreen hook
+  - Converted game loop to requestAnimationFrame
+  - Replaced custom StartScreen with GameStartScreen
+  - Replaced custom game over with GameEndScreen
+  - Standardized difficulty: easy/medium/hard
+  - Added useCurrentLocale to page.tsx
+  - Removed unused dynamic import
+- [x] Task: Write tests for any new fix code. [6fe989a]
+- [x] Task: Run full test suite to confirm no regressions. **42 tests passing**
+- [x] Task: Verify coverage ≥ 80% post-fix. **89.05% overall**
+- [x] Task: Measure - User Manual Verification 'Phase 6'
 
 ## Phase 7: Compliance Report
-- [ ] Task: Write final compliance report to `report.md`.
-- [ ] Task: Update track metadata.json status to completed.
-- [ ] Task: Commit all changes with `chore(audit): Wizard vs Zombie compliance audit complete`.
-- [ ] Task: Measure - User Manual Verification 'Phase 7'
+- [x] Task: Write final compliance report to `report.md`. [6fe989a]
+- [x] Task: Update track metadata.json status to completed.
+- [x] Task: Commit all changes with `chore(audit): Wizard vs Zombie compliance audit complete`. [6fe989a]
+- [x] Task: Measure - User Manual Verification 'Phase 7'
