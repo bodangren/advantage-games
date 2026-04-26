@@ -35,15 +35,16 @@
 
 ---
 
-## Track: Sorcerer Ziggurat Compliance Audit (2026-04-26)
+## Track: Labyrinth of the Goblin King Compliance Audit (2026-04-26)
 
 ### Summary
-- Audited sorcerer-ziggurat against 25 shared game specifications
-- Result: 0/25 passing — game is not yet implemented
-- Only registry entry (status: `coming-soon`) and cover image exist
-- Recommendation: create implementation track before next audit
+- Audited labyrinth-goblin-king against 25 shared game specifications
+- Result: 25/25 passing after fixes (20 passing at start, 5 failures)
+- Fixes: useGameFullscreen, useAccessibilitySettings, text sizes, hook deps, i18n/session, unused imports, component tests
+- Final coverage: 87.71% overall (logic 85.57%, component 91.04%)
 
 ### Key Learnings
-- Auditing a non-existent game is fast but yields zero actionable code fixes
-- `coming-soon` status in gameCards.ts is a reliable indicator of missing implementation
-- Compliance audits should be scheduled AFTER implementation tracks complete
+- `gameState` object in effect deps causes excessive re-renders; destructure primitives before useEffect
+- Konva Text fontSize must be ≥ 16px; use `getEffectiveTextSize(base)` for accessibility scaling
+- Adding component tests raises coverage dramatically (0% → 91%)
+- Empty asset directories satisfy directory-structure compliance for games without custom sprites

@@ -36,12 +36,16 @@
 
 ---
 
-## Sorcerer Ziggurat Compliance Audit (2026-04-26)
+## Labyrinth of the Goblin King Compliance Audit (2026-04-26)
 
 ### Resolved
-- None — game not yet implemented
+- Missing useGameFullscreen — integrated with enter/exit on phase changes
+- Missing useAccessibilitySettings — added text scaling via getEffectiveTextSize
+- Text size below 16px — increased Konva Text fontSize from 10/12/14 to 16px base
+- Unstable hook deps — removed gameState object from effect deps, destructured primitives
+- Unused imports/variables — removed Clock import, fixed _e parameter
+- Missing i18n/session hooks — added useScopedI18n and useSession to page.tsx
+- Component test coverage — wrote LabyrinthGoblinKingGame.test.tsx (13 tests, 0% → 91.04%)
 
 ### Remaining
-- Entire game implementation missing (component, logic, page, API, assets)
-- Registry status should change from `coming-soon` to `playable` after implementation
-- Recommend creating implementation track using vocab-game-builder skill
+- None
