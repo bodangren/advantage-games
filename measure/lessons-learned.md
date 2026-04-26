@@ -32,17 +32,16 @@
 
 ---
 
-## Track: Griffin Riders Escape Compliance Audit (2026-04-26)
+## Track: Gryphon Patrol Compliance Audit (2026-04-26)
 
 ### Summary
-- Audited griffin-riders-escape against 25 shared game specifications
-- Result: 24/25 passing after fixes (14 passing at start, 11 failures)
-- Fixes: useGameFullscreen, useAccessibilitySettings, text sizes, calculateXP, difficulty tiers, hook deps, i18n/session, cover image
-- Final coverage: 87.99% overall (logic 98.44%, component 79.11%)
+- Audited gryphon-patrol against 25 shared game specifications
+- Result: 22/25 passing after fixes (14 passing at start, 11 failures)
+- Fixes: rAF game loop, useGameFullscreen, useAccessibilitySettings, text sizes, calculateXP, difficulty tiers, hook deps, i18n/session, component tests, assets
+- Final coverage: 89.9% overall (logic 98.25%, component 81.89%)
 
 ### Key Learnings
-- Game loops should avoid `gameState` in effect deps; use functional setState or refs
-- `useGameFullscreen` integration pattern: enter on 'playing', exit on 'ended'/'start'
-- Accessibility text scaling via `getEffectiveTextSize(base)` preserves base layout
-- Difficulty naming inconsistency (`normal` vs `medium`) is easy to miss in config objects
-- Cover image absence is a common compliance gap for games with existing assets
+- setInterval(16ms) game loops must be refactored to requestAnimationFrame + delta clamping
+- Mocking `containerRef` with stable object prevents infinite resize loops in tests
+- Adding 8 component tests raises coverage from 0% to ~82% with minimal effort
+- Difficulty 'normal' → 'medium' rename must touch type, state default, and all UI arrays

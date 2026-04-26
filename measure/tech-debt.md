@@ -24,4 +24,6 @@
 
 **Labyrinth Goblin King (2026-04-26):** Resolved fullscreen, accessibility, text sizes, hook deps, unused imports, i18n/session, component tests. Remaining: none.
 
+**Gryphon Patrol (2026-04-26):** Resolved rAF game loop, fullscreen, accessibility, text sizes, calculateXP, difficulty naming, hook deps, i18n/session, component tests, assets. Remaining: difficulty presets not yet wired to logic, VocabularyItem[] vs SentenceItem[] naming.
+
 **Griffin Riders Escape (2026-04-26):** Resolved fullscreen, accessibility, text sizes, calculateXP, difficulty naming, hook deps, i18n/session, cover image. Remaining: VocabularyItem[] vs SentenceItem[] naming only.
