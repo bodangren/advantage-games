@@ -48,7 +48,7 @@
 - [x] Task: Measure - User Manual Verification 'Phase 6'
 
 ## Phase 7: Compliance Report
-- [x] Task: Write final compliance report to `report.md`.
-- [x] Task: Update track metadata.json status to completed.
-- [x] Task: Commit all changes with `chore(audit): The Abyssal Well compliance audit complete`.
-- [x] Task: Measure - User Manual Verification 'Phase 7'
+- [x] Task: Write final compliance report to `report.md`. [46ba897]
+- [x] Task: Update track metadata.json status to completed. [46ba897]
+- [x] Task: Commit all changes with `chore(audit): The Abyssal Well compliance audit complete`. [46ba897]
+- [x] Task: Measure - User Manual Verification 'Phase 7' [46ba897]
