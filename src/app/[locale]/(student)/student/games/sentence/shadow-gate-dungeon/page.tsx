@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
-import { useCurrentLocale } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -28,6 +29,8 @@ type WarningStatus = {
 };
 
 export default function ShadowGateDungeonPage() {
+  const t = useScopedI18n("pages.student.gamesPage.shadowGateDungeon");
+  const { data: session } = useSession();
   const [sentences, setSentences] = useState<
     { term: string; translation: string }[]
   >([]);

@@ -1,11 +1,11 @@
 # Implementation Plan: Rune Forge Chamber Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (RuneForgeChamberGame.tsx, runeForgeChamber.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/runeForgeChamber.ts' --collectCoverageFrom='src/components/games/sentence/rune-forge-chamber/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/rune-forge-chamber/RuneForgeChamberGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
+- [~] Task: Read game source files (RuneForgeChamberGame.tsx, runeForgeChamber.ts, page.tsx, API routes).
+- [~] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/runeForgeChamber.ts' --collectCoverageFrom='src/components/games/sentence/rune-forge-chamber/**/*.tsx'`).
+- [~] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/rune-forge-chamber/RuneForgeChamberGame.tsx`).
+- [~] Task: Check game registry entry in `src/lib/gameCards.ts`.
+- [~] Task: Verify asset and cover image existence.
 - [ ] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit

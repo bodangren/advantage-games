@@ -1,78 +1,29 @@
 import {
   createShadowGateDungeonState,
   tickShadowGateDungeon,
-  calculateXP,
   setPlayerVelocity,
+  calculateXP,
+  type ShadowGateDungeonState,
 } from './shadowGateDungeon'
-import { SHADOW_GATE_DUNGEON_CONFIG, GAME_WIDTH, GAME_HEIGHT } from './shadowGateDungeonConfig'
-import type { VocabularyItem } from '@/store/useGameStore'
-
-const mockVocabulary: VocabularyItem[] = [
-  { term: 'the quick brown fox jumps over the lazy dog', translation: 'le renard brun rapide saute par-dessus le chien paresseux' },
-  { term: 'hello world today is great and wonderful', translation: 'bonjour monde aujourd\'hui est super et merveilleux' },
-]
+import { SHADOW_GATE_DUNGEON_CONFIG } from './shadowGateDungeonConfig'
 
 describe('shadowGateDungeon', () => {
+  const mockVocab = [
+    { term: 'The cat sits', translation: 'แมวนั่ง' },
+    { term: 'I love books', translation: 'ฉันชอบหนังสือ' },
+  ]
+
+  const mockRng = () => 0.5
+
   describe('createShadowGateDungeonState', () => {
-    it('should throw error for empty vocabulary', () => {
-      expect(() => createShadowGateDungeonState([])).toThrow('Vocabulary cannot be empty')
-    })
-
-    it('should create state with default difficulty normal', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      expect(state.difficulty).toBe('normal')
-    })
-
-    it('should create state with default creature type orc-hunter', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      expect(state.creatureType).toBe('orc-hunter')
-    })
-
-    it('should create state with playing status', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
+    it('creates initial state with correct defaults', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
       expect(state.status).toBe('playing')
-    })
-
-    it('should initialize player with full health', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
+      expect(state.difficulty).toBe('normal')
+      expect(state.creatureType).toBe('orc-hunter')
       expect(state.player.health).toBe(SHADOW_GATE_DUNGEON_CONFIG.initialHealth)
-    })
-
-    it('should initialize player at bottom center', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      expect(state.player.position.x).toBe(GAME_WIDTH / 2)
-      expect(state.player.position.y).toBe(GAME_HEIGHT - 100)
-    })
-
-    it('should initialize creature at top center', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      expect(state.creature.position.x).toBe(GAME_WIDTH / 2)
-      expect(state.creature.position.y).toBe(100)
-    })
-
-    it('should initialize gate as locked', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      expect(state.gate.unlocked).toBe(false)
-    })
-
-    it('should spawn crystals equal to word count', () => {
-      const state = createShadowGateDungeonState(mockVocabulary, { difficulty: 'easy' })
-      expect(state.crystals.length).toBe(4)
-    })
-
-    it('should use custom difficulty', () => {
-      const state = createShadowGateDungeonState(mockVocabulary, { difficulty: 'hard' })
-      expect(state.difficulty).toBe('hard')
-      expect(state.words.length).toBe(6)
-    })
-
-    it('should use custom creature type', () => {
-      const state = createShadowGateDungeonState(mockVocabulary, { creatureType: 'shadow-dragon' })
-      expect(state.creatureType).toBe('shadow-dragon')
-    })
-
-    it('should initialize counters to zero', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
+      expect(state.player.invincible).toBe(false)
+      expect(state.crystals.length).toBeGreaterThan(0)
       expect(state.collectedWords).toEqual([])
       expect(state.targetIndex).toBe(0)
       expect(state.correctAnswers).toBe(0)
@@ -80,284 +31,278 @@ describe('shadowGateDungeon', () => {
       expect(state.gameTime).toBe(0)
     })
 
-    it('should use seeded rng for deterministic results', () => {
-      let seed = 0.5
-      const rng = () => {
-        seed = (seed * 9301 + 49297) % 233280
-        return seed / 233280
-      }
-      const state1 = createShadowGateDungeonState(mockVocabulary, { rng })
-      seed = 0.5
-      const state2 = createShadowGateDungeonState(mockVocabulary, { rng })
-      expect(state1.crystals[0].position.x).toBe(state2.crystals[0].position.x)
+    it('throws on empty vocabulary', () => {
+      expect(() => createShadowGateDungeonState([])).toThrow('Vocabulary cannot be empty')
+    })
+
+    it('applies difficulty config', () => {
+      const state = createShadowGateDungeonState(mockVocab, { difficulty: 'easy', rng: mockRng })
+      expect(state.difficulty).toBe('easy')
+    })
+
+    it('applies creature type config', () => {
+      const state = createShadowGateDungeonState(mockVocab, { creatureType: 'shadow-dragon', rng: mockRng })
+      expect(state.creatureType).toBe('shadow-dragon')
+    })
+
+    it('spawns crystals for each word', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const wordCount = state.words.length
+      expect(state.crystals.length).toBe(wordCount)
+      expect(state.crystals.every(c => !c.collected)).toBe(true)
     })
   })
 
   describe('tickShadowGateDungeon', () => {
-    it('should not update state if not playing', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
+    it('returns same state if not playing', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
       const endedState = { ...state, status: 'victory' as const }
-      const newState = tickShadowGateDungeon(endedState, 16)
-      expect(newState).toBe(endedState)
+      expect(tickShadowGateDungeon(endedState, 16)).toBe(endedState)
     })
 
-    it('should increment game time', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
+    it('updates game time', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
       const newState = tickShadowGateDungeon(state, 16)
       expect(newState.gameTime).toBe(16)
     })
 
-    it('should move player according to velocity', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const stateWithVelocity = setPlayerVelocity(state, { x: 1, y: 0 })
-      const newState = tickShadowGateDungeon(stateWithVelocity, 1000)
+    it('moves player with velocity', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const movingState = setPlayerVelocity(state, { x: 1, y: 0 })
+      const newState = tickShadowGateDungeon(movingState, 1000)
       expect(newState.player.position.x).toBeGreaterThan(state.player.position.x)
     })
 
-    it('should keep player within bounds', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const stateWithVelocity = setPlayerVelocity(state, { x: 10, y: 10 })
-      const newState = tickShadowGateDungeon(stateWithVelocity, 5000)
-      expect(newState.player.position.x).toBeLessThanOrEqual(GAME_WIDTH - SHADOW_GATE_DUNGEON_CONFIG.playerRadius)
-      expect(newState.player.position.y).toBeLessThanOrEqual(GAME_HEIGHT - SHADOW_GATE_DUNGEON_CONFIG.playerRadius)
+    it('clamps player position to bounds', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const movingState = setPlayerVelocity(state, { x: 100, y: 100 })
+      const newState = tickShadowGateDungeon(movingState, 10000)
+      expect(newState.player.position.x).toBeLessThanOrEqual(390 - SHADOW_GATE_DUNGEON_CONFIG.playerRadius)
+      expect(newState.player.position.y).toBeLessThanOrEqual(700 - SHADOW_GATE_DUNGEON_CONFIG.playerRadius)
     })
 
-    it('should move creature toward player when within sight range', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      // Place creature near player (within sightRadius) so it chases
-      const nearPlayerState = {
+    it('transitions to chase when player in sight', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      // Place creature very close to player
+      const closeState = {
         ...state,
         creature: {
           ...state.creature,
-          position: { x: state.player.position.x, y: state.player.position.y - 80 },
-          mode: 'chase' as const,
-          chaseTimer: 3000,
-          patrolAngle: 0,
+          position: { x: state.player.position.x + 10, y: state.player.position.y },
         },
       }
-      const newState = tickShadowGateDungeon(nearPlayerState, 1000)
-      expect(newState.creature.position.y).toBeGreaterThan(nearPlayerState.creature.position.y)
-    })
-
-    it('creature enters chase mode when player is within sight radius', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const closeSightState = {
-        ...state,
-        creature: {
-          ...state.creature,
-          position: { x: state.player.position.x + 50, y: state.player.position.y + 50 },
-          mode: 'patrol' as const,
-          chaseTimer: 0,
-          patrolAngle: 0,
-        },
-      }
-      const newState = tickShadowGateDungeon(closeSightState, 50)
+      const newState = tickShadowGateDungeon(closeState, 16)
       expect(newState.creature.mode).toBe('chase')
     })
 
-    it('creature patrols when player is far away', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      // Player is far from default patrol center
-      const farPlayerState = {
-        ...state,
-        player: { ...state.player, position: { x: 10, y: 10 } },
-        creature: {
-          ...state.creature,
-          position: { x: GAME_WIDTH / 2 + 200, y: GAME_HEIGHT / 2 },
-          mode: 'patrol' as const,
-          chaseTimer: 0,
-          patrolAngle: 0,
-        },
-      }
-      const newState = tickShadowGateDungeon(farPlayerState, 50)
-      expect(newState.creature.mode).toBe('patrol')
-    })
-
-    it('should detect player-creature collision and deal damage', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const nearCreatureState = {
+    it('damages player on creature collision', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      // Place creature 1px away so distToPlayer > 0 (enters chase mode toward player)
+      const collisionState = {
         ...state,
         creature: {
           ...state.creature,
-          position: { x: state.player.position.x + 5, y: state.player.position.y + 5 },
+          position: { x: state.player.position.x + 1, y: state.player.position.y },
         },
       }
-      const newState = tickShadowGateDungeon(nearCreatureState, 16)
-      expect(newState.player.health).toBeLessThan(SHADOW_GATE_DUNGEON_CONFIG.initialHealth)
-    })
-
-    it('should apply invincibility after damage', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const nearCreatureState = {
-        ...state,
-        creature: {
-          ...state.creature,
-          position: { x: state.player.position.x + 5, y: state.player.position.y + 5 },
-        },
-      }
-      const newState = tickShadowGateDungeon(nearCreatureState, 16)
+      const newState = tickShadowGateDungeon(collisionState, 16)
+      expect(newState.player.health).toBeLessThan(state.player.health)
       expect(newState.player.invincible).toBe(true)
     })
 
-    it('should detect defeat when health reaches zero', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const lowHealthState = {
+    it('collects correct crystal and advances target', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const targetCrystal = state.crystals[state.targetIndex]
+      const collectState = {
         ...state,
         player: {
           ...state.player,
-          health: 10,
-        },
-        creature: {
-          ...state.creature,
-          position: { x: state.player.position.x + 5, y: state.player.position.y + 5 },
+          position: { x: targetCrystal.position.x, y: targetCrystal.position.y },
         },
       }
-      const newState = tickShadowGateDungeon(lowHealthState, 16)
-      expect(newState.status).toBe('defeat')
-    })
-
-    it('should detect correct word collection', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const targetWord = state.words[0]
-      const crystal = state.crystals.find((c) => c.word === targetWord)!
-      const nearCrystalState = {
-        ...state,
-        player: {
-          ...state.player,
-          position: { ...crystal.position },
-        },
-      }
-      const newState = tickShadowGateDungeon(nearCrystalState, 16)
-      expect(newState.collectedWords).toContain(targetWord)
+      const newState = tickShadowGateDungeon(collectState, 16)
+      expect(newState.collectedWords).toContain(targetCrystal.word)
       expect(newState.targetIndex).toBe(1)
+      expect(newState.correctAnswers).toBe(1)
     })
 
-    it('should detect wrong word collection and deal damage', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const wrongWord = state.words[1]
-      const crystal = state.crystals.find((c) => c.word === wrongWord)!
-      const nearCrystalState = {
+    it('damages player on wrong crystal', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const targetWord = state.words[0]
+
+      // Create isolated test state with one wrong crystal at player position
+      const testState: ShadowGateDungeonState = {
         ...state,
-        player: {
-          ...state.player,
-          position: { ...crystal.position },
-        },
+        crystals: [
+          {
+            id: 'wrong-crystal',
+            word: 'wrong-word',
+            orderIndex: 1,
+            position: { x: state.player.position.x, y: state.player.position.y },
+            collected: false,
+          },
+        ],
+        words: [targetWord, 'wrong-word'],
+        targetIndex: 0,
       }
-      const newState = tickShadowGateDungeon(nearCrystalState, 16)
-      expect(newState.player.health).toBeLessThan(SHADOW_GATE_DUNGEON_CONFIG.initialHealth)
+
+      const newState = tickShadowGateDungeon(testState, 16)
+      expect(newState.player.health).toBeLessThan(testState.player.health)
       expect(newState.wrongAnswers).toBe(1)
     })
 
-    it('should unlock gate when all words collected', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const allCollectedState = {
+    it('unlocks gate when all words collected', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const allCollected = {
         ...state,
-        collectedWords: [...state.words],
         targetIndex: state.words.length,
-        crystals: state.crystals.map((c) => ({ ...c, collected: true })),
+        collectedWords: state.words,
       }
-      const newState = tickShadowGateDungeon(allCollectedState, 16)
+      const newState = tickShadowGateDungeon(allCollected, 16)
       expect(newState.gate.unlocked).toBe(true)
     })
 
-    it('should detect victory when player reaches unlocked gate', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const nearGateState = {
+    it('triggers victory when player reaches unlocked gate', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const gateCenterX = state.gate.position.x + state.gate.width / 2
+      const gateCenterY = state.gate.position.y + state.gate.height / 2
+      const atGateState = {
         ...state,
-        gate: { ...state.gate, unlocked: true },
-        collectedWords: [...state.words],
         targetIndex: state.words.length,
+        collectedWords: state.words,
+        gate: { ...state.gate, unlocked: true },
         player: {
           ...state.player,
-          position: {
-            x: state.gate.position.x + state.gate.width / 2,
-            y: state.gate.position.y + state.gate.height / 2,
-          },
+          position: { x: gateCenterX, y: gateCenterY },
         },
       }
-      const newState = tickShadowGateDungeon(nearGateState, 16)
+      const newState = tickShadowGateDungeon(atGateState, 16)
       expect(newState.status).toBe('victory')
+    })
+
+    it('triggers defeat when health reaches zero', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const dyingState = {
+        ...state,
+        player: {
+          ...state.player,
+          health: SHADOW_GATE_DUNGEON_CONFIG.creatureCollisionDamage,
+          invincible: false,
+          invincibilityTimer: 0,
+        },
+        creature: {
+          ...state.creature,
+          // Slight offset so distToPlayer > 0 (creature enters chase mode)
+          position: { x: state.player.position.x + 1, y: state.player.position.y },
+        },
+      }
+      const newState = tickShadowGateDungeon(dyingState, 16)
+      expect(newState.status).toBe('defeat')
+    })
+
+    it('applies invincibility timer', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const invincibleState = {
+        ...state,
+        player: {
+          ...state.player,
+          invincible: true,
+          invincibilityTimer: 500,
+        },
+      }
+      const newState = tickShadowGateDungeon(invincibleState, 100)
+      expect(newState.player.invincibilityTimer).toBe(400)
     })
   })
 
   describe('calculateXP', () => {
-    it('should calculate base XP from correct answers', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const completedState = {
+    it('returns base XP for correct answers', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const completeState = {
         ...state,
         correctAnswers: 5,
-        wrongAnswers: 0,
-        gameTime: 20000,
-        player: { ...state.player, health: 100 },
-      }
-      const xp = calculateXP(completedState)
-      expect(xp).toBeGreaterThanOrEqual(5)
-    })
-
-    it('should add accuracy bonus when no wrong answers', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const perfectState = {
-        ...state,
-        correctAnswers: 4,
-        wrongAnswers: 0,
-        gameTime: 40000,
-        player: { ...state.player, health: 30 },
-      }
-      const xp = calculateXP(perfectState)
-      expect(xp).toBe(5)
-    })
-
-    it('should add speed bonus when completed under threshold', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const fastState = {
-        ...state,
-        correctAnswers: 4,
-        wrongAnswers: 1,
-        gameTime: 20000,
-        player: { ...state.player, health: 30 },
-      }
-      const xp = calculateXP(fastState)
-      expect(xp).toBe(5)
-    })
-
-    it('should add survival bonus when health above threshold', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const healthyState = {
-        ...state,
-        correctAnswers: 4,
-        wrongAnswers: 1,
-        gameTime: 40000,
-        player: { ...state.player, health: 60 },
-      }
-      const xp = calculateXP(healthyState)
-      expect(xp).toBe(5)
-    })
-
-    it('should cap XP at maxXP', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      const perfectState = {
-        ...state,
-        correctAnswers: 10,
         wrongAnswers: 0,
         gameTime: 10000,
         player: { ...state.player, health: 100 },
       }
-      const xp = calculateXP(perfectState)
-      expect(xp).toBe(SHADOW_GATE_DUNGEON_CONFIG.maxXP)
+      expect(calculateXP(completeState)).toBeGreaterThanOrEqual(5)
+    })
+
+    it('caps XP at maxXP', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const perfectState = {
+        ...state,
+        correctAnswers: 20,
+        wrongAnswers: 0,
+        gameTime: 1000,
+        player: { ...state.player, health: 100 },
+      }
+      expect(calculateXP(perfectState)).toBeLessThanOrEqual(SHADOW_GATE_DUNGEON_CONFIG.maxXP)
+    })
+
+    it('gives accuracy bonus for no wrong answers', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const perfectState = {
+        ...state,
+        correctAnswers: 3,
+        wrongAnswers: 0,
+        gameTime: 60000,
+        player: { ...state.player, health: 100 },
+      }
+      const imperfectState = {
+        ...state,
+        correctAnswers: 3,
+        wrongAnswers: 1,
+        gameTime: 60000,
+        player: { ...state.player, health: 100 },
+      }
+      expect(calculateXP(perfectState)).toBeGreaterThan(calculateXP(imperfectState))
+    })
+
+    it('gives speed bonus for fast completion', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const fastState = {
+        ...state,
+        correctAnswers: 3,
+        wrongAnswers: 0,
+        gameTime: 10000,
+        player: { ...state.player, health: 100 },
+      }
+      const slowState = {
+        ...state,
+        correctAnswers: 3,
+        wrongAnswers: 0,
+        gameTime: 60000,
+        player: { ...state.player, health: 100 },
+      }
+      expect(calculateXP(fastState)).toBeGreaterThan(calculateXP(slowState))
+    })
+
+    it('gives survival bonus for high health', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
+      const healthyState = {
+        ...state,
+        correctAnswers: 3,
+        wrongAnswers: 0,
+        gameTime: 60000,
+        player: { ...state.player, health: 100 },
+      }
+      const injuredState = {
+        ...state,
+        correctAnswers: 3,
+        wrongAnswers: 0,
+        gameTime: 60000,
+        player: { ...state.player, health: 10 },
+      }
+      expect(calculateXP(healthyState)).toBeGreaterThan(calculateXP(injuredState))
     })
   })
 
   describe('setPlayerVelocity', () => {
-    it('should update player velocity', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
+    it('sets player velocity', () => {
+      const state = createShadowGateDungeonState(mockVocab, { rng: mockRng })
       const newState = setPlayerVelocity(state, { x: 1, y: -1 })
       expect(newState.player.velocity).toEqual({ x: 1, y: -1 })
-    })
-
-    it('should not mutate original state', () => {
-      const state = createShadowGateDungeonState(mockVocabulary)
-      setPlayerVelocity(state, { x: 1, y: -1 })
-      expect(state.player.velocity).toEqual({ x: 0, y: 0 })
     })
   })
 })

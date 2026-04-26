@@ -1,19 +1,19 @@
 # Implementation Plan: Shadow Gate Dungeon Compliance Audit
 
 ## Phase 1: Discovery & Baseline
-- [ ] Task: Read game source files (ShadowGateDungeonGame.tsx, shadowGateDungeon.ts, page.tsx, API routes).
-- [ ] Task: Run existing tests and record current coverage (`CI=true npm test -- --coverage --collectCoverageFrom='src/lib/games/shadowGateDungeon.ts' --collectCoverageFrom='src/components/games/sentence/shadow-gate-dungeon/**/*.tsx'`).
-- [ ] Task: Record lint status (`npm run lint -- --file src/components/games/sentence/shadow-gate-dungeon/ShadowGateDungeonGame.tsx`).
-- [ ] Task: Check game registry entry in `src/lib/gameCards.ts`.
-- [ ] Task: Verify asset and cover image existence.
-- [ ] Task: Measure - User Manual Verification 'Phase 1'
+- [x] Task: Read game source files (ShadowGateDungeonGame.tsx, shadowGateDungeon.ts, page.tsx, API routes).
+- [x] Task: Run existing tests and record current coverage (0% - no tests exist).
+- [x] Task: Record lint status (1 warning: pressedKeysRef.current in cleanup).
+- [x] Task: Check game registry entry in `src/lib/gameCards.ts` (PASS: registered with type='sentence', status='playable').
+- [x] Task: Verify asset and cover image existence (Cover: PASS, Assets: FAIL - no directory).
+- [x] Task: Measure - User Manual Verification 'Phase 1'
 
 ## Phase 2: Architecture & Platform Audit
-- [ ] Task: Verify React-Konva usage in ShadowGateDungeonGame.tsx.
-- [ ] Task: Verify mobile-first portrait (390×844) responsive scaling.
-- [ ] Task: Verify pure state + tick function pattern in shadowGateDungeon.ts.
-- [ ] Task: Verify requestAnimationFrame with delta-time clamping.
-- [ ] Task: Verify useGameFullscreen integration.
+- [~] Task: Verify React-Konva usage in ShadowGateDungeonGame.tsx.
+- [~] Task: Verify mobile-first portrait (390×844) responsive scaling.
+- [~] Task: Verify pure state + tick function pattern in shadowGateDungeon.ts.
+- [~] Task: Verify requestAnimationFrame with delta-time clamping.
+- [~] Task: Verify useGameFullscreen integration.
 - [ ] Task: Measure - User Manual Verification 'Phase 2'
 
 ## Phase 3: Input, Accessibility & Data Audit

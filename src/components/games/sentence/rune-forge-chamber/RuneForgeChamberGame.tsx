@@ -14,10 +14,11 @@ import { GAME_WIDTH, GAME_HEIGHT, RUNE_FORGE_CHAMBER_CONFIG } from '@/lib/games/
 import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
 import type { RuneType } from '@/lib/games/runeForgeChamberConfig'
-import { useInterval } from '@/hooks/useInterval'
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
-import { Gem, BookOpen, AlertTriangle, Heart, Clock } from 'lucide-react'
+import { Gem, BookOpen, AlertTriangle, Heart } from 'lucide-react'
 
 export type RuneForgeChamberGameResult = {
   xp: number
@@ -36,9 +37,24 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal')
   const [selectedRuneType, setSelectedRuneType] = useState<RuneType>('common-stone')
   const hasReportedRef = useRef(false)
+  const gameStateRef = useRef<RuneForgeChamberState | null>(null)
+  const gamePhaseRef = useRef(gamePhase)
+  const rafRef = useRef<number | null>(null)
+  const lastTimeRef = useRef<number>(0)
 
-  const containerRef = useRef<HTMLDivElement>(null)
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { getEffectiveTextSize, getEffectiveTouchTarget } = useAccessibilitySettings()
+
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  // Keep refs in sync with state for the rAF loop
+  useEffect(() => {
+    gameStateRef.current = gameState
+  }, [gameState])
+
+  useEffect(() => {
+    gamePhaseRef.current = gamePhase
+  }, [gamePhase])
 
   const resetGame = useCallback(() => {
     if (vocabulary.length > 0) {
@@ -84,29 +100,71 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [])
+  }, [containerRef])
 
-  useInterval(() => {
-    if (gameState && gameState.status === 'playing' && gamePhase === 'playing') {
-      setGameState(prevState => {
-        if (!prevState || prevState.status !== 'playing') return prevState
-        return tickRuneForgeChamber(prevState, 50)
-      })
+  // requestAnimationFrame game loop with delta-time clamping
+  useEffect(() => {
+    if (gamePhase !== 'playing') {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+      lastTimeRef.current = 0
+      return
     }
-  }, 50)
+
+    const gameLoop = (timestamp: number) => {
+      if (lastTimeRef.current === 0) {
+        lastTimeRef.current = timestamp
+      }
+      const deltaMs = Math.min(timestamp - lastTimeRef.current, 50)
+      lastTimeRef.current = timestamp
+
+      const currentState = gameStateRef.current
+      const currentPhase = gamePhaseRef.current
+
+      if (currentState && currentState.status === 'playing' && currentPhase === 'playing') {
+        setGameState(prevState => {
+          if (!prevState || prevState.status !== 'playing') return prevState
+          return tickRuneForgeChamber(prevState, deltaMs)
+        })
+      }
+
+      rafRef.current = requestAnimationFrame(gameLoop)
+    }
+
+    lastTimeRef.current = 0
+    rafRef.current = requestAnimationFrame(gameLoop)
+
+    return () => {
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
+    }
+  }, [gamePhase])
 
   useEffect(() => {
-    if (gameState?.status === 'defeat') {
+    const currentState = gameStateRef.current
+    if (currentState?.status === 'defeat') {
       if (gamePhase !== 'ended') {
-        const accuracy = gameState.correctAnswers + gameState.wrongAnswers > 0
-          ? gameState.correctAnswers / (gameState.correctAnswers + gameState.wrongAnswers)
+        const accuracy = currentState.correctAnswers + currentState.wrongAnswers > 0
+          ? currentState.correctAnswers / (currentState.correctAnswers + currentState.wrongAnswers)
           : 0
-        const xp = calculateXP(gameState)
+        const xp = calculateXP(currentState)
         setResults({ xp, accuracy })
         setGamePhase('ended')
       }
     }
-  }, [gameState?.status, gamePhase, gameState])
+  }, [gameState?.status, gamePhase])
+
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      enterFullscreen()
+    } else {
+      exitFullscreen()
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen])
 
   useEffect(() => {
     if (gamePhase === 'ended' && results && !hasReportedRef.current) {
@@ -161,10 +219,10 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                 onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
               >
-                <option value="easy">Apprentice</option>
-                <option value="normal">Journeyman</option>
-                <option value="hard">Master</option>
-                <option value="extreme">Grandmaster</option>
+                <option value="easy">Easy</option>
+                <option value="normal">Medium</option>
+                <option value="hard">Hard</option>
+                <option value="extreme">Extreme</option>
               </select>
             </div>
             <div className="flex items-center gap-2">
@@ -227,7 +285,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                 x={gameState.runeStone.centerX - gameState.runeStone.radius + 10}
                 y={gameState.runeStone.centerY - 30}
                 text={gameState.currentSentence.translation}
-                fontSize={14}
+                fontSize={getEffectiveTextSize(16)}
                 fill="white"
                 fontStyle="bold"
                 width={(gameState.runeStone.radius - 10) * 2}
@@ -239,7 +297,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                 x={gameState.runeStone.centerX - gameState.runeStone.radius + 10}
                 y={gameState.runeStone.centerY + 10}
                 text={gameState.collectedWords.join(' ')}
-                fontSize={11}
+                fontSize={getEffectiveTextSize(16)}
                 fill="#00ff88"
                 fontStyle="bold"
                 width={(gameState.runeStone.radius - 10) * 2}
@@ -251,7 +309,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                 const pos = getCirclePosition(circle, gameState.runeStone, gameState.circleAngle)
                 const isTarget = !circle.selected && circle.word === gameState.words[gameState.targetIndex]
                 const isSelected = circle.selected
-                const hitRadius = RUNE_FORGE_CHAMBER_CONFIG.circleRadius + 12
+                const hitRadius = getEffectiveTouchTarget(RUNE_FORGE_CHAMBER_CONFIG.circleRadius + 12)
 
                 return (
                   <Group
@@ -279,7 +337,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                         x={-RUNE_FORGE_CHAMBER_CONFIG.circleRadius}
                         y={-8}
                         text={circle.word}
-                        fontSize={11}
+                        fontSize={getEffectiveTextSize(16)}
                         fill="white"
                         fontStyle="bold"
                         width={RUNE_FORGE_CHAMBER_CONFIG.circleRadius * 2}
@@ -295,7 +353,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                   x={0}
                   y={0}
                   width={GAME_WIDTH - 20}
-                  height={16}
+                  height={20}
                   fill="rgba(0, 0, 0, 0.5)"
                   cornerRadius={8}
                 />
@@ -303,15 +361,15 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                   x={0}
                   y={0}
                   width={(gameState.timer / gameState.maxTimer) * (GAME_WIDTH - 20)}
-                  height={16}
+                  height={20}
                   fill={gameState.timer > gameState.maxTimer * 0.3 ? '#ff9500' : '#ef4444'}
                   cornerRadius={8}
                 />
                 <Text
-                  x={GAME_WIDTH / 2 - 25}
+                  x={GAME_WIDTH / 2 - 30}
                   y={2}
                   text={`Forge: ${Math.ceil(gameState.timer / 1000)}s`}
-                  fontSize={10}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                   fontStyle="bold"
                 />
@@ -322,7 +380,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                   x={0}
                   y={0}
                   width={GAME_WIDTH - 20}
-                  height={16}
+                  height={20}
                   fill="rgba(0, 0, 0, 0.5)"
                   cornerRadius={8}
                 />
@@ -330,15 +388,15 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
                   x={0}
                   y={0}
                   width={(gameState.player.health / RUNE_FORGE_CHAMBER_CONFIG.initialHealth) * (GAME_WIDTH - 20)}
-                  height={16}
+                  height={20}
                   fill={gameState.player.health > 50 ? '#22c55e' : gameState.player.health > 25 ? '#eab308' : '#ef4444'}
                   cornerRadius={8}
                 />
                 <Text
-                  x={GAME_WIDTH / 2 - 25}
+                  x={GAME_WIDTH / 2 - 30}
                   y={2}
                   text={`Rune: ${gameState.player.health}%`}
-                  fontSize={10}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                   fontStyle="bold"
                 />
@@ -346,18 +404,18 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
 
               <Text
                 x={10}
-                y={GAME_HEIGHT - 55}
+                y={GAME_HEIGHT - 60}
                 text={`Words: ${gameState.collectedWords.length}/${gameState.words.length}`}
-                fontSize={12}
+                fontSize={getEffectiveTextSize(16)}
                 fill="white"
                 fontStyle="bold"
               />
 
               <Text
                 x={GAME_WIDTH / 2 - 30}
-                y={GAME_HEIGHT - 55}
+                y={GAME_HEIGHT - 60}
                 text={`Level ${gameState.level}`}
-                fontSize={12}
+                fontSize={getEffectiveTextSize(16)}
                 fill="#fbbf24"
                 fontStyle="bold"
               />

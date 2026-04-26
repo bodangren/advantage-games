@@ -13,7 +13,9 @@ import { GAME_WIDTH, GAME_HEIGHT, SHADOW_GATE_DUNGEON_CONFIG } from '@/lib/games
 import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
 import type { CreatureType } from '@/lib/games/shadowGateDungeonConfig'
-// rAF-based game loop — no useInterval needed
+import { useGameFullscreen } from '@/hooks/useGameFullscreen'
+import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useScopedI18n } from '@/locales/client'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
@@ -30,6 +32,10 @@ interface ShadowGateDungeonGameProps {
 }
 
 export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDungeonGameProps) {
+  const t = useScopedI18n('pages.student.gamesPage.shadowGateDungeon')
+  const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+
   const [gameState, setGameState] = useState<ShadowGateDungeonState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<ShadowGateDungeonGameResult | null>(null)
@@ -38,7 +44,6 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
   const hasReportedRef = useRef(false)
   const pressedKeysRef = useRef<Set<string>>(new Set())
 
-  const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
@@ -57,6 +62,15 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
       resetGame()
     }
   }, [vocabulary, gamePhase, resetGame])
+
+  // Fullscreen handling
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      enterFullscreen()
+    } else if (gamePhase === 'ended') {
+      exitFullscreen()
+    }
+  }, [gamePhase, enterFullscreen, exitFullscreen])
 
   useEffect(() => {
     if (!containerRef.current) return
@@ -85,7 +99,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
       clearInterval(interval)
       clearTimeout(timeout)
     }
-  }, [])
+  }, [containerRef])
 
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
@@ -146,8 +160,10 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
   }, [gameState, gamePhase])
 
   useEffect(() => {
+    const keysRef = pressedKeysRef
+
     const computeVelocity = () => {
-      const keys = pressedKeysRef.current
+      const keys = keysRef.current
       let dx = 0, dy = 0
       if (keys.has('ArrowLeft') || keys.has('a') || keys.has('A')) dx = -1
       if (keys.has('ArrowRight') || keys.has('d') || keys.has('D')) dx = 1
@@ -160,21 +176,21 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
       if (gamePhase !== 'playing') return
       if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'a', 'A', 'd', 'D', 'w', 'W', 's', 'S'].includes(e.key)) {
         e.preventDefault()
-        pressedKeysRef.current.add(e.key)
+        keysRef.current.add(e.key)
         computeVelocity()
       }
     }
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (gamePhase !== 'playing') return
-      pressedKeysRef.current.delete(e.key)
+      keysRef.current.delete(e.key)
       computeVelocity()
     }
 
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('keyup', handleKeyUp)
     return () => {
-      pressedKeysRef.current.clear()
+      keysRef.current.clear()
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
@@ -211,6 +227,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
             <div className="flex items-center gap-2">
               <span className="text-xs uppercase tracking-wider text-white/50">Difficulty:</span>
               <select
+                aria-label="Difficulty"
                 value={selectedDifficulty}
                 onChange={(e) => setSelectedDifficulty(e.target.value as Difficulty)}
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -224,6 +241,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
             <div className="flex items-center gap-2">
               <span className="text-xs uppercase tracking-wider text-white/50">Opponent:</span>
               <select
+                aria-label="Opponent"
                 value={selectedCreature}
                 onChange={(e) => setSelectedCreature(e.target.value as CreatureType)}
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-400"
@@ -291,7 +309,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                     x={gameState.gate.position.x + 5}
                     y={gameState.gate.position.y + 8}
                     text={gameState.currentSentence.translation}
-                    fontSize={12}
+                    fontSize={getEffectiveTextSize(16)}
                     fill="white"
                     fontStyle="bold"
                     width={gameState.gate.width - 10}
@@ -316,7 +334,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                         x={-SHADOW_GATE_DUNGEON_CONFIG.crystalRadius}
                         y={-8}
                         text={crystal.word}
-                        fontSize={11}
+                        fontSize={getEffectiveTextSize(16)}
                         fill="white"
                         fontStyle="bold"
                         width={SHADOW_GATE_DUNGEON_CONFIG.crystalRadius * 2}
@@ -348,7 +366,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                   <Circle x={-4} y={-3} radius={2.5} fill={gameState.creature.mode === 'chase' ? '#ffff00' : '#ff0000'} />
                   <Circle x={4} y={-3} radius={2.5} fill={gameState.creature.mode === 'chase' ? '#ffff00' : '#ff0000'} />
                   {gameState.creature.mode === 'chase' && (
-                    <Text x={-8} y={-24} text="!" fontSize={16} fill="#ef4444" fontStyle="bold" />
+                    <Text x={-8} y={-24} text="!" fontSize={getEffectiveTextSize(16)} fill="#ef4444" fontStyle="bold" />
                   )}
                 </Group>
 
@@ -385,7 +403,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                     x={GAME_WIDTH / 2 - 30}
                     y={4}
                     text={`HP: ${gameState.player.health}`}
-                    fontSize={12}
+                    fontSize={getEffectiveTextSize(16)}
                     fill="white"
                     fontStyle="bold"
                   />
@@ -395,7 +413,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                   x={10}
                   y={GAME_HEIGHT - 55}
                   text={`Words: ${gameState.collectedWords.length}/${gameState.words.length}`}
-                  fontSize={14}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                   fontStyle="bold"
                 />
@@ -404,7 +422,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                   x={10}
                   y={GAME_HEIGHT - 75}
                   text={gameState.collectedWords.join(' ')}
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="#a5b4fc"
                   fontStyle="bold"
                   width={GAME_WIDTH - 20}
@@ -414,7 +432,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                   x={GAME_WIDTH - 80}
                   y={GAME_HEIGHT - 55}
                   text={`Time: ${Math.floor(gameState.gameTime / 1000)}s`}
-                  fontSize={12}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="white"
                 />
 
@@ -423,7 +441,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
                   x={10}
                   y={GAME_HEIGHT - 95}
                   text={gameState.creature.mode === 'chase' ? '⚠ DETECTED!' : '👁 Undetected'}
-                  fontSize={13}
+                  fontSize={getEffectiveTextSize(16)}
                   fill={gameState.creature.mode === 'chase' ? '#ef4444' : '#a5b4fc'}
                   fontStyle="bold"
                 />

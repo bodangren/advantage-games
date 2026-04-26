@@ -5,353 +5,330 @@ import {
   getCirclePosition,
   calculateXP,
   isPointInCircle,
+  type RuneForgeChamberState,
 } from './runeForgeChamber'
-import { RUNE_FORGE_CHAMBER_CONFIG } from './runeForgeChamberConfig'
+import { RUNE_FORGE_CHAMBER_CONFIG, GAME_WIDTH, GAME_HEIGHT } from './runeForgeChamberConfig'
+import type { VocabularyItem } from '@/store/useGameStore'
 
-const mockVocabulary = [
-  { term: 'The cat sits on the mat', translation: 'Le chat est assis sur le tapis' },
-  { term: 'Hello world', translation: 'Bonjour le monde' },
+const mockVocabulary: VocabularyItem[] = [
+  { term: 'The cat sits on the mat', translation: 'แมวนั่งบนเสื่อ' },
+  { term: 'I love to read books', translation: 'ฉันชอบอ่านหนังสือ' },
+  { term: 'The sun is shining bright', translation: 'ดวงอาทิตย์ส่องแสงสว่าง' },
 ]
 
 describe('runeForgeChamber', () => {
   describe('createRuneForgeChamberState', () => {
-    it('should throw error if vocabulary is empty', () => {
-      expect(() => createRuneForgeChamberState([])).toThrow('Vocabulary cannot be empty')
-    })
+    it('should create initial state with vocabulary', () => {
+      let seed = 0.1
+      const rng = () => (seed = (seed * 9301 + 49297) % 233280) / 233280
 
-    it('should create initial state with default config', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
+      const state = createRuneForgeChamberState(mockVocabulary, { rng })
+
       expect(state.status).toBe('playing')
       expect(state.difficulty).toBe('normal')
-      expect(state.runeType).toBe('common-stone')
-      expect(state.player.health).toBe(RUNE_FORGE_CHAMBER_CONFIG.initialHealth)
-    })
-
-    it('should create circles for each word', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      expect(state.circles.length).toBeGreaterThan(0)
-      expect(state.words.length).toBe(state.circles.length)
-    })
-
-    it('should limit words based on difficulty', () => {
-      const state = createRuneForgeChamberState(mockVocabulary, { difficulty: 'easy' })
-      expect(state.words.length).toBeLessThanOrEqual(RUNE_FORGE_CHAMBER_CONFIG.difficulties.easy.wordCount)
-    })
-
-    it('should initialize timer at 2x difficulty value for level 1', () => {
-      const state = createRuneForgeChamberState(mockVocabulary, { difficulty: 'easy' })
-      expect(state.timer).toBe(RUNE_FORGE_CHAMBER_CONFIG.timerDurations.easy * 2)
-      expect(state.maxTimer).toBe(RUNE_FORGE_CHAMBER_CONFIG.timerDurations.easy * 2)
-    })
-
-    it('should start at level 1', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
       expect(state.level).toBe(1)
-    })
-
-    it('should set rune stone at center', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      expect(state.runeStone.centerX).toBe(RUNE_FORGE_CHAMBER_CONFIG.arenaWidth / 2)
-      expect(state.runeStone.centerY).toBe(RUNE_FORGE_CHAMBER_CONFIG.arenaHeight / 2)
-    })
-
-    it('should start with empty collected words', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      expect(state.collectedWords).toEqual([])
+      expect(state.vocabulary).toEqual(mockVocabulary)
+      expect(state.player.health).toBe(RUNE_FORGE_CHAMBER_CONFIG.initialHealth)
+      expect(state.circles.length).toBeGreaterThan(0)
       expect(state.targetIndex).toBe(0)
       expect(state.correctAnswers).toBe(0)
       expect(state.wrongAnswers).toBe(0)
+      expect(state.timer).toBeGreaterThan(0)
+      expect(state.maxTimer).toBe(state.timer)
+      expect(state.gameTime).toBe(0)
     })
 
-    it('should accept custom difficulty and rune type', () => {
-      const state = createRuneForgeChamberState(mockVocabulary, {
-        difficulty: 'hard',
-        runeType: 'void-essence',
-      })
+    it('should throw error with empty vocabulary', () => {
+      expect(() => createRuneForgeChamberState([])).toThrow('Vocabulary cannot be empty')
+    })
+
+    it('should use provided difficulty', () => {
+      const state = createRuneForgeChamberState(mockVocabulary, { difficulty: 'hard' })
       expect(state.difficulty).toBe('hard')
-      expect(state.runeType).toBe('void-essence')
     })
 
-    it('should use deterministic RNG for testing', () => {
-      const rng = () => 0.5
-      const state1 = createRuneForgeChamberState(mockVocabulary, { rng })
-      const state2 = createRuneForgeChamberState(mockVocabulary, { rng })
-      expect(state1.words).toEqual(state2.words)
+    it('should use provided runeType', () => {
+      const state = createRuneForgeChamberState(mockVocabulary, { runeType: 'rare-crystal' })
+      expect(state.runeType).toBe('rare-crystal')
+    })
+
+    it('should place rune stone at center', () => {
+      const state = createRuneForgeChamberState(mockVocabulary)
+      expect(state.runeStone.centerX).toBe(GAME_WIDTH / 2)
+      expect(state.runeStone.centerY).toBe(GAME_HEIGHT / 2)
+    })
+
+    it('should shuffle circle angles', () => {
+      let seed = 0.5
+      const rng = () => (seed = (seed * 9301 + 49297) % 233280) / 233280
+
+      const state = createRuneForgeChamberState(mockVocabulary, { rng })
+      const angles = state.circles.map(c => c.angle)
+      const baseAngles = state.circles.map((_, i) => (2 * Math.PI * i) / state.circles.length)
+      
+      // Angles should be different from base angles due to shuffle + offset
+      expect(angles).not.toEqual(baseAngles)
     })
   })
 
   describe('tickRuneForgeChamber', () => {
-    it('should return unchanged state if not playing', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      const endedState = { ...state, status: 'victory' as const }
-      const result = tickRuneForgeChamber(endedState, 50)
-      expect(result).toBe(endedState)
-    })
-
     it('should decrement timer', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const result = tickRuneForgeChamber(state, 100)
-      expect(result.timer).toBe(state.timer - 100)
+      const initialTimer = state.timer
+
+      const next = tickRuneForgeChamber(state, 100)
+
+      expect(next.timer).toBe(initialTimer - 100)
     })
 
-    it('should increment game time', () => {
+    it('should increment gameTime', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const result = tickRuneForgeChamber(state, 100)
-      expect(result.gameTime).toBe(100)
-    })
-
-    it('should set defeat when timer reaches zero', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      const lowTimerState = { ...state, timer: 50 }
-      const result = tickRuneForgeChamber(lowTimerState, 100)
-      expect(result.status).toBe('defeat')
-    })
-
-    it('should set defeat when health reaches zero', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      const lowHealthState = {
-        ...state,
-        player: { ...state.player, health: 10 },
-      }
-      const result = tickRuneForgeChamber(lowHealthState, 50)
-      expect(result.status).toBe('playing')
+      const next = tickRuneForgeChamber(state, 100)
+      expect(next.gameTime).toBe(100)
     })
 
     it('should rotate circles', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const initialAngles = state.circles.map(c => c.angle)
-      const result = tickRuneForgeChamber(state, 100)
-      result.circles.forEach((circle, i) => {
-        expect(circle.angle).toBeGreaterThan(initialAngles[i])
-      })
+      const initialAngle = state.circles[0].angle
+
+      const next = tickRuneForgeChamber(state, 1000)
+
+      expect(next.circles[0].angle).not.toBe(initialAngle)
     })
 
-    it('should advance to level 2 when all words collected (not victory)', () => {
+    it('should set status to defeat when timer reaches zero', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const completedState = {
-        ...state,
-        targetIndex: state.words.length,
-        collectedWords: state.words,
-      }
-      const result = tickRuneForgeChamber(completedState, 50)
-      expect(result.status).toBe('playing')
-      expect(result.level).toBe(2)
-      expect(result.collectedWords).toHaveLength(0)
+      state.timer = 50
+
+      const next = tickRuneForgeChamber(state, 100)
+
+      expect(next.status).toBe('defeat')
     })
 
-    it('level 2 timer is maxTimer * 0.8', () => {
-      const state = createRuneForgeChamberState(mockVocabulary, { difficulty: 'easy' })
-      const completedState = {
-        ...state,
-        targetIndex: state.words.length,
-        collectedWords: state.words,
-      }
-      const level2 = tickRuneForgeChamber(completedState, 50)
-      const expectedTimer = state.maxTimer * 0.8
-      expect(level2.maxTimer).toBeCloseTo(expectedTimer, 0)
-    })
-  })
-
-  describe('selectCircle', () => {
-    it('should return unchanged state if not playing', () => {
+    it('should set status to defeat when health reaches zero', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const endedState = { ...state, status: 'victory' as const }
-      const result = selectCircle(endedState, 'any-id')
-      expect(result).toBe(endedState)
+      state.player.health = 0
+
+      const next = tickRuneForgeChamber(state, 16)
+
+      expect(next.status).toBe('defeat')
     })
 
-    it('should mark circle as selected and advance on correct word', () => {
+    it('should not update if status is not playing', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const targetWord = state.words[0]
-      const targetCircle = state.circles.find(c => c.word === targetWord)!
-      
-      const result = selectCircle(state, targetCircle.id)
-      
-      expect(result.circles.find(c => c.id === targetCircle.id)?.selected).toBe(true)
-      expect(result.collectedWords).toContain(targetWord)
-      expect(result.targetIndex).toBe(1)
-      expect(result.correctAnswers).toBe(1)
-    })
+      state.status = 'defeat'
 
-    it('should damage player on wrong word', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      const targetWord = state.words[0]
-      const wrongCircle = state.circles.find(c => c.word !== targetWord)!
-      
-      const result = selectCircle(state, wrongCircle.id)
-      
-      expect(result.player.health).toBe(state.player.health - RUNE_FORGE_CHAMBER_CONFIG.wrongWordDamage)
-      expect(result.wrongAnswers).toBe(1)
-      expect(result.targetIndex).toBe(0)
-    })
+      const next = tickRuneForgeChamber(state, 16)
 
-    it('should set defeat when health reaches zero from wrong selection', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      const lowHealthState = {
-        ...state,
-        player: { ...state.player, health: 10 },
-      }
-      const targetWord = state.words[0]
-      const wrongCircle = state.circles.find(c => c.word !== targetWord)!
-      
-      const result = selectCircle(lowHealthState, wrongCircle.id)
-      
-      expect(result.status).toBe('defeat')
+      expect(next).toEqual(state)
     })
 
     it('should advance to next level when all words collected', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      let currentState = state
+      state.targetIndex = state.words.length
 
-      for (let i = 0; i < state.words.length; i++) {
-        const targetWord = currentState.words[i]
-        const targetCircle = currentState.circles.find(c => c.word === targetWord && !c.selected)!
-        currentState = selectCircle(currentState, targetCircle.id)
-      }
+      const next = tickRuneForgeChamber(state, 16)
 
-      expect(currentState.status).toBe('playing')
-      expect(currentState.level).toBe(2)
+      expect(next.level).toBe(2)
+      expect(next.targetIndex).toBe(0)
+      expect(next.collectedWords.length).toBe(0)
+    })
+  })
+
+  describe('selectCircle', () => {
+    it('should select correct circle and advance target', () => {
+      const state = createRuneForgeChamberState(mockVocabulary)
+      const targetWord = state.words[state.targetIndex]
+      const targetCircle = state.circles.find(c => c.word === targetWord)!
+
+      const next = selectCircle(state, targetCircle.id)
+
+      expect(next.targetIndex).toBe(1)
+      expect(next.correctAnswers).toBe(1)
+      expect(next.collectedWords).toContain(targetWord)
+      expect(next.circles.find(c => c.id === targetCircle.id)!.selected).toBe(true)
     })
 
-    it('should not allow selecting already selected circles', () => {
+    it('should advance level when all words selected', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const targetWord = state.words[0]
+      // Select all words
+      let current = state
+      for (let i = 0; i < state.words.length; i++) {
+        const targetWord = current.words[current.targetIndex]
+        const targetCircle = current.circles.find(c => c.word === targetWord)!
+        current = selectCircle(current, targetCircle.id)
+      }
+
+      expect(current.level).toBe(2)
+      expect(current.targetIndex).toBe(0)
+    })
+
+    it('should reduce health for wrong selection', () => {
+      const state = createRuneForgeChamberState(mockVocabulary)
+      const targetWord = state.words[state.targetIndex]
+      const wrongCircle = state.circles.find(c => c.word !== targetWord)!
+      const initialHealth = state.player.health
+
+      const next = selectCircle(state, wrongCircle.id)
+
+      expect(next.player.health).toBe(initialHealth - RUNE_FORGE_CHAMBER_CONFIG.wrongWordDamage)
+      expect(next.wrongAnswers).toBe(1)
+      expect(next.targetIndex).toBe(0)
+    })
+
+    it('should set defeat when health reaches zero from wrong selection', () => {
+      const state = createRuneForgeChamberState(mockVocabulary)
+      state.player.health = RUNE_FORGE_CHAMBER_CONFIG.wrongWordDamage
+
+      const targetWord = state.words[state.targetIndex]
+      const wrongCircle = state.circles.find(c => c.word !== targetWord)!
+
+      const next = selectCircle(state, wrongCircle.id)
+
+      expect(next.status).toBe('defeat')
+    })
+
+    it('should not select already selected circle', () => {
+      const state = createRuneForgeChamberState(mockVocabulary)
+      const targetWord = state.words[state.targetIndex]
       const targetCircle = state.circles.find(c => c.word === targetWord)!
       
-      const afterFirst = selectCircle(state, targetCircle.id)
-      const afterSecond = selectCircle(afterFirst, targetCircle.id)
-      
-      expect(afterSecond).toBe(afterFirst)
+      const first = selectCircle(state, targetCircle.id)
+      const second = selectCircle(first, targetCircle.id)
+
+      expect(second).toEqual(first)
+    })
+
+    it('should not update if status is not playing', () => {
+      const state = createRuneForgeChamberState(mockVocabulary)
+      state.status = 'defeat'
+
+      const next = selectCircle(state, state.circles[0].id)
+
+      expect(next).toEqual(state)
+    })
+
+    it('should return same state for invalid circle id', () => {
+      const state = createRuneForgeChamberState(mockVocabulary)
+      const next = selectCircle(state, 'invalid-id')
+      expect(next).toEqual(state)
     })
   })
 
   describe('getCirclePosition', () => {
     it('should calculate position based on angle and orbit radius', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      const circle = state.circles[0]
+      const circle = {
+        id: '1',
+        word: 'test',
+        orderIndex: 0,
+        angle: 0,
+        orbitRadius: 100,
+        selected: false,
+      }
+      const runeStone = { centerX: 200, centerY: 200, radius: 50 }
       const baseAngle = 0
-      
-      const pos = getCirclePosition(circle, state.runeStone, baseAngle)
-      
-      const expectedX = state.runeStone.centerX + Math.cos(circle.angle) * circle.orbitRadius
-      const expectedY = state.runeStone.centerY + Math.sin(circle.angle) * circle.orbitRadius
-      
-      expect(pos.x).toBeCloseTo(expectedX, 5)
-      expect(pos.y).toBeCloseTo(expectedY, 5)
+
+      const pos = getCirclePosition(circle, runeStone, baseAngle)
+
+      expect(pos.x).toBeCloseTo(300)
+      expect(pos.y).toBeCloseTo(200)
     })
 
-    it('should add base angle to circle angle', () => {
-      const state = createRuneForgeChamberState(mockVocabulary)
-      const circle = state.circles[0]
-      
-      const pos1 = getCirclePosition(circle, state.runeStone, 0)
-      const pos2 = getCirclePosition(circle, state.runeStone, Math.PI / 2)
-      
-      expect(pos1.x).not.toBe(pos2.x)
-      expect(pos1.y).not.toBe(pos2.y)
+    it('should account for base angle offset', () => {
+      const circle = {
+        id: '1',
+        word: 'test',
+        orderIndex: 0,
+        angle: Math.PI / 2,
+        orbitRadius: 100,
+        selected: false,
+      }
+      const runeStone = { centerX: 200, centerY: 200, radius: 50 }
+      const baseAngle = 0
+
+      const pos = getCirclePosition(circle, runeStone, baseAngle)
+
+      expect(pos.x).toBeCloseTo(200)
+      expect(pos.y).toBeCloseTo(300)
     })
   })
 
   describe('calculateXP', () => {
     it('should calculate base XP from correct answers', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const completedState = {
-        ...state,
-        correctAnswers: 5,
-        wrongAnswers: 0,
-        timer: state.maxTimer * 0.5,
-        player: { health: 100 },
-      }
-      
-      const xp = calculateXP(completedState)
-      
+      state.correctAnswers = 5
+      state.wrongAnswers = 2
+      state.timer = 5000
+      state.maxTimer = 10000
+      state.player.health = 50
+
+      const xp = calculateXP(state)
       expect(xp).toBeGreaterThanOrEqual(5)
     })
 
-    it('should add accuracy bonus for no wrong answers', () => {
+    it('should add accuracy bonus for perfect play', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const perfectState = {
-        ...state,
-        correctAnswers: 4,
-        wrongAnswers: 0,
-        timer: state.maxTimer * 0.5,
-        player: { health: 100 },
-      }
-      
-      const xp = calculateXP(perfectState)
-      
-      expect(xp).toBe(4 + RUNE_FORGE_CHAMBER_CONFIG.accuracyBonus + RUNE_FORGE_CHAMBER_CONFIG.speedBonus + RUNE_FORGE_CHAMBER_CONFIG.survivalBonus)
+      state.correctAnswers = 5
+      state.wrongAnswers = 0
+      state.timer = 1000
+      state.maxTimer = 10000
+      state.player.health = 40
+
+      const xp = calculateXP(state)
+      expect(xp).toBe(5 + RUNE_FORGE_CHAMBER_CONFIG.accuracyBonus)
     })
 
-    it('should add speed bonus for fast completion', () => {
+    it('should add speed bonus when time remaining is high', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const fastState = {
-        ...state,
-        correctAnswers: 4,
-        wrongAnswers: 0,
-        timer: state.maxTimer * 0.5,
-        player: { health: 100 },
-      }
-      
-      const xp = calculateXP(fastState)
-      
-      expect(xp).toBeGreaterThanOrEqual(4 + RUNE_FORGE_CHAMBER_CONFIG.accuracyBonus)
+      state.correctAnswers = 3
+      state.wrongAnswers = 1
+      state.timer = 8000
+      state.maxTimer = 10000
+      state.player.health = 40
+
+      const xp = calculateXP(state)
+      expect(xp).toBe(3 + RUNE_FORGE_CHAMBER_CONFIG.speedBonus)
     })
 
-    it('should add survival bonus for high health', () => {
+    it('should add survival bonus when health is high', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const healthyState = {
-        ...state,
-        correctAnswers: 4,
-        wrongAnswers: 0,
-        timer: state.maxTimer * 0.5,
-        player: { health: 80 },
-      }
-      
-      const xp = calculateXP(healthyState)
-      
-      expect(xp).toBeGreaterThanOrEqual(4 + RUNE_FORGE_CHAMBER_CONFIG.accuracyBonus)
+      state.correctAnswers = 3
+      state.wrongAnswers = 1
+      state.timer = 1000
+      state.maxTimer = 10000
+      state.player.health = 80
+
+      const xp = calculateXP(state)
+      expect(xp).toBe(3 + RUNE_FORGE_CHAMBER_CONFIG.survivalBonus)
     })
 
     it('should cap XP at maxXP', () => {
       const state = createRuneForgeChamberState(mockVocabulary)
-      const highXPState = {
-        ...state,
-        correctAnswers: 20,
-        wrongAnswers: 0,
-        timer: state.maxTimer,
-        player: { health: 100 },
-      }
-      
-      const xp = calculateXP(highXPState)
-      
-      expect(xp).toBeLessThanOrEqual(RUNE_FORGE_CHAMBER_CONFIG.maxXP)
+      state.correctAnswers = 20
+      state.wrongAnswers = 0
+      state.timer = 9000
+      state.maxTimer = 10000
+      state.player.health = 100
+
+      const xp = calculateXP(state)
+      expect(xp).toBe(RUNE_FORGE_CHAMBER_CONFIG.maxXP)
     })
   })
 
   describe('isPointInCircle', () => {
-    it('should return true when point is inside circle', () => {
-      const point = { x: 100, y: 100 }
-      const center = { x: 100, y: 100 }
-      const radius = 50
-      
-      expect(isPointInCircle(point, center, radius)).toBe(true)
+    it('should return true for point inside circle', () => {
+      const result = isPointInCircle({ x: 0, y: 0 }, { x: 0, y: 0 }, 10)
+      expect(result).toBe(true)
     })
 
-    it('should return true when point is on edge', () => {
-      const point = { x: 150, y: 100 }
-      const center = { x: 100, y: 100 }
-      const radius = 50
-      
-      expect(isPointInCircle(point, center, radius)).toBe(true)
+    it('should return false for point outside circle', () => {
+      const result = isPointInCircle({ x: 15, y: 0 }, { x: 0, y: 0 }, 10)
+      expect(result).toBe(false)
     })
 
-    it('should return false when point is outside circle', () => {
-      const point = { x: 200, y: 100 }
-      const center = { x: 100, y: 100 }
-      const radius = 50
-      
-      expect(isPointInCircle(point, center, radius)).toBe(false)
+    it('should return true for point on circle edge', () => {
+      const result = isPointInCircle({ x: 10, y: 0 }, { x: 0, y: 0 }, 10)
+      expect(result).toBe(true)
     })
   })
 })

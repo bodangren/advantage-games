@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
-import { useCurrentLocale } from "@/locales/client";
+import { useCurrentLocale, useScopedI18n } from "@/locales/client";
+import { useSession } from "@/hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
@@ -37,6 +38,12 @@ export default function RuneForgeChamberPage() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const locale = useCurrentLocale();
+  const { data: session } = useSession();
+  const t = useScopedI18n("runeForgeChamber");
+
+  // Session and i18n hooks are available for future use
+  const userId = session?.user?.id;
+  const pageTitle = t("title") || "Rune Forge Chamber";
 
   useEffect(() => {
     const fetchSentences = async () => {
@@ -88,13 +95,14 @@ export default function RuneForgeChamberPage() {
             accuracy: results.accuracy,
             correctAnswers: Math.floor(results.accuracy * 10),
             totalAttempts: 10,
+            userId,
           }),
         });
       } catch (e) {
         console.error("Failed to submit game results", e);
       }
     },
-    [setLastResult],
+    [setLastResult, userId],
   );
 
   if (isLoading) {
@@ -199,7 +207,7 @@ export default function RuneForgeChamberPage() {
       </Button>
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 md:gap-8">
         <Header
-          heading="Rune Forge Chamber"
+          heading={pageTitle}
           text="Tap word circles in the correct order to forge magical runes!"
         >
           <Gem className="h-8 w-8 text-primary" />
