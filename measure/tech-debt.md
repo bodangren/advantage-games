@@ -8,6 +8,16 @@
 
 ---
 
+## Wizard vs Zombie Compliance Audit (2026-04-26)
+
+### Resolved
+- Missing useGameFullscreen, RAF game loop, GameStartScreen/GameEndScreen, difficulty tiers (normal→medium, removed extreme), useCurrentLocale, unused dynamic import, tests
+
+### Remaining
+- None
+
+---
+
 ## Archer's Revenge Compliance Audit (2026-04-26)
 
 ### Resolved
@@ -33,16 +43,6 @@
 
 ### Resolved
 - Missing useGameFullscreen, useAccessibilitySettings, text sizes, calculateXP, difficulty tiers, hook deps, unused imports, i18n/session, component tests, assets
-
-### Remaining
-- None
-
----
-
-## Dragon Rider Compliance Audit (2026-04-26)
-
-### Resolved
-- Missing useGameFullscreen, useAccessibilitySettings, text sizes, difficulty tiers (normal→medium, removed extreme), hook deps, i18n/session, unused vars, `any` types
 
 ### Remaining
 - None
