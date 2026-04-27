@@ -5,7 +5,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Visual Refresh: Define Unique Identity**
-*Link: [./measure/tracks/visual_refresh_20260425/](./measure/tracks/visual_refresh_20260425/)*
+*Link: [./measure/archive/visual_refresh_20260425/](./measure/archive/visual_refresh_20260425/)*
 *Description: Defined and implemented the "Obsidian Grimoire" visual identity, replacing generic AI slop with a high-contrast brutalist aesthetic.*
 *Priority: High*
 *Type: UI/UX*
