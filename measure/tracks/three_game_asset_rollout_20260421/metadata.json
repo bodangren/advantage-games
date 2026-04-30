@@ -1,0 +1,16 @@
+{
+  "trackId": "three_game_asset_rollout_20260421",
+  "title": "Three-Game Asset Rollout",
+  "description": "Plan, generate, visually review, and wire production image assets for Labyrinth of the Goblin King, The Haunted Library, and Gryphon Patrol.",
+  "priority": "high",
+  "type": "feature",
+  "status": "in_progress",
+  "created": "2026-04-21",
+  "updated": "2026-04-21",
+  "estimated_tasks": 19,
+  "games": [
+    "labyrinth-goblin-king",
+    "haunted-library",
+    "gryphon-patrol"
+  ]
+}
