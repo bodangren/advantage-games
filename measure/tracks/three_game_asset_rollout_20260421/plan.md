@@ -79,7 +79,7 @@
   - [ ] Confirm every accepted generation was visually inspected before integration.
   - [ ] Confirm pose-sheet row semantics are consistent across all newly generated character sheets.
   - [ ] Capture any rejected-generation notes or follow-up fixes in the asset brief.
-- [~] Task: Run final automated verification.
+- [x] Task: Run final automated verification.
   - [x] Run targeted tests for all three games with `CI=true`.
-  - [~] Run any affected lint/build checks required by the changed code paths.
+  - [x] Run any affected lint/build checks required by the changed code paths.
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Final QA' (Protocol in workflow.md)
