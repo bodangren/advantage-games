@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useGameStore } from "@/store/useGameStore";
 import { AlertTriangle, BookOpen, ArrowRight } from "lucide-react";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
-import { useSession } from "next-auth/react";
+import { useSession } from "@/hooks/useSession";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 

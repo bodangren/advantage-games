@@ -3,4 +3,4 @@ import { createCompleteRoute } from "@/lib/games/api";
 const { POST } = createCompleteRoute();
 
 export { POST };
-export const dynamic = "force-static" as const;
+export const dynamic = "force-static";

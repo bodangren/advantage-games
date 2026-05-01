@@ -75,7 +75,6 @@ export default function RuneMatchPage() {
         console.error("Failed to submit game results:", error);
       }
 
-      setIsPlaying(false);
     },
     [setLastResult, locale, session],
   );

@@ -4,4 +4,4 @@ import { SAMPLE_SENTENCES } from "@/lib/games/sampleSentences";
 const { GET } = createSentencesRoute(SAMPLE_SENTENCES);
 
 export { GET };
-export const dynamic = "force-static" as const;
+export const dynamic = "force-static";

@@ -49,7 +49,7 @@ export default function EnchantedLibraryPage({
   });
 
   const currentLocale = useCurrentLocale();
-  const { user } = useSession();
+  const { data: session } = useSession();
 
   // Load vocabulary from API
   useEffect(() => {
@@ -197,9 +197,9 @@ export default function EnchantedLibraryPage({
             <BookOpen className="h-8 w-8 text-primary" />
           </Header>
 
-          {user && (
+          {session?.user && (
             <div className="text-sm text-slate-600 dark:text-white/60">
-              Playing as {user.name}
+              Playing as {session.user.name}
             </div>
           )}
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg self-start">
