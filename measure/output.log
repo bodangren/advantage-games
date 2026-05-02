@@ -2,164 +2,26 @@
 > build · k2p6
 [0m
 [0m→ [0mRead measure/autonomous_prompt.md
-[0m→ [0mSkill "measure"
 [0m→ [0mRead measure/tracks.md
 [0m→ [0mRead measure/tech-debt.md
 [0m→ [0mRead measure/lessons-learned.md
 [0m→ [0mRead measure/current_directive.md
-[0m→ [0mRead measure/tracks/three_game_asset_rollout_20260421/plan.md
-[0m→ [0mRead measure/tracks/three_game_asset_rollout_20260421/spec.md
 [0m
 [0m$ [0mgit status --short
 M measure/output.log
+ M measure/review-output.log
+ M measure/tracks.md
+ M measure/tracks/three_game_asset_rollout_20260421/plan.md
+ M src/lib/gameCards.test.ts
+ M src/lib/gameCards.ts
 [0m
-[0m$ [0mgit log --oneline -10
-8a59951 chore(measure): update autonomous prompt to use browser-harness skill
-84264d9 chore: mark verification tasks complete in asset rollout plan
-eaf2351 fix: resolve build errors across multiple games
-b52b412 chore: update measure logs
-adac144 chore(measure): add gameplay usability bug track
-c30f971 chore(measure): daily automation - archive completed tracks, update configs [mimo-v2.5]
-0c8f017 measure(plan): Complete Rune Forge Chamber compliance audit track
-0da114a chore(audit): Rune Forge Chamber compliance audit - accessibility labels and test mocks
-ce4b3d1 docs(audit): Shadow Gate Dungeon compliance report and plan update
-ecbeced fix(shadow-gate-dungeon): Compliance audit fixes
+[0m$ [0mgit diff --stat
+measure/output.log                                 | 158 +--------------------
+ measure/review-output.log                          | Bin 25895 -> 22810 bytes
+ measure/tracks.md                                  |   8 +-
+ .../three_game_asset_rollout_20260421/plan.md      |  82 +++++------
+ src/lib/gameCards.test.ts                          |  38 +++--
+ src/lib/gameCards.ts                               |   2 +-
+ 6 files changed, 81 insertions(+), 207 deletions(-)
 [0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/public/games/labyrinth-goblin-king/ 2>/dev/null || echo "Directory not found"
-Directory not found
-[0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/public/games/haunted-library/ 2>/dev/null || echo "Directory not found"
-Directory not found
-[0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/public/games/gryphon-patrol/ 2>/dev/null || echo "Directory not found"
-Directory not found
-[0m
-[0m$ [0mgit log --all --oneline --grep="asset" -20
-84264d9 chore: mark verification tasks complete in asset rollout plan
-ecbeced fix(shadow-gate-dungeon): Compliance audit fixes
-afd4c24 chore(audit): Spellweaver's Run compliance audit - fix fullscreen, accessibility, SentenceItem typing, API factories, useSession, calculateSpellweaversRunXP, difficulty tiers, text sizes, unused imports, component tests, asset directory
-a5b70fd chore(audit): Magic Defense compliance audit complete
-70d4f01 fix(audit): Storm the Castle Tower compliance audit fixes
-46ba897 chore(audit): The Abyssal Well compliance audit complete
-655b01d feat: add sentence game assets for castle-defense and potion-rush
-90edd26 fix: copy game assets to vocabulary subdirectory for correct paths
-5490110 feat(dungeon-liberator): wire up sprite assets
-f6f6593 feat(dragon-rider): add DragonRiderGame component
-434e12c feat(assets): replace intro placeholder with actual facing-camera dragon rider sprite
-1f1759a feat(assets): add Dragon Rider game assets for younger audience reskin
-bdcaa2f feat(ui): Update game menu and covers
-4224129 chore(assets): update enchanted library sprites
-6b21695 conductor(plan): Mark task 7.2 'Create/integrate sprite assets' as complete
-3f82fe3 feat(enchanted-library): Verify sprite assets meet visual theme requirements
-db33007 feat(potion-rush): build core gameplay loop and assets
-001eec8 fix(castle-defense): Use withBasePath for assets to fix loading on GitHub Pages
-a3cca55 conductor(archive): Archive track 'Integration of new tile-based background, roads, and game assets for Castle Defense.'
-bdbbaa6 conductor(plan): finalize track 'Integration of new tile-based background, roads, and game assets for Castle Defense.'
-[0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/public/games/ | head -30
-total 92
-drwxrwxr-x 23 daniel-bo daniel-bo 4096 Apr  7 04:05 .
-drwxrwxr-x  5 daniel-bo daniel-bo 4096 Mar 17 19:22 ..
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  3 22:08 archers-revenge
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 17 19:22 castle-defense
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 12:08 cover
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 17 19:22 dragon-flight
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  3 22:08 dragon-rider
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 22 20:05 dungeon-liberator
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 17 19:22 enchanted-library
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 17 19:22 magic-defense
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 29 20:28 paladins-twin-soul
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  6 23:42 potion-rush
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  7 03:37 realm-carver
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 17 19:22 rpg-battle
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  7 03:45 rune-forge-chamber
-drwxrwxr-x  5 daniel-bo daniel-bo 4096 Mar 17 19:22 rune-match
-drwxrwxr-x 16 daniel-bo daniel-bo 4096 Apr 26 19:28 sentence
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  7 03:49 shadow-gate-dungeon
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  7 03:53 spellweavers-run
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  7 03:59 storm-castle-tower
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr  7 04:05 village-guardian
-drwxrwxr-x 11 daniel-bo daniel-bo 4096 Apr 26 14:33 vocabulary
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 17 19:22 wizard-vs-zombie
-[0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/public/games/sentence/
-total 64
-drwxrwxr-x 16 daniel-bo daniel-bo 4096 Apr 26 19:28 .
-drwxrwxr-x 23 daniel-bo daniel-bo 4096 Apr  7 04:05 ..
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 11:11 abyssal-well
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 22 20:05 castle-defense
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 18:32 dungeon-liberator
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 22 20:05 griffin-riders-escape
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 12:18 griffin-sky-joust
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 11:13 gryphon-patrol
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 11:05 labyrinth-goblin-king
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Mar 22 20:05 potion-rush
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 12:19 realm-carver
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 19:15 rune-forge-chamber
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 19:28 shadow-gate-dungeon
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 19:20 spellweavers-run
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 12:02 storm-castle-tower
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 19:14 village-guardian
-[0m
-[0m$ [0mgrep -r "labyrinth-goblin-king" /home/daniel-bo/Desktop/advantage-games/app/games/ 2>/dev/null | head -5 || echo "No references found"
-(no output)
-[0m
-[0m$ [0mgrep -r "haunted-library" /home/daniel-bo/Desktop/advantage-games/app/games/ 2>/dev/null | head -5 || echo "No references found"
-(no output)
-[0m
-[0m$ [0mgrep -r "gryphon-patrol" /home/daniel-bo/Desktop/advantage-games/app/games/ 2>/dev/null | head -5 || echo "No references found"
-(no output)
-[0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/public/games/sentence/labyrinth-goblin-king/
-total 8
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 11:05 .
-drwxrwxr-x 16 daniel-bo daniel-bo 4096 Apr 26 19:28 ..
-[0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/public/games/sentence/haunted-library/
-ls: cannot access '/home/daniel-bo/Desktop/advantage-games/public/games/sentence/haunted-library/': No such file or directory
-[0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/public/games/sentence/gryphon-patrol/
-total 8
-drwxrwxr-x  2 daniel-bo daniel-bo 4096 Apr 26 11:13 .
-drwxrwxr-x 16 daniel-bo daniel-bo 4096 Apr 26 19:28 ..
-[0m
-[0m$ [0mfind /home/daniel-bo/Desktop/advantage-games/app/games/ -name "*labyrinth*" -o -name "*haunted*" -o -name "*gryphon*" 2>/dev/null | head -20
-(no output)
-[0m
-[0m$ [0mls -la /home/daniel-bo/Desktop/advantage-games/app/games/
-ls: cannot access '/home/daniel-bo/Desktop/advantage-games/app/games/': No such file or directory
-[0m
-[0m$ [0mfind /home/daniel-bo/Desktop/advantage-games -type f -name "*Labyrinth*" 2>/dev/null | head -10
-/home/daniel-bo/Desktop/advantage-games/coverage/lcov-report/components/games/sentence/labyrinth-goblin-king/LabyrinthGoblinKingGame.tsx.html
-/home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/labyrinth-goblin-king/LabyrinthGoblinKingGame.test.tsx
-/home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/labyrinth-goblin-king/LabyrinthGoblinKingGame.tsx
-[0m
-[0m$ [0mfind /home/daniel-bo/Desktop/advantage-games -type d -name "labyrinth*" 2>/dev/null
-/home/daniel-bo/Desktop/advantage-games/coverage/lcov-report/components/games/sentence/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/.next/static/chunks/app/[locale]/(student)/student/games/sentence/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/.next/static/chunks/app/api/v1/games/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/.next/types/app/[locale]/(student)/student/games/sentence/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/.next/types/app/api/v1/games/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/.next/server/app/[locale]/(student)/student/games/sentence/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/.next/server/app/api/v1/games/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/measure/archive/labyrinth-goblin-king-20260320
-/home/daniel-bo/Desktop/advantage-games/measure/tracks/labyrinth-goblin-king-compliance-audit_20260426
-/home/daniel-bo/Desktop/advantage-games/out/_next/static/chunks/app/[locale]/(student)/student/games/sentence/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/out/_next/static/chunks/app/api/v1/games/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/out/en/student/games/sentence/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/out/api/v1/games/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/public/games/sentence/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/src/app/[locale]/(student)/student/games/sentence/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/src/app/api/v1/games/labyrinth-goblin-king
-/home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/labyrinth-goblin-king
-[0m
-[0m→ [0mRead src/components/games/sentence/labyrinth-goblin-king/LabyrinthGoblinKingGame.tsx[90m [limit=50][0m
-[0m→ [0mRead src/components/games/sentence/haunted-library/HauntedLibraryGame.tsx[90m [limit=50][0m
-[0m→ [0mRead src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx[90m [limit=50][0m
-[0m
-[0m$ [0mwhich mmx 2>/dev/null || echo "mmx not found"
-/home/daniel-bo/.nvm/versions/node/v24.4.0/bin/mmx
-[0m
-[0m$ [0mgit log --all --oneline -- "public/games/sentence/labyrinth-goblin-king" "public/games/sentence/haunted-library" "public/games/sentence/gryphon-patrol" | head -20
-(no output)
-[0m
+[0m→ [0mRead measure/tracks/gameplay_usability_bugs_20260430/plan.md

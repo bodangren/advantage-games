@@ -13,18 +13,18 @@
 
 ## Phase 2: Labyrinth of the Goblin King Assets
 
-- [x] Task: Create the Labyrinth asset set in `public/games/labyrinth-goblin-king/`.
-  - [x] Generate and visually review `maze-floor-tile.png`.
-  - [x] Generate and visually review `maze-wall-tile.png`.
-  - [x] Generate and visually review `word-orb.png`.
-  - [x] Generate and visually review `paladin_3x3_pose_sheet.png`.
-  - [x] Generate and visually review `goblin_scout_3x3_pose_sheet.png`.
-  - [x] Generate and visually review `goblin_warrior_3x3_pose_sheet.png`.
-  - [x] Generate and visually review `goblin_elite_3x3_pose_sheet.png`.
-- [x] Task: Wire the Labyrinth assets into `LabyrinthGoblinKingGame.tsx`.
-  - [x] Replace wall/floor rectangles with tile images where appropriate.
-  - [x] Replace player, goblin, and orb placeholder shapes with image-backed rendering.
-  - [x] Keep word labels and heroic-aura HUD/readability cues code-rendered if that remains clearer.
+- [ ] Task: Create the Labyrinth asset set in `public/games/sentence/labyrinth-goblin-king/`.
+  - [ ] Generate and visually review `maze-floor-tile.png`.
+  - [ ] Generate and visually review `maze-wall-tile.png`.
+  - [ ] Generate and visually review `word-orb.png`.
+  - [ ] Generate and visually review `paladin_3x3_pose_sheet.png`.
+  - [ ] Generate and visually review `goblin_scout_3x3_pose_sheet.png`.
+  - [ ] Generate and visually review `goblin_warrior_3x3_pose_sheet.png`.
+  - [ ] Generate and visually review `goblin_elite_3x3_pose_sheet.png`.
+- [ ] Task: Wire the Labyrinth assets into `LabyrinthGoblinKingGame.tsx`.
+  - [ ] Replace wall/floor rectangles with tile images where appropriate.
+  - [ ] Replace player, goblin, and orb placeholder shapes with image-backed rendering.
+  - [ ] Keep word labels and heroic-aura HUD/readability cues code-rendered if that remains clearer.
 - [ ] Task: Add or update automated tests for Labyrinth asset loading/rendering.
   - [ ] Cover image-loading success and safe fallback behavior where needed.
   - [ ] Run the targeted Labyrinth test suite and coverage command.
@@ -32,20 +32,20 @@
 
 ## Phase 3: The Haunted Library Assets
 
-- [x] Task: Create the Haunted Library asset set in `public/games/haunted-library/`.
-  - [x] Generate and visually review `library-background.png`.
-  - [x] Generate and visually review `floor-strip-tile.png`.
-  - [x] Generate and visually review `trampoline-pad.png`.
-  - [x] Generate and visually review `door-closed.png`.
-  - [x] Generate and visually review `door-open-correct.png`.
-  - [x] Generate and visually review `door-open-trap.png`.
-  - [x] Generate and visually review `player_3x3_pose_sheet.png`.
-  - [x] Generate and visually review `ghost_3x3_pose_sheet.png`.
-  - [x] Generate and visually review `bat_3x3_pose_sheet.png`.
-- [x] Task: Wire the Haunted Library assets into `HauntedLibraryGame.tsx`.
-  - [x] Replace the flat background and floor rendering with production art.
-  - [x] Replace door, player, ghost, and bat placeholder primitives with image-backed rendering.
-  - [x] Preserve gameplay word rendering on opened doors unless the asset treatment requires a different overlay.
+- [ ] Task: Create the Haunted Library asset set in `public/games/sentence/haunted-library/`.
+  - [ ] Generate and visually review `library-background.png`.
+  - [ ] Generate and visually review `floor-strip-tile.png`.
+  - [ ] Generate and visually review `trampoline-pad.png`.
+  - [ ] Generate and visually review `door-closed.png`.
+  - [ ] Generate and visually review `door-open-correct.png`.
+  - [ ] Generate and visually review `door-open-trap.png`.
+  - [ ] Generate and visually review `player_3x3_pose_sheet.png`.
+  - [ ] Generate and visually review `ghost_3x3_pose_sheet.png`.
+  - [ ] Generate and visually review `bat_3x3_pose_sheet.png`.
+- [ ] Task: Wire the Haunted Library assets into `HauntedLibraryGame.tsx`.
+  - [ ] Replace the flat background and floor rendering with production art.
+  - [ ] Replace door, player, ghost, and bat placeholder primitives with image-backed rendering.
+  - [ ] Preserve gameplay word rendering on opened doors unless the asset treatment requires a different overlay.
 - [ ] Task: Add or update automated tests for Haunted Library asset loading/rendering.
   - [ ] Cover image-loading success and safe fallback behavior where needed.
   - [ ] Run the targeted Haunted Library test suite and coverage command.
@@ -53,18 +53,18 @@
 
 ## Phase 4: Gryphon Patrol Assets
 
-- [x] Task: Create the Gryphon Patrol asset set in `public/games/gryphon-patrol/`.
-  - [x] Generate and visually review `parallax-top-tiling.png`.
-  - [x] Generate and visually review `parallax-middle-tiling.png`.
-  - [x] Generate and visually review `parallax-bottom-tiling.png`.
-  - [x] Generate and visually review `player_gryphon_rider_3x3_pose_sheet.png`.
-  - [x] Generate and visually review `sky_raider_3x3_pose_sheet.png`.
-  - [x] Generate and visually review `word-orb.png`.
-  - [x] Generate and visually review `feather-bolt.png`.
-- [x] Task: Wire the Gryphon Patrol assets into `GryphonPatrolGame.tsx`.
-  - [x] Replace the placeholder sky/landscape treatment with looping parallax art.
-  - [x] Replace player, enemy, orb, and projectile primitives with image-backed rendering.
-  - [x] Keep HUD and minimap elements code-rendered unless art materially improves them.
+- [ ] Task: Create the Gryphon Patrol asset set in `public/games/sentence/gryphon-patrol/`.
+  - [ ] Generate and visually review `parallax-top-tiling.png`.
+  - [ ] Generate and visually review `parallax-middle-tiling.png`.
+  - [ ] Generate and visually review `parallax-bottom-tiling.png`.
+  - [ ] Generate and visually review `player_gryphon_rider_3x3_pose_sheet.png`.
+  - [ ] Generate and visually review `sky_raider_3x3_pose_sheet.png`.
+  - [ ] Generate and visually review `word-orb.png`.
+  - [ ] Generate and visually review `feather-bolt.png`.
+- [ ] Task: Wire the Gryphon Patrol assets into `GryphonPatrolGame.tsx`.
+  - [ ] Replace the placeholder sky/landscape treatment with looping parallax art.
+  - [ ] Replace player, enemy, orb, and projectile primitives with image-backed rendering.
+  - [ ] Keep HUD and minimap elements code-rendered unless art materially improves them.
 - [ ] Task: Add or update automated tests for Gryphon Patrol asset loading/rendering.
   - [ ] Cover parallax/image-loading success and safe fallback behavior where needed.
   - [ ] Run the targeted Gryphon Patrol test suite and coverage command.
@@ -79,7 +79,7 @@
   - [ ] Confirm every accepted generation was visually inspected before integration.
   - [ ] Confirm pose-sheet row semantics are consistent across all newly generated character sheets.
   - [ ] Capture any rejected-generation notes or follow-up fixes in the asset brief.
-- [x] Task: Run final automated verification.
-  - [x] Run targeted tests for all three games with `CI=true`.
-  - [x] Run any affected lint/build checks required by the changed code paths.
+- [ ] Task: Run final automated verification.
+  - [ ] Run targeted tests for all three games with `CI=true`.
+  - [ ] Run any affected lint/build checks required by the changed code paths.
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Final QA' (Protocol in workflow.md)

@@ -65,15 +65,37 @@ describe('gameCards', () => {
 
     playableCards.forEach((card) => {
       const gameId = card.id;
-      const componentPath = path.join(process.cwd(), 'src/components/games', gameId.includes('vocabulary') || gameId === 'dragon-flight' || gameId === 'rpg-battle' || gameId === 'magic-defense' || gameId === 'wizard-vs-zombie' || gameId === 'rune-match' || gameId === 'archers-revenge' ? 'vocabulary' : 'sentence', gameId);
-      const logicPath = path.join(process.cwd(), 'src/lib/games');
+      const isVocab = gameId.includes('vocabulary') || 
+        ['dragon-flight', 'dragon-rider', 'rpg-battle', 'magic-defense', 'wizard-vs-zombie', 
+         'rune-match', 'archers-revenge', 'enchanted-library', 'alchemists-synthesis',
+         'paladins-twin-soul'].includes(gameId);
+      const gameType = isVocab ? 'vocabulary' : 'sentence';
       
-      const hasComponent = fs.existsSync(componentPath);
-      const logicFiles = fs.readdirSync(logicPath).filter((f: string) => f.toLowerCase().includes(gameId.toLowerCase().replace(/-/g, '')));
-      const hasLogic = logicFiles.length > 0;
-
-      if (!(hasComponent || hasLogic)) {
-        missingGames.push(gameId);
+      // Check page and API - these must exist for all playable games
+      const pagePath = path.join(process.cwd(), 'src/app/[locale]/(student)/student/games', gameType, gameId);
+      const apiPath = path.join(process.cwd(), 'src/app/api/v1/games', gameId);
+      
+      const hasPage = fs.existsSync(pagePath);
+      const hasApi = fs.existsSync(apiPath);
+      
+      // For babel-architect specifically, check all surfaces since it has no implementation
+      if (gameId === 'babel-architect') {
+        const componentPath = path.join(process.cwd(), 'src/components/games', gameType, gameId);
+        const logicPath = path.join(process.cwd(), 'src/lib/games');
+        const hasComponent = fs.existsSync(componentPath);
+        const logicFiles = fs.readdirSync(logicPath).filter((f: string) => {
+          return f.toLowerCase().includes('babelarchitect') && !f.endsWith('.test.ts') && !f.endsWith('.test.tsx');
+        });
+        const hasLogic = logicFiles.length > 0;
+        
+        if (!hasComponent || !hasPage || !hasApi || !hasLogic) {
+          missingGames.push(gameId);
+        }
+        return;
+      }
+      
+      if (!hasPage || !hasApi) {
+        missingGames.push(`${gameId}: page=${hasPage}, api=${hasApi}`);
       }
     });
 

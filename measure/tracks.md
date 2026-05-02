@@ -671,21 +671,21 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Three-Game Asset Rollout**
+- [ ] **Track: Three-Game Asset Rollout**
 *Link: [./measure/tracks/three_game_asset_rollout_20260421/](./measure/tracks/three_game_asset_rollout_20260421/)*
 *Description: Generate, review, and wire production image assets for Labyrinth of the Goblin King, The Haunted Library, and Gryphon Patrol.*
 *Priority: High*
 *Type: Feature*
-*Status: In Progress*
+*Status: New - Asset generation not started; plan corrected to reflect actual state*
 
 ---
 
-- [ ] **Track: Gameplay Usability Bug Fixes**
+- [~] **Track: Gameplay Usability Bug Fixes**
 *Link: [./measure/tracks/gameplay_usability_bugs_20260430/](./measure/tracks/gameplay_usability_bugs_20260430/)*
 *Description: Fix playability, input, progression, route truthfulness, and readable-text bugs found across three gameplay audit passes.*
 *Priority: Critical*
 *Type: Bug*
-*Status: New*
+*Status: In Progress*
 
 ## Upcoming Tracks
 

@@ -216,7 +216,7 @@ export const gameCards: GameCard[] = [
     description: 'Stack stone blocks in the correct sentence order to build the tallest legendary tower!',
     cover: withBasePath('/games/cover/cover-babel-architect.png'),
     href: '/en/student/games/sentence/babel-architect',
-    status: 'playable',
+    status: 'coming-soon',
   },
   {
     id: 'sorcerer-ziggurat',
