@@ -5297,3 +5297,530 @@ Snapshots:   0 total
 Time:        8.617 s
 Ran all test suites matching archersRevenge.
 [0m
+[0m$ [0mgit add -A && git commit -m "Fix 'medium' -> 'normal' difficulty type mismatch across games and tests"
+[master 1ed6e28] Fix 'medium' -> 'normal' difficulty type mismatch across games and tests
+ 17 files changed, 5328 insertions(+), 51 deletions(-)
+[0m
+[0m→ [0mRead measure/tracks/gameplay_usability_bugs_20260430/plan.md[90m [limit=30][0m
+[0m
+[0m← [0mEdit measure/tracks/gameplay_usability_bugs_20260430/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/measure/tracks/gameplay_usability_bugs_20260430/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/measure/tracks/gameplay_usability_bugs_20260430/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/measure/tracks/gameplay_usability_bugs_20260430/plan.md
+@@ -1,12 +1,12 @@
+ # Gameplay Usability Bug Fixes Plan
+ 
+ ## Phase 0: Baseline Inventory and Guardrails
+ 
+-- [ ] Task: Add playable-card route consistency tests
+-  - [ ] Write a failing test that iterates `gameCards` and verifies every `status: 'playable'` card has the expected page/component/API surface for its route.
+-  - [ ] Make `babel-architect` truthful by changing it to `coming-soon` unless a complete playable implementation exists when this task starts.
+-  - [ ] Verify `astral-mage` and `sorcerer-ziggurat` remain non-playable until implemented.
++- [x] Task: Add playable-card route consistency tests
++  - [x] Enhanced existing test to verify every `status: 'playable'` card has page/component/API surface (src/lib/gameCards.test.ts)
++  - [x] `babel-architect` already changed to `coming-soon` in previous commit
++  - [x] `astral-mage` and `sorcerer-ziggurat` correctly remain `coming-soon`
+ 
+ - [ ] Task: Add a reusable gameplay readability checklist
+   - [ ] Document the actual-screen-pixel rule: HUD >= 16 CSS px, words/translations >= 18 CSS px after scaling.
+   - [ ] Add tests or test helpers where practical for scale-down components that compute `fontSize` from viewport scale.
+
+[0m
+[0m$ [0mgit add measure/tracks/gameplay_usability_bugs_20260430/plan.md && git commit -m "Update plan: mark Phase 0 Task 1 complete"
+[master 12b0d31] Update plan: mark Phase 0 Task 1 complete
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+[0m
+[0m→ [0mRead src/components/games/sentence/abyssal-well/AbyssalWellGame.tsx[90m [limit=50][0m
+[0m✱ [0mGrep "AbyssalWellDifficulty"[90m in src/lib/games · 7 matches[0m
+[0m→ [0mRead src/lib/games/abyssalWell.ts[90m [limit=80][0m
+[0m✱ [0mGrep "getLanePosition"[90m in src/lib/games/abyssalWell.ts · 1 match[0m
+[0m→ [0mRead src/lib/games/abyssalWell.ts[90m [limit=30, offset=84][0m
+[0m✱ [0mGrep "getLanePosition.*player|Player.*getLanePosition|Circle.*player|player.*Circle"[90m in src/components/games/sentence/abyssal-well · 1 match[0m
+[0m→ [0mRead src/components/games/sentence/abyssal-well/AbyssalWellGame.tsx[90m [limit=50, offset=420][0m
+[0m✱ [0mGrep "getLanePosition.*enemy|enemy.*getLanePosition"[90m in src/components/games/sentence/abyssal-well · 1 match[0m
+[0m→ [0mRead src/lib/games/abyssalWell.ts[90m [limit=30, offset=84][0m
+[0m→ [0mRead src/lib/games/__tests__/abyssalWell.test.ts
+[0m
+[0m← [0mEdit src/lib/games/__tests__/abyssalWell.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/abyssalWell.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/abyssalWell.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/abyssalWell.test.ts
+@@ -82,8 +82,28 @@
+     
+     expect(pos0.x).toBeCloseTo(pos8.x)
+     expect(pos0.y).toBeCloseTo(pos8.y)
+   })
++
++  it('should place player (depth=1) at the top of the screen (rim)', () => {
++    const playerPos = getLanePosition(0, 1)
++    const enemyPos = getLanePosition(0, 0)
++    
++    // Player (depth=1, rim) should be higher (smaller y) than enemy spawn (depth=0, far)
++    expect(playerPos.y).toBeLessThan(enemyPos.y)
++  })
++
++  it('should give player (depth=1) a larger radius than far enemies (depth=0)', () => {
++    const playerPos = getLanePosition(0, 1)
++    const enemyPos = getLanePosition(0, 0)
++    const centerX = ABYSSAL_WELL_CONFIG.gameWidth / 2
++    
++    const playerRadius = Math.abs(playerPos.x - centerX)
++    const enemyRadius = Math.abs(enemyPos.x - centerX)
++    
++    // Player at rim should have larger radius (closer to viewer)
++    expect(playerRadius).toBeGreaterThan(enemyRadius)
++  })
+ })
+ 
+ describe('rotatePlayer', () => {
+   it('should rotate player clockwise', () => {
+
+[0m
+[0m$ [0mnpm test -- --testPathPatterns="abyssalWell.test" --no-coverage
+> vocabulary-games@0.1.0 test
+> jest --testPathPatterns=abyssalWell.test --no-coverage
+
+FAIL src/lib/games/__tests__/abyssalWell.test.ts
+  abyssalWell
+    createAbyssalWellState
+      ✓ should create initial game state (12 ms)
+      ✓ should set sentence and words from vocabulary (2 ms)
+      ✓ should set targetIndex to 0 (1 ms)
+      ✓ should throw if vocabulary is empty (42 ms)
+      ✓ should default difficulty to medium (1 ms)
+      ✓ should allow setting difficulty to easy (1 ms)
+    getLanePosition
+      ✓ should return position with x at center for lane 0 depth 0 (2 ms)
+      ✓ should return different x positions for different lanes at same depth (1 ms)
+      ✓ should wrap around for lane 8 (same as lane 0) (1 ms)
+      ✕ should place player (depth=1) at the top of the screen (rim) (5 ms)
+      ✕ should give player (depth=1) a larger radius than far enemies (depth=0) (3 ms)
+    rotatePlayer
+      ✓ should rotate player clockwise (1 ms)
+      ✓ should rotate player counter-clockwise (1 ms)
+      ✓ should wrap around when rotating past last lane (1 ms)
+    fireProjectile
+      ✓ should add projectile to state (1 ms)
+      ✓ should not fire if cooldown not elapsed (2 ms)
+    advanceAbyssalWellTime
+      ✓ should return same state if not playing (1 ms)
+      ✓ should update game time when playing (2 ms)
+      ✓ should move projectiles toward center (1 ms)
+      ✓ should move enemies toward rim (increase depth) (1 ms)
+      ✓ should detect projectile-enemy collision in same lane (2 ms)
+      ✓ should increment correctWords and targetIndex when hitting correct enemy (1 ms)
+      ✓ should remove enemy but not progress when hitting wrong enemy (2 ms)
+      ✓ should lose life when enemy reaches rim (1 ms)
+      ✓ should set phase to defeat when lives reach 0 (1 ms)
+      ✓ should set phase to victory when all words collected (2 ms)
+    spawnEnemy
+      ✓ should spawn an enemy when playing (2 ms)
+      ✓ should not spawn if all words already have enemies (1 ms)
+      ✓ should not spawn if not playing
+    startGame
+      ✓ should set phase to playing (1 ms)
+    calculateXP
+      ✓ should return 0 if no attempts (1 ms)
+      ✓ should calculate base XP from correct words (1 ms)
+      ✓ should cap XP at 10 (1 ms)
+      ✓ should add perfect accuracy bonus
+      ✓ should add survival bonus for lives >= 50%
+      ✓ should add speed bonus for games under 30s
+
+  ● abyssalWell › getLanePosition › should place player (depth=1) at the top of the screen (rim)
+
+    expect(received).toBeLessThan(expected)
+
+    Expected: < 410
+    Received:   530
+
+      90 |       
+      91 |       // Player (depth=1, rim) should be higher (smaller y) than enemy spawn (depth=0, far)
+    > 92 |       expect(playerPos.y).toBeLessThan(enemyPos.y)
+         |                           ^
+      93 |     })
+      94 |
+      95 |     it('should give player (depth=1) a larger radius than far enemies (depth=0)', () => {
+
+      at Object.toBeLessThan (src/lib/games/__tests__/abyssalWell.test.ts:92:27)
+
+  ● abyssalWell › getLanePosition › should give player (depth=1) a larger radius than far enemies (depth=0)
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 2.842170943040401e-14
+    Received:   0
+
+      102 |       
+      103 |       // Player at rim should have larger radius (closer to viewer)
+    > 104 |       expect(playerRadius).toBeGreaterThan(enemyRadius)
+          |                            ^
+      105 |     })
+      106 |   })
+      107 |
+
+      at Object.toBeGreaterThan (src/lib/games/__tests__/abyssalWell.test.ts:104:28)
+
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 34 passed, 36 total
+Snapshots:   0 total
+Time:        2.519 s
+Ran all test suites matching abyssalWell.test.
+[0m
+[0m← [0mEdit src/lib/games/abyssalWell.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/abyssalWell.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/abyssalWell.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/abyssalWell.ts
+@@ -90,12 +90,15 @@
+   
+   const maxRadius = ABYSSAL_WELL_CONFIG.rimRadius * 2
+   const minRadius = 20
+   
+-  const radius = minRadius + (1 - depth) * (maxRadius - minRadius)
++  // depth=1 is rim (player, near/top), depth=0 is far end (enemy spawn, bottom)
++  const radius = minRadius + depth * (maxRadius - minRadius)
+   
+   const x = centerX + Math.cos(angle) * radius
+-  const y = rimY - (1 - depth) * (ABYSSAL_WELL_CONFIG.gameHeight - rimY - 50)
++  // depth=1 -> rimY - 1*(gameHeight - rimY - 50) = top of screen
++  // depth=0 -> rimY - 0 = bottom of screen
++  const y = rimY - depth * (ABYSSAL_WELL_CONFIG.gameHeight - rimY - 50)
+   
+   return { x, y }
+ }
+ 
+
+[0m
+[0m$ [0mnpm test -- --testPathPatterns="abyssalWell.test" --no-coverage
+> vocabulary-games@0.1.0 test
+> jest --testPathPatterns=abyssalWell.test --no-coverage
+
+PASS src/lib/games/__tests__/abyssalWell.test.ts
+  abyssalWell
+    createAbyssalWellState
+      ✓ should create initial game state (9 ms)
+      ✓ should set sentence and words from vocabulary (2 ms)
+      ✓ should set targetIndex to 0 (1 ms)
+      ✓ should throw if vocabulary is empty (41 ms)
+      ✓ should default difficulty to medium (2 ms)
+      ✓ should allow setting difficulty to easy (1 ms)
+    getLanePosition
+      ✓ should return position with x at center for lane 0 depth 0 (1 ms)
+      ✓ should return different x positions for different lanes at same depth (1 ms)
+      ✓ should wrap around for lane 8 (same as lane 0) (2 ms)
+      ✓ should place player (depth=1) at the top of the screen (rim) (1 ms)
+      ✓ should give player (depth=1) a larger radius than far enemies (depth=0) (1 ms)
+    rotatePlayer
+      ✓ should rotate player clockwise (1 ms)
+      ✓ should rotate player counter-clockwise (1 ms)
+      ✓ should wrap around when rotating past last lane (1 ms)
+    fireProjectile
+      ✓ should add projectile to state (1 ms)
+      ✓ should not fire if cooldown not elapsed (1 ms)
+    advanceAbyssalWellTime
+      ✓ should return same state if not playing
+      ✓ should update game time when playing (1 ms)
+      ✓ should move projectiles toward center (1 ms)
+      ✓ should move enemies toward rim (increase depth) (1 ms)
+      ✓ should detect projectile-enemy collision in same lane (1 ms)
+      ✓ should increment correctWords and targetIndex when hitting correct enemy (1 ms)
+      ✓ should remove enemy but not progress when hitting wrong enemy (1 ms)
+      ✓ should lose life when enemy reaches rim (1 ms)
+      ✓ should set phase to defeat when lives reach 0 (1 ms)
+      ✓ should set phase to victory when all words collected (1 ms)
+    spawnEnemy
+      ✓ should spawn an enemy when playing (1 ms)
+      ✓ should not spawn if all words already have enemies (1 ms)
+      ✓ should not spawn if not playing (1 ms)
+    startGame
+      ✓ should set phase to playing (1 ms)
+    calculateXP
+      ✓ should return 0 if no attempts (1 ms)
+      ✓ should calculate base XP from correct words (1 ms)
+      ✓ should cap XP at 10
+      ✓ should add perfect accuracy bonus (1 ms)
+      ✓ should add survival bonus for lives >= 50% (1 ms)
+      ✓ should add speed bonus for games under 30s
+
+Test Suites: 1 passed, 1 total
+Tests:       36 passed, 36 total
+Snapshots:   0 total
+Time:        2.074 s
+Ran all test suites matching abyssalWell.test.
+[0m
+[0m$ [0mnpm run build
+> vocabulary-games@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.9
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 24.3s
+   Linting and checking validity of types ...
+
+./src/app/[locale]/(student)/student/games/sentence/potion-rush/page.test.tsx
+9:33  Warning: 'vocabList' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/[locale]/(student)/student/games/sentence/realm-carver/page.tsx
+29:9  Warning: 'currentLocale' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+30:17  Warning: 'session' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/[locale]/(student)/student/games/sentence/shadow-gate-dungeon/page.tsx
+32:9  Warning: 't' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+33:17  Warning: 'session' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/[locale]/(student)/student/games/vocabulary/enchanted-library/page.test.tsx
+8:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/[locale]/(student)/student/games/vocabulary/magic-defense/page.test.tsx
+8:26  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/[locale]/(student)/student/games/vocabulary/rune-match/page.test.tsx
+1:26  Warning: 'fireEvent' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/[locale]/layout.tsx
+9:3  Warning: 'params' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/v1/games/shadow-gate-dungeon/complete/route.ts
+1:10  Warning: 'NextResponse' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/api/v1/games/shadow-gate-dungeon/sentences/route.ts
+1:10  Warning: 'NextResponse' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.test.tsx
+1:37  Warning: 'act' is defined but never used.  @typescript-eslint/no-unused-vars
+10:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+11:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+12:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+13:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+14:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+15:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/games/sentence/realm-carver/RealmCarverGame.test.tsx
+1:37  Warning: 'act' is defined but never used.  @typescript-eslint/no-unused-vars
+1:42  Warning: 'waitFor' is defined but never used.  @typescript-eslint/no-unused-vars
+8:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+9:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+10:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+11:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+12:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+13:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/games/sentence/rune-forge-chamber/RuneForgeChamberGame.test.tsx
+1:46  Warning: 'act' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/sentence/shadow-gate-dungeon/ShadowGateDungeonGame.tsx
+35:9  Warning: 't' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/sentence/village-guardian/VillageGuardianGame.test.tsx
+1:37  Warning: 'waitFor' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/vocabulary/enchanted-library/EnchantedLibraryGame.test.tsx
+1:37  Warning: 'act' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/vocabulary/enchanted-library/RankingDisplay.tsx
+111:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/components/games/vocabulary/rpg-battle/StartScreen.tsx
+303:29  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/components/multiplayer/MultiplayerGameWrapper.tsx
+81:13  Warning: 'children' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/hooks/useGameCamera.test.ts
+26:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+48:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+64:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/useGameDimensions.test.ts
+23:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/useMultiplayerSocket.test.ts
+13:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+14:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+15:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+16:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+27:8  Warning: '_data' is defined but never used.  @typescript-eslint/no-unused-vars
+52:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+175:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/games/alchemistsSynthesis.ts
+64:3  Warning: '_vocabulary' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/contentPackSchema.test.ts
+197:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+208:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+220:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/games/griffinRidersEscape.test.ts
+7:8  Warning: 'GriffinRiderState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/magicDefenseConfig.test.ts
+87:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/games/realmCarver.test.ts
+6:8  Warning: 'RealmCarverState' is defined but never used.  @typescript-eslint/no-unused-vars
+53:84  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+78:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+86:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+98:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+111:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+123:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+136:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+155:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+171:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+178:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+186:9  Warning: 'state' is never reassigned. Use 'const' instead.  prefer-const
+
+./src/lib/games/runeForgeChamber.test.ts
+8:8  Warning: 'RuneForgeChamberState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/runeMatch.test.ts
+306:11  Warning: 'originalGrid' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/multiplayer/ws-server.ts
+92:18  Warning: 'error' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/remotion/test-index.tsx
+2:10  Warning: 'Composition' is defined but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+   Collecting page data ...
+   Generating static pages (0/89) ...
+   Generating static pages (22/89) 
+   Generating static pages (44/89) 
+   Generating static pages (66/89) 
+ ✓ Generating static pages (89/89)
+   Finalizing page optimization ...
+   Collecting build traces ...
+   Exporting (0/2) ...
+ ✓ Exporting (2/2)
+
+Route (app)                                                     Size  First Load JS
+┌ ○ /                                                        5.34 kB         111 kB
+├ ○ /_not-found                                                 1 kB         104 kB
+├ ● /[locale]/student/games/sentence/abyssal-well            5.35 kB         157 kB
+├   └ /en/student/games/sentence/abyssal-well
+├ ● /[locale]/student/games/sentence/castle-defense          5.75 kB         157 kB
+├   └ /en/student/games/sentence/castle-defense
+├ ● /[locale]/student/games/sentence/devourer-slime          4.52 kB         156 kB
+├   └ /en/student/games/sentence/devourer-slime
+├ ● /[locale]/student/games/sentence/dungeon-liberator       5.33 kB         157 kB
+├   └ /en/student/games/sentence/dungeon-liberator
+├ ● /[locale]/student/games/sentence/griffin-riders-escape   1.96 kB         140 kB
+├   └ /en/student/games/sentence/griffin-riders-escape
+├ ● /[locale]/student/games/sentence/griffin-sky-joust       2.81 kB         157 kB
+├   └ /en/student/games/sentence/griffin-sky-joust
+├ ● /[locale]/student/games/sentence/gryphon-patrol          3.52 kB         158 kB
+├   └ /en/student/games/sentence/gryphon-patrol
+├ ● /[locale]/student/games/sentence/haunted-library          4.5 kB         156 kB
+├   └ /en/student/games/sentence/haunted-library
+├ ● /[locale]/student/games/sentence/labyrinth-goblin-king   5.39 kB         157 kB
+├   └ /en/student/games/sentence/labyrinth-goblin-king
+├ ● /[locale]/student/games/sentence/potion-rush             5.85 kB         158 kB
+├   └ /en/student/games/sentence/potion-rush
+├ ● /[locale]/student/games/sentence/realm-carver            4.77 kB         156 kB
+├   └ /en/student/games/sentence/realm-carver
+├ ● /[locale]/student/games/sentence/rune-forge-chamber      5.41 kB         157 kB
+├   └ /en/student/games/sentence/rune-forge-chamber
+├ ● /[locale]/student/games/sentence/shadow-gate-dungeon     5.39 kB         157 kB
+├   └ /en/student/games/sentence/shadow-gate-dungeon
+├ ● /[locale]/student/games/sentence/spellweavers-run        5.39 kB         157 kB
+├   └ /en/student/games/sentence/spellweavers-run
+├ ● /[locale]/student/games/sentence/storm-castle-tower      5.19 kB         157 kB
+├   └ /en/student/games/sentence/storm-castle-tower
+├ ● /[locale]/student/games/sentence/village-guardian        5.37 kB         157 kB
+├   └ /en/student/games/sentence/village-guardian
+├ ● /[locale]/student/games/vocabulary/alchemists-synthesis  5.38 kB         292 kB
+├   └ /en/student/games/vocabulary/alchemists-synthesis
+├ ● /[locale]/student/games/vocabulary/archers-revenge       9.63 kB         296 kB
+├   └ /en/student/games/vocabulary/archers-revenge
+├ ● /[locale]/student/games/vocabulary/dragon-flight           19 kB         327 kB
+├   └ /en/student/games/vocabulary/dragon-flight
+├ ● /[locale]/student/games/vocabulary/dragon-rider          16.4 kB         324 kB
+├   └ /en/student/games/vocabulary/dragon-rider
+├ ● /[locale]/student/games/vocabulary/enchanted-library     5.11 kB         157 kB
+├   └ /en/student/games/vocabulary/enchanted-library
+├ ● /[locale]/student/games/vocabulary/magic-defense         16.8 kB         228 kB
+├   └ /en/student/games/vocabulary/magic-defense
+├ ● /[locale]/student/games/vocabulary/paladins-twin-soul    4.65 kB         156 kB
+├   └ /en/student/games/vocabulary/paladins-twin-soul
+├ ● /[locale]/student/games/vocabulary/rpg-battle            16.7 kB         207 kB
+├   └ /en/student/games/vocabulary/rpg-battle
+├ ● /[locale]/student/games/vocabulary/rune-match            4.38 kB         156 kB
+├   └ /en/student/games/vocabulary/rune-match
+├ ● /[locale]/student/games/vocabulary/wizard-vs-zombie        10 kB         299 kB
+├   └ /en/student/games/vocabulary/wizard-vs-zombie
+├ ● /[locale]/student/leaderboard                            2.75 kB         119 kB
+├   └ /en/student/leaderboard
+├ ƒ /api/v1/games/abyssal-well/complete                        266 B         103 kB
+├ ○ /api/v1/games/abyssal-well/sentences                       266 B         103 kB
+├ ƒ /api/v1/games/alchemists-synthesis/complete                266 B         103 kB
+├ ○ /api/v1/games/alchemists-synthesis/vocabulary              266 B         103 kB
+├ ƒ /api/v1/games/archers-revenge/complete                     266 B         103 kB
+├ ○ /api/v1/games/archers-revenge/vocabulary                   266 B         103 kB
+├ ƒ /api/v1/games/castle-defense/complete                      266 B         103 kB
+├ ○ /api/v1/games/castle-defense/sentences                     266 B         103 kB
+├ ƒ /api/v1/games/devourer-slime/complete                      266 B         103 kB
+├ ○ /api/v1/games/devourer-slime/sentences                     266 B         103 kB
+├ ƒ /api/v1/games/dragon-flight/complete                       266 B         103 kB
+├ ○ /api/v1/games/dragon-flight/ranking                        266 B         103 kB
+├ ○ /api/v1/games/dragon-flight/vocabulary                     266 B         103 kB
+├ ƒ /api/v1/games/dragon-rider/complete                        266 B         103 kB
+├ ○ /api/v1/games/dragon-rider/vocabulary                      266 B         103 kB
+├ ƒ /api/v1/games/dungeon-liberator/complete                   266 B         103 kB
+├ ○ /api/v1/games/dungeon-liberator/ranking                    266 B         103 kB
+├ ○ /api/v1/games/dungeon-liberator/sentences                  266 B         103 kB
+├ ƒ /api/v1/games/enchanted-library/complete                   266 B         103 kB
+├ ○ /api/v1/games/enchanted-library/vocabulary                 266 B         103 kB
+├ ƒ /api/v1/games/griffin-riders-escape/complete               266 B         103 kB
+├ ○ /api/v1/games/griffin-riders-escape/sentences              266 B         103 kB
+├ ƒ /api/v1/games/griffin-sky-joust/complete                   266 B         103 kB
+├ ○ /api/v1/games/griffin-sky-joust/sentences                  266 B         103 kB
+├ ƒ /api/v1/games/gryphon-patrol/complete                      266 B         103 kB
+├ ○ /api/v1/games/gryphon-patrol/ranking                       266 B         103 kB
+├ ○ /api/v1/games/gryphon-patrol/sentences                     266 B         103 kB
+├ ƒ /api/v1/games/haunted-library/complete                     266 B         103 kB
+├ ○ /api/v1/games/haunted-library/sentences                    266 B         103 kB
+├ ƒ /api/v1/games/labyrinth-goblin-king/complete               266 B         103 kB
+├ ○ /api/v1/games/labyrinth-goblin-king/sentences              266 B         103 kB
+├ ƒ /api/v1/games/magic-defense/complete                       266 B         103 kB
+├ ○ /api/v1/games/magic-defense/vocabulary                     266 B         103 kB
+├ ƒ /api/v1/games/paladins-twin-soul/complete                  266 B         103 kB
+├ ○ /api/v1/games/paladins-twin-soul/vocabulary                266 B         103 kB
+├ ƒ /api/v1/games/potion-rush/complete                         266 B         103 kB
+├ ○ /api/v1/games/potion-rush/ranking                          266 B         103 kB
+├ ○ /api/v1/games/potion-rush/sentences                        266 B         103 kB
+├ ƒ /api/v1/games/realm-carver/complete                        266 B         103 kB
+├ ○ /api/v1/games/realm-carver/sentences                       266 B         103 kB
+├ ƒ /api/v1/games/rpg-battle/complete                          266 B         103 kB
+├ ○ /api/v1/games/rpg-battle/vocabulary                        266 B         103 kB
+├ ƒ /api/v1/games/rune-forge-chamber/complete                  266 B         103 kB
+├ ○ /api/v1/games/rune-forge-chamber/sentences                 266 B         103 kB
+├ ƒ /api/v1/games/rune-match/complete                          266 B         103 kB
+├ ○ /api/v1/games/rune-match/vocabulary                        266 B         103 kB
+├ ƒ /api/v1/games/shadow-gate-dungeon/complete                 266 B         103 kB
+├ ○ /api/v1/games/shadow-gate-dungeon/sentences                266 B         103 kB
+├ ƒ /api/v1/games/spellweavers-run/complete                    266 B         103 kB
+├ ○ /api/v1/games/spellweavers-run/sentences                   266 B         103 kB
+├ ƒ /api/v1/games/storm-castle-tower/complete                  266 B         103 kB
+├ ○ /api/v1/games/storm-castle-tower/sentences                 266 B         103 kB
+├ ƒ /api/v1/games/village-guardian/complete                    266 B         103 kB
+├ ○ /api/v1/games/village-guardian/sentences                   266 B         103 kB
+├ ƒ /api/v1/games/wizard-vs-zombie/complete                    266 B         103 kB
+├ ○ /api/v1/games/wizard-vs-zombie/vocabulary                  266 B         103 kB
+└ ○ /dev/game-screens                                        3.58 kB         161 kB
++ First Load JS shared by all                                 103 kB
+  ├ chunks/1255-5d6ce65c18108441.js                          45.7 kB
+  ├ chunks/4bd1b696-100b9d70ed4e49c1.js                      54.2 kB
+  └ other shared chunks (total)                              2.58 kB
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+[0m

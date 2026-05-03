@@ -83,6 +83,26 @@ describe('abyssalWell', () => {
       expect(pos0.x).toBeCloseTo(pos8.x)
       expect(pos0.y).toBeCloseTo(pos8.y)
     })
+
+    it('should place player (depth=1) at the top of the screen (rim)', () => {
+      const playerPos = getLanePosition(0, 1)
+      const enemyPos = getLanePosition(0, 0)
+      
+      // Player (depth=1, rim) should be higher (smaller y) than enemy spawn (depth=0, far)
+      expect(playerPos.y).toBeLessThan(enemyPos.y)
+    })
+
+    it('should give player (depth=1) a larger radius than far enemies (depth=0)', () => {
+      const playerPos = getLanePosition(0, 1)
+      const enemyPos = getLanePosition(0, 0)
+      const centerX = ABYSSAL_WELL_CONFIG.gameWidth / 2
+      
+      const playerRadius = Math.abs(playerPos.x - centerX)
+      const enemyRadius = Math.abs(enemyPos.x - centerX)
+      
+      // Player at rim should have larger radius (closer to viewer)
+      expect(playerRadius).toBeGreaterThan(enemyRadius)
+    })
   })
 
   describe('rotatePlayer', () => {

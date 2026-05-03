@@ -91,10 +91,13 @@ export function getLanePosition(lane: number, depth: number): { x: number; y: nu
   const maxRadius = ABYSSAL_WELL_CONFIG.rimRadius * 2
   const minRadius = 20
   
-  const radius = minRadius + (1 - depth) * (maxRadius - minRadius)
+  // depth=1 is rim (player, near/top), depth=0 is far end (enemy spawn, bottom)
+  const radius = minRadius + depth * (maxRadius - minRadius)
   
   const x = centerX + Math.cos(angle) * radius
-  const y = rimY - (1 - depth) * (ABYSSAL_WELL_CONFIG.gameHeight - rimY - 50)
+  // depth=1 -> rimY - 1*(gameHeight - rimY - 50) = top of screen
+  // depth=0 -> rimY - 0 = bottom of screen
+  const y = rimY - depth * (ABYSSAL_WELL_CONFIG.gameHeight - rimY - 50)
   
   return { x, y }
 }
