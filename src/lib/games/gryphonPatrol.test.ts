@@ -96,6 +96,63 @@ describe('GryphonPatrol Logic', () => {
       
       expect(state.player.vx).toBe(GRYPHON_PATROL_CONFIG.player.speed);
     });
+
+    it('should produce bounded velocity after many frames of held input', () => {
+      let state = createInitialGryphonPatrolState(sentence);
+      state.status = 'playing';
+      
+      // Simulate holding right for 60 frames
+      for (let i = 0; i < 60; i++) {
+        state = handleGryphonPatrolInput(state, { dx: 1, dy: 0 });
+        state = tickGryphonPatrol(state, 0.016);
+      }
+      
+      // Velocity should be bounded, not growing unbounded
+      expect(state.player.vx).toBeLessThanOrEqual(GRYPHON_PATROL_CONFIG.player.speed * 1.5);
+      expect(state.player.vx).toBeGreaterThan(0);
+    });
+
+    it('should use final post-tick player position for enemy collision', () => {
+      let state = createInitialGryphonPatrolState(sentence);
+      state.status = 'playing';
+      state.player.x = 100;
+      state.player.y = 100;
+      state.player.vx = 50; // Moving right
+      state.player.hp = 3;
+      state.player.invulnerableTime = 0;
+      
+      // Place enemy at position 145 - player will overlap after moving to 150
+      state.enemies = [{
+        id: 'e1', x: 145, y: 100, vx: 0, vy: 0, size: 40,
+        word: 'Wrong', isTarget: false, isActive: true
+      }];
+      
+      state = tickGryphonPatrol(state, 1);
+      
+      // Player moved to x=150, collided with enemy at x=145
+      // Distance = 5, threshold = (40+40)/2 = 40, so collision occurs
+      expect(state.player.hp).toBe(2);
+    });
+
+    it('should shoot projectile to the right when idle', () => {
+      let state = createInitialGryphonPatrolState(sentence);
+      state.status = 'playing';
+      state.player.vx = 0;
+      
+      state = shootGryphonPatrolProjectile(state);
+      
+      expect(state.projectiles[0].vx).toBe(500);
+    });
+
+    it('should shoot projectile in horizontal movement direction', () => {
+      let state = createInitialGryphonPatrolState(sentence);
+      state.status = 'playing';
+      state.player.vx = -100;
+      
+      state = shootGryphonPatrolProjectile(state);
+      
+      expect(state.projectiles[0].vx).toBe(-500);
+    });
   });
 
   describe('Camera System', () => {

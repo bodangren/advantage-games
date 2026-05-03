@@ -36,11 +36,11 @@
   - [x] Add the missing reschedule inside the main gameplay loop.
   - [x] Confirm the separate lane lerp loop does not mask a stopped gameplay loop.
 
-- [ ] Task: Stabilize Gryphon Patrol movement and collision state
-  - [ ] Write a pure logic test proving held input produces bounded velocity after many frames.
-  - [ ] Write a collision test proving collisions use the final post-input/post-tick player position.
-  - [ ] Adjust input handling so velocity is set or clamped rather than accumulated unintentionally.
-  - [ ] Verify projectile direction while idle, moving horizontally, and moving vertically.
+- [x] Task: Stabilize Gryphon Patrol movement and collision state
+  - [x] Write a pure logic test proving held input produces bounded velocity after many frames.
+  - [x] Write a collision test proving collisions use the final post-input/post-tick player position.
+  - [x] Adjust input handling so velocity is set or clamped rather than accumulated unintentionally.
+  - [x] Verify projectile direction while idle, moving horizontally, and moving vertically.
 
 - [ ] Task: Fix Devourer Slime camera clamp and repeated enemy damage
   - [ ] Write tests for arena smaller than viewport in the vertical axis.

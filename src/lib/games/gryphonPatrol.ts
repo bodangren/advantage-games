@@ -218,7 +218,7 @@ export const tickGryphonPatrol = (state: GameState, deltaTime: number): GameStat
   const nextEnemies = finalState.enemies.map(enemy => {
     if (!enemy.isActive) return enemy;
 
-    if (nextInvulnerableTime === 0 && checkCollision(player, enemy)) {
+    if (nextInvulnerableTime === 0 && checkCollision(finalState.player, enemy)) {
       nextHp -= 1;
       nextInvulnerableTime = 1; // 1 second invulnerability
       if (nextHp <= 0) {
@@ -281,8 +281,8 @@ export const handleGryphonPatrolInput = (state: GameState, input: { dx: number, 
     ...state,
     player: {
       ...player,
-      vx: player.vx + input.dx * speed,
-      vy: player.vy + input.dy * speed,
+      vx: input.dx * speed,
+      vy: input.dy * speed,
     }
   };
 };
