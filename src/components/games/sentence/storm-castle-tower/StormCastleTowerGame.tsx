@@ -36,7 +36,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
   const [gameState, setGameState] = useState<StormCastleTowerState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<StormCastleTowerGameResult | null>(null)
-  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('medium')
+  const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty>('normal')
   const [selectedGuard, setSelectedGuard] = useState<GuardType>('alert-sentry')
   const hasReportedRef = useRef(false)
   const lastHazardRef = useRef(0)
@@ -238,7 +238,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
                 className="bg-slate-800 border border-white/20 rounded-lg px-3 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-cyan-400"
               >
                 <option value="easy">Squire&apos;s Tower (4 words)</option>
-                <option value="medium">Knight&apos;s Keep (5 words)</option>
+                <option value="normal">Knight&apos;s Keep (5 words)</option>
                 <option value="hard">Lord&apos;s Citadel (6 words)</option>
               </select>
             </div>

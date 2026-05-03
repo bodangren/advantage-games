@@ -78,24 +78,16 @@ describe('gameCards', () => {
       const hasPage = fs.existsSync(pagePath);
       const hasApi = fs.existsSync(apiPath);
       
-      // For babel-architect specifically, check all surfaces since it has no implementation
-      if (gameId === 'babel-architect') {
-        const componentPath = path.join(process.cwd(), 'src/components/games', gameType, gameId);
-        const logicPath = path.join(process.cwd(), 'src/lib/games');
-        const hasComponent = fs.existsSync(componentPath);
-        const logicFiles = fs.readdirSync(logicPath).filter((f: string) => {
-          return f.toLowerCase().includes('babelarchitect') && !f.endsWith('.test.ts') && !f.endsWith('.test.tsx');
-        });
-        const hasLogic = logicFiles.length > 0;
-        
-        if (!hasComponent || !hasPage || !hasApi || !hasLogic) {
-          missingGames.push(gameId);
-        }
-        return;
-      }
+      // Check component surface
+      const componentPath = path.join(process.cwd(), 'src/components/games', gameType, gameId);
+      const hasComponent = fs.existsSync(componentPath);
       
-      if (!hasPage || !hasApi) {
-        missingGames.push(`${gameId}: page=${hasPage}, api=${hasApi}`);
+      // magic-defense uses shared components in src/components/games/game/
+      const usesSharedComponents = gameId === 'magic-defense' && 
+        fs.existsSync(path.join(process.cwd(), 'src/components/games/game/GameContainer.tsx'));
+      
+      if (!hasPage || !hasApi || (!hasComponent && !usesSharedComponents)) {
+        missingGames.push(`${gameId}: page=${hasPage}, api=${hasApi}, component=${hasComponent || usesSharedComponents}`);
       }
     });
 
