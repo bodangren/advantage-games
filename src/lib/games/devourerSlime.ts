@@ -45,6 +45,7 @@ export type SlimeState = {
   totalAttempts: number
   difficulty: Difficulty
   lastEvent?: 'correct' | 'incorrect' | 'hit' | 'eat_enemy' | 'victory' | 'defeat'
+  invulnerableTime: number
 }
 
 export const ARENA_WIDTH = 800 // Larger arena for growth
@@ -88,7 +89,8 @@ export function createSlimeState(
     gameTime: 0,
     correctAnswers: 0,
     totalAttempts: 0,
-    difficulty: config.difficulty || 'medium'
+    difficulty: config.difficulty || 'medium',
+    invulnerableTime: 0
   }
 
   return spawnLevel(state, config.rng ?? Math.random)
@@ -149,7 +151,12 @@ export function moveSlime(state: SlimeState, dx: number, dy: number, dt: number)
 export function tickSlime(state: SlimeState, dt: number, rng: () => number = Math.random): SlimeState {
   if (state.phase !== 'playing') return state
 
-  let nextState: SlimeState = { ...state, gameTime: state.gameTime + dt, lastEvent: undefined }
+  let nextState: SlimeState = { 
+    ...state, 
+    gameTime: state.gameTime + dt, 
+    lastEvent: undefined,
+    invulnerableTime: Math.max(0, state.invulnerableTime - dt)
+  }
 
   // 1. Move Enemies
   nextState.enemies = nextState.enemies.map(enemy => {
@@ -200,10 +207,12 @@ function handleCollisions(state: SlimeState, rng: () => number): SlimeState {
         nextState.enemies = newEnemies
         nextState.score += 500
         nextState.lastEvent = 'eat_enemy'
-      } else {
-        // Get hit
+      } else if (nextState.invulnerableTime <= 0) {
+        // Get hit (only if not invulnerable)
         nextState.lives -= 1
         nextState.lastEvent = 'hit'
+        nextState.invulnerableTime = 1000 // 1 second invulnerability
+        
         // Shrink
         nextState.slime.radius = Math.max(INITIAL_SLIME_RADIUS, nextState.slime.radius * 0.8)
         nextState.slime.scale = nextState.slime.radius / INITIAL_SLIME_RADIUS

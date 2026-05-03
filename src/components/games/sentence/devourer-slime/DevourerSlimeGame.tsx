@@ -110,8 +110,12 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
     if (!gameState) return []
     const indicators: { x: number; y: number; label: string; color: string }[] = []
     
-    const cameraX = Math.max(0, Math.min(ARENA_WIDTH - VIEWPORT_WIDTH, gameState.slime.pos.x - VIEWPORT_WIDTH / 2))
-    const cameraY = Math.max(0, Math.min(ARENA_HEIGHT - VIEWPORT_HEIGHT, gameState.slime.pos.y - VIEWPORT_HEIGHT / 2))
+    const cameraX = ARENA_WIDTH > VIEWPORT_WIDTH
+      ? Math.max(0, Math.min(ARENA_WIDTH - VIEWPORT_WIDTH, gameState.slime.pos.x - VIEWPORT_WIDTH / 2))
+      : (ARENA_WIDTH - VIEWPORT_WIDTH) / 2
+    const cameraY = ARENA_HEIGHT > VIEWPORT_HEIGHT
+      ? Math.max(0, Math.min(ARENA_HEIGHT - VIEWPORT_HEIGHT, gameState.slime.pos.y - VIEWPORT_HEIGHT / 2))
+      : (ARENA_HEIGHT - VIEWPORT_HEIGHT) / 2
     
     // Target orb indicator
     const targetOrb = gameState.orbs.find(o => !o.isEaten && o.index === gameState.targetWordIndex)
@@ -180,9 +184,14 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
   const currentSentence = gameState.sentences[gameState.currentSentenceIndex]
   const words = currentSentence?.term.split(' ') || []
 
-  // Camera logic: Center on Slime
-  const cameraX = Math.max(0, Math.min(ARENA_WIDTH - VIEWPORT_WIDTH, gameState.slime.pos.x - VIEWPORT_WIDTH / 2))
-  const cameraY = Math.max(0, Math.min(ARENA_HEIGHT - VIEWPORT_HEIGHT, gameState.slime.pos.y - VIEWPORT_HEIGHT / 2))
+  // Camera logic: Center on Slime, clamp to arena bounds
+  // When arena is smaller than viewport, center the arena in the viewport
+  const cameraX = ARENA_WIDTH > VIEWPORT_WIDTH
+    ? Math.max(0, Math.min(ARENA_WIDTH - VIEWPORT_WIDTH, gameState.slime.pos.x - VIEWPORT_WIDTH / 2))
+    : (ARENA_WIDTH - VIEWPORT_WIDTH) / 2
+  const cameraY = ARENA_HEIGHT > VIEWPORT_HEIGHT
+    ? Math.max(0, Math.min(ARENA_HEIGHT - VIEWPORT_HEIGHT, gameState.slime.pos.y - VIEWPORT_HEIGHT / 2))
+    : (ARENA_HEIGHT - VIEWPORT_HEIGHT) / 2
 
   const indicators = getIndicators()
   const dpadSize = getEffectiveTouchTarget(64)

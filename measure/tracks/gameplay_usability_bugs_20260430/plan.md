@@ -42,11 +42,11 @@
   - [x] Adjust input handling so velocity is set or clamped rather than accumulated unintentionally.
   - [x] Verify projectile direction while idle, moving horizontally, and moving vertically.
 
-- [ ] Task: Fix Devourer Slime camera clamp and repeated enemy damage
-  - [ ] Write tests for arena smaller than viewport in the vertical axis.
-  - [ ] Write tests for sustained enemy overlap causing one damage event per cooldown window.
-  - [ ] Fix camera centering/clamping so no blank impossible movement area appears.
-  - [ ] Add or reuse invulnerability/cooldown for enemy contact damage.
+- [x] Task: Fix Devourer Slime camera clamp and repeated enemy damage
+  - [x] Write tests for arena smaller than viewport in the vertical axis.
+  - [x] Write tests for sustained enemy overlap causing one damage event per cooldown window.
+  - [x] Fix camera centering/clamping so no blank impossible movement area appears.
+  - [x] Add or reuse invulnerability/cooldown for enemy contact damage.
 
 ## Phase 2: Sentence Progression and End-State Correctness
 

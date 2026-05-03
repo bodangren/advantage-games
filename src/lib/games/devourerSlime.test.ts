@@ -97,4 +97,43 @@ describe('Devourer Slime Logic', () => {
     state = tickSlime(state, 16.6)
     expect(state.phase).toBe('defeat')
   })
+
+  it('should only take damage once per collision window from sustained enemy overlap', () => {
+    let state = createSlimeState(mockSentences)
+    state.lives = 3
+    state.enemies[0].pos = { ...state.slime.pos }
+    state.enemies[0].vel = { x: 0, y: 0 } // Keep enemy stationary
+    
+    // First tick: take damage
+    state = tickSlime(state, 16.6)
+    expect(state.lives).toBe(2)
+    
+    // Force enemy back to slime position (overriding pushback)
+    state.enemies[0].pos = { ...state.slime.pos }
+    
+    // Second tick: should NOT take damage again due to invulnerability
+    state = tickSlime(state, 16.6)
+    expect(state.lives).toBe(2) // Should still be 2, not 1
+  })
+
+  it('should allow damage again after invulnerability expires', () => {
+    let state = createSlimeState(mockSentences)
+    state.lives = 3
+    state.enemies[0].pos = { ...state.slime.pos }
+    state.enemies[0].vel = { x: 0, y: 0 } // Keep enemy stationary
+    
+    // First tick: take damage
+    state = tickSlime(state, 16.6)
+    expect(state.lives).toBe(2)
+    
+    // Force enemy back to slime position after pushback
+    state.enemies[0].pos = { ...state.slime.pos }
+    
+    // Wait for invulnerability to expire (assume 1 second)
+    state = tickSlime(state, 1000)
+    
+    // Still overlapping, should take damage again
+    state = tickSlime(state, 16.6)
+    expect(state.lives).toBe(1)
+  })
 })
