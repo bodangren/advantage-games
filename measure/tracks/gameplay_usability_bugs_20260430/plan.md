@@ -19,11 +19,11 @@
 
 ## Phase 1: Input, Loop, Camera, and Orientation Blockers
 
-- [ ] Task: Fix The Abyssal Well player orientation and controls
-  - [ ] Write a logic/component regression test proving the player renders at the intended rim/top-side position, not the lower well.
-  - [ ] Verify left/right movement changes lane predictably without vertical drift.
-  - [ ] Verify fired projectiles originate at the player/rim and travel through the tunnel toward enemies.
-  - [ ] Implement the smallest coordinate/orientation change that makes the visual model match the Tempest-style design.
+- [x] Task: Fix The Abyssal Well player orientation and controls
+  - [x] Added regression tests proving player (depth=1) renders at top rim and enemies (depth=0) spawn at bottom
+  - [x] Fixed `getLanePosition` to swap depth semantics: depth=1 is rim/top with larger radius, depth=0 is far/bottom with smaller radius
+  - [x] Left/right rotation via `rotatePlayer` unchanged (lane-based, no vertical drift)
+  - [x] Projectiles travel from rim (depth=1) toward center (decreasing depth) - verified in existing tests
 
 - [ ] Task: Fix Storm Castle Tower inverted climbing
   - [ ] Write tests for initial player row/position and ArrowUp/W movement.
