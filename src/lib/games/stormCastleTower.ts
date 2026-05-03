@@ -74,10 +74,14 @@ export function createStormCastleTowerState(
 
   const windows = createWindows(words, rng)
 
+  // Player starts below the bottom-most window
+  const baseRow = 3
+  const startRow = baseRow + words.length * 3 + 2
+
   return {
     phase: 'start',
     player: {
-      position: { col: Math.floor(STORM_CASTLE_TOWER_CONFIG.columns / 2), row: 0 },
+      position: { col: Math.floor(STORM_CASTLE_TOWER_CONFIG.columns / 2), row: startRow },
       lives: STORM_CASTLE_TOWER_CONFIG.player.lives,
       lastMoveTime: 0,
     },
@@ -102,7 +106,9 @@ function createWindows(words: string[], rng: () => number): GameWindow[] {
   
   words.forEach((word, index) => {
     const col = Math.floor(rng() * columns)
-    const row = baseRow + index * 3 + Math.floor(rng() * 2)
+    // Reverse order: word 0 at bottom (highest row), last word at top (lowest row)
+    // This way the player climbs upward to collect words in order
+    const row = baseRow + (words.length - 1 - index) * 3 + Math.floor(rng() * 2)
     
     windows.push({
       id: `window-${index}`,
@@ -132,10 +138,10 @@ export function movePlayer(
   
   switch (direction) {
     case 'up':
-      newPos = { ...position, row: position.row + 1 }
+      newPos = { ...position, row: Math.max(0, position.row - 1) }
       break
     case 'down':
-      newPos = { ...position, row: Math.max(0, position.row - 1) }
+      newPos = { ...position, row: position.row + 1 }
       break
     case 'left':
       newPos = { ...position, col: Math.max(0, position.col - 1) }

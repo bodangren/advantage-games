@@ -31,6 +31,25 @@ describe('stormCastleTower', () => {
       expect(state.windows.length).toBe(state.words.length)
     })
 
+    it('should start player at bottom of tower', () => {
+      const state = createStormCastleTowerState(mockVocabulary)
+      
+      // Player should start below all windows
+      const maxWindowRow = Math.max(...state.windows.map(w => w.position.row))
+      expect(state.player.position.row).toBeGreaterThan(maxWindowRow)
+    })
+
+    it('should place first word at bottom and last word at top', () => {
+      const state = createStormCastleTowerState(mockVocabulary)
+      
+      const word0Window = state.windows.find(w => w.wordIndex === 0)!
+      const lastWordWindow = state.windows.find(w => w.wordIndex === state.words.length - 1)!
+      
+      // Word 0 (first target) should be at the bottom (highest row)
+      // Last word should be at the top (lowest row)
+      expect(word0Window.position.row).toBeGreaterThan(lastWordWindow.position.row)
+    })
+
     it('should throw error with empty vocabulary', () => {
       expect(() => createStormCastleTowerState([])).toThrow('Vocabulary cannot be empty')
     })
@@ -79,20 +98,31 @@ describe('stormCastleTower', () => {
       playingState = { ...playingState, gameTime: 1000 }
     })
 
-    it('should move player up', () => {
+    it('should move player up (decrease row)', () => {
+      const startRow = playingState.player.position.row
       const newState = movePlayer(playingState, 'up')
-      expect(newState.player.position.row).toBe(1)
+      expect(newState.player.position.row).toBe(startRow - 1)
     })
 
-    it('should not move player below row 0', () => {
+    it('should move player down (increase row)', () => {
+      const startRow = playingState.player.position.row
       const newState = movePlayer(playingState, 'down')
+      expect(newState.player.position.row).toBe(startRow + 1)
+    })
+
+    it('should not move player above row 0', () => {
+      const topState = { 
+        ...playingState, 
+        player: { ...playingState.player, position: { col: playingState.player.position.col, row: 0 } }
+      }
+      const newState = movePlayer(topState, 'up')
       expect(newState.player.position.row).toBe(0)
     })
 
     it('should move player left within bounds', () => {
       const centerState = { 
         ...playingState, 
-        player: { ...playingState.player, position: { col: 2, row: 0 } }
+        player: { ...playingState.player, position: { col: 2, row: playingState.player.position.row } }
       }
       const newState = movePlayer(centerState, 'left')
       expect(newState.player.position.col).toBe(1)
@@ -101,7 +131,7 @@ describe('stormCastleTower', () => {
     it('should not move player left past column 0', () => {
       const leftState = { 
         ...playingState, 
-        player: { ...playingState.player, position: { col: 0, row: 0 } }
+        player: { ...playingState.player, position: { col: 0, row: playingState.player.position.row } }
       }
       const newState = movePlayer(leftState, 'left')
       expect(newState.player.position.col).toBe(0)
@@ -110,7 +140,7 @@ describe('stormCastleTower', () => {
     it('should move player right within bounds', () => {
       const centerState = { 
         ...playingState, 
-        player: { ...playingState.player, position: { col: 1, row: 0 } }
+        player: { ...playingState.player, position: { col: 1, row: playingState.player.position.row } }
       }
       const newState = movePlayer(centerState, 'right')
       expect(newState.player.position.col).toBe(2)
@@ -119,7 +149,7 @@ describe('stormCastleTower', () => {
     it('should not move player right past max column', () => {
       const rightState = { 
         ...playingState, 
-        player: { ...playingState.player, position: { col: STORM_CASTLE_TOWER_CONFIG.columns - 1, row: 0 } }
+        player: { ...playingState.player, position: { col: STORM_CASTLE_TOWER_CONFIG.columns - 1, row: playingState.player.position.row } }
       }
       const newState = movePlayer(rightState, 'right')
       expect(newState.player.position.col).toBe(STORM_CASTLE_TOWER_CONFIG.columns - 1)
@@ -128,13 +158,14 @@ describe('stormCastleTower', () => {
     it('should respect move cooldown', () => {
       const state1 = movePlayer(playingState, 'up')
       const state2 = movePlayer(state1, 'up')
-      expect(state2.player.position.row).toBe(1)
+      expect(state2.player.position.row).toBe(state1.player.position.row)
     })
 
     it('should not move when not in playing phase', () => {
       const startState = createStormCastleTowerState(mockVocabulary)
+      const initialRow = startState.player.position.row
       const newState = movePlayer(startState, 'up')
-      expect(newState.player.position.row).toBe(0)
+      expect(newState.player.position.row).toBe(initialRow)
     })
   })
 

@@ -25,11 +25,11 @@
   - [x] Left/right rotation via `rotatePlayer` unchanged (lane-based, no vertical drift)
   - [x] Projectiles travel from rim (depth=1) toward center (decreasing depth) - verified in existing tests
 
-- [ ] Task: Fix Storm Castle Tower inverted climbing
-  - [ ] Write tests for initial player row/position and ArrowUp/W movement.
-  - [ ] Make the player start at the bottom of the tower.
-  - [ ] Make ArrowUp/W move visually upward and ArrowDown/S move visually downward.
-  - [ ] Verify window collection, hazards, and victory still use the corrected coordinate convention.
+- [x] Task: Fix Storm Castle Tower inverted climbing
+  - [x] Write tests for initial player row/position and ArrowUp/W movement.
+  - [x] Make the player start at the bottom of the tower.
+  - [x] Make ArrowUp/W move visually upward and ArrowDown/S move visually downward.
+  - [x] Verify window collection, hazards, and victory still use the corrected coordinate convention.
 
 - [ ] Task: Fix Griffin Rider's Escape one-frame gameplay loop
   - [ ] Write a component test that starts the game and proves two or more gameplay ticks occur from consecutive `requestAnimationFrame` callbacks.
