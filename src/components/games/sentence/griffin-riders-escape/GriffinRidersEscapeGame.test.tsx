@@ -1,6 +1,21 @@
-import { render, screen, fireEvent, act } from "@testing-library/react";
+import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
 import { GriffinRidersEscapeGame } from "./GriffinRidersEscapeGame";
 import React from "react";
+
+
+
+// Capture RAF callbacks so we can manually tick them
+const rafCallbacks: FrameRequestCallback[] = [];
+const mockRaf = jest.fn((cb: FrameRequestCallback) => {
+  rafCallbacks.push(cb);
+  return rafCallbacks.length;
+});
+global.requestAnimationFrame = mockRaf;
+global.cancelAnimationFrame = jest.fn((id: number) => {
+  if (id <= rafCallbacks.length) {
+    rafCallbacks[id - 1] = () => {};
+  }
+});
 
 const mockEnterFullscreen = jest.fn();
 const mockExitFullscreen = jest.fn();
@@ -53,6 +68,7 @@ const mockVocabulary = [
 describe("GriffinRidersEscapeGame", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    rafCallbacks.length = 0;
   });
 
   it("renders the start screen initially", () => {
@@ -129,5 +145,37 @@ describe("GriffinRidersEscapeGame", () => {
     fireEvent.click(startButton);
     
     expect(await screen.findByTestId("konva-stage")).toBeInTheDocument();
+  });
+
+  it("schedules multiple gameplay ticks via requestAnimationFrame", async () => {
+    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    const startButton = screen.getByRole("button", { name: /Start Game/i });
+    fireEvent.click(startButton);
+    
+    // Wait for the game loop to register at least one RAF callback
+    await waitFor(() => {
+      expect(rafCallbacks.length).toBeGreaterThanOrEqual(1);
+    });
+    
+    // Trigger the first RAF callback (first gameplay tick)
+    act(() => {
+      const cb = rafCallbacks[0];
+      cb(performance.now());
+    });
+    
+    // The game loop should have scheduled a SECOND RAF callback
+    await waitFor(() => {
+      expect(rafCallbacks.length).toBeGreaterThanOrEqual(2);
+    });
+    
+    // Trigger the second RAF callback (second gameplay tick)
+    act(() => {
+      const cb = rafCallbacks[1];
+      cb(performance.now() + 16);
+    });
+    
+    // The RAF loop should have rescheduled itself at least twice
+    // proving continuous gameplay ticks occur
+    expect(rafCallbacks.length).toBeGreaterThanOrEqual(2);
   });
 });

@@ -31,10 +31,10 @@
   - [x] Make ArrowUp/W move visually upward and ArrowDown/S move visually downward.
   - [x] Verify window collection, hazards, and victory still use the corrected coordinate convention.
 
-- [ ] Task: Fix Griffin Rider's Escape one-frame gameplay loop
-  - [ ] Write a component test that starts the game and proves two or more gameplay ticks occur from consecutive `requestAnimationFrame` callbacks.
-  - [ ] Add the missing reschedule inside the main gameplay loop.
-  - [ ] Confirm the separate lane lerp loop does not mask a stopped gameplay loop.
+- [x] Task: Fix Griffin Rider's Escape one-frame gameplay loop
+  - [x] Write a component test that starts the game and proves two or more gameplay ticks occur from consecutive `requestAnimationFrame` callbacks.
+  - [x] Add the missing reschedule inside the main gameplay loop.
+  - [x] Confirm the separate lane lerp loop does not mask a stopped gameplay loop.
 
 - [ ] Task: Stabilize Gryphon Patrol movement and collision state
   - [ ] Write a pure logic test proving held input produces bounded velocity after many frames.

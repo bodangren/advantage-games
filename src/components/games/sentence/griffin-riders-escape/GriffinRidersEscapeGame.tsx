@@ -103,6 +103,8 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
       })
 
       setShake(s => Math.max(0, s - 1))
+
+      rafRef.current = requestAnimationFrame(loop)
     }
 
     rafRef.current = requestAnimationFrame(loop)
