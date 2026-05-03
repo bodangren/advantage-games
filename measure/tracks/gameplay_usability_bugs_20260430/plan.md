@@ -2,10 +2,10 @@
 
 ## Phase 0: Baseline Inventory and Guardrails
 
-- [ ] Task: Add playable-card route consistency tests
-  - [ ] Write a failing test that iterates `gameCards` and verifies every `status: 'playable'` card has the expected page/component/API surface for its route.
-  - [ ] Make `babel-architect` truthful by changing it to `coming-soon` unless a complete playable implementation exists when this task starts.
-  - [ ] Verify `astral-mage` and `sorcerer-ziggurat` remain non-playable until implemented.
+- [x] Task: Add playable-card route consistency tests
+  - [x] Enhanced existing test to verify every `status: 'playable'` card has page/component/API surface (src/lib/gameCards.test.ts)
+  - [x] `babel-architect` already changed to `coming-soon` in previous commit
+  - [x] `astral-mage` and `sorcerer-ziggurat` correctly remain `coming-soon`
 
 - [ ] Task: Add a reusable gameplay readability checklist
   - [ ] Document the actual-screen-pixel rule: HUD >= 16 CSS px, words/translations >= 18 CSS px after scaling.
