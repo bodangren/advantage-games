@@ -29,8 +29,8 @@ type WarningStatus = {
 };
 
 export default function ShadowGateDungeonPage() {
-  const t = useScopedI18n("pages.student.gamesPage.shadowGateDungeon");
-  const { data: session } = useSession();
+  useScopedI18n("pages.student.gamesPage.shadowGateDungeon");
+  useSession();
   const [sentences, setSentences] = useState<
     { term: string; translation: string }[]
   >([]);

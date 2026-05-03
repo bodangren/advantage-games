@@ -53,7 +53,7 @@ describe("AlchemistsSynthesisPage", () => {
 
     render(<AlchemistsSynthesisPage />);
 
-    expect(screen.getByText("pages.student.gamesPage.games.alchemistsSynthesis.title")).toBeInTheDocument();
+    expect(screen.getByText("games.alchemistsSynthesis.title")).toBeInTheDocument();
   });
 
   it("should fetch vocabulary on mount", async () => {
@@ -96,6 +96,6 @@ describe("AlchemistsSynthesisPage", () => {
 
     render(<AlchemistsSynthesisPage />);
 
-    expect(screen.getByText("pages.student.gamesPage.backToGames")).toBeInTheDocument();
+    expect(screen.getByText("backToGames")).toBeInTheDocument();
   });
 });

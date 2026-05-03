@@ -26,8 +26,8 @@ export default function RealmCarverPage({
 }) {
   const { locale } = use(params);
   const t = useScopedI18n("pages.student.gamesPage");
-  const currentLocale = useCurrentLocale();
-  const { data: session } = useSession();
+  useCurrentLocale();
+  useSession();
   const setLastResult = useGameStore((state) => state.setLastResult);
   
   const [sentences, setSentences] = useState<SentenceItem[]>([]);

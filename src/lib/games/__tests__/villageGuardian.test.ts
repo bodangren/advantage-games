@@ -175,6 +175,7 @@ describe('villager collision mechanics', () => {
     const stateWithKnightOnVillager: VillageGuardianState = {
       ...state,
       knight: { ...state.knight, x: targetVillager.x, y: targetVillager.y },
+      monsters: [{ ...state.monsters[0], x: -500, y: -500 }],
     }
     const newState = tickVillageGuardian(stateWithKnightOnVillager, 50)
     expect(newState.trail).toHaveLength(1)
