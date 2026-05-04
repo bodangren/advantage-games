@@ -136,10 +136,34 @@
     - Result: 1 suite passed, 4 tests passed, 0 failed
   - [x] Total: 12 suites, 190 tests, all passing
 
-- [ ] Task: Create manual smoke verification matrix
-  - [ ] For each touched game, list the route, start action, primary input, expected first success, expected first failure, victory path, defeat path, restart behavior, and text readability check.
-  - [ ] Include mobile portrait viewport 390x844 and at least one narrower/shorter viewport.
-  - [ ] Include desktop keyboard checks for games with typing or arrow-key controls.
+- [x] Task: Create manual smoke verification matrix
+  - [x] For each touched game, list the route, start action, primary input, expected first success, expected first failure, victory path, defeat path, restart behavior, and text readability check.
+
+### Manual Smoke Verification Matrix
+
+| Game | Route | Start Action | Primary Input | First Success | First Failure | Victory Path | Defeat Path | Restart Behavior | Text Check |
+|------|-------|--------------|---------------|---------------|---------------|--------------|-------------|------------------|------------|
+| Rune Match | /student/games/vocabulary/rune-match | Click "Start Game" | Click grid cells to swap | Match 3+ identical runes | Wrong swap (no match) | Defeat monster via matches | Monster kills player (HP=0) | Resets grid, HP, monster | HUD >=16px, runes >=18px |
+| Archer's Revenge | /student/games/vocabulary/archers-revenge | Click "Start Game" | Click to fire arrows | Hit unshielded target enemy | Hit shielded enemy (retaliation) | Complete all waves (2-5) | HP reaches 0 | Resets waves, HP, score | HUD >=16px, enemy labels >=18px |
+| Dragon Flight | /student/games/vocabulary/dragon-flight | Click "Start Game" | Click left/right gate | Choose correct translation | Choose wrong translation | dragonCount >= bossPower (60-70% acc) | dragonCount < bossPower at timeout | Resets dragons, score, timer | HUD >=16px, gate text >=18px |
+| Dragon Rider | /student/games/vocabulary/dragon-rider | Click "Start Game" | Click left/right gate | Choose correct translation | Choose wrong translation | dragonCount >= bossPower (70% acc) | dragonCount < bossPower at timeout | Resets dragons, score, timer | HUD >=16px, gate text >=18px |
+| Haunted Library | /student/games/sentence/haunted-library | Click "Start Game" | Arrow keys + Up for doors | Open correct word door in order | Open wrong door / ghost collision | Open all sentence word doors | Lives reach 0 | Resets lives, doors, player pos | HUD >=16px, door text >=18px |
+| Realm Carver | /student/games/sentence/realm-carver | Click "Start Game" | Arrow keys to move | Claim territory, capture words | Hit trail / monster | Capture all words in order | HP reaches 0 | Resets grid, HP, words | HUD >=16px, word labels >=18px |
+| Spellweaver's Run | /student/games/sentence/spellweavers-run | Click "Start Game" | Click lane to collect orb | Collect target word orb | Collect wrong orb / miss target | Collect all words in order | Mana reaches 0 | Resets orbs, mana, score | HUD >=16px, orb text >=18px |
+| Potion Rush | /student/games/sentence/potion-rush | Click "Start Game" | Drag ingredients to cauldrons | Drop correct word on matching cauldron | Drop on blocked cauldron / wrong word | Survive until day ends with reputation > 0 | Reputation reaches 0 | Resets day, reputation, score | HUD >=16px, ingredient text >=18px |
+| Magic Defense | /student/games/vocabulary/magic-defense | Click "Start Game" | Type translation and press Enter | Correctly type falling word translation | Wrong spelling / too slow | Survive 60 seconds with castles intact | All castles destroyed | Resets castles, score, timer | HUD >=16px, falling text >=18px |
+| Wizard vs Zombie | /student/games/vocabulary/wizard-vs-zombie | Click "Start Game" | Arrow keys + Cast button | Collect correct orb | Collect wrong orb / zombie collision | Survive with HP > 0 (no time limit) | HP reaches 0 | Clears phase, score, enemies, progress | HUD >=16px, orb text >=18px |
+
+**Viewport Checks:**
+- Mobile portrait: 390x844 (primary target)
+- Narrower: 320x568 (iPhone SE)
+- Desktop: 1280x720 with keyboard input
+
+**Keyboard Games:**
+- Haunted Library: Arrow keys + Up
+- Realm Carver: Arrow keys
+- Magic Defense: Typing input
+- Wizard vs Zombie: Arrow keys + Space/Cast
 
 - [ ] Task: Measure - User Manual Verification 'Gameplay Usability Bug Fixes' (Protocol in workflow.md)
   - [ ] Present the manual verification matrix to the user.
