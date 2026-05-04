@@ -71,6 +71,7 @@ export type LabyrinthGoblinKingState = {
   wrongAnswers: number
   goblinsEaten: number
   gameTime: number
+  completedSentenceIndices: number[]
 }
 
 export type LabyrinthGoblinKingConfig = {
@@ -245,6 +246,7 @@ export function createLabyrinthGoblinKingState(
     wrongAnswers: 0,
     goblinsEaten: 0,
     gameTime: 0,
+    completedSentenceIndices: [],
   }
 }
 
@@ -524,8 +526,21 @@ export function tickLabyrinthGoblinKing(
         newState.player.heroicAuraTimer = LABYRINTH_CONFIG.heroicAuraDuration
         newState.goblins = (newState.goblins ?? state.goblins).map(g => ({ ...g, fleeing: true }))
 
-        // Advance to next sentence and spawn new word orbs
-        const nextIndex = (state.sentenceIndex + 1) % state.allSentences.length
+        // Mark current sentence as completed
+        const completedIndices = [...state.completedSentenceIndices, state.sentenceIndex]
+
+        // Check if all sentences are completed
+        if (completedIndices.length >= state.allSentences.length) {
+          newState.status = 'victory'
+          newState.completedSentenceIndices = completedIndices
+          return newState
+        }
+
+        // Advance to next uncompleted sentence and spawn new word orbs
+        const uncompletedIndices = state.allSentences
+          .map((_, i) => i)
+          .filter(i => !completedIndices.includes(i))
+        const nextIndex = uncompletedIndices[Math.floor(rng() * uncompletedIndices.length)]
         const nextSentence = state.allSentences[nextIndex]
         const diffConfig = getDifficultyConfig(state.difficulty)
         newState.sentenceIndex = nextIndex
@@ -536,6 +551,7 @@ export function tickLabyrinthGoblinKing(
         )
         newState.collectedWords = []
         newState.targetIndex = 0
+        newState.completedSentenceIndices = completedIndices
       }
     } else {
       newState.wrongAnswers = state.wrongAnswers + 1

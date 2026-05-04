@@ -170,6 +170,27 @@ describe('labyrinthGoblinKing', () => {
       expect(currentState.player.heroicAura).toBe(true)
       expect(currentState.goblins.every(g => g.fleeing)).toBe(true)
     })
+
+    it('sets victory when all sentences are completed', () => {
+      // Use single-sentence vocabulary to test victory
+      const singleSentence = { term: 'The cat', translation: 'แมว' }
+      const state = createLabyrinthGoblinKingState([singleSentence], { difficulty: 'easy' })
+      const started = startLabyrinthGoblinKing(state)
+
+      let currentState = started
+      // Collect all words (2 words for 'The cat' with easy difficulty)
+      for (let i = 0; i < currentState.wordOrbs.length; i++) {
+        const orb = currentState.wordOrbs.find(o => o.orderIndex === i)!
+        currentState = {
+          ...currentState,
+          player: { ...currentState.player, x: orb.x, y: orb.y },
+        }
+        currentState = tickLabyrinthGoblinKing(currentState, { dx: 0, dy: 0 }, 16.67)
+      }
+
+      expect(currentState.status).toBe('victory')
+      expect(currentState.completedSentenceIndices).toContain(0)
+    })
   })
 
   describe('calculateLabyrinthXP', () => {

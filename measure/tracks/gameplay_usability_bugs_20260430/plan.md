@@ -60,10 +60,10 @@
   - [x] If multiple sentences are intended, end when the assigned sentence list is exhausted.
   - [x] Ensure defeat remains reachable and distinct from victory.
 
-- [ ] Task: Fix Labyrinth Goblin King completion loop
-  - [ ] Write a test for collecting all required word orbs and expecting final victory.
-  - [ ] Remove modulo wraparound for finite lesson completion.
-  - [ ] Keep any heroic aura/paladin state coherent through the final success transition.
+- [x] Task: Fix Labyrinth Goblin King completion loop
+  - [x] Write a test for collecting all required word orbs and expecting final victory.
+  - [x] Remove modulo wraparound for finite lesson completion.
+  - [x] Keep any heroic aura/paladin state coherent through the final success transition.
 
 - [ ] Task: Fix Dungeon Liberator suppressed victory screen
   - [ ] Write a test proving `phase === 'victory'` shows a victory end screen for final assigned content.
