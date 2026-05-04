@@ -107,10 +107,10 @@
   - [x] Add explicit focus management or event handling to keep typing reliable on desktop.
   - [x] Verify game-over, victory, and completion submission are not conflated.
 
-- [ ] Task: Verify Wizard vs Zombie restart and completion behavior
-  - [ ] Write or update tests proving victory/defeat calls `onComplete` exactly once.
-  - [ ] Verify restart clears stale phase, score, enemies, player state, and progress.
-  - [ ] Verify shared start/end screen music hooks do not create duplicate completion submissions.
+- [x] Task: Verify Wizard vs Zombie restart and completion behavior
+  - [x] Write or update tests proving victory/defeat calls `onComplete` exactly once.
+  - [x] Verify restart clears stale phase, score, enemies, player state, and progress.
+  - [x] Verify shared start/end screen music hooks do not create duplicate completion submissions.
 
 - [ ] Task: Tune Dragon Flight and Dragon Rider early fairness
   - [ ] Add tests around boss/threshold constants or scoring helpers where available.

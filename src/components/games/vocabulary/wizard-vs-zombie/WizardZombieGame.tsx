@@ -207,6 +207,11 @@ export function WizardZombieGame({
   const handleRestart = useCallback(() => {
     setGamePhase("start");
     setGameState(null);
+    setFloatingTexts([]);
+    setScreenShake(0);
+    setScreenShakeOffset({ x: 0, y: 0 });
+    setDamageFlash(0);
+    setShockwaveRing(0);
   }, []);
 
   const handleExit = useCallback(() => {
@@ -386,6 +391,7 @@ export function WizardZombieGame({
 
       if (nextState.status === "gameover") {
         setGamePhase("ended");
+        return; // Stop loop immediately on game over
       }
 
       rafId = requestAnimationFrame(loop);
