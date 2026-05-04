@@ -75,10 +75,10 @@
   - [x] Ensure future required words are not removed permanently when captured out of order.
   - [x] Apply a clear penalty for wrong/future capture if desired, but keep the sentence completable.
 
-- [ ] Task: Fix Haunted Library repeated collision damage
-  - [ ] Write a pure logic test for sustained ghost overlap across consecutive ticks.
-  - [ ] Add or repair invulnerability/stun so one collision costs at most one life per collision window.
-  - [ ] Verify victory and defeat events still set the correct end-screen status.
+- [x] Task: Fix Haunted Library repeated collision damage
+  - [x] Write a pure logic test for sustained ghost overlap across consecutive ticks.
+  - [x] Add or repair invulnerability/stun so one collision costs at most one life per collision window.
+  - [x] Verify victory and defeat events still set the correct end-screen status.
 
 - [ ] Task: Fix Spellweaver's Run missed target-word penalty
   - [ ] Write a test where the current target orb falls past the collection zone.

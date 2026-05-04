@@ -44,6 +44,7 @@ export interface LibraryState {
   time: number
   lastEvent: 'correct' | 'incorrect' | 'damage' | 'victory' | 'defeat' | null
   difficulty: 'easy' | 'medium' | 'hard'
+  playerInvulnerableTimer: number
 }
 
 export const GAME_WIDTH = 390
@@ -156,6 +157,7 @@ export function createLibraryState(
     time: 0,
     lastEvent: null,
     difficulty: config.difficulty,
+    playerInvulnerableTimer: 0,
   }
 }
 
@@ -188,6 +190,11 @@ export function tickLibrary(state: LibraryState, delta: number, input: { dx: num
   const dt = delta / 1000
   const nextState = { ...state, time: state.time + delta, lastEvent: null as LibraryState['lastEvent'] }
   const player = { ...nextState.player }
+
+  // Decrement invulnerability timer
+  if (nextState.playerInvulnerableTimer > 0) {
+    nextState.playerInvulnerableTimer = Math.max(0, nextState.playerInvulnerableTimer - delta)
+  }
 
   // 1. Movement & Gravity
   player.velocity.x = input.dx * PLAYER_SPEED
@@ -248,9 +255,10 @@ export function tickLibrary(state: LibraryState, delta: number, input: { dx: num
       Math.pow(player.x + player.width / 2 - (nextGhost.x + ghost.width / 2), 2) +
       Math.pow(player.y + player.height / 2 - (nextGhost.y + ghost.height / 2), 2)
     )
-    if (dist < 30) {
+    if (dist < 30 && nextState.playerInvulnerableTimer <= 0) {
       nextState.lives--
       nextState.lastEvent = 'damage'
+      nextState.playerInvulnerableTimer = 2000 // 2 seconds invulnerability
     }
 
     return nextGhost
@@ -274,9 +282,10 @@ export function tickLibrary(state: LibraryState, delta: number, input: { dx: num
       Math.pow(player.x + player.width / 2 - (nextBat.x + bat.width / 2), 2) +
       Math.pow(player.y + player.height / 2 - (nextBat.y + bat.height / 2), 2)
     )
-    if (dist < 20) {
+    if (dist < 20 && nextState.playerInvulnerableTimer <= 0) {
       nextState.lives--
       nextState.lastEvent = 'damage'
+      nextState.playerInvulnerableTimer = 2000 // 2 seconds invulnerability
       return null // Remove bat on hit
     }
     return nextBat

@@ -212,6 +212,62 @@ describe('Haunted Library Logic', () => {
     expect(state.lastEvent).toBe('defeat')
   })
 
+  it('should not take repeated damage from sustained ghost overlap', () => {
+    // Use deterministic RNG for consistent ghost placement
+    let state = createLibraryState(mockSentences, { difficulty: 'medium' }, () => 0.5)
+    state.bats = [] // Clear bats
+    // Place ghost on player's floor
+    const ghost = state.ghosts[0]
+    ghost.x = 100
+    ghost.y = state.floors[0].y - ghost.height
+    // Teleport player to ghost position
+    state.player.x = ghost.x
+    state.player.y = ghost.y
+    state.player.velocity.y = 0
+    const initialLives = state.lives
+
+    // First tick: should take damage
+    state = tickLibrary(state, 16.6, { dx: 0, dy: 0 })
+    expect(state.lives).toBe(initialLives - 1)
+    expect(state.lastEvent).toBe('damage')
+    expect(state.playerInvulnerableTimer).toBeGreaterThan(0)
+
+    // Second tick immediately after: should NOT take damage due to invulnerability
+    state = tickLibrary(state, 16.6, { dx: 0, dy: 0 })
+    expect(state.lives).toBe(initialLives - 1) // Still only lost 1 life
+    expect(state.playerInvulnerableTimer).toBeGreaterThan(0)
+
+    // Third tick: still invulnerable
+    state = tickLibrary(state, 16.6, { dx: 0, dy: 0 })
+    expect(state.lives).toBe(initialLives - 1)
+  })
+
+  it('should allow damage again after invulnerability expires', () => {
+    // Use deterministic RNG
+    let state = createLibraryState(mockSentences, { difficulty: 'medium' }, () => 0.5)
+    state.bats = []
+    const ghost = state.ghosts[0]
+    ghost.x = 100
+    ghost.y = state.floors[0].y - ghost.height
+    state.player.x = ghost.x
+    state.player.y = ghost.y
+    state.player.velocity.y = 0
+    const initialLives = state.lives
+
+    // First tick: takes damage
+    state = tickLibrary(state, 16.6, { dx: 0, dy: 0 })
+    expect(state.lives).toBe(initialLives - 1)
+    expect(state.playerInvulnerableTimer).toBe(2000)
+
+    // Wait 2.1 seconds for invulnerability to expire
+    state.playerInvulnerableTimer = 0
+
+    // Now should take damage again
+    state = tickLibrary(state, 16.6, { dx: 0, dy: 0 })
+    expect(state.lives).toBe(initialLives - 2)
+    expect(state.lastEvent).toBe('damage')
+  })
+
   it('should set easy difficulty initial lives to 5', () => {
     const state = createLibraryState(mockSentences, { difficulty: 'easy' })
     expect(state.lives).toBe(5)
