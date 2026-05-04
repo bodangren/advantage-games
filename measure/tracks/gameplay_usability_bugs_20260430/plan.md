@@ -92,10 +92,10 @@
 
 ## Phase 3: Vocabulary Game Semantics
 
-- [ ] Task: Fix Rune Match power-word identity mismatch
-  - [ ] Write tests that distinguish term, translation, `wordId`, displayed rune text, and `powerWord`.
-  - [ ] Choose one source of truth for matching identity and target display.
-  - [ ] Verify correct matches damage the monster and wrong matches do not increment accuracy.
+- [x] Task: Fix Rune Match power-word identity mismatch
+  - [x] Write tests that distinguish term, translation, `wordId`, displayed rune text, and `powerWord`.
+  - [x] Choose one source of truth for matching identity and target display.
+  - [x] Verify correct matches damage the monster and wrong matches do not increment accuracy.
 
 - [ ] Task: Add Archer's Revenge reachable victory
   - [ ] Write a pure logic test that clears the required enemy/wave target set and expects `status: "victory"`.

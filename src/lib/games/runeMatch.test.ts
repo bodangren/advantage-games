@@ -518,3 +518,83 @@ describe("advanceTime", () => {
     expect(newState.nextAttackTimer).toBe(500);
   });
 });
+
+describe("power word identity", () => {
+  it("sets powerWordId to the English term and powerWord to the translation", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB, { rng: () => 0 });
+    // powerWordId should be a lowercase term from vocabulary
+    const vocabTerms = SAMPLE_VOCAB.map(v => v.term.toLowerCase().trim());
+    expect(vocabTerms).toContain(state.powerWordId);
+    // powerWord should be the corresponding translation
+    const matchingItem = SAMPLE_VOCAB.find(
+      v => v.term.toLowerCase().trim() === state.powerWordId
+    );
+    expect(state.powerWord).toBe(matchingItem?.translation);
+  });
+
+  it("increments correctAnswers and deals extra damage for power word match", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.monster = { type: "goblin", hp: 100, maxHp: 100, attack: 2, xp: 3 };
+    state.grid = initializeEmptyGrid(SAMPLE_VOCAB);
+    
+    // Set power word explicitly
+    state.powerWordId = "testword";
+    state.powerWord = "Test Translation";
+
+    const result = {
+      grid: state.grid,
+      cascades: 1,
+      groups: [
+        {
+          coords: [{ row: 0, col: 0 }, { row: 0, col: 1 }],
+          isSpecial: false,
+          type: "vocabulary" as const,
+          wordId: "testword", // Matches powerWordId
+          cascadeIndex: 0,
+        },
+      ],
+    };
+
+    const newState = applyMatchResult(state, result);
+    expect(newState.correctAnswers).toBe(1);
+    expect(newState.monster?.hp).toBeLessThan(100);
+    // Power rune should deal multiplied damage
+    expect(newState.floatingTexts).toContainEqual(
+      expect.objectContaining({ text: expect.stringContaining("POWER!") }),
+    );
+  });
+
+  it("does not increment correctAnswers for non-power word match", () => {
+    const state = createRuneMatchState(SAMPLE_VOCAB);
+    state.status = "playing";
+    state.monster = { type: "goblin", hp: 100, maxHp: 100, attack: 2, xp: 3 };
+    state.grid = initializeEmptyGrid(SAMPLE_VOCAB);
+    
+    // Set power word explicitly
+    state.powerWordId = "testword";
+    state.powerWord = "Test Translation";
+
+    const result = {
+      grid: state.grid,
+      cascades: 1,
+      groups: [
+        {
+          coords: [{ row: 0, col: 0 }, { row: 0, col: 1 }],
+          isSpecial: false,
+          type: "vocabulary" as const,
+          wordId: "otherword", // Does NOT match powerWordId
+          cascadeIndex: 0,
+        },
+      ],
+    };
+
+    const newState = applyMatchResult(state, result);
+    expect(newState.correctAnswers).toBe(0);
+    expect(newState.monster?.hp).toBeLessThan(100);
+    // Should not have POWER! text
+    expect(newState.floatingTexts).not.toContainEqual(
+      expect.objectContaining({ text: expect.stringContaining("POWER!") }),
+    );
+  });
+});

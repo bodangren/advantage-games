@@ -320,10 +320,12 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
           }
 
           // Random new power word
-          newState.powerWord =
+          const nextPowerWordItem =
             prev.vocabulary[
               Math.floor(prev.rng() * prev.vocabulary.length)
-            ].translation;
+            ];
+          newState.powerWord = nextPowerWordItem.translation;
+          newState.powerWordId = nextPowerWordItem.term.toLowerCase().trim();
 
           return newState;
         } else {

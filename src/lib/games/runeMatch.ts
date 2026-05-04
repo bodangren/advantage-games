@@ -55,7 +55,8 @@ export type RuneMatchState = {
   monster: Monster | null;
   grid: Rune[][];
   selectedCell: GridPosition | null;
-  powerWord: string | null;
+  powerWord: string | null; // Display text (translation for UI)
+  powerWordId: string | null; // Canonical ID (English term) for matching
   correctAnswers: number;
   totalAttempts: number;
   nextAttackTimer: number; // Time until next monster attack
@@ -564,7 +565,7 @@ export const applyMatchResult = (
     const ty = firstCoord.row;
 
     if (group.type === "vocabulary") {
-      const isPower = group.wordId === state.powerWord;
+      const isPower = group.wordId === state.powerWordId;
       if (isPower) correctAnswers++;
       const baseDamage = calculateMatchDamage(group.coords.length, isPower);
       const specialBonus = group.isSpecial
@@ -705,8 +706,9 @@ export const createRuneMatchState = (
   const activeVocabulary = shuffledVocab.slice(0, maxWords);
 
   // Pick power word from active vocabulary
-  const powerWord =
-    activeVocabulary[Math.floor(rng() * activeVocabulary.length)].translation;
+  const powerWordItem = activeVocabulary[Math.floor(rng() * activeVocabulary.length)];
+  const powerWord = powerWordItem.translation;
+  const powerWordId = powerWordItem.term.toLowerCase().trim();
 
   return {
     status: "selection",
@@ -720,6 +722,7 @@ export const createRuneMatchState = (
     grid: [],
     selectedCell: null,
     powerWord,
+    powerWordId,
     correctAnswers: 0,
     totalAttempts: 0,
     nextAttackTimer: 3000,
