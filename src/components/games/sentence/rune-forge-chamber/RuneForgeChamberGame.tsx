@@ -146,7 +146,7 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
 
   useEffect(() => {
     const currentState = gameStateRef.current
-    if (currentState?.status === 'defeat') {
+    if (currentState?.status === 'defeat' || currentState?.status === 'victory') {
       if (gamePhase !== 'ended') {
         const accuracy = currentState.correctAnswers + currentState.wrongAnswers > 0
           ? currentState.correctAnswers / (currentState.correctAnswers + currentState.wrongAnswers)
@@ -428,9 +428,12 @@ export function RuneForgeChamberGame({ vocabulary, onComplete }: RuneForgeChambe
 
       {gamePhase === 'ended' && gameState && results && (
         <GameEndScreen
-          status="defeat"
-          title="Rune Shattered!"
-          subtitle={`The forge grew too cold... You reached level ${gameState.level}.`}
+          status={gameState.status === 'victory' ? 'victory' : 'defeat'}
+          title={gameState.status === 'victory' ? 'Rune Forged!' : 'Rune Shattered!'}
+          subtitle={gameState.status === 'victory' 
+            ? `You mastered all ${gameState.vocabulary.length} sentences! Level ${gameState.level} reached.`
+            : `The forge grew too cold... You reached level ${gameState.level}.`
+          }
           score={gameState.correctAnswers * 10}
           xp={results.xp}
           accuracy={results.accuracy}

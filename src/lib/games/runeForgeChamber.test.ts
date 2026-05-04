@@ -133,6 +133,24 @@ describe('runeForgeChamber', () => {
       expect(next.targetIndex).toBe(0)
       expect(next.collectedWords.length).toBe(0)
     })
+
+    it('should set status to victory when all sentences are completed', () => {
+      // Use single-sentence vocabulary to test victory
+      const singleVocab = [mockVocabulary[0]]
+      const state = createRuneForgeChamberState(singleVocab)
+
+      // Complete all words
+      let current = state
+      for (let i = 0; i < state.words.length; i++) {
+        const targetWord = current.words[current.targetIndex]
+        const targetCircle = current.circles.find(c => c.word === targetWord)!
+        current = selectCircle(current, targetCircle.id)
+      }
+
+      // After completing the only sentence, should be victory
+      expect(current.status).toBe('victory')
+      expect(current.completedSentenceIndices).toContain(current.currentSentenceIndex)
+    })
   })
 
   describe('selectCircle', () => {

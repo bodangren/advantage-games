@@ -50,10 +50,10 @@
 
 ## Phase 2: Sentence Progression and End-State Correctness
 
-- [ ] Task: Fix Rune Forge Chamber finite victory
-  - [ ] Write a test that completes the assigned sentence/session and expects a victory end screen.
-  - [ ] Decide in code whether extra levels are survival mode or lesson progression; make the copy match.
-  - [ ] Ensure `onComplete` fires exactly once with final XP and accuracy.
+- [x] Task: Fix Rune Forge Chamber finite victory
+  - [x] Write a test that completes the assigned sentence/session and expects a victory end screen.
+  - [x] Decide in code whether extra levels are survival mode or lesson progression; make the copy match.
+  - [x] Ensure `onComplete` fires exactly once with final XP and accuracy.
 
 - [ ] Task: Fix Village Guardian finite victory
   - [ ] Write a test that rescues the required sentence words and reaches victory instead of looping forever.

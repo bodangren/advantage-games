@@ -3,7 +3,7 @@ import type { Difficulty } from '@/store/useGameStore'
 import type { RuneType } from './runeForgeChamberConfig'
 import { RUNE_FORGE_CHAMBER_CONFIG, getDifficultyConfig, GAME_WIDTH, GAME_HEIGHT } from './runeForgeChamberConfig'
 
-export type GameStatus = 'start' | 'playing' | 'defeat'
+export type GameStatus = 'start' | 'playing' | 'victory' | 'defeat'
 
 export type Position = {
   x: number
@@ -48,6 +48,8 @@ export type RuneForgeChamberState = {
   maxTimer: number
   gameTime: number
   circleAngle: number
+  completedSentenceIndices: number[]
+  currentSentenceIndex: number
 }
 
 export type RuneForgeChamberConfig = {
@@ -129,16 +131,36 @@ export function createRuneForgeChamberState(
     maxTimer: level1Timer,
     gameTime: 0,
     circleAngle: 0,
+    completedSentenceIndices: [],
+    currentSentenceIndex: sentenceIndex,
   }
 }
 
 function advanceRuneForgeLevel(state: RuneForgeChamberState): RuneForgeChamberState {
   const rng = Math.random
-  const nextLevel = state.level + 1
-  const nextMaxTimer = Math.floor(state.maxTimer * 0.8)
   const diffConfig = getDifficultyConfig(state.difficulty)
 
-  const sentenceIndex = Math.floor(rng() * state.vocabulary.length)
+  // Mark current sentence as completed
+  const completedIndices = [...state.completedSentenceIndices, state.currentSentenceIndex]
+
+  // Check if all sentences are completed
+  if (completedIndices.length >= state.vocabulary.length) {
+    return {
+      ...state,
+      status: 'victory',
+      completedSentenceIndices: completedIndices,
+    }
+  }
+
+  const nextLevel = state.level + 1
+  const nextMaxTimer = Math.floor(state.maxTimer * 0.8)
+
+  // Pick an uncompleted sentence
+  const uncompletedIndices = state.vocabulary
+    .map((_, i) => i)
+    .filter(i => !completedIndices.includes(i))
+
+  const sentenceIndex = uncompletedIndices[Math.floor(rng() * uncompletedIndices.length)]
   const nextSentence = state.vocabulary[sentenceIndex]
   const nextWords = nextSentence.term.split(' ')
   const wordCount = Math.min(diffConfig.wordCount, nextWords.length)
@@ -160,6 +182,7 @@ function advanceRuneForgeLevel(state: RuneForgeChamberState): RuneForgeChamberSt
     ...state,
     level: nextLevel,
     currentSentence: nextSentence,
+    currentSentenceIndex: sentenceIndex,
     words: activeWords,
     circles,
     collectedWords: [],
@@ -167,6 +190,7 @@ function advanceRuneForgeLevel(state: RuneForgeChamberState): RuneForgeChamberSt
     timer: nextMaxTimer,
     maxTimer: nextMaxTimer,
     circleAngle: 0,
+    completedSentenceIndices: completedIndices,
   }
 }
 
