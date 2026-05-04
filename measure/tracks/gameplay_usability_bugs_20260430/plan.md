@@ -80,10 +80,10 @@
   - [x] Add or repair invulnerability/stun so one collision costs at most one life per collision window.
   - [x] Verify victory and defeat events still set the correct end-screen status.
 
-- [ ] Task: Fix Spellweaver's Run missed target-word penalty
-  - [ ] Write a test where the current target orb falls past the collection zone.
-  - [ ] Apply a visible penalty to mana, combo, score, or another resource.
-  - [ ] Verify missed decoys do not incorrectly punish the player as target misses.
+- [x] Task: Fix Spellweaver's Run missed target-word penalty
+  - [x] Write a test where the current target orb falls past the collection zone.
+  - [x] Apply a visible penalty to mana, combo, score, or another resource.
+  - [x] Verify missed decoys do not incorrectly punish the player as target misses.
 
 - [ ] Task: Fix Potion Rush day completion and blocked-drop preservation
   - [ ] Write a test for surviving until day/time completion with reputation above zero and expecting victory.

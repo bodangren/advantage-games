@@ -127,12 +127,28 @@ export function tickSpellweaversRun(
   newState.spawnTimer += deltaMs
 
   const pixelsPerMs = scrollSpeed / 1000
-  newState.orbs = state.orbs
-    .map(orb => ({
-      ...orb,
-      y: orb.y + pixelsPerMs * deltaMs,
-    }))
-    .filter(orb => orb.y <= GAME_HEIGHT + SPELLWEAVERS_RUN_CONFIG.collectionZoneHeight)
+  const updatedOrbs = state.orbs.map(orb => ({
+    ...orb,
+    y: orb.y + pixelsPerMs * deltaMs,
+  }))
+
+  // Check for missed target words (orbs that passed the collection zone)
+  const collectionZoneBottom = GAME_HEIGHT + SPELLWEAVERS_RUN_CONFIG.collectionZoneHeight
+  const removedOrbs = updatedOrbs.filter(orb => orb.y > collectionZoneBottom)
+  const remainingOrbs = updatedOrbs.filter(orb => orb.y <= collectionZoneBottom)
+
+  // Apply penalty for missed target words
+  let missedTargetCount = 0
+  for (const orb of removedOrbs) {
+    if (orb.orderIndex === newState.targetIndex) {
+      missedTargetCount++
+      newState.mana = Math.max(0, newState.mana - SPELLWEAVERS_RUN_CONFIG.wrongWordPenalty)
+      newState.combo = 0
+      newState.totalAttempts++
+    }
+  }
+
+  newState.orbs = remainingOrbs
 
   if (newState.spawnTimer >= spawnInterval && newState.orbs.length < state.words.length) {
     const spawnedWords = new Set(newState.orbs.map(o => o.orderIndex))

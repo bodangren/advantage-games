@@ -200,6 +200,44 @@ describe('spellweaversRun', () => {
       const newState = tickSpellweaversRun(readyToSpawn, vocabulary, 100)
       expect(newState.orbs.length).toBe(state.words.length)
     })
+
+    it('should penalize mana and reset combo when target word passes collection zone', () => {
+      const state = createSpellweaversRunState(vocabulary)
+      const targetWord = state.words[0]
+      const orb: WordOrb = {
+        id: 'orb-1',
+        word: targetWord,
+        orderIndex: 0,
+        lane: 'left',
+        y: GAME_HEIGHT + SPELLWEAVERS_RUN_CONFIG.collectionZoneHeight + 10,
+        collected: false,
+      }
+      const stateWithOrb = { ...state, orbs: [orb], combo: 3 }
+      const newState = tickSpellweaversRun(stateWithOrb, vocabulary, 100)
+      expect(newState.orbs).toHaveLength(0)
+      expect(newState.mana).toBe(SPELLWEAVERS_RUN_CONFIG.initialMana - SPELLWEAVERS_RUN_CONFIG.wrongWordPenalty)
+      expect(newState.combo).toBe(0)
+      expect(newState.totalAttempts).toBe(1)
+    })
+
+    it('should not penalize when non-target word passes collection zone', () => {
+      const state = createSpellweaversRunState(vocabulary)
+      // Target is word 0, but we're placing word 1
+      const orb: WordOrb = {
+        id: 'orb-1',
+        word: state.words[1],
+        orderIndex: 1,
+        lane: 'left',
+        y: GAME_HEIGHT + SPELLWEAVERS_RUN_CONFIG.collectionZoneHeight + 10,
+        collected: false,
+      }
+      const stateWithOrb = { ...state, orbs: [orb], combo: 3 }
+      const newState = tickSpellweaversRun(stateWithOrb, vocabulary, 100)
+      expect(newState.orbs).toHaveLength(0)
+      expect(newState.mana).toBe(SPELLWEAVERS_RUN_CONFIG.initialMana)
+      expect(newState.combo).toBe(3)
+      expect(newState.totalAttempts).toBe(0)
+    })
   })
 
   describe('spawnOrb', () => {
