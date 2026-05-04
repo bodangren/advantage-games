@@ -56,6 +56,9 @@ export type DungeonLiberatorState = {
   totalAttempts: number
   gameTime: number
   level: number
+  allSentences: SentenceItem[]
+  sentenceIndex: number
+  completedSentenceIndices: number[]
 }
 
 export type Difficulty = 'easy' | 'medium' | 'hard'
@@ -125,6 +128,9 @@ export function createDungeonLiberatorState(
     totalAttempts: 0,
     gameTime: 0,
     level: 1,
+    allSentences: vocabulary,
+    sentenceIndex: sentenceIndex,
+    completedSentenceIndices: [],
   }
 }
 
@@ -442,7 +448,24 @@ function checkVictoryCondition(state: DungeonLiberatorState): DungeonLiberatorSt
 
   if (dist < player.radius + portal.radius) {
     if (trail.length === words.length) {
-      return { ...state, phase: 'victory' }
+      // Mark current sentence as completed
+      const completedIndices = [...state.completedSentenceIndices, state.sentenceIndex]
+
+      // Check if all sentences are completed
+      if (completedIndices.length >= state.allSentences.length) {
+        return {
+          ...state,
+          phase: 'victory',
+          completedSentenceIndices: completedIndices,
+        }
+      }
+
+      // Not all completed - return victory phase but component will advance level
+      return {
+        ...state,
+        phase: 'victory',
+        completedSentenceIndices: completedIndices,
+      }
     }
   }
 

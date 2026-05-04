@@ -65,10 +65,10 @@
   - [x] Remove modulo wraparound for finite lesson completion.
   - [x] Keep any heroic aura/paladin state coherent through the final success transition.
 
-- [ ] Task: Fix Dungeon Liberator suppressed victory screen
-  - [ ] Write a test proving `phase === 'victory'` shows a victory end screen for final assigned content.
-  - [ ] Preserve level advancement only while additional assigned sentences remain.
-  - [ ] Ensure accumulated XP/correct totals include all completed levels and are not double counted.
+- [x] Task: Fix Dungeon Liberator suppressed victory screen
+  - [x] Write a test proving `phase === 'victory'` shows a victory end screen for final assigned content.
+  - [x] Preserve level advancement only while additional assigned sentences remain.
+  - [x] Ensure accumulated XP/correct totals include all completed levels and are not double counted.
 
 - [ ] Task: Fix Realm Carver out-of-order word capture
   - [ ] Write a pure logic test where a future word is enclosed before the current target.

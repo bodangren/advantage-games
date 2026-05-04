@@ -213,9 +213,26 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
         setTotalXP(prev => prev + levelXP)
         setTotalCorrect(prev => prev + nextState.correctWords)
 
-        const nextLevelState = advanceToNextLevel(nextState, vocabulary)
-        setGameState(nextLevelState)
-        gameStateRef.current = nextLevelState
+        // Check if all sentences are completed
+        if (nextState.completedSentenceIndices.length >= vocabulary.length) {
+          // Final victory - show end screen
+          const finalTotalCorrect = totalCorrect + nextState.correctWords
+          const finalTotalAttempts = nextState.totalAttempts
+          const finalAccuracy = finalTotalAttempts > 0 ? finalTotalCorrect / finalTotalAttempts : 0
+          const finalResults = { xp: totalXP + levelXP, accuracy: finalAccuracy, difficulty }
+          setResults(finalResults)
+          if (!hasReportedRef.current) {
+            onComplete(finalResults)
+            hasReportedRef.current = true
+          }
+          setGamePhase('ended')
+          exitFullscreen()
+        } else {
+          // Advance to next level with uncompleted sentence
+          const nextLevelState = advanceToNextLevel(nextState, vocabulary)
+          setGameState(nextLevelState)
+          gameStateRef.current = nextLevelState
+        }
       } else if (nextState.phase === 'defeat') {
         const finalTotalCorrect = totalCorrect + nextState.correctWords
         const finalTotalAttempts = nextState.totalAttempts
@@ -601,9 +618,9 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
 
       {gamePhase === 'ended' && gameState && results && (
         <GameEndScreen
-          status="defeat"
-          title="Overwhelmed!"
-          subtitle="The dungeon claimed another hero..."
+          status={gameState.phase === 'victory' ? 'victory' : 'defeat'}
+          title={gameState.phase === 'victory' ? 'Dungeon Conquered!' : 'Overwhelmed!'}
+          subtitle={gameState.phase === 'victory' ? 'You rescued all the prisoners!' : 'The dungeon claimed another hero...'}
           score={totalCorrect * 10}
           xp={results.xp}
           accuracy={results.accuracy}

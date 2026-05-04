@@ -192,6 +192,35 @@ describe('dungeonLiberator', () => {
 
       expect(next.phase).toBe('victory')
     })
+
+    it('should track completed sentences and keep victory when all done', () => {
+      // Use single-sentence vocabulary to test finite victory
+      const singleVocab = [{ term: 'The cat', translation: 'แมว' }]
+      const state = createDungeonLiberatorState(singleVocab)
+
+      // Collect all prisoners
+      for (let i = 0; i < state.prisoners.length; i++) {
+        const p = state.prisoners[i]
+        state.trail.push({
+          id: `trail-${i}`,
+          x: p.x,
+          y: p.y,
+          word: p.word,
+          translation: p.translation,
+          orderIndex: p.orderIndex,
+        })
+        state.targetIndex = i + 1
+        state.correctWords = i + 1
+      }
+      // Move player to portal
+      state.player.x = state.portal.x
+      state.player.y = state.portal.y
+
+      const next = advanceDungeonLiberatorTime(state, 16.67, { dx: 0, dy: 0 })
+
+      expect(next.phase).toBe('victory')
+      expect(next.completedSentenceIndices).toContain(state.sentenceIndex)
+    })
   })
 
   describe('advanceToNextLevel', () => {
