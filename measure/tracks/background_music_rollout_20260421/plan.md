@@ -6,14 +6,14 @@
     - [x] Inventory all current music/SFX usage, entry points, and existing `useSound` assumptions
     - [x] Document autoplay-policy constraints and the default-start rules the shared music system must obey
     - [x] Produce the per-game research template that will be reused for all 29 titles
-- [x] Task: Write tests for shared background music playback behavior
-    - [x] Add failing tests for track selection, loop configuration, cleanup, and browser-safe startup timing
-    - [x] Add failing tests covering interaction with existing short-form SFX playback
-    - [x] Confirm the new tests fail before implementation
-- [x] Task: Implement shared background music infrastructure
-    - [x] Build a shared runtime or hook for game music playback with per-game asset mapping
-    - [x] Support extension-aware asset resolution so shipped tracks are not hardcoded to the old SFX-only `mp3` path assumptions
-    - [x] Integrate lifecycle cleanup for restart, unmount, and route transitions
+- [ ] Task: Write tests for shared background music playback behavior
+    - [ ] Add failing tests for track selection, loop configuration, cleanup, and browser-safe startup timing
+    - [ ] Add failing tests covering interaction with existing short-form SFX playback
+    - [ ] Confirm the new tests fail before implementation
+- [ ] Task: Implement shared background music infrastructure
+    - [ ] Build a shared runtime or hook for game music playback with per-game asset mapping
+    - [ ] Support extension-aware asset resolution so shipped tracks are not hardcoded to the old SFX-only `mp3` path assumptions
+    - [ ] Integrate lifecycle cleanup for restart, unmount, and route transitions
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Shared Audio Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Vocabulary Game Music Pass

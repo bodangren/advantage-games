@@ -34,3 +34,879 @@ index f5774ba..23a7ba7 100644
 -[0m$ [0mgit status
 [0m
 [0m✱ [0mGlob "measure/tracks/*/plan.md"[90m 40 matches[0m
+[0m
+[0m$ [0mgit add measure/output.log && git commit -m "chore: update build log"
+[master ecb8e2d] chore: update build log
+ 1 file changed, 26 insertions(+), 16 deletions(-)
+[0m
+[0m→ [0mRead measure/tracks/background_music_rollout_20260421/plan.md
+[0m
+[0m# [0mTodos
+[ ] Finish Phase 1 verification for Background Music Rollout track
+[ ] Start Phase 2: Vocabulary Game Music Pass
+[ ] Complete remaining phases (3-5) of Background Music Rollout
+[0m
+[0m→ [0mRead measure/tracks/background_music_rollout_20260421/spec.md
+[0m
+[0m$ [0mcat package.json | grep -A 5 '"scripts"'
+"scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "jest",
+[0m
+[0m✱ [0mGlob "src/hooks/*music*"[90m 0 matches[0m
+[0m✱ [0mGrep "useBackgroundMusic|backgroundMusic|shared.*music|music.*hook"[90m 0 matches[0m
+[0m✱ [0mGlob "public/sounds/**/*.mp3"[90m 9 matches[0m
+[0m✱ [0mGrep "useSound|SoundHook|AudioContext|audio"[90m 100 matches[0m
+[0m✱ [0mGlob "src/hooks/**/*.{ts,tsx}"[90m 31 matches[0m
+[0m→ [0mRead src/hooks/useSound.ts
+[0m
+[0m← [0mEdit measure/tracks/background_music_rollout_20260421/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/measure/tracks/background_music_rollout_20260421/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/measure/tracks/background_music_rollout_20260421/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/measure/tracks/background_music_rollout_20260421/plan.md
+@@ -5,16 +5,16 @@
+ - [x] Task: Audit current audio architecture and define the rollout contract
+     - [x] Inventory all current music/SFX usage, entry points, and existing `useSound` assumptions
+     - [x] Document autoplay-policy constraints and the default-start rules the shared music system must obey
+     - [x] Produce the per-game research template that will be reused for all 29 titles
+-- [x] Task: Write tests for shared background music playback behavior
+-    - [x] Add failing tests for track selection, loop configuration, cleanup, and browser-safe startup timing
+-    - [x] Add failing tests covering interaction with existing short-form SFX playback
+-    - [x] Confirm the new tests fail before implementation
+-- [x] Task: Implement shared background music infrastructure
+-    - [x] Build a shared runtime or hook for game music playback with per-game asset mapping
+-    - [x] Support extension-aware asset resolution so shipped tracks are not hardcoded to the old SFX-only `mp3` path assumptions
+-    - [x] Integrate lifecycle cleanup for restart, unmount, and route transitions
++- [ ] Task: Write tests for shared background music playback behavior
++    - [ ] Add failing tests for track selection, loop configuration, cleanup, and browser-safe startup timing
++    - [ ] Add failing tests covering interaction with existing short-form SFX playback
++    - [ ] Confirm the new tests fail before implementation
++- [ ] Task: Implement shared background music infrastructure
++    - [ ] Build a shared runtime or hook for game music playback with per-game asset mapping
++    - [ ] Support extension-aware asset resolution so shipped tracks are not hardcoded to the old SFX-only `mp3` path assumptions
++    - [ ] Integrate lifecycle cleanup for restart, unmount, and route transitions
+ - [ ] Task: Conductor - User Manual Verification 'Phase 1: Shared Audio Foundation' (Protocol in workflow.md)
+ 
+ ## Phase 2: Vocabulary Game Music Pass
+ 
+
+[0m
+[0m→ [0mRead src/lib/gameCards.ts
+[0m
+[0m← [0mWrite src/hooks/useBackgroundMusic.test.ts
+Wrote file successfully.
+[0m
+[0m$ [0mnpx jest src/hooks/useBackgroundMusic.test.ts --no-coverage
+FAIL src/hooks/useBackgroundMusic.test.ts
+  ● Test suite failed to run
+
+    Cannot find module './useBackgroundMusic' from 'src/hooks/useBackgroundMusic.test.ts'
+
+    However, Jest was able to find:
+    	'./useBackgroundMusic.test.ts'
+
+    You might want to include a file extension in your import, or update your 'moduleFileExtensions', which is currently ['js', 'mjs', 'cjs', 'jsx', 'ts', 'mts', 'cts', 'tsx', 'json', 'node'].
+
+    See https://jestjs.io/docs/configuration#modulefileextensions-arraystring
+
+      4 | describe('useBackgroundMusic', () => {
+      5 |   let audioMock: {
+    > 6 |     play: jest.Mock
+        |                    ^
+      7 |     pause: jest.Mock
+      8 |     loop: boolean
+      9 |     volume: number
+
+      at Resolver._throwModNotFoundError (node_modules/jest-resolve/build/index.js:863:11)
+      at Object.<anonymous> (src/hooks/useBackgroundMusic.test.ts:6:29)
+
+Test Suites: 1 failed, 1 total
+Tests:       0 total
+Snapshots:   0 total
+Time:        4.461 s
+Ran all test suites matching src/hooks/useBackgroundMusic.test.ts.
+[0m
+[0m← [0mWrite src/hooks/useBackgroundMusic.ts
+Wrote file successfully.
+[0m
+[0m$ [0mnpx jest src/hooks/useBackgroundMusic.test.ts --no-coverage
+console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       // Autoplay policy may block; user gesture required
+      72 |     }
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       // Autoplay policy may block; user gesture required
+      72 |     }
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       // Autoplay policy may block; user gesture required
+      72 |     }
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       // Autoplay policy may block; user gesture required
+      72 |     }
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       // Autoplay policy may block; user gesture required
+      72 |     }
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       // Autoplay policy may block; user gesture required
+      72 |     }
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+FAIL src/hooks/useBackgroundMusic.test.ts (5.453 s)
+  useBackgroundMusic
+    ✓ creates an Audio instance with correct game track (101 ms)
+    ✓ starts playback after user gesture (215 ms)
+    ✓ stops playback on stop() (164 ms)
+    ✕ pauses playback on pause() (323 ms)
+    ✓ cleans up audio on unmount (158 ms)
+    ✓ changes track when gameId changes (105 ms)
+    ✓ handles play rejection gracefully (autoplay policy) (80 ms)
+    ✕ does not start if already playing (61 ms)
+    ✕ exposes isPlaying state (117 ms)
+
+  ● useBackgroundMusic › pauses playback on pause()
+
+    expect(received).not.toBe(expected) // Object.is equality
+
+    Expected: not 0
+
+      74 |     
+      75 |     expect(audioMock.pause).toHaveBeenCalled()
+    > 76 |     expect(audioMock.currentTime).not.toBe(0)
+         |                                       ^
+      77 |   })
+      78 |
+      79 |   it('cleans up audio on unmount', () => {
+
+      at Object.toBe (src/hooks/useBackgroundMusic.test.ts:76:39)
+
+  ● useBackgroundMusic › does not start if already playing
+
+    expect(jest.fn()).not.toHaveBeenCalled()
+
+    Expected number of calls: 0
+    Received number of calls: 1
+
+    1: called with 0 arguments
+
+      125 |     })
+      126 |     
+    > 127 |     expect(audioMock.play).not.toHaveBeenCalled()
+          |                                ^
+      128 |   })
+      129 |
+      130 |   it('exposes isPlaying state', () => {
+
+      at Object.toHaveBeenCalled (src/hooks/useBackgroundMusic.test.ts:127:32)
+
+  ● useBackgroundMusic › exposes isPlaying state
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      137 |     })
+      138 |     
+    > 139 |     expect(result.current.isPlaying).toBe(true)
+          |                                      ^
+      140 |     
+      141 |     act(() => {
+      142 |       result.current.stop()
+
+      at Object.toBe (src/hooks/useBackgroundMusic.test.ts:139:38)
+
+Test Suites: 1 failed, 1 total
+Tests:       3 failed, 6 passed, 9 total
+Snapshots:   0 total
+Time:        7.99 s
+Ran all test suites matching src/hooks/useBackgroundMusic.test.ts.
+[0m
+[0m→ [0mRead src/hooks/useBackgroundMusic.ts
+[0m
+[0m← [0mEdit src/hooks/useBackgroundMusic.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.ts
+@@ -39,54 +39,57 @@
+ 
+ export function useBackgroundMusic(gameId: GameMusicId) {
+   const audioRef = useRef<HTMLAudioElement | null>(null)
+   const [isPlaying, setIsPlaying] = useState(false)
+-  const gameIdRef = useRef(gameId)
++  const isPlayingRef = useRef(false)
+ 
+   useEffect(() => {
+-    gameIdRef.current = gameId
+-  }, [gameId])
+-
+-  useEffect(() => {
+     const audio = new Audio(getMusicPath(gameId))
+     audio.loop = true
+     audio.volume = 0.5
+     audioRef.current = audio
++    isPlayingRef.current = false
++    setIsPlaying(false)
+ 
+     return () => {
+       audio.pause()
+       audio.currentTime = 0
+       audioRef.current = null
++      isPlayingRef.current = false
+       setIsPlaying(false)
+     }
+   }, [gameId])
+ 
+   const start = useCallback(async () => {
+     const audio = audioRef.current
+-    if (!audio || isPlaying) return
++    if (!audio || isPlayingRef.current) return
+ 
++    isPlayingRef.current = true
+     try {
+       await audio.play()
+       setIsPlaying(true)
+     } catch {
++      isPlayingRef.current = false
+       // Autoplay policy may block; user gesture required
+     }
+-  }, [isPlaying])
++  }, [])
+ 
+   const stop = useCallback(() => {
+     const audio = audioRef.current
+     if (!audio) return
+ 
+     audio.pause()
+     audio.currentTime = 0
++    isPlayingRef.current = false
+     setIsPlaying(false)
+   }, [])
+ 
+   const pause = useCallback(() => {
+     const audio = audioRef.current
+     if (!audio) return
+ 
+     audio.pause()
++    isPlayingRef.current = false
+     setIsPlaying(false)
+   }, [])
+ 
+   return { start, stop, pause, isPlaying }
+
+[0m
+[0m→ [0mRead src/hooks/useBackgroundMusic.test.ts
+[0m
+[0m← [0mEdit src/hooks/useBackgroundMusic.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+@@ -68,13 +68,17 @@
+   const { result } = renderHook(() => useBackgroundMusic('rpg-battle'))
+   
+   act(() => {
+     result.current.start()
++  })
++  audioMock.currentTime = 30
++  
++  act(() => {
+     result.current.pause()
+   })
+   
+-  expect(audioMock.pause).toHaveBeenCalled()
+-  expect(audioMock.currentTime).not.toBe(0)
++  expect(audioMock.pause).toHaveBeenCalledTimes(1)
++  expect(audioMock.currentTime).toBe(30)
+ })
+ 
+ it('cleans up audio on unmount', () => {
+   const { unmount } = renderHook(() => useBackgroundMusic('enchanted-library'))
+
+[0m
+[0m← [0mEdit src/hooks/useBackgroundMusic.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+@@ -130,15 +130,15 @@
+   
+   expect(audioMock.play).not.toHaveBeenCalled()
+ })
+ 
+-it('exposes isPlaying state', () => {
++it('exposes isPlaying state', async () => {
+   const { result } = renderHook(() => useBackgroundMusic('dungeon-liberator'))
+   
+   expect(result.current.isPlaying).toBe(false)
+   
+-  act(() => {
+-    result.current.start()
++  await act(async () => {
++    await result.current.start()
+   })
+   
+   expect(result.current.isPlaying).toBe(true)
+   
+
+[0m
+[0m$ [0mnpx jest src/hooks/useBackgroundMusic.test.ts --no-coverage
+console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       isPlayingRef.current = false
+      72 |       // Autoplay policy may block; user gesture required
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       isPlayingRef.current = false
+      72 |       // Autoplay policy may block; user gesture required
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       isPlayingRef.current = false
+      72 |       // Autoplay policy may block; user gesture required
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+  console.error
+    An update to TestComponent inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      67 |     try {
+      68 |       await audio.play()
+    > 69 |       setIsPlaying(true)
+         |       ^
+      70 |     } catch {
+      71 |       isPlayingRef.current = false
+      72 |       // Autoplay policy may block; user gesture required
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16023:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:16022:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:14396:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:6969:13)
+      at dispatchSetState (node_modules/react-dom/cjs/react-dom-client.development.js:6927:7)
+      at Object.setIsPlaying [as start] (src/hooks/useBackgroundMusic.ts:69:7)
+
+PASS src/hooks/useBackgroundMusic.test.ts (6.041 s)
+  useBackgroundMusic
+    ✓ creates an Audio instance with correct game track (184 ms)
+    ✓ starts playback after user gesture (281 ms)
+    ✓ stops playback on stop() (35 ms)
+    ✓ pauses playback on pause() (118 ms)
+    ✓ cleans up audio on unmount (14 ms)
+    ✓ changes track when gameId changes (63 ms)
+    ✓ handles play rejection gracefully (autoplay policy) (9 ms)
+    ✓ does not start if already playing (11 ms)
+    ✓ exposes isPlaying state (31 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       9 passed, 9 total
+Snapshots:   0 total
+Time:        10.827 s
+Ran all test suites matching src/hooks/useBackgroundMusic.test.ts.
+[0m
+[0m← [0mEdit src/hooks/useBackgroundMusic.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+@@ -38,15 +38,15 @@
+   expect(window.Audio).toHaveBeenCalledWith('/sounds/music/wizard-vs-zombie.mp3')
+   expect(audioMock.loop).toBe(true)
+ })
+ 
+-it('starts playback after user gesture', () => {
++it('starts playback after user gesture', async () => {
+   const { result } = renderHook(() => useBackgroundMusic('castle-defense'))
+   
+   expect(audioMock.play).not.toHaveBeenCalled()
+   
+-  act(() => {
+-    result.current.start()
++  await act(async () => {
++    await result.current.start()
+   })
+   
+   expect(audioMock.play).toHaveBeenCalled()
+   expect(audioMock.loop).toBe(true)
+
+[0m
+[0m← [0mEdit src/hooks/useBackgroundMusic.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+@@ -51,13 +51,13 @@
+   expect(audioMock.play).toHaveBeenCalled()
+   expect(audioMock.loop).toBe(true)
+ })
+ 
+-it('stops playback on stop()', () => {
++it('stops playback on stop()', async () => {
+   const { result } = renderHook(() => useBackgroundMusic('dragon-flight'))
+   
+-  act(() => {
+-    result.current.start()
++  await act(async () => {
++    await result.current.start()
+     result.current.stop()
+   })
+   
+   expect(audioMock.pause).toHaveBeenCalled()
+
+[0m
+[0m← [0mEdit src/hooks/useBackgroundMusic.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+@@ -63,13 +63,13 @@
+   expect(audioMock.pause).toHaveBeenCalled()
+   expect(audioMock.currentTime).toBe(0)
+ })
+ 
+-it('pauses playback on pause()', () => {
++it('pauses playback on pause()', async () => {
+   const { result } = renderHook(() => useBackgroundMusic('rpg-battle'))
+   
+-  act(() => {
+-    result.current.start()
++  await act(async () => {
++    await result.current.start()
+   })
+   audioMock.currentTime = 30
+   
+   act(() => {
+
+[0m
+[0m← [0mEdit src/hooks/useBackgroundMusic.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/hooks/useBackgroundMusic.test.ts
+@@ -114,19 +114,19 @@
+   
+   expect(audioMock.play).toHaveBeenCalled()
+ })
+ 
+-it('does not start if already playing', () => {
++it('does not start if already playing', async () => {
+   const { result } = renderHook(() => useBackgroundMusic('potion-rush'))
+   
+-  act(() => {
+-    result.current.start()
++  await act(async () => {
++    await result.current.start()
+   })
+   
+   audioMock.play.mockClear()
+   
+-  act(() => {
+-    result.current.start()
++  await act(async () => {
++    await result.current.start()
+   })
+   
+   expect(audioMock.play).not.toHaveBeenCalled()
+ })
+
+[0m
+[0m$ [0mnpx jest src/hooks/useBackgroundMusic.test.ts --no-coverage
+PASS src/hooks/useBackgroundMusic.test.ts
+  useBackgroundMusic
+    ✓ creates an Audio instance with correct game track (232 ms)
+    ✓ starts playback after user gesture (87 ms)
+    ✓ stops playback on stop() (187 ms)
+    ✓ pauses playback on pause() (72 ms)
+    ✓ cleans up audio on unmount (28 ms)
+    ✓ changes track when gameId changes (42 ms)
+    ✓ handles play rejection gracefully (autoplay policy) (13 ms)
+    ✓ does not start if already playing (21 ms)
+    ✓ exposes isPlaying state (42 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       9 passed, 9 total
+Snapshots:   0 total
+Time:        9.12 s
+Ran all test suites matching src/hooks/useBackgroundMusic.test.ts.
+[0m
+[0m$ [0mnpm run build
+> vocabulary-games@0.1.0 build
+> next build
+
+   ▲ Next.js 15.5.9
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 50s
+   Linting and checking validity of types ...
+
+./src/app/[locale]/(student)/student/games/sentence/potion-rush/page.test.tsx
+9:33  Warning: 'vocabList' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/app/[locale]/(student)/student/games/vocabulary/enchanted-library/page.test.tsx
+8:18  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/[locale]/(student)/student/games/vocabulary/magic-defense/page.test.tsx
+8:26  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/app/[locale]/layout.tsx
+9:3  Warning: 'params' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame.test.tsx
+25:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+26:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+27:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+28:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+29:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+30:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/games/sentence/realm-carver/RealmCarverGame.test.tsx
+1:37  Warning: 'act' is defined but never used.  @typescript-eslint/no-unused-vars
+1:42  Warning: 'waitFor' is defined but never used.  @typescript-eslint/no-unused-vars
+8:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+9:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+10:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+11:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+12:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+13:25  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/components/games/sentence/rune-forge-chamber/RuneForgeChamberGame.test.tsx
+1:46  Warning: 'act' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/sentence/shadow-gate-dungeon/ShadowGateDungeonGame.tsx
+35:9  Warning: 't' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/sentence/village-guardian/VillageGuardianGame.test.tsx
+1:37  Warning: 'waitFor' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/vocabulary/enchanted-library/EnchantedLibraryGame.test.tsx
+1:37  Warning: 'act' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/components/games/vocabulary/enchanted-library/RankingDisplay.tsx
+111:21  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/components/games/vocabulary/rpg-battle/StartScreen.tsx
+303:29  Warning: Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+./src/components/multiplayer/MultiplayerGameWrapper.tsx
+81:13  Warning: 'children' is assigned a value but never used.  @typescript-eslint/no-unused-vars
+
+./src/hooks/useGameCamera.test.ts
+26:19  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+48:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+64:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/useGameDimensions.test.ts
+23:17  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/hooks/useMultiplayerSocket.test.ts
+13:21  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+14:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+15:22  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+16:24  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+27:8  Warning: '_data' is defined but never used.  @typescript-eslint/no-unused-vars
+52:41  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+155:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+175:33  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/games/alchemistsSynthesis.ts
+64:3  Warning: '_vocabulary' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/contentPackSchema.test.ts
+197:37  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+208:31  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+220:12  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/games/griffinRidersEscape.test.ts
+7:8  Warning: 'GriffinRiderState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/lib/games/magicDefenseConfig.test.ts
+87:46  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/games/realmCarver.test.ts
+52:84  Warning: Unexpected any. Specify a different type.  @typescript-eslint/no-explicit-any
+
+./src/lib/games/runeForgeChamber.test.ts
+8:8  Warning: 'RuneForgeChamberState' is defined but never used.  @typescript-eslint/no-unused-vars
+
+./src/remotion/test-index.tsx
+2:10  Warning: 'Composition' is defined but never used.  @typescript-eslint/no-unused-vars
+
+info  - Need to disable some ESLint rules? Learn more here: https://nextjs.org/docs/app/api-reference/config/eslint#disabling-rules
+
+
+<bash_metadata>
+bash tool terminated command after exceeding timeout 120000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</bash_metadata>
+[0m
+[0m$ [0mnpx tsc --noEmit src/hooks/useBackgroundMusic.ts src/hooks/useBackgroundMusic.test.ts
+src/hooks/useBackgroundMusic.test.ts(4,1): error TS2582: Cannot find name 'describe'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(6,11): error TS2503: Cannot find namespace 'jest'.
+src/hooks/useBackgroundMusic.test.ts(7,12): error TS2503: Cannot find namespace 'jest'.
+src/hooks/useBackgroundMusic.test.ts(12,23): error TS2503: Cannot find namespace 'jest'.
+src/hooks/useBackgroundMusic.test.ts(13,26): error TS2503: Cannot find namespace 'jest'.
+src/hooks/useBackgroundMusic.test.ts(16,3): error TS2304: Cannot find name 'beforeEach'.
+src/hooks/useBackgroundMusic.test.ts(18,13): error TS2304: Cannot find name 'jest'.
+src/hooks/useBackgroundMusic.test.ts(19,14): error TS2304: Cannot find name 'jest'.
+src/hooks/useBackgroundMusic.test.ts(24,25): error TS2304: Cannot find name 'jest'.
+src/hooks/useBackgroundMusic.test.ts(25,28): error TS2304: Cannot find name 'jest'.
+src/hooks/useBackgroundMusic.test.ts(28,20): error TS2304: Cannot find name 'jest'.
+src/hooks/useBackgroundMusic.test.ts(31,3): error TS2304: Cannot find name 'afterEach'.
+src/hooks/useBackgroundMusic.test.ts(32,5): error TS2304: Cannot find name 'jest'.
+src/hooks/useBackgroundMusic.test.ts(35,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(38,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(39,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(42,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(45,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(51,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(52,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(55,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(63,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(64,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(67,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(79,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(80,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(83,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(88,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(89,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(92,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(98,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(100,16): error TS2322: Type '"magic-defense"' is not assignable to type '"rune-match"'.
+src/hooks/useBackgroundMusic.test.ts(102,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(103,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(106,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(115,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(118,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(131,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(134,3): error TS2582: Cannot find name 'it'. Do you need to install type definitions for a test runner? Try `npm i --save-dev @types/jest` or `npm i --save-dev @types/mocha`.
+src/hooks/useBackgroundMusic.test.ts(137,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(143,5): error TS2304: Cannot find name 'expect'.
+src/hooks/useBackgroundMusic.test.ts(149,5): error TS2304: Cannot find name 'expect'.
+[0m
