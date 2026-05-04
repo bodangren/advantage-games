@@ -232,7 +232,27 @@ export function tickRealmCarver(state: RealmCarverState, delta: number): RealmCa
                 nextScore += 100;
                 if (nextTargetWordIndex >= state.fullSentence.length) nextStatus = "victory";
               } else {
-                nextWords.splice(i, 1);
+                // Wrong order - apply penalty but keep word by moving it to a new wild position
+                nextPlayerHp -= 1;
+                nextScore = Math.max(0, nextScore - 50);
+                if (nextPlayerHp <= 0) {
+                  nextStatus = "defeat";
+                } else {
+                  // Find a new wild position for the word
+                  let newX = word.x;
+                  let newY = word.y;
+                  for (let sy = 0; sy < GRID_SIZE; sy++) {
+                    for (let sx = 0; sx < GRID_SIZE; sx++) {
+                      if (nextGrid[sy][sx] === "wild") {
+                        newX = sx;
+                        newY = sy;
+                        sy = GRID_SIZE;
+                        break;
+                      }
+                    }
+                  }
+                  nextWords[i] = { ...word, x: newX, y: newY };
+                }
               }
             }
           }

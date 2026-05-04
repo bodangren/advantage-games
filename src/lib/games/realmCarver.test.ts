@@ -151,6 +151,34 @@ describe("tickRealmCarver", () => {
     expect(next.score).toBeGreaterThan(0);
   });
 
+  it("should not permanently remove future words when captured out of order", () => {
+    let state = createRealmCarverState(mockSentences);
+    state.player.x = 1;
+    state.player.y = 1;
+    state.player.vx = 1;
+    state.player.vy = 0;
+    // Remove monsters so fillTerritory claims everything
+    state.monsters = [];
+    // Place target word "The" on already-claimed cell so it won't be captured
+    const targetWord = state.words.find(w => w.term === "The")!;
+    targetWord.x = 0;
+    targetWord.y = 0;
+    // Place a FUTURE word (not the current target) on a cell we'll claim
+    const futureWord = state.words.find(w => w.term === "cat")!;
+    futureWord.x = 5;
+    futureWord.y = 5;
+    // Ensure "cat" is not the current target (target should be "The")
+    expect(state.fullSentence[state.targetWordIndex].term).toBe("The");
+    // Set up trail and move to claimed
+    state.grid[1][2] = "trail";
+    const next = tickRealmCarver(state, 1000);
+    // The future word should NOT be removed permanently
+    const stillHasFutureWord = next.words.some(w => w.term === "cat");
+    expect(stillHasFutureWord).toBe(true);
+    // The target word index should NOT advance since we captured wrong word
+    expect(next.targetWordIndex).toBe(state.targetWordIndex);
+  });
+
   it("should detect monster-trail collision", () => {
     let state = createRealmCarverState(mockSentences);
     state.player.x = 10;

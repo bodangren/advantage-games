@@ -70,10 +70,10 @@
   - [x] Preserve level advancement only while additional assigned sentences remain.
   - [x] Ensure accumulated XP/correct totals include all completed levels and are not double counted.
 
-- [ ] Task: Fix Realm Carver out-of-order word capture
-  - [ ] Write a pure logic test where a future word is enclosed before the current target.
-  - [ ] Ensure future required words are not removed permanently when captured out of order.
-  - [ ] Apply a clear penalty for wrong/future capture if desired, but keep the sentence completable.
+- [x] Task: Fix Realm Carver out-of-order word capture
+  - [x] Write a pure logic test where a future word is enclosed before the current target.
+  - [x] Ensure future required words are not removed permanently when captured out of order.
+  - [x] Apply a clear penalty for wrong/future capture if desired, but keep the sentence completable.
 
 - [ ] Task: Fix Haunted Library repeated collision damage
   - [ ] Write a pure logic test for sustained ghost overlap across consecutive ticks.
