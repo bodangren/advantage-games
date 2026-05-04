@@ -138,6 +138,36 @@ describe("archersRevenge", () => {
       expect(nextState.wave).toBe(2);
       expect(nextState.enemies.length).toBeGreaterThan(0);
     });
+
+    it("should set victory when all waves are completed", () => {
+      const state = createArchersRevengeState(mockVocabulary, { difficulty: "easy" });
+      // Easy has maxWaves = 2, so set current wave to max
+      state.wave = ARCHERS_REVENGE_CONFIG.maxWaves.easy;
+      const targetEnemy = state.enemies.find(e => !e.shieldUp)!;
+      
+      // Destroy last enemy
+      state.enemies = [targetEnemy];
+      state.arrows = [{ id: "test-arrow", x: targetEnemy.x, y: targetEnemy.y, vy: -400 }];
+      
+      const nextState = tickArchersRevenge(state, 16);
+      
+      expect(nextState.status).toBe("victory");
+    });
+
+    it("should not spawn new enemies after victory", () => {
+      const state = createArchersRevengeState(mockVocabulary, { difficulty: "easy" });
+      state.wave = ARCHERS_REVENGE_CONFIG.maxWaves.easy;
+      const targetEnemy = state.enemies.find(e => !e.shieldUp)!;
+      
+      state.enemies = [targetEnemy];
+      state.arrows = [{ id: "test-arrow", x: targetEnemy.x, y: targetEnemy.y, vy: -400 }];
+      
+      const nextState = tickArchersRevenge(state, 16);
+      
+      expect(nextState.status).toBe("victory");
+      // Should not have spawned new enemies
+      expect(nextState.enemies.length).toBe(0);
+    });
   });
 
   describe("calculateXP", () => {

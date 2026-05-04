@@ -340,6 +340,13 @@ export const tickArchersRevenge = (
 
 const nextWave = (state: ArchersRevengeState): ArchersRevengeState => {
   const nextWaveNum = state.wave + 1;
+  const maxWaves = ARCHERS_REVENGE_CONFIG.maxWaves?.[state.difficulty] || 3;
+
+  // Victory if all waves completed
+  if (state.wave >= maxWaves) {
+    return { ...state, status: "victory" };
+  }
+
   const { enemies, targetIndex } = createEnemyFormation(
     state.vocabulary,
     state.difficulty,

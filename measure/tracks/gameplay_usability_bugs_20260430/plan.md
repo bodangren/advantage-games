@@ -97,10 +97,10 @@
   - [x] Choose one source of truth for matching identity and target display.
   - [x] Verify correct matches damage the monster and wrong matches do not increment accuracy.
 
-- [ ] Task: Add Archer's Revenge reachable victory
-  - [ ] Write a pure logic test that clears the required enemy/wave target set and expects `status: "victory"`.
-  - [ ] Implement finite victory by vocabulary/wave completion, unless explicitly converting the game to endless survival.
-  - [ ] Verify the component renders the victory end screen and submits completion once.
+- [x] Task: Add Archer's Revenge reachable victory
+  - [x] Write a pure logic test that clears the required enemy/wave target set and expects `status: "victory"`.
+  - [x] Implement finite victory by vocabulary/wave completion, unless explicitly converting the game to endless survival.
+  - [x] Verify the component renders the victory end screen and submits completion once.
 
 - [ ] Task: Fix Magic Defense input focus and success/failure semantics
   - [ ] Write a component test proving keyboard input works immediately after start and after clicking the game area.

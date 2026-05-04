@@ -18,6 +18,7 @@ export type ArchersRevengeConfig = {
     projectileSpeed: number;
   };
   targetChangeInterval: Record<Difficulty, number>;
+  maxWaves: Record<Difficulty, number>;
   scoring: {
     basePointsPerEnemy: number;
     comboMultiplier: number;
@@ -74,6 +75,12 @@ export const ARCHERS_REVENGE_CONFIG: ArchersRevengeConfig = {
     normal: 7000,
     hard: 5000,
     extreme: 3500,
+  },
+  maxWaves: {
+    easy: 2,
+    normal: 3,
+    hard: 4,
+    extreme: 5,
   },
   scoring: {
     basePointsPerEnemy: 100,
