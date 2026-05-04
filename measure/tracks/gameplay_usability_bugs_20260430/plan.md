@@ -124,11 +124,17 @@
   - [ ] For scrolling-canvas games, verify HUD/target text remains fixed or compensated.
   - [ ] Fix any touched game where target words, translations, lives, timers, or instructions are below the minimum.
 
-- [ ] Task: Run focused automated suites
-  - [ ] Run all new/changed pure gameplay logic tests.
-  - [ ] Run all new/changed component tests for touched games.
-  - [ ] Run route/card consistency tests.
-  - [ ] Record the exact command and result in the phase notes.
+- [x] Task: Run focused automated suites
+  - [x] Run all new/changed pure gameplay logic tests.
+    - Command: `npx jest src/lib/games/runeMatch.test.ts src/lib/games/archersRevenge.test.ts src/lib/games/dragonFlight.test.ts src/lib/games/dragonRider.test.ts src/lib/games/hauntedLibrary.test.ts src/lib/games/realmCarver.test.ts src/lib/games/spellweaversRun.test.ts --verbose`
+    - Result: 7 suites passed, 158 tests passed, 0 failed
+  - [x] Run all new/changed component tests for touched games.
+    - Command: `npx jest src/components/games/game/InputController.test.tsx src/components/games/game/GameContainer.test.tsx src/components/games/vocabulary/wizard-vs-zombie/WizardZombieGame.test.tsx src/store/usePotionRushStore.logic.test.ts --verbose`
+    - Result: 4 suites passed, 28 tests passed, 0 failed
+  - [x] Run route/card consistency tests.
+    - Command: `npx jest src/lib/gameCards.test.ts --verbose`
+    - Result: 1 suite passed, 4 tests passed, 0 failed
+  - [x] Total: 12 suites, 190 tests, all passing
 
 - [ ] Task: Create manual smoke verification matrix
   - [ ] For each touched game, list the route, start action, primary input, expected first success, expected first failure, victory path, defeat path, restart behavior, and text readability check.
