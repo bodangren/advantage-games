@@ -85,10 +85,10 @@
   - [x] Apply a visible penalty to mana, combo, score, or another resource.
   - [x] Verify missed decoys do not incorrectly punish the player as target misses.
 
-- [ ] Task: Fix Potion Rush day completion and blocked-drop preservation
-  - [ ] Write a test for surviving until day/time completion with reputation above zero and expecting victory.
-  - [ ] Write a test for dropping onto a blocked/unavailable cauldron and keeping the ingredient recoverable.
-  - [ ] Ensure `onComplete` fires exactly once on final victory or defeat.
+- [x] Task: Fix Potion Rush day completion and blocked-drop preservation
+  - [x] Write a test for surviving until day/time completion with reputation above zero and expecting victory.
+  - [x] Write a test for dropping onto a blocked/unavailable cauldron and keeping the ingredient recoverable.
+  - [x] Ensure `onComplete` fires exactly once on final victory or defeat.
 
 ## Phase 3: Vocabulary Game Semantics
 

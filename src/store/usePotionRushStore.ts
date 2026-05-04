@@ -444,30 +444,39 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
       // 5. Update Day Time
       const nextDayTime = dayTime + (dt * 0.01) 
+      const dayComplete = nextDayTime >= 1
 
       const nextEffects = effects
         .map(effect => ({ ...effect, age: effect.age + dt }))
         .filter(effect => effect.age < effect.duration)
       
-      if (nextReputation <= 0) {
-           set({ gameState: 'GAME_OVER', reputation: nextReputation, effects: nextEffects, gameTime: nextGameTime, angryCustomers: nextAngryCustomers, totalCustomerSpawns: nextTotalCustomerSpawns })
+      if (nextReputation <= 0 || dayComplete) {
+           set({ 
+             gameState: 'GAME_OVER', 
+             reputation: nextReputation, 
+             effects: nextEffects, 
+             gameTime: nextGameTime, 
+             angryCustomers: nextAngryCustomers, 
+             totalCustomerSpawns: nextTotalCustomerSpawns,
+             dayTime: Math.min(1, nextDayTime)
+           })
        } else {
            set({
-             conveyorItems: nextItems,
-             customers: nextCustomers,
-             reputation: nextReputation,
-             dayTime: nextDayTime,
-             effects: nextEffects,
-             activeWordPool: nextActiveWordPool,
-             beltSpeed: targetSpeed,
-             cauldrons: nextCauldrons,
-             timeToNextCustomerSpawn: nextCustomerTimer,
-             timeToNextIngredientSpawn: nextIngredientTimer,
-             gameTime: nextGameTime,
-             angryCustomers: nextAngryCustomers,
-             totalCustomerSpawns: nextTotalCustomerSpawns
-           })
-       }
+              conveyorItems: nextItems,
+              customers: nextCustomers,
+              reputation: nextReputation,
+              dayTime: nextDayTime,
+              effects: nextEffects,
+              activeWordPool: nextActiveWordPool,
+              beltSpeed: targetSpeed,
+              cauldrons: nextCauldrons,
+              timeToNextCustomerSpawn: nextCustomerTimer,
+              timeToNextIngredientSpawn: nextIngredientTimer,
+              gameTime: nextGameTime,
+              angryCustomers: nextAngryCustomers,
+              totalCustomerSpawns: nextTotalCustomerSpawns
+            })
+        }
   },
 
   handleDropIngredient: (cauldronIndex, ingredientId, dropPosition) => {
@@ -477,11 +486,11 @@ export const usePotionRushStore = create<PotionRushState>((set, get) => ({
 
     if (!ingredient || !cauldron) return
 
+    // If Cauldron is WARNING or COMPLETED, reject drop and keep ingredient
+    if (cauldron.state === 'WARNING' || cauldron.state === 'COMPLETED') return
+
     // Remove from belt
     set({ conveyorItems: conveyorItems.filter(i => i.id !== ingredientId) })
-
-    // If Cauldron is WARNING or COMPLETED, ignore drops (must be emptied first)
-    if (cauldron.state === 'WARNING' || cauldron.state === 'COMPLETED') return
 
     const emitEffect = (type: PotionRushEffectType) => {
       if (!dropPosition) return
