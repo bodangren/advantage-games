@@ -126,7 +126,7 @@ export const advanceDragonRiderTime = (
 }
 
 export const calculateBossPower = (totalAttempts: number): number =>
-  Math.max(3, Math.ceil(totalAttempts * 0.75))
+  Math.max(3, Math.ceil(totalAttempts * 0.5))
 
 export const getDragonRiderResults = ({
   correctAnswers,

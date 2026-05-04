@@ -137,7 +137,7 @@ export const advanceDragonFlightTime = (
 };
 
 export const calculateBossPower = (totalAttempts: number): number =>
-  Math.max(3, Math.ceil(totalAttempts * 0.6));
+  Math.max(2, Math.ceil(totalAttempts * 0.4));
 
 export const getDragonFlightResults = (
   {

@@ -112,10 +112,10 @@
   - [x] Verify restart clears stale phase, score, enemies, player state, and progress.
   - [x] Verify shared start/end screen music hooks do not create duplicate completion submissions.
 
-- [ ] Task: Tune Dragon Flight and Dragon Rider early fairness
-  - [ ] Add tests around boss/threshold constants or scoring helpers where available.
-  - [ ] Adjust thresholds only enough to give players time to read and respond in early play.
-  - [ ] Verify existing ranking/result behavior is unchanged except for fairness tuning.
+- [x] Task: Tune Dragon Flight and Dragon Rider early fairness
+  - [x] Add tests around boss/threshold constants or scoring helpers where available.
+  - [x] Adjust thresholds only enough to give players time to read and respond in early play.
+  - [x] Verify existing ranking/result behavior is unchanged except for fairness tuning.
 
 ## Phase 4: Cross-Game Readability and Manual Verification
 

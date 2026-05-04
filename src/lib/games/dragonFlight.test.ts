@@ -88,9 +88,10 @@ describe("dragonFlight core logic", () => {
   });
 
   it("calculates boss power from attempts", () => {
-    expect(calculateBossPower(0)).toBe(3);
-    expect(calculateBossPower(5)).toBe(3);
-    expect(calculateBossPower(6)).toBe(4);
+    expect(calculateBossPower(0)).toBe(2);
+    expect(calculateBossPower(5)).toBe(2);
+    expect(calculateBossPower(6)).toBe(3);
+    expect(calculateBossPower(10)).toBe(4);
   });
 
   it("builds results with accuracy, boss outcome, and XP", () => {
@@ -102,8 +103,34 @@ describe("dragonFlight core logic", () => {
     });
 
     expect(results.accuracy).toBeCloseTo(0.6);
-    expect(results.bossPower).toBe(6);
-    expect(results.victory).toBe(false);
+    expect(results.bossPower).toBe(4);
+    expect(results.victory).toBe(true);
     expect(results.xp).toBe(3);
+  });
+
+  it("allows victory with 60% accuracy and moderate attempts", () => {
+    // 8 attempts, 5 correct (62.5%), 3 wrong
+    // dragonCount: 1 + 5 - 3 = 3
+    // bossPower: max(2, ceil(8 * 0.4)) = max(2, 4) = 4
+    // Victory: 3 >= 4 = false
+    const results62 = getDragonFlightResults({
+      correctAnswers: 5,
+      totalAttempts: 8,
+      dragonCount: 3,
+      difficulty: "normal",
+    });
+    expect(results62.victory).toBe(false);
+
+    // 8 attempts, 6 correct (75%), 2 wrong
+    // dragonCount: 1 + 6 - 2 = 5
+    // bossPower: 4
+    // Victory: 5 >= 4 = true
+    const results75 = getDragonFlightResults({
+      correctAnswers: 6,
+      totalAttempts: 8,
+      dragonCount: 5,
+      difficulty: "normal",
+    });
+    expect(results75.victory).toBe(true);
   });
 });

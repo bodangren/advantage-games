@@ -73,8 +73,9 @@ describe('dragonRider core logic', () => {
 
   it('calculates boss power from attempts', () => {
     expect(calculateBossPower(0)).toBe(3)
-    expect(calculateBossPower(5)).toBe(4)
-    expect(calculateBossPower(6)).toBe(5)
+    expect(calculateBossPower(5)).toBe(3)
+    expect(calculateBossPower(6)).toBe(3)
+    expect(calculateBossPower(10)).toBe(5)
   })
 
   it('builds results with accuracy, boss outcome, and XP', () => {
@@ -85,8 +86,32 @@ describe('dragonRider core logic', () => {
     })
 
     expect(results.accuracy).toBeCloseTo(0.6)
-    expect(results.bossPower).toBe(8)
+    expect(results.bossPower).toBe(5)
     expect(results.victory).toBe(false)
     expect(results.xp).toBe(3)
+  })
+
+  it('allows victory with 60% accuracy and moderate attempts', () => {
+    // 10 attempts, 6 correct (60%), 4 wrong
+    // dragonCount: 1 + 6 - 4 = 3
+    // bossPower: max(3, ceil(10 * 0.5)) = max(3, 5) = 5
+    // Victory: 3 >= 5 = false
+    const results60 = getDragonRiderResults({
+      correctAnswers: 6,
+      totalAttempts: 10,
+      dragonCount: 3,
+    })
+    expect(results60.victory).toBe(false)
+
+    // 10 attempts, 7 correct (70%), 3 wrong
+    // dragonCount: 1 + 7 - 3 = 5
+    // bossPower: 5
+    // Victory: 5 >= 5 = true
+    const results70 = getDragonRiderResults({
+      correctAnswers: 7,
+      totalAttempts: 10,
+      dragonCount: 5,
+    })
+    expect(results70.victory).toBe(true)
   })
 })
