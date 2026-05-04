@@ -27,4 +27,9 @@
   - Label + htmlFor on selects improves both a11y and testability simultaneously
   - High baseline compliance means audit is primarily verification
 
+## Track: Gameplay Usability Bug Fixes (2026-05-05)
+- Fixed text readability violations: Potion Rush (12→16px), Spellweaver's Run (10-12→18px), Village Guardian (14→16/18px)
+- All touched games now meet HUD ≥16px and words ≥18px minimums
+- **Key Learning:** Code audit for fontSize values is faster than visual testing for catching sub-minimum text sizes
+
 **Previous audits (condensed):** Rune Forge Chamber, Spellweaver's Run, Village Guardian, Dungeon Liberator, Potion Rush, Rune Match, Castle Defense, Alchemists Synthesis, Wizard vs Zombie, RPG Battle, Magic Defense, Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.
