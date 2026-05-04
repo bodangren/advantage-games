@@ -209,8 +209,8 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
 
   const baseTextSize = 16
   const effectiveTextSize = useMemo(() => getEffectiveTextSize(baseTextSize), [getEffectiveTextSize])
-  const smallTextSize = useMemo(() => Math.max(12, getEffectiveTextSize(14)), [getEffectiveTextSize])
-  const tinyTextSize = useMemo(() => Math.max(10, getEffectiveTextSize(12)), [getEffectiveTextSize])
+  const smallTextSize = useMemo(() => Math.max(18, getEffectiveTextSize(18)), [getEffectiveTextSize])
+  const tinyTextSize = useMemo(() => Math.max(18, getEffectiveTextSize(18)), [getEffectiveTextSize])
 
   if (gamePhase === 'start') {
     return (

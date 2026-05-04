@@ -302,7 +302,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                   x={10}
                   y={52}
                   text={`Words: ${gameState.collectedWords.length}/${gameState.words.length}`}
-                  fontSize={getEffectiveTextSize(14)}
+                  fontSize={getEffectiveTextSize(16)}
                   fill="#a3a3a3"
                   width={GAME_WIDTH - 20}
                   align="center"
@@ -345,7 +345,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                         x={-VILLAGE_GUARDIAN_CONFIG.villagerSize / 2}
                         y={-VILLAGE_GUARDIAN_CONFIG.villagerSize / 2 - 18}
                         text={villager.word}
-                        fontSize={getEffectiveTextSize(14)}
+                        fontSize={getEffectiveTextSize(18)}
                         fill="white"
                         fontStyle="bold"
                         width={VILLAGE_GUARDIAN_CONFIG.villagerSize}
@@ -369,7 +369,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                       x={-VILLAGE_GUARDIAN_CONFIG.villagerSize / 2 + 2}
                       y={-6}
                         text={segment.word}
-                        fontSize={getEffectiveTextSize(14)}
+                        fontSize={getEffectiveTextSize(18)}
                         fill="white"
                         fontStyle="bold"
                         width={VILLAGE_GUARDIAN_CONFIG.villagerSize - 4}
@@ -428,7 +428,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                     x={5}
                     y={2}
                     text={`Time: ${Math.ceil(gameState.timer / 1000)}s`}
-                    fontSize={getEffectiveTextSize(14)}
+                    fontSize={getEffectiveTextSize(16)}
                     fill="white"
                     fontStyle="bold"
                   />
@@ -455,7 +455,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
                     x={5}
                     y={2}
                     text={`Lives: ${gameState.knight.lives}`}
-                    fontSize={getEffectiveTextSize(14)}
+                    fontSize={getEffectiveTextSize(16)}
                     fill="white"
                     fontStyle="bold"
                   />

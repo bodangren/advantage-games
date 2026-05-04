@@ -36,7 +36,7 @@ export default function TrashPortal({ x, y }: { x: number, y: number }) {
         <Circle radius={22 * frame.pulse} fill="#6b21a8" opacity={0.9} />
         <Circle radius={14 * frame.pulse} fill="#581c87" opacity={0.9} />
 
-        <Text text="TRASH" fontSize={12} fill="white" fontStyle="bold" x={-20} y={-5} />
+        <Text text="TRASH" fontSize={16} fill="white" fontStyle="bold" x={-20} y={-5} />
     </Group>
   )
 }
