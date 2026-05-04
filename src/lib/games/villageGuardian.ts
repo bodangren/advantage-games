@@ -9,7 +9,7 @@ import {
   GAME_HEIGHT,
 } from './villageGuardianConfig'
 
-export type GameStatus = 'start' | 'playing' | 'defeat'
+export type GameStatus = 'start' | 'playing' | 'victory' | 'defeat'
 
 export type Position = {
   x: number
@@ -79,6 +79,8 @@ export type VillageGuardianState = {
   timer: number
   maxTimer: number
   gameTime: number
+  completedSentenceIndices: number[]
+  currentSentenceIndex: number
 }
 
 export type VillageGuardianConfig = {
@@ -229,6 +231,8 @@ export function createVillageGuardianState(
     timer: diffConfig.timer,
     maxTimer: diffConfig.timer,
     gameTime: 0,
+    completedSentenceIndices: [],
+    currentSentenceIndex: sentenceIndex,
   }
 }
 
@@ -568,12 +572,28 @@ function advanceLevelIfComplete(state: VillageGuardianState): VillageGuardianSta
   const dist = Math.sqrt(dx * dx + dy * dy)
 
   if (dist < VILLAGE_GUARDIAN_CONFIG.knightSize / 2 + sanctuary.radius && trail.length === words.length) {
+    // Mark current sentence as completed
+    const completedIndices = [...state.completedSentenceIndices, state.currentSentenceIndex]
+
+    // Check if all sentences are completed
+    if (completedIndices.length >= state.vocabulary.length) {
+      return {
+        ...state,
+        status: 'victory',
+        completedSentenceIndices: completedIndices,
+      }
+    }
+
     const rng = Math.random
     const nextLevel = state.level + 1
     const diffConfig = getDifficultyConfig(state.difficulty)
 
-    // Pick a new sentence
-    const sentenceIndex = Math.floor(rng() * state.vocabulary.length)
+    // Pick an uncompleted sentence
+    const uncompletedIndices = state.vocabulary
+      .map((_, i) => i)
+      .filter(i => !completedIndices.includes(i))
+
+    const sentenceIndex = uncompletedIndices[Math.floor(rng() * uncompletedIndices.length)]
     const nextSentence = state.vocabulary[sentenceIndex]
     const nextWords = nextSentence.term.split(' ')
     const wordCount = Math.min(diffConfig.wordCount, nextWords.length)
@@ -594,6 +614,7 @@ function advanceLevelIfComplete(state: VillageGuardianState): VillageGuardianSta
       ...state,
       level: nextLevel,
       currentSentence: nextSentence,
+      currentSentenceIndex: sentenceIndex,
       words: activeWords,
       villagers: newVillagers,
       trail: [],
@@ -602,6 +623,7 @@ function advanceLevelIfComplete(state: VillageGuardianState): VillageGuardianSta
       monsters: newMonsters,
       timer: diffConfig.timer,
       maxTimer: diffConfig.timer,
+      completedSentenceIndices: completedIndices,
     }
   }
 

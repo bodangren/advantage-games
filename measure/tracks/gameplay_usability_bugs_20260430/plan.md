@@ -55,10 +55,10 @@
   - [x] Decide in code whether extra levels are survival mode or lesson progression; make the copy match.
   - [x] Ensure `onComplete` fires exactly once with final XP and accuracy.
 
-- [ ] Task: Fix Village Guardian finite victory
-  - [ ] Write a test that rescues the required sentence words and reaches victory instead of looping forever.
-  - [ ] If multiple sentences are intended, end when the assigned sentence list is exhausted.
-  - [ ] Ensure defeat remains reachable and distinct from victory.
+- [x] Task: Fix Village Guardian finite victory
+  - [x] Write a test that rescues the required sentence words and reaches victory instead of looping forever.
+  - [x] If multiple sentences are intended, end when the assigned sentence list is exhausted.
+  - [x] Ensure defeat remains reachable and distinct from victory.
 
 - [ ] Task: Fix Labyrinth Goblin King completion loop
   - [ ] Write a test for collecting all required word orbs and expecting final victory.

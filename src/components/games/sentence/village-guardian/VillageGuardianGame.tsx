@@ -128,7 +128,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
   gameStateRef.current = gameState
 
   useEffect(() => {
-    if (gameState?.status === 'defeat' && gamePhase !== 'ended') {
+    if ((gameState?.status === 'defeat' || gameState?.status === 'victory') && gamePhase !== 'ended') {
       const currentState = gameStateRef.current
       if (!currentState) return
       const accuracy = currentState.correctAnswers + currentState.wrongAnswers > 0
@@ -490,9 +490,12 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
 
       {gamePhase === 'ended' && gameState && results && (
         <GameEndScreen
-          status="defeat"
-          title="Village Overrun!"
-          subtitle={`The monsters were too strong... You reached level ${gameState.level}.`}
+          status={gameState.status === 'victory' ? 'victory' : 'defeat'}
+          title={gameState.status === 'victory' ? 'Village Saved!' : 'Village Overrun!'}
+          subtitle={gameState.status === 'victory'
+            ? `You rescued all the villagers! Level ${gameState.level} reached.`
+            : `The monsters were too strong... You reached level ${gameState.level}.`
+          }
           score={gameState.correctAnswers * 10}
           xp={results.xp}
           accuracy={results.accuracy}

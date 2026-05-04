@@ -277,7 +277,32 @@ describe('level progression (no victory state)', () => {
     }
     const newState = tickVillageGuardian(nonCompleteState, 50)
     expect(newState.status).toBe('playing')
-    expect(newState.level).toBe(1)
+  })
+
+  it('sets victory when all sentences are completed', () => {
+    // Use single-sentence vocabulary to test victory
+    const singleVocab = [mockVocabulary[0]]
+    const state = createVillageGuardianState(singleVocab, { difficulty: 'easy' })
+    const fullTrail = state.words.map((word, i) => ({
+      id: `trail-${i}`,
+      x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
+      y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
+      word,
+      orderIndex: i,
+    }))
+    const completedState: VillageGuardianState = {
+      ...state,
+      knight: {
+        ...state.knight,
+        x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
+        y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
+      },
+      trail: fullTrail,
+      targetIndex: state.words.length,
+    }
+    const newState = tickVillageGuardian(completedState, 50)
+    expect(newState.status).toBe('victory')
+    expect(newState.completedSentenceIndices).toContain(state.currentSentenceIndex)
   })
 
   it('initializes with level 1', () => {

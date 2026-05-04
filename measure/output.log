@@ -3998,3 +3998,443 @@ Index: /home/daniel-bo/Desktop/advantage-games/measure/tracks/gameplay_usability
    - [ ] If multiple sentences are intended, end when the assigned sentence list is exhausted.
 
 [0m
+[0m$ [0mgit add -A && git commit -m "fix(rune-forge-chamber): add finite victory condition
+
+- Add 'victory' status to GameStatus type
+- Track completed sentences and trigger victory when all sentences done
+- Update component to handle victory status with appropriate end screen
+- Component now shows victory/defeat based on actual game status
+- Add test for victory condition when all sentences completed"
+[master 1283976] fix(rune-forge-chamber): add finite victory condition
+ 5 files changed, 1074 insertions(+), 11 deletions(-)
+[0m
+[0m→ [0mRead measure/tracks/gameplay_usability_bugs_20260430/plan.md[90m [limit=30, offset=51][0m
+[0m✱ [0mGlob "**/village-guardian/**/*.{ts,tsx}"[90m 6 matches[0m
+[0m→ [0mRead src/lib/games/villageGuardian.ts[90m [limit=100][0m
+[0m✱ [0mGrep "victory|advanceLevel|targetIndex|collectedWords"[90m in src/lib/games · 20 matches[0m
+[0m→ [0mRead src/lib/games/villageGuardian.ts[90m [limit=80, offset=555][0m
+[0m→ [0mRead src/components/games/sentence/village-guardian/VillageGuardianGame.tsx[90m [limit=100][0m
+[0m→ [0mRead src/components/games/sentence/village-guardian/VillageGuardianGame.tsx[90m [limit=100, offset=100][0m
+[0m→ [0mRead src/components/games/sentence/village-guardian/VillageGuardianGame.tsx[90m [limit=100, offset=400][0m
+[0m
+[0m← [0mEdit src/lib/games/villageGuardian.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
+@@ -8,9 +8,9 @@
+   GAME_WIDTH,
+   GAME_HEIGHT,
+ } from './villageGuardianConfig'
+ 
+-export type GameStatus = 'start' | 'playing' | 'defeat'
++export type GameStatus = 'start' | 'playing' | 'victory' | 'defeat'
+ 
+ export type Position = {
+   x: number
+   y: number
+
+[0m
+[0m← [0mEdit src/lib/games/villageGuardian.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
+@@ -78,8 +78,10 @@
+   wrongAnswers: number
+   timer: number
+   maxTimer: number
+   gameTime: number
++  completedSentenceIndices: number[]
++  currentSentenceIndex: number
+ }
+ 
+ export type VillageGuardianConfig = {
+   difficulty?: Difficulty
+
+[0m
+[0m✱ [0mGrep "createVillageGuardianState"[90m in src/lib/games · 1 match[0m
+[0m→ [0mRead src/lib/games/villageGuardian.ts[90m [limit=80, offset=177][0m
+[0m
+[0m← [0mEdit src/lib/games/villageGuardian.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
+@@ -230,8 +230,10 @@
+     wrongAnswers: 0,
+     timer: diffConfig.timer,
+     maxTimer: diffConfig.timer,
+     gameTime: 0,
++    completedSentenceIndices: [],
++    currentSentenceIndex: sentenceIndex,
+   }
+ }
+ 
+ export function tickVillageGuardian(
+
+[0m
+[0m← [0mEdit src/lib/games/villageGuardian.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/villageGuardian.ts
+@@ -571,14 +571,30 @@
+ const dy = knight.y - sanctuary.y
+ const dist = Math.sqrt(dx * dx + dy * dy)
+ 
+ if (dist < VILLAGE_GUARDIAN_CONFIG.knightSize / 2 + sanctuary.radius && trail.length === words.length) {
++  // Mark current sentence as completed
++  const completedIndices = [...state.completedSentenceIndices, state.currentSentenceIndex]
++
++  // Check if all sentences are completed
++  if (completedIndices.length >= state.vocabulary.length) {
++    return {
++      ...state,
++      status: 'victory',
++      completedSentenceIndices: completedIndices,
++    }
++  }
++
+   const rng = Math.random
+   const nextLevel = state.level + 1
+   const diffConfig = getDifficultyConfig(state.difficulty)
+ 
+-  // Pick a new sentence
+-  const sentenceIndex = Math.floor(rng() * state.vocabulary.length)
++  // Pick an uncompleted sentence
++  const uncompletedIndices = state.vocabulary
++    .map((_, i) => i)
++    .filter(i => !completedIndices.includes(i))
++
++  const sentenceIndex = uncompletedIndices[Math.floor(rng() * uncompletedIndices.length)]
+   const nextSentence = state.vocabulary[sentenceIndex]
+   const nextWords = nextSentence.term.split(' ')
+   const wordCount = Math.min(diffConfig.wordCount, nextWords.length)
+   const activeWords = nextWords.slice(0, wordCount)
+@@ -597,16 +613,18 @@
+   return {
+     ...state,
+     level: nextLevel,
+     currentSentence: nextSentence,
++    currentSentenceIndex: sentenceIndex,
+     words: activeWords,
+     villagers: newVillagers,
+     trail: [],
+     collectedWords: [],
+     targetIndex: 0,
+     monsters: newMonsters,
+     timer: diffConfig.timer,
+     maxTimer: diffConfig.timer,
++    completedSentenceIndices: completedIndices,
+   }
+ }
+ 
+ return state
+
+[0m
+[0m← [0mEdit src/components/games/sentence/village-guardian/VillageGuardianGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/village-guardian/VillageGuardianGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/village-guardian/VillageGuardianGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/village-guardian/VillageGuardianGame.tsx
+@@ -127,9 +127,9 @@
+ const gameStateRef = useRef(gameState)
+ gameStateRef.current = gameState
+ 
+ useEffect(() => {
+-  if (gameState?.status === 'defeat' && gamePhase !== 'ended') {
++  if ((gameState?.status === 'defeat' || gameState?.status === 'victory') && gamePhase !== 'ended') {
+     const currentState = gameStateRef.current
+     if (!currentState) return
+     const accuracy = currentState.correctAnswers + currentState.wrongAnswers > 0
+       ? currentState.correctAnswers / (currentState.correctAnswers + currentState.wrongAnswers)
+
+[0m
+[0m← [0mEdit src/components/games/sentence/village-guardian/VillageGuardianGame.tsx
+Index: /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/village-guardian/VillageGuardianGame.tsx
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/village-guardian/VillageGuardianGame.tsx
++++ /home/daniel-bo/Desktop/advantage-games/src/components/games/sentence/village-guardian/VillageGuardianGame.tsx
+@@ -489,11 +489,14 @@
+ )}
+ 
+ {gamePhase === 'ended' && gameState && results && (
+   <GameEndScreen
+-    status="defeat"
+-    title="Village Overrun!"
+-    subtitle={`The monsters were too strong... You reached level ${gameState.level}.`}
++    status={gameState.status === 'victory' ? 'victory' : 'defeat'}
++    title={gameState.status === 'victory' ? 'Village Saved!' : 'Village Overrun!'}
++    subtitle={gameState.status === 'victory'
++      ? `You rescued all the villagers! Level ${gameState.level} reached.`
++      : `The monsters were too strong... You reached level ${gameState.level}.`
++    }
+     score={gameState.correctAnswers * 10}
+     xp={results.xp}
+     accuracy={results.accuracy}
+     customStats={[
+
+[0m
+[0m$ [0mnpx jest src/lib/games/villageGuardian.test.ts --verbose
+No tests found, exiting with code 1
+Run with `--passWithNoTests` to exit with code 0
+In /home/daniel-bo/Desktop/advantage-games
+  778 files checked.
+  testMatch: **/__tests__/**/*.?([mc])[jt]s?(x), **/?(*.)+(spec|test).?([mc])[jt]s?(x) - 208 matches
+  testPathIgnorePatterns: /node_modules/, /.next/, /node_modules/, /tests/e2e/ - 605 matches
+  testRegex:  - 0 matches
+Pattern: src/lib/games/villageGuardian.test.ts - 0 matches
+[0m
+[0m✱ [0mGlob "**/villageGuardian*.test.{ts,tsx}"[90m 1 match[0m
+[0m
+[0m$ [0mnpx jest src/lib/games/__tests__/villageGuardian.test.ts --verbose
+PASS src/lib/games/__tests__/villageGuardian.test.ts
+  villageGuardianConfig
+    ✓ exports correct game dimensions (12 ms)
+    ✓ returns correct difficulty config (6 ms)
+    ✓ returns correct timer duration (3 ms)
+    ✓ returns correct monster speed (3 ms)
+  createVillageGuardianState
+    ✓ throws error when vocabulary is empty (78 ms)
+    ✓ creates state with default difficulty and opponent (4 ms)
+    ✓ creates state with custom difficulty (2 ms)
+    ✓ creates state with custom opponent type (2 ms)
+    ✓ initializes knight at correct position (3 ms)
+    ✓ spawns villagers based on word count (2 ms)
+    ✓ spawns one monster (1 ms)
+    ✓ initializes empty trail and collectedWords (7 ms)
+    ✓ sets correct timer based on difficulty (2 ms)
+  tickVillageGuardian
+    ✓ returns same state when not playing (2 ms)
+    ✓ decrements timer (4 ms)
+    ✓ sets defeat when timer reaches zero (2 ms)
+    ✓ increments game time (2 ms)
+    ✓ moves knight based on input (2 ms)
+    ✓ moves knight diagonally with normalized speed (2 ms)
+    ✓ keeps knight within bounds (3 ms)
+    ✓ decreases invulnerability time (1 ms)
+  villager collision mechanics
+    ✓ collecting correct villager increments correctAnswers only, not wrongAnswers (4 ms)
+    ✓ collecting correct villager adds it to trail and collectedWords (3 ms)
+    ✓ touching wrong-order villager increments wrongAnswers and hides villager (4 ms)
+    ✓ touching wrong villager applies time penalty (2 ms)
+  level progression (no victory state)
+    ✓ advances to level 2 when knight reaches sanctuary with full trail (4 ms)
+    ✓ adds an extra monster each level (up to max) (1 ms)
+    ✓ does not advance level when trail is not full (2 ms)
+    ✓ initializes with level 1 (1 ms)
+  monster collision
+    ✓ knight loses a life when monster hits and trail is empty (6 ms)
+    ✓ monster hitting trail scatters villagers and resets trail (5 ms)
+    ✓ knight gets invulnerability after monster scatters trail (3 ms)
+  trail following
+    ✓ trail segment moves toward knight position (3 ms)
+  monster movement
+    ✓ goblin monsters chase the knight (2 ms)
+    ✓ dragon monsters chase the knight more aggressively (1 ms)
+    ✓ bandit monsters bounce off walls (2 ms)
+  hiding villager behavior
+    ✓ hiding villager timer decrements each tick (2 ms)
+    ✓ hiding villager becomes visible again when timer expires (1 ms)
+  calculateXP
+    ✓ calculates base XP from correct answers (2 ms)
+    ✓ adds accuracy bonus for 90%+ accuracy (2 ms)
+    ✓ caps XP at maxXP (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       41 passed, 41 total
+Snapshots:   0 total
+Time:        3.767 s
+Ran all test suites matching src/lib/games/__tests__/villageGuardian.test.ts.
+[0m
+[0m→ [0mRead src/lib/games/__tests__/villageGuardian.test.ts[90m [limit=50, offset=180][0m
+[0m→ [0mRead src/lib/games/__tests__/villageGuardian.test.ts[90m [limit=50, offset=230][0m
+[0m
+[0m← [0mEdit src/lib/games/__tests__/villageGuardian.test.ts
+Index: /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/villageGuardian.test.ts
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/villageGuardian.test.ts
++++ /home/daniel-bo/Desktop/advantage-games/src/lib/games/__tests__/villageGuardian.test.ts
+@@ -276,11 +276,36 @@
+     trail: partialTrail,
+   }
+   const newState = tickVillageGuardian(nonCompleteState, 50)
+   expect(newState.status).toBe('playing')
+-  expect(newState.level).toBe(1)
+ })
+ 
++it('sets victory when all sentences are completed', () => {
++  // Use single-sentence vocabulary to test victory
++  const singleVocab = [mockVocabulary[0]]
++  const state = createVillageGuardianState(singleVocab, { difficulty: 'easy' })
++  const fullTrail = state.words.map((word, i) => ({
++    id: `trail-${i}`,
++    x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
++    y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
++    word,
++    orderIndex: i,
++  }))
++  const completedState: VillageGuardianState = {
++    ...state,
++    knight: {
++      ...state.knight,
++      x: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.x,
++      y: VILLAGE_GUARDIAN_CONFIG.sanctuaryPosition.y,
++    },
++    trail: fullTrail,
++    targetIndex: state.words.length,
++  }
++  const newState = tickVillageGuardian(completedState, 50)
++  expect(newState.status).toBe('victory')
++  expect(newState.completedSentenceIndices).toContain(state.currentSentenceIndex)
++})
++
+ it('initializes with level 1', () => {
+   const state = createVillageGuardianState(mockVocabulary)
+   expect(state.level).toBe(1)
+ })
+
+[0m
+[0m$ [0mnpx jest src/lib/games/__tests__/villageGuardian.test.ts --verbose
+PASS src/lib/games/__tests__/villageGuardian.test.ts
+  villageGuardianConfig
+    ✓ exports correct game dimensions (9 ms)
+    ✓ returns correct difficulty config (3 ms)
+    ✓ returns correct timer duration (4 ms)
+    ✓ returns correct monster speed (3 ms)
+  createVillageGuardianState
+    ✓ throws error when vocabulary is empty (79 ms)
+    ✓ creates state with default difficulty and opponent (4 ms)
+    ✓ creates state with custom difficulty (2 ms)
+    ✓ creates state with custom opponent type (2 ms)
+    ✓ initializes knight at correct position (2 ms)
+    ✓ spawns villagers based on word count (2 ms)
+    ✓ spawns one monster (1 ms)
+    ✓ initializes empty trail and collectedWords (5 ms)
+    ✓ sets correct timer based on difficulty (2 ms)
+  tickVillageGuardian
+    ✓ returns same state when not playing (2 ms)
+    ✓ decrements timer (5 ms)
+    ✓ sets defeat when timer reaches zero (1 ms)
+    ✓ increments game time (2 ms)
+    ✓ moves knight based on input (3 ms)
+    ✓ moves knight diagonally with normalized speed (2 ms)
+    ✓ keeps knight within bounds (1 ms)
+    ✓ decreases invulnerability time (1 ms)
+  villager collision mechanics
+    ✓ collecting correct villager increments correctAnswers only, not wrongAnswers (3 ms)
+    ✓ collecting correct villager adds it to trail and collectedWords (3 ms)
+    ✓ touching wrong-order villager increments wrongAnswers and hides villager (3 ms)
+    ✓ touching wrong villager applies time penalty (2 ms)
+  level progression (no victory state)
+    ✓ advances to level 2 when knight reaches sanctuary with full trail (3 ms)
+    ✓ adds an extra monster each level (up to max) (1 ms)
+    ✓ does not advance level when trail is not full (1 ms)
+    ✓ sets victory when all sentences are completed (2 ms)
+    ✓ initializes with level 1 (2 ms)
+  monster collision
+    ✓ knight loses a life when monster hits and trail is empty (6 ms)
+    ✓ monster hitting trail scatters villagers and resets trail (3 ms)
+    ✓ knight gets invulnerability after monster scatters trail (2 ms)
+  trail following
+    ✓ trail segment moves toward knight position (2 ms)
+  monster movement
+    ✓ goblin monsters chase the knight (2 ms)
+    ✓ dragon monsters chase the knight more aggressively (2 ms)
+    ✓ bandit monsters bounce off walls (2 ms)
+  hiding villager behavior
+    ✓ hiding villager timer decrements each tick (2 ms)
+    ✓ hiding villager becomes visible again when timer expires (2 ms)
+  calculateXP
+    ✓ calculates base XP from correct answers (2 ms)
+    ✓ adds accuracy bonus for 90%+ accuracy (1 ms)
+    ✓ caps XP at maxXP (2 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       42 passed, 42 total
+Snapshots:   0 total
+Time:        3.114 s
+Ran all test suites matching src/lib/games/__tests__/villageGuardian.test.ts.
+[0m
+[0m$ [0mnpx jest src/components/games/sentence/village-guardian/VillageGuardianGame.test.tsx --verbose
+console.error
+    React does not recognize the `cornerRadius` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `cornerradius` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+      106 |       name: /defend the village/i,
+      107 |     })
+    > 108 |     fireEvent.click(startButton)
+          |               ^
+      109 |
+      110 |     expect(await screen.findByTestId('konva-stage')).toBeInTheDocument()
+      111 |   })
+
+      at validateProperty (node_modules/react-dom/cjs/react-dom-client.development.js:3009:19)
+      at warnUnknownProperties (node_modules/react-dom/cjs/react-dom-client.development.js:3154:9)
+      at validatePropertiesInDevelopment (node_modules/react-dom/cjs/react-dom-client.development.js:17117:9)
+      at setInitialProperties (node_modules/react-dom/cjs/react-dom-client.development.js:17741:7)
+      at completeWork (node_modules/react-dom/cjs/react-dom-client.development.js:11391:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:1522:13)
+      at completeUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15268:19)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:15149:11)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:14956:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:14936:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:14419:13)
+      at performSyncWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16231:7)
+      at flushSyncWorkAcrossRoots_impl (node_modules/react-dom/cjs/react-dom-client.development.js:16079:21)
+      at processRootScheduleInMicrotask (node_modules/react-dom/cjs/react-dom-client.development.js:16116:7)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:16241:11
+      at flushActQueue (node_modules/react/cjs/react.development.js:566:34)
+      at process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:859:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at Object.eventWrapper (node_modules/@testing-library/react/dist/pure.js:106:28)
+      at fireEvent (node_modules/@testing-library/dom/dist/events.js:12:35)
+      at fireEvent.<computed> [as click] (node_modules/@testing-library/dom/dist/events.js:110:36)
+      at fireEvent.<computed> [as click] (node_modules/@testing-library/react/dist/fire-event.js:15:52)
+      at Object.click (src/components/games/sentence/village-guardian/VillageGuardianGame.test.tsx:108:15)
+
+PASS src/components/games/sentence/village-guardian/VillageGuardianGame.test.tsx
+  VillageGuardianGame
+    ✓ renders the start screen initially (436 ms)
+    ✓ transitions to playing phase when start is clicked (208 ms)
+    ✓ enters fullscreen when game starts (110 ms)
+    ✓ exits fullscreen when game ends (103 ms)
+    ✓ displays difficulty and opponent selectors on start screen (104 ms)
+    ✓ allows changing difficulty (148 ms)
+    ✓ allows changing opponent type (132 ms)
+    ✓ calls onComplete when game ends (114 ms)
+    ✓ shows end screen after defeat (112 ms)
+    ✓ renders virtual d-pad during gameplay (111 ms)
+    ✓ displays game instructions on start screen (101 ms)
+    ✓ displays controls information on start screen (52 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       12 passed, 12 total
+Snapshots:   0 total
+Time:        4.24 s
+Ran all test suites matching src/components/games/sentence/village-guardian/VillageGuardianGame.test.tsx.
+[0m
+[0m← [0mEdit measure/tracks/gameplay_usability_bugs_20260430/plan.md
+Index: /home/daniel-bo/Desktop/advantage-games/measure/tracks/gameplay_usability_bugs_20260430/plan.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/measure/tracks/gameplay_usability_bugs_20260430/plan.md
++++ /home/daniel-bo/Desktop/advantage-games/measure/tracks/gameplay_usability_bugs_20260430/plan.md
+@@ -54,12 +54,12 @@
+   - [x] Write a test that completes the assigned sentence/session and expects a victory end screen.
+   - [x] Decide in code whether extra levels are survival mode or lesson progression; make the copy match.
+   - [x] Ensure `onComplete` fires exactly once with final XP and accuracy.
+ 
+-- [ ] Task: Fix Village Guardian finite victory
+-  - [ ] Write a test that rescues the required sentence words and reaches victory instead of looping forever.
+-  - [ ] If multiple sentences are intended, end when the assigned sentence list is exhausted.
+-  - [ ] Ensure defeat remains reachable and distinct from victory.
++- [x] Task: Fix Village Guardian finite victory
++  - [x] Write a test that rescues the required sentence words and reaches victory instead of looping forever.
++  - [x] If multiple sentences are intended, end when the assigned sentence list is exhausted.
++  - [x] Ensure defeat remains reachable and distinct from victory.
+ 
+ - [ ] Task: Fix Labyrinth Goblin King completion loop
+   - [ ] Write a test for collecting all required word orbs and expecting final victory.
+   - [ ] Remove modulo wraparound for finite lesson completion.
+
+[0m
