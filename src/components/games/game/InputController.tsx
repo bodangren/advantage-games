@@ -22,12 +22,26 @@ export function InputController({
   // Keep focus on input for desktop
   useEffect(() => {
     if (mobile) return;
-    const focusInput = () => {
-      if (inputRef.current) inputRef.current.focus();
-    };
-    focusInput();
+
+    const input = inputRef.current;
+    if (!input) return;
+
+    // Immediate focus
+    input.focus();
+
+    // Refocus on any click or keydown to ensure typing always works
+    const focusInput = () => input.focus();
     window.addEventListener("click", focusInput);
-    return () => window.removeEventListener("click", focusInput);
+    window.addEventListener("keydown", focusInput);
+
+    // Refocus when window regains focus (e.g. alt-tab back)
+    window.addEventListener("focus", focusInput);
+
+    return () => {
+      window.removeEventListener("click", focusInput);
+      window.removeEventListener("keydown", focusInput);
+      window.removeEventListener("focus", focusInput);
+    };
   }, [mobile]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -88,14 +102,14 @@ export function InputController({
   // ── Desktop: invisible input + magical floating display ─────────
   return (
     <div className="relative w-full flex justify-center items-center pointer-events-none">
-      {/* Hidden Input */}
+      {/* Hidden Input - full size to reliably capture focus/clicks */}
       <input
         ref={inputRef}
         type="text"
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className="opacity-0 absolute pointer-events-auto h-0 w-0"
+        className="opacity-0 absolute inset-0 pointer-events-auto cursor-text"
         autoFocus
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

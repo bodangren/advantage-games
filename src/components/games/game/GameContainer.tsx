@@ -31,12 +31,14 @@ export function GameContainer({ onComplete }: GameContainerProps) {
 
   const [difficulty, setDifficulty] = React.useState<Difficulty>("normal");
   const [showRanking, setShowRanking] = React.useState(false);
+  const hasCompletedRef = React.useRef(false);
 
   const accuracy = totalAttempts > 0 ? correctAnswers / totalAttempts : 0;
   const xp = calculateXP(score, correctAnswers, totalAttempts);
 
   React.useEffect(() => {
-    if (status === "game-over" && onComplete) {
+    if (status === "game-over" && onComplete && !hasCompletedRef.current) {
+      hasCompletedRef.current = true;
       onComplete({
         score,
         correctAnswers,
@@ -54,6 +56,13 @@ export function GameContainer({ onComplete }: GameContainerProps) {
     accuracy,
     difficulty,
   ]);
+
+  // Reset completion flag when game restarts
+  React.useEffect(() => {
+    if (status === "playing") {
+      hasCompletedRef.current = false;
+    }
+  }, [status]);
 
   const handleStart = (selectedDifficulty: Difficulty) => {
     setDifficulty(selectedDifficulty);

@@ -102,10 +102,10 @@
   - [x] Implement finite victory by vocabulary/wave completion, unless explicitly converting the game to endless survival.
   - [x] Verify the component renders the victory end screen and submits completion once.
 
-- [ ] Task: Fix Magic Defense input focus and success/failure semantics
-  - [ ] Write a component test proving keyboard input works immediately after start and after clicking the game area.
-  - [ ] Add explicit focus management or event handling to keep typing reliable on desktop.
-  - [ ] Verify game-over, victory, and completion submission are not conflated.
+- [x] Task: Fix Magic Defense input focus and success/failure semantics
+  - [x] Write a component test proving keyboard input works immediately after start and after clicking the game area.
+  - [x] Add explicit focus management or event handling to keep typing reliable on desktop.
+  - [x] Verify game-over, victory, and completion submission are not conflated.
 
 - [ ] Task: Verify Wizard vs Zombie restart and completion behavior
   - [ ] Write or update tests proving victory/defeat calls `onComplete` exactly once.

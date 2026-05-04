@@ -82,6 +82,62 @@ describe('GameContainer', () => {
     expect(onComplete).toHaveBeenCalled()
   })
 
+  it('calls onComplete exactly once even if score changes after game over', () => {
+    const onComplete = jest.fn()
+    const missedWords = [{ term: 'Apple', translation: 'Manzana' }];
+    let mockScore = 100;
+    
+    mockUseGameStore.mockImplementation(() => ({
+      status: 'game-over',
+      vocabulary: [],
+      score: mockScore,
+      correctAnswers: 5,
+      totalAttempts: 10,
+      resetGame: jest.fn(),
+      missedWords,
+    }))
+    mockUseGameStore.getState = jest.fn(() => ({ missedWords }))
+
+    const { rerender } = render(<GameContainer onComplete={onComplete} />)
+    expect(onComplete).toHaveBeenCalledTimes(1)
+    
+    // Simulate score change after game over
+    mockScore = 200;
+    rerender(<GameContainer onComplete={onComplete} />)
+    
+    expect(onComplete).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls onComplete again after restart and new game over', () => {
+    const onComplete = jest.fn()
+    const missedWords = [{ term: 'Apple', translation: 'Manzana' }];
+    let mockStatus = 'game-over';
+    
+    mockUseGameStore.mockImplementation(() => ({
+      status: mockStatus,
+      vocabulary: [],
+      score: 100,
+      correctAnswers: 5,
+      totalAttempts: 10,
+      resetGame: jest.fn(),
+      missedWords,
+      castles: { left: 3, center: 3, right: 3 },
+    }))
+    mockUseGameStore.getState = jest.fn(() => ({ missedWords }))
+
+    const { rerender } = render(<GameContainer onComplete={onComplete} />)
+    expect(onComplete).toHaveBeenCalledTimes(1)
+    
+    // Simulate restart (playing -> game-over)
+    mockStatus = 'playing';
+    rerender(<GameContainer onComplete={onComplete} />)
+    
+    mockStatus = 'game-over';
+    rerender(<GameContainer onComplete={onComplete} />)
+    
+    expect(onComplete).toHaveBeenCalledTimes(2)
+  })
+
   it('displays missed words on results screen', () => {
     const missedWords = [
       { term: 'Apple', translation: 'Manzana' },
