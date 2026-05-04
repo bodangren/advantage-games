@@ -138,10 +138,8 @@ export function tickSpellweaversRun(
   const remainingOrbs = updatedOrbs.filter(orb => orb.y <= collectionZoneBottom)
 
   // Apply penalty for missed target words
-  let missedTargetCount = 0
   for (const orb of removedOrbs) {
     if (orb.orderIndex === newState.targetIndex) {
-      missedTargetCount++
       newState.mana = Math.max(0, newState.mana - SPELLWEAVERS_RUN_CONFIG.wrongWordPenalty)
       newState.combo = 0
       newState.totalAttempts++

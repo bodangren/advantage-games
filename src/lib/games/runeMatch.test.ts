@@ -303,7 +303,6 @@ describe("shuffleGrid", () => {
     const state = createRuneMatchState(SAMPLE_VOCAB);
     state.status = "playing";
     state.specialMoves.shuffle = 1;
-    const originalGrid = state.grid;
     const newState = shuffleGrid(state);
     expect(newState.specialMoves.shuffle).toBe(0);
     expect(newState.floatingTexts.some((ft) => ft.text === "SHUFFLE!")).toBe(true);

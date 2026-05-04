@@ -3,7 +3,6 @@ import {
   tickRealmCarver,
   calculateXP,
   type SentenceItem,
-  type RealmCarverState,
 } from "./realmCarver";
 
 const mockSentences: SentenceItem[] = [
@@ -75,7 +74,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should move player when velocity is set", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.player.vx = 1;
     state.player.vy = 0;
     const next = tickRealmCarver(state, 100);
@@ -83,7 +82,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should leave trail on wild cells", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.player.x = 10;
     state.player.y = 10;
     state.player.vx = 1;
@@ -95,7 +94,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should damage player on trail collision and reset", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.player.x = 10;
     state.player.y = 10;
     state.player.vx = 1;
@@ -108,7 +107,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should set defeat when hp reaches 0", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.player.hp = 1;
     state.player.x = 10;
     state.player.y = 10;
@@ -120,7 +119,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should claim territory when returning to claimed area with trail", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.player.x = 1;
     state.player.y = 1;
     state.player.vx = 1;
@@ -133,7 +132,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should capture target word when claimed", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.player.x = 1;
     state.player.y = 1;
     state.player.vx = 1;
@@ -152,7 +151,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should not permanently remove future words when captured out of order", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.player.x = 1;
     state.player.y = 1;
     state.player.vx = 1;
@@ -180,7 +179,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should detect monster-trail collision", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.player.x = 10;
     state.player.y = 10;
     state.player.vx = 0;
@@ -196,14 +195,14 @@ describe("tickRealmCarver", () => {
   });
 
   it("should move monsters", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     const initialX = state.monsters[0].x;
     const next = tickRealmCarver(state, 1000);
     expect(next.monsters[0].x).not.toBe(initialX);
   });
 
   it("should bounce monsters off walls", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     state.monsters[0].x = 0.5;
     state.monsters[0].vx = -1;
     const next = tickRealmCarver(state, 100);
@@ -211,7 +210,7 @@ describe("tickRealmCarver", () => {
   });
 
   it("should increment gameTime", () => {
-    let state = createRealmCarverState(mockSentences);
+    const state = createRealmCarverState(mockSentences);
     const next = tickRealmCarver(state, 16);
     expect(next.gameTime).toBe(16);
   });

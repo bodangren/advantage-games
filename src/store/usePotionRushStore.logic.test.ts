@@ -103,7 +103,6 @@ describe("PotionRush Store Logic", () => {
       store.startGame(mockVocabList, "normal");
       
       // Set up customers so first word matches
-      const state = usePotionRushStore.getState();
       const customer = {
         id: "cust-1",
         type: "human" as const,
