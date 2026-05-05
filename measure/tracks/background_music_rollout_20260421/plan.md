@@ -65,10 +65,10 @@
 
 ## Phase 5: Catalog QA and Rollout Hardening
 
-- [ ] Task: Add automated regression coverage for catalog-wide music integration
-    - [ ] Add or update tests around shared asset mapping and representative game integration points
-    - [ ] Verify no regressions to existing `useSound`-driven effects
-    - [ ] Confirm coverage remains above threshold for newly introduced audio modules
+- [x] Task: Add automated regression coverage for catalog-wide music integration [c8f51a1]
+    - [x] Add or update tests around shared asset mapping and representative game integration points
+    - [x] Verify no regressions to existing `useSound`-driven effects
+    - [x] Confirm coverage remains above threshold for newly introduced audio modules
 - [ ] Task: Execute full manual music verification across the playable catalog
     - [ ] Run the catalog verification matrix against all 29 games
     - [ ] Confirm track/theme fit, startup behavior, loop behavior, and cleanup behavior for each game
