@@ -26,6 +26,7 @@ import {
 } from "@/lib/games/enchantedLibrary";
 import type { VocabularyItem } from "@/store/useGameStore";
 import { useSound } from "@/hooks/useSound";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { useInterval } from "@/hooks/useInterval";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
 import { useGameFullscreen } from "@/hooks/useGameFullscreen";
@@ -99,6 +100,7 @@ export function EnchantedLibraryGame({
   rankings,
 }: EnchantedLibraryGameProps) {
   const { playSound } = useSound();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('enchanted-library');
   const { input, setVirtualInput, triggerCast, consumeCast } =
     useDirectionalInput();
   const { containerRef: fullscreenRef, enterFullscreen, exitFullscreen } =
@@ -242,6 +244,23 @@ export function EnchantedLibraryGame({
       hasReportedRef.current = false;
     }
   }, [vocabulary, difficulty]);
+
+  const handleStartGame = useCallback(() => {
+    resetGame();
+    setGamePhase("playing");
+    startMusic();
+  }, [resetGame, startMusic]);
+
+  const handleRestart = useCallback(() => {
+    stopMusic();
+    resetGame();
+    setGamePhase("start");
+  }, [resetGame, stopMusic]);
+
+  const handleExit = useCallback(() => {
+    stopMusic();
+    window.location.href = "/student/games";
+  }, [stopMusic]);
 
   useEffect(() => {
     resetGame();
@@ -595,10 +614,7 @@ export function EnchantedLibraryGame({
           ]}
           startButtonText={t("startButton")}
           icon={BookOpen}
-          onStart={() => {
-            resetGame();
-            setGamePhase("playing");
-          }}
+          onStart={handleStartGame}
         >
           <DifficultySelector
             selected={difficulty}
@@ -915,13 +931,8 @@ export function EnchantedLibraryGame({
                 value: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),
               },
             ]}
-            onRestart={() => {
-              resetGame();
-              setGamePhase("start");
-            }}
-            onExit={() => {
-              window.location.href = "/student/games";
-            }}
+            onRestart={handleRestart}
+            onExit={handleExit}
           />
 
           {/* Rankings Display */}

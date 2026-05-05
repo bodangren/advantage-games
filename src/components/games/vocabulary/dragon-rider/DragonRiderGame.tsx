@@ -41,6 +41,7 @@ import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
 import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { RankingDialog } from "@/components/games/vocabulary/dragon-flight/RankingDialog";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 
 type DragonRiderAssets = {
   gates: HTMLImageElement;
@@ -421,6 +422,7 @@ export function DragonRiderGame({
   const [bossSequenceDone, setBossSequenceDone] = useState(false);
   const [bossBattleStarted, setBossBattleStarted] = useState(false);
   const { playSound } = useSound();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('dragon-rider');
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSelectionRef = useRef<PendingSelection | null>(null);
   const playerTargetRef = useRef<number | null>(null);
@@ -1183,6 +1185,7 @@ export function DragonRiderGame({
             if (isLoading) return;
             resetGame();
             setGamePhase("playing");
+            startMusic();
           }}
         >
           <div className="flex items-center gap-2">
@@ -1241,6 +1244,7 @@ export function DragonRiderGame({
             },
           ]}
           onRestart={() => {
+            stopMusic();
             resetGame();
             setGamePhase("start");
           }}

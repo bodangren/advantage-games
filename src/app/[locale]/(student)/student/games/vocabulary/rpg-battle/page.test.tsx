@@ -130,6 +130,11 @@ jest.mock("@/hooks/useSound", () => ({
   useSound: () => ({ playSound: jest.fn() }),
 }));
 
+// Mock useBackgroundMusic
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 describe("RpgBattlePage", () => {
   beforeEach(() => {
     jest.clearAllMocks();

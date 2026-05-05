@@ -32,6 +32,7 @@ import { useInterval } from "@/hooks/useInterval";
 import { useSound } from "@/hooks/useSound";
 import { useAdaptiveDifficulty } from "@/hooks/useAdaptiveDifficulty";
 import { registerDifficultyParams } from "@/lib/adaptive-difficulty/registerDifficultyParams";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 
 type DragonFlightAssets = {
   gates: HTMLImageElement;
@@ -499,6 +500,7 @@ export function DragonFlightGame({
     }
   }, [difficulty, hasStarted, DIFFICULTY_SETTINGS]);
   const { playSound } = useSound();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('dragon-flight');
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSelectionRef = useRef<PendingSelection | null>(null);
   const playerTargetRef = useRef<number | null>(null);
@@ -1306,6 +1308,7 @@ export function DragonFlightGame({
                       transition={{ delay: 0.7 }}
                       onClick={(e) => {
                         e.stopPropagation();
+                        stopMusic();
                         if (onRestart) {
                           onRestart();
                         } else {
@@ -1593,6 +1596,7 @@ export function DragonFlightGame({
                   if (isLoading) return;
                   resetGame();
                   setHasStarted(true);
+                  startMusic();
                 }}
                 disabled={isLoading}
               >

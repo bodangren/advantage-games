@@ -91,6 +91,11 @@ jest.mock("@/lib/games/xp", () => ({
   calculateXP: jest.fn(() => 5),
 }));
 
+// Mock useBackgroundMusic
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 // Mock Image to trigger onload
 Object.defineProperty(global.Image.prototype, "src", {
   set(src) {

@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/header";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { useSession } from "@/hooks/useSession";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
+import { useGameStore } from "@/store/useGameStore";
 
 export default function MagicDefensePage() {
   const t = useScopedI18n("pages.student.gamesPage");
@@ -20,8 +22,19 @@ export default function MagicDefensePage() {
   const { data: session } = useSession();
   const setVocabulary = useGameStore((state) => state.setVocabulary);
   const setLastResult = useGameStore((state) => state.setLastResult);
+  const gameStatus = useGameStore((state) => state.status);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('magic-defense');
+
+  useEffect(() => {
+    if (gameStatus === 'playing') {
+      startMusic();
+    } else {
+      stopMusic();
+    }
+  }, [gameStatus, startMusic, stopMusic]);
 
   useEffect(() => {
     const fetchVocabulary = async () => {

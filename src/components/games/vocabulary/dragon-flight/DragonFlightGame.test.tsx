@@ -33,6 +33,10 @@ jest.mock("@/hooks/useSound", () => ({
   useSound: () => ({ playSound: jest.fn() }),
 }));
 
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 const createImage = (width: number, height: number) => {
   const image = new Image();
   image.width = width;

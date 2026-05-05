@@ -45,6 +45,7 @@ import { useScopedI18n, useCurrentLocale } from "@/locales/client";
 import { useGameFullscreen } from "@/hooks/useGameFullscreen";
 import { useSession } from "@/hooks/useSession";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 
 const ACTION_COUNT = 3;
 const BASIC_DAMAGE = 10;
@@ -109,6 +110,7 @@ export default function RpgBattlePage() {
   const [heroSprite, setHeroSprite] = useState(() => battleHeroes[0].sprite);
   const [enemySprite, setEnemySprite] = useState(() => battleEnemies[0].sprite);
   const { playSound } = useSound();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('rpg-battle');
   const resultsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Game key to force remount on restart if needed,
@@ -426,6 +428,7 @@ export default function RpgBattlePage() {
   };
 
   const handleRestart = () => {
+    stopMusic();
     setInputValue("");
     setTurnsTaken(0);
     setLongestStreak(0);
@@ -446,6 +449,7 @@ export default function RpgBattlePage() {
   };
 
   const handleStartBattle = () => {
+    startMusic();
     setShowStartScreen(false);
     enterFullscreen();
   };

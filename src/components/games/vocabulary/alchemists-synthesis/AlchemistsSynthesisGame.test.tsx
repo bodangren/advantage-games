@@ -21,6 +21,10 @@ jest.mock("@/hooks/useGameFullscreen", () => ({
   }),
 }));
 
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 jest.mock("@/hooks/useAccessibilitySettings", () => ({
   useAccessibilitySettings: () => ({
     getEffectiveTextSize: (size: number) => size,

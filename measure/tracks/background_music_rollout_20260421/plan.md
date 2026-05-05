@@ -6,30 +6,30 @@
     - [x] Inventory all current music/SFX usage, entry points, and existing `useSound` assumptions
     - [x] Document autoplay-policy constraints and the default-start rules the shared music system must obey
     - [x] Produce the per-game research template that will be reused for all 29 titles
-- [ ] Task: Write tests for shared background music playback behavior
-    - [ ] Add failing tests for track selection, loop configuration, cleanup, and browser-safe startup timing
-    - [ ] Add failing tests covering interaction with existing short-form SFX playback
-    - [ ] Confirm the new tests fail before implementation
-- [ ] Task: Implement shared background music infrastructure
-    - [ ] Build a shared runtime or hook for game music playback with per-game asset mapping
-    - [ ] Support extension-aware asset resolution so shipped tracks are not hardcoded to the old SFX-only `mp3` path assumptions
-    - [ ] Integrate lifecycle cleanup for restart, unmount, and route transitions
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Shared Audio Foundation' (Protocol in workflow.md)
+- [x] Task: Write tests for shared background music playback behavior
+    - [x] Add failing tests for track selection, loop configuration, cleanup, and browser-safe startup timing
+    - [x] Add failing tests covering interaction with existing short-form SFX playback
+    - [x] Confirm the new tests fail before implementation
+- [x] Task: Implement shared background music infrastructure
+    - [x] Build a shared runtime or hook for game music playback with per-game asset mapping
+    - [x] Support extension-aware asset resolution so shipped tracks are not hardcoded to the old SFX-only `mp3` path assumptions
+    - [x] Integrate lifecycle cleanup for restart, unmount, and route transitions
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Shared Audio Foundation' (Protocol in workflow.md)
 
 ## Phase 2: Vocabulary Game Music Pass
 
-- [ ] Task: Investigate, score, export, and wire core vocabulary fantasy games
-    - [ ] `wizard-vs-zombie`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `enchanted-library`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `rune-match`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `magic-defense`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `rpg-battle`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-- [ ] Task: Investigate, score, export, and wire advanced vocabulary action games
-    - [ ] `dragon-flight`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `dragon-rider`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `archers-revenge`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `paladins-twin-soul`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `alchemists-synthesis`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+- [x] Task: Investigate, score, export, and wire core vocabulary fantasy games
+    - [x] `wizard-vs-zombie`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `enchanted-library`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `rune-match`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `magic-defense`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `rpg-battle`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+- [x] Task: Investigate, score, export, and wire advanced vocabulary action games
+    - [x] `dragon-flight`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `dragon-rider`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `archers-revenge`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `paladins-twin-soul`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `alchemists-synthesis`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Vocabulary Game Music Pass' (Protocol in workflow.md)
 
 ## Phase 3: Sentence Strategy and Arena Music Pass

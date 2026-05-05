@@ -19,6 +19,7 @@ import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
 import { useGameFullscreen } from "@/hooks/useGameFullscreen";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { Target, Shield, Zap, Sword, Heart, Clock, Award } from "lucide-react";
 
 type ArchersRevengeGameProps = {
@@ -36,6 +37,7 @@ export function ArchersRevengeGame({
   
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
   const { getEffectiveTextSize } = useAccessibilitySettings();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('archers-revenge');
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const lastFrameRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
@@ -49,10 +51,11 @@ export function ArchersRevengeGame({
       setGamePhase("playing");
       hasReportedRef.current = false;
       lastFrameRef.current = 0;
+      startMusic();
     } catch (error) {
       console.error("Failed to start game:", error);
     }
-  }, [vocabulary, selectedDifficulty]);
+  }, [vocabulary, selectedDifficulty, startMusic]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -324,10 +327,12 @@ export function ArchersRevengeGame({
             { label: "Health", value: `${gameState.hp}/${gameState.maxHp}`, icon: Heart },
           ]}
           onRestart={() => {
+            stopMusic();
             setGamePhase("start");
             setGameState(null);
           }}
           onExit={() => {
+            stopMusic();
             window.location.href = "/student/games";
           }}
         />

@@ -25,6 +25,7 @@ import {
 } from "@/lib/games/wizardZombie";
 import type { VocabularyItem } from "@/store/useGameStore";
 import { useSound } from "@/hooks/useSound";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { useInterval } from "@/hooks/useInterval";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
@@ -90,6 +91,7 @@ export function WizardZombieGame({
 }: WizardZombieGameProps) {
   const t = useScopedI18n("pages.student.gamesPage");
   const { playSound } = useSound();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('wizard-vs-zombie');
   const { input, setVirtualInput, triggerCast, consumeCast } =
     useDirectionalInput();
   const { getEffectiveTouchTarget, getEffectiveTextSize } =
@@ -201,8 +203,9 @@ export function WizardZombieGame({
       setScreenShakeOffset({ x: 0, y: 0 });
       setDamageFlash(0);
       setShockwaveRing(0);
+      startMusic();
     }
-  }, [vocabulary, selectedDifficulty]);
+  }, [vocabulary, selectedDifficulty, startMusic]);
 
   const handleRestart = useCallback(() => {
     setGamePhase("start");
@@ -212,7 +215,8 @@ export function WizardZombieGame({
     setScreenShakeOffset({ x: 0, y: 0 });
     setDamageFlash(0);
     setShockwaveRing(0);
-  }, []);
+    stopMusic();
+  }, [stopMusic]);
 
   const handleExit = useCallback(() => {
     if (gameStateRef.current) {
@@ -235,7 +239,8 @@ export function WizardZombieGame({
     }
     setGamePhase("start");
     setGameState(null);
-  }, [onComplete, selectedDifficulty]);
+    stopMusic();
+  }, [onComplete, selectedDifficulty, stopMusic]);
 
   useEffect(() => {
     if (gamePhase === "playing") {

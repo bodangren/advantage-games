@@ -17,6 +17,7 @@ import { useDirectionalInput } from "@/hooks/useDirectionalInput";
 import { useSound } from "@/hooks/useSound";
 import { useGameFullscreen } from "@/hooks/useGameFullscreen";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { VirtualDPad } from "@/components/ui/VirtualDPad";
 
 interface PaladinsTwinSoulGameProps {
@@ -39,6 +40,7 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
 
   const { input: keyboardInput } = useDirectionalInput();
   const { playSound } = useSound();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('paladins-twin-soul');
 
   const velocity = useMemo(() => ({
     x: dpadVelocity.x || keyboardInput.dx,
@@ -53,10 +55,11 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
       hasReportedRef.current = false;
       lastFrameRef.current = 0;
       playSound("success");
+      startMusic();
     } catch (error) {
       console.error("Failed to start game:", error);
     }
-  }, [vocabulary, selectedDifficulty, playSound]);
+  }, [vocabulary, selectedDifficulty, playSound, startMusic]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -343,10 +346,12 @@ export function PaladinsTwinSoulGame({ vocabulary, onComplete }: PaladinsTwinSou
           })}
           accuracy={gameState.totalAttempts > 0 ? gameState.correctAnswers / gameState.totalAttempts : 0}
           onRestart={() => {
+            stopMusic();
             setGamePhase("start");
             setGameState(null);
           }}
           onExit={() => {
+            stopMusic();
             window.location.href = "/student/games";
           }}
         />

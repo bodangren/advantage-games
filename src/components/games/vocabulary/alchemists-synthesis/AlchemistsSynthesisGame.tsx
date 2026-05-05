@@ -17,6 +17,7 @@ import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
 import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
 import { useScopedI18n } from "@/locales/client";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 
 export type AlchemistsSynthesisGameResult = {
   xp: number;
@@ -41,6 +42,7 @@ export function AlchemistsSynthesisGame({
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
   const { getEffectiveTextSize, getEffectiveTouchTarget } =
     useAccessibilitySettings();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('alchemists-synthesis');
 
   const [gameState, setGameState] = useState<AlchemistsSynthesisState>(() =>
     createAlchemistsSynthesisState(vocabulary, "normal")
@@ -62,17 +64,19 @@ export function AlchemistsSynthesisGame({
     );
     setGameState({ ...newState, status: "playing" });
     enterFullscreen();
+    startMusic();
     lastTimeRef.current = null;
-  }, [enterFullscreen]);
+  }, [enterFullscreen, startMusic]);
 
   const handleRestart = useCallback(() => {
+    stopMusic();
     const newState = createAlchemistsSynthesisState(
       vocabularyRef.current,
       gameStateRef.current.difficulty
     );
     setGameState({ ...newState, status: "idle" });
     exitFullscreen();
-  }, [exitFullscreen]);
+  }, [exitFullscreen, stopMusic]);
 
   const handleSelectOption = useCallback(
     (option: VocabularyItem) => {
@@ -84,12 +88,13 @@ export function AlchemistsSynthesisGame({
       setGameState(newState);
 
       if (newState.status === "victory" || newState.status === "gameover") {
+        stopMusic();
         exitFullscreen();
         const results = getAlchemistsSynthesisResults(newState);
         onComplete(results);
       }
     },
-    [onComplete, exitFullscreen]
+    [onComplete, exitFullscreen, stopMusic]
   );
 
   useEffect(() => {
@@ -120,6 +125,7 @@ export function AlchemistsSynthesisGame({
         setGameState(newState);
 
         if (newState.status === "gameover") {
+          stopMusic();
           exitFullscreen();
           const results = getAlchemistsSynthesisResults(newState);
           onComplete(results);
@@ -137,7 +143,7 @@ export function AlchemistsSynthesisGame({
         rafIdRef.current = null;
       }
     };
-  }, [gameState.status, onComplete, exitFullscreen]);
+  }, [gameState.status, onComplete, exitFullscreen, stopMusic]);
 
   const textSize = getEffectiveTextSize(18);
   const touchTargetSize = getEffectiveTouchTarget(50);

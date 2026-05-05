@@ -8,6 +8,11 @@ jest.mock('@/components/games/game/GameContainer', () => ({
   GameContainer: (props: any) => MockGameContainer(props),
 }));
 
+// Mock useBackgroundMusic
+jest.mock('@/hooks/useBackgroundMusic', () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 describe('MagicDefensePage', () => {
   beforeAll(() => {
     global.fetch = jest.fn(() =>

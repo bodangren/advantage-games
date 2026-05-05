@@ -43,6 +43,7 @@ import { Button } from "@/components/ui/button";
 import { useScopedI18n } from "@/locales/client";
 import { useGameFullscreen } from "@/hooks/useGameFullscreen";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { GameEndScreen } from "@/components/games/game/GameEndScreen";
 import { calculateXP } from "@/lib/games/xp";
@@ -91,6 +92,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
 
   const { containerRef: fullscreenRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
   const { getEffectiveTextSize } = useAccessibilitySettings();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('rune-match');
 
   // Merge refs so both fullscreen and ResizeObserver work
   const mergedRef = useCallback(
@@ -246,9 +248,11 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   const handleStartGame = useCallback(() => {
     setGameStarted(true);
     resetGame();
-  }, [resetGame]);
+    startMusic();
+  }, [resetGame, startMusic]);
 
   const handleSelectMonster = useCallback((monsterType: MonsterType) => {
+    startMusic();
     const config = RUNE_MATCH_CONFIG.monsters[monsterType];
     setGameState((prev) => {
       if (!prev) return null;
@@ -269,7 +273,7 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
         grid,
       };
     });
-  }, []);
+  }, [startMusic]);
 
   const handleCellClick = useCallback((row: number, col: number) => {
     setGameState((prev) => {
@@ -441,16 +445,18 @@ export function RuneMatchGame({ vocabulary, onComplete }: RuneMatchGameProps) {
   }, []);
 
   const handleRestart = useCallback(() => {
+    stopMusic();
     setGameStarted(false);
     setGameState(null);
     exitFullscreen();
-  }, [exitFullscreen]);
+  }, [exitFullscreen, stopMusic]);
 
   const handleExit = useCallback(() => {
+    stopMusic();
     setGameStarted(false);
     setGameState(null);
     exitFullscreen();
-  }, [exitFullscreen]);
+  }, [exitFullscreen, stopMusic]);
 
   useEffect(() => {
     if (!gameState) return;

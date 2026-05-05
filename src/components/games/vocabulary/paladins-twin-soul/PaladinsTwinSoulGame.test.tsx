@@ -16,6 +16,10 @@ jest.mock("@/hooks/useSound", () => ({
   useSound: jest.fn(() => ({ playSound: jest.fn() })),
 }));
 
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 jest.mock("@/hooks/useGameFullscreen", () => ({
   useGameFullscreen: jest.fn(() => ({
     containerRef: { current: null },
