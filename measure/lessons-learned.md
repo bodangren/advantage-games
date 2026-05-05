@@ -32,4 +32,11 @@
 - All touched games now meet HUD ≥16px and words ≥18px minimums
 - **Key Learning:** Code audit for fontSize values is faster than visual testing for catching sub-minimum text sizes
 
+## Track: Background Music Rollout - Phase 5 (2026-05-06)
+- Result: All 5 phases complete. 26 playable games wired, 29 music assets shipped.
+- Fix: Spellweaver's Run was missing startMusic/stopMusic lifecycle calls - hook was declared but never invoked.
+- Added catalog integration test (useBackgroundMusic.catalog.test.ts) verifying all 29 GameMusicId values have corresponding mp3 files.
+- Coverage: 100% statements, 84.61% branches for useBackgroundMusic hook.
+- **Key Learning:** Automated verification of asset-to-code mapping catches integration gaps that manual audits miss.
+
 **Previous audits (condensed):** Rune Forge Chamber, Spellweaver's Run, Village Guardian, Dungeon Liberator, Potion Rush, Rune Match, Castle Defense, Alchemists Synthesis, Wizard vs Zombie, RPG Battle, Magic Defense, Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.

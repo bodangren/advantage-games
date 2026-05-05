@@ -662,12 +662,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Background Music Rollout**
+- [x] **Track: Background Music Rollout**
 *Link: [./measure/tracks/background_music_rollout_20260421/](./measure/tracks/background_music_rollout_20260421/)*
 *Description: Add original background music to playable games and wire it through shared playback.*
 *Priority: High*
 *Type: Feature*
-*Status: In Progress - Phases 1-4 complete for all playable games (26 of 29). Phase 5 (Catalog QA) remaining. Coming-soon games deferred: babel-architect, sorcerer-ziggurat, astral-mage.*
+*Status: ✅ COMPLETE - All 5 phases finished. 26 playable games have music integration, 29 assets shipped. Fixed Spellweaver's Run missing lifecycle calls. Coverage: 100% statements, 84.61% branches.*
 
 ---
 
