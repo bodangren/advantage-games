@@ -14,6 +14,7 @@ import {
 import { GAME_WIDTH, GAME_HEIGHT, SPELLWEAVERS_RUN_CONFIG } from '@/lib/games/spellweaversRunConfig'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { Wand2, BookOpen, AlertTriangle } from 'lucide-react'
@@ -41,6 +42,7 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
 
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('spellweavers-run')
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const [totalCorrect, setTotalCorrect] = useState(0)

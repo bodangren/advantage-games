@@ -116,6 +116,10 @@ jest.mock("@/hooks/useAccessibilitySettings", () => ({
   }),
 }));
 
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 jest.mock("@/locales/client", () => ({
   useScopedI18n: () => (key: string) => key,
 }));

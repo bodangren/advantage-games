@@ -10,6 +10,7 @@ import { GameStartScreen } from "@/components/games/game/GameStartScreen";
 import { useScopedI18n } from "@/locales/client";
 import { useGameFullscreen } from "@/hooks/useGameFullscreen";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 
 import ConveyorBelt from "./ConveyorBelt";
 import CauldronStation from "./CauldronStation";
@@ -43,6 +44,7 @@ export default function PotionRushGame({
   const [hasStarted, setHasStarted] = useState(false);
   const { containerRef: fsContainerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
   useAccessibilitySettings(); // Verify hook is integrated
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('potion-rush');
 
   const [images, setImages] = useState<Record<string, HTMLImageElement>>({});
 
@@ -221,6 +223,7 @@ export default function PotionRushGame({
             onStart={() => {
               setHasStarted(true);
               enterFullscreen();
+              startMusic();
               startGame(vocabList, difficulty);
             }}
           />
@@ -344,10 +347,14 @@ export default function PotionRushGame({
           ]}
           restartButtonText={t("messages.openAgain")}
           onRestart={() => {
+            stopMusic();
             enterFullscreen();
             startGame(vocabList, difficulty);
           }}
-          onExit={() => router.push("/")}
+          onExit={() => {
+            stopMusic();
+            router.push("/");
+          }}
         />
       )}
     </div>
