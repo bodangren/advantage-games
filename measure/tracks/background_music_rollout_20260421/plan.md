@@ -74,4 +74,4 @@
     - [x] Confirm track/theme fit, startup behavior, loop behavior, and cleanup behavior for each game
     - [x] Capture follow-up notes for any track requiring a second composition pass
     - **Fix applied:** Spellweaver's Run was missing music lifecycle calls (startMusic/stopMusic). Fixed and verified.
-- [ ] Task: Conductor - User Manual Verification 'Phase 5: Catalog QA and Rollout Hardening' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 5: Catalog QA and Rollout Hardening' (Protocol in workflow.md) [checkpoint: 34398d5]
