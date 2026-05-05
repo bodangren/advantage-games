@@ -61,7 +61,7 @@
     - [x] `gryphon-patrol`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
     - [x] `abyssal-well`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
     - [~] `astral-mage`: game component not yet implemented (coming-soon status)
-- [x] Task: Conductor - User Manual Verification 'Phase 4: Sentence Movement and Action Music Pass' (Protocol in workflow.md) [checkpoint: TBD]
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Sentence Movement and Action Music Pass' (Protocol in workflow.md) [checkpoint: 2aae7e8]
 
 ## Phase 5: Catalog QA and Rollout Hardening
 
