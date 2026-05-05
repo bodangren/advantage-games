@@ -20,6 +20,7 @@ import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
 import { Shield, BookOpen, AlertTriangle, Heart, Users } from 'lucide-react'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { useScopedI18n } from '@/locales/client'
 
 export type VillageGuardianGameResult = {
@@ -45,9 +46,16 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
 
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('village-guardian')
   useScopedI18n('pages.student.gamesPage.villageGuardian')
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  useEffect(() => {
+    return () => {
+      stopMusic()
+    }
+  }, [stopMusic])
 
   const resetGame = useCallback(() => {
     if (vocabulary.length > 0) {
@@ -206,6 +214,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
           startButtonText="Defend the Village"
           icon={Shield}
           onStart={() => {
+            startMusic()
             resetGame()
             setGamePhase('playing')
           }}
@@ -505,10 +514,12 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
             { label: 'Lives Left', value: gameState.knight.lives, icon: Heart },
           ]}
           onRestart={() => {
+            stopMusic()
             resetGame()
             setGamePhase('start')
           }}
           onExit={() => {
+            stopMusic()
             window.location.href = '/student/games'
           }}
         />

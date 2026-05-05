@@ -55,6 +55,10 @@ jest.mock('@/locales/client', () => ({
   useScopedI18n: () => (key: string) => key,
 }))
 
+jest.mock('@/hooks/useBackgroundMusic', () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}))
+
 // Mock VirtualDPad
 jest.mock('@/components/games/ui/VirtualDPad', () => ({
   VirtualDPad: () => <div data-testid="virtual-dpad" />,

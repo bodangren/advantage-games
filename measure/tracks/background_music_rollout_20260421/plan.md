@@ -34,19 +34,19 @@
 
 ## Phase 3: Sentence Strategy and Arena Music Pass
 
-- [ ] Task: Investigate, score, export, and wire defense, maze, and survival sentence games
-    - [ ] `castle-defense`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `dungeon-liberator`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `shadow-gate-dungeon`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `labyrinth-goblin-king`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `haunted-library`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `devourer-slime`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-- [ ] Task: Investigate, score, export, and wire sentence territory and construction games
-    - [ ] `village-guardian`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `rune-forge-chamber`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `realm-carver`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `babel-architect`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `sorcerer-ziggurat`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+- [~] Task: Investigate, score, export, and wire defense, maze, and survival sentence games
+    - [x] `castle-defense`: integrate default playback, verify
+    - [x] `dungeon-liberator`: integrate default playback, verify
+    - [x] `shadow-gate-dungeon`: integrate default playback, verify
+    - [x] `labyrinth-goblin-king`: integrate default playback, verify
+    - [x] `haunted-library`: integrate default playback, verify
+    - [x] `devourer-slime`: integrate default playback, verify
+- [~] Task: Investigate, score, export, and wire sentence territory and construction games
+    - [x] `village-guardian`: integrate default playback, verify
+    - [x] `rune-forge-chamber`: integrate default playback, verify
+    - [x] `realm-carver`: integrate default playback, verify
+    - [ ] `babel-architect`: game component not yet implemented (coming-soon status)
+    - [ ] `sorcerer-ziggurat`: game component not yet implemented (coming-soon status)
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Sentence Strategy and Arena Music Pass' (Protocol in workflow.md)
 
 ## Phase 4: Sentence Movement and Action Music Pass

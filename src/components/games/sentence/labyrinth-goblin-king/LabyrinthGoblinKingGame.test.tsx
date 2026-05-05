@@ -37,6 +37,10 @@ jest.mock("@/hooks/useAccessibilitySettings", () => ({
   }),
 }));
 
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 jest.mock("@/components/games/ui/VirtualDPad", () => ({
   VirtualDPad: ({ onInput }: { onInput: (input: { dx: number; dy: number }) => void }) => (
     <div data-testid="virtual-dpad">

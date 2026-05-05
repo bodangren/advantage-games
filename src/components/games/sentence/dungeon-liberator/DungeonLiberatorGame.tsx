@@ -20,6 +20,7 @@ import { calculateIndicators } from '@/lib/games/dungeonLiberatorIndicators'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
@@ -55,6 +56,7 @@ interface DungeonLiberatorGameProps {
 export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberatorGameProps) {
   const { input, setVirtualInput } = useDirectionalInput()
   const { getEffectiveTouchTarget, getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('dungeon-liberator')
   const [gameState, setGameState] = useState<DungeonLiberatorState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<DungeonLiberatorGameResult | null>(null)
@@ -305,6 +307,7 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
             resetGame()
             setGamePhase('playing')
             enterFullscreen()
+            startMusic()
           }}
         >
           <div className="flex gap-1 bg-slate-900/80 p-1 rounded-lg border border-white/10">
@@ -631,9 +634,11 @@ export function DungeonLiberatorGame({ vocabulary, onComplete }: DungeonLiberato
           onRestart={() => {
             resetGame()
             setGamePhase('start')
+            stopMusic()
           }}
           onExit={() => {
             exitFullscreen()
+            stopMusic()
             window.location.href = '/'
           }}
         />

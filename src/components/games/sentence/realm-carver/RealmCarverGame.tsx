@@ -18,6 +18,7 @@ import { VirtualDPad } from "@/components/ui/VirtualDPad";
 import { useSound } from "@/hooks/useSound";
 import { useGameFullscreen } from "@/hooks/useGameFullscreen";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import type { VocabularyItem } from "@/store/useGameStore";
 
 interface RealmCarverGameProps {
@@ -39,9 +40,17 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
   const { playSound } = useSound();
   const { enterFullscreen, exitFullscreen } = useGameFullscreen();
   const { getEffectiveTextSize } = useAccessibilitySettings();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('realm-carver');
+
+  useEffect(() => {
+    return () => {
+      stopMusic();
+    };
+  }, [stopMusic]);
 
   const startGame = useCallback(() => {
     try {
+      startMusic();
       const state = createRealmCarverState(sentences);
       setGameState(state);
       setGamePhase("playing");
@@ -52,7 +61,7 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
     } catch (error) {
       console.error("Failed to start game:", error);
     }
-  }, [sentences, playSound, enterFullscreen]);
+  }, [sentences, playSound, enterFullscreen, startMusic]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -337,10 +346,12 @@ export function RealmCarverGame({ sentences, onComplete }: RealmCarverGameProps)
           xp={Math.floor(gameState.score / 10)}
           accuracy={gameState.targetWordIndex / gameState.fullSentence.length}
           onRestart={() => {
+            stopMusic();
             setGamePhase("start");
             setGameState(null);
           }}
           onExit={() => {
+            stopMusic();
             window.location.href = "/student/games";
           }}
         />

@@ -15,6 +15,7 @@ import type { Difficulty } from '@/store/useGameStore'
 import type { CreatureType } from '@/lib/games/shadowGateDungeonConfig'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { useScopedI18n } from '@/locales/client'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
@@ -35,6 +36,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
   const t = useScopedI18n('pages.student.gamesPage.shadowGateDungeon')
   const { getEffectiveTextSize } = useAccessibilitySettings()
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('shadow-gate-dungeon')
 
   const [gameState, setGameState] = useState<ShadowGateDungeonState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
@@ -221,6 +223,7 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
           onStart={() => {
             resetGame()
             setGamePhase('playing')
+            startMusic()
           }}
         >
           <div className="flex flex-col gap-3">
@@ -471,8 +474,10 @@ export function ShadowGateDungeonGame({ vocabulary, onComplete }: ShadowGateDung
           onRestart={() => {
             resetGame()
             setGamePhase('start')
+            stopMusic()
           }}
           onExit={() => {
+            stopMusic()
             window.location.href = '/student/games'
           }}
         />

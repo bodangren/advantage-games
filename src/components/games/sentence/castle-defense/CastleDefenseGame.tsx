@@ -30,6 +30,7 @@ import { VirtualDPad } from "@/components/games/ui/VirtualDPad";
 import { useDirectionalInput } from "@/hooks/useDirectionalInput";
 import { useGameFullscreen } from "@/hooks/useGameFullscreen";
 import { useAccessibilitySettings } from "@/hooks/useAccessibilitySettings";
+import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
 import { withBasePath } from "@/lib/games/basePath";
 
 import {
@@ -134,6 +135,7 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
 
   const { enterFullscreen, exitFullscreen } = useGameFullscreen();
   const { getEffectiveTextSize } = useAccessibilitySettings();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('castle-defense');
 
   const { input, setVirtualInput, consumeCast } = useDirectionalInput();
 
@@ -153,7 +155,8 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
   const handleBackToMenu = useCallback(() => {
     setHasStarted(false);
     setGameState(null);
-  }, []);
+    stopMusic();
+  }, [stopMusic]);
 
   useEffect(() => {
     let mounted = true;
@@ -264,7 +267,8 @@ export function CastleDefenseGame({ vocabulary, onComplete }: Props) {
     setGameState(createCastleDefenseState(vocabulary, { difficulty }));
     setHasStarted(true);
     enterFullscreen();
-  }, [vocabulary, difficulty, enterFullscreen]);
+    startMusic();
+  }, [vocabulary, difficulty, enterFullscreen, startMusic]);
 
   // Game loop with requestAnimationFrame
   useEffect(() => {

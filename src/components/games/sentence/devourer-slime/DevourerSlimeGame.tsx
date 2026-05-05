@@ -17,6 +17,7 @@ import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { useSound } from '@/hooks/useSound'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { Move, Zap, Target, Shield } from 'lucide-react'
@@ -37,6 +38,7 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
   const { playSound } = useSound()
   const { getEffectiveTouchTarget } = useAccessibilitySettings()
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('devourer-slime')
 
   const [grassPatches] = useState(() => 
     Array.from({ length: 40 }, (_, i) => ({
@@ -53,18 +55,21 @@ export function DevourerSlimeGame({ sentences, difficulty = 'medium', onComplete
     setGameState(initialState)
     setGamePhase('playing')
     enterFullscreen()
-  }, [sentences, difficulty, enterFullscreen])
+    startMusic()
+  }, [sentences, difficulty, enterFullscreen, startMusic])
 
   const handleRestart = useCallback(() => {
     setGamePhase('start')
     setGameState(null)
-  }, [])
+    stopMusic()
+  }, [stopMusic])
 
   const endGame = useCallback((finalState: SlimeState) => {
     exitFullscreen()
     setGamePhase('ended')
+    stopMusic()
     onComplete(finalState)
-  }, [onComplete, exitFullscreen])
+  }, [onComplete, exitFullscreen, stopMusic])
 
   // Sound effects
   useEffect(() => {

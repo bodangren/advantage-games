@@ -16,6 +16,7 @@ import { useSound } from '@/hooks/useSound'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { VirtualDPad } from '@/components/ui/VirtualDPad'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
@@ -34,6 +35,7 @@ interface HauntedLibraryGameProps {
 export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGameProps) {
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('haunted-library')
   const [gameState, setGameState] = useState<LibraryState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [difficulty, setDifficulty] = useState<'easy' | 'medium' | 'hard'>('medium')
@@ -46,18 +48,20 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
     if (sentences.length > 0) {
       setGameState(createLibraryState(sentences, { difficulty }))
       setGamePhase('playing')
+      startMusic()
     }
-  }, [sentences, difficulty])
+  }, [sentences, difficulty, startMusic])
 
   const endGame = useCallback((finalState: LibraryState) => {
     setGamePhase('ended')
+    stopMusic()
     onComplete({ 
       xp: calculateXP(finalState), 
       accuracy: finalState.totalAttempts > 0 ? finalState.correctAnswers / finalState.totalAttempts : 0,
       correctAnswers: finalState.correctAnswers,
       totalAttempts: finalState.totalAttempts
     })
-  }, [onComplete])
+  }, [onComplete, stopMusic])
 
   // Game Loop with requestAnimationFrame
   useEffect(() => {

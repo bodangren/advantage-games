@@ -21,6 +21,7 @@ import { VirtualDPad } from '@/components/games/ui/VirtualDPad'
 import { Skull, Heart, BookOpen, AlertTriangle, Zap, Target } from 'lucide-react'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 
 export type LabyrinthGoblinKingGameResult = {
   xp: number
@@ -35,6 +36,7 @@ interface LabyrinthGoblinKingGameProps {
 export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGoblinKingGameProps) {
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('labyrinth-goblin-king')
   const [gameState, setGameState] = useState<LabyrinthGoblinKingState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<LabyrinthGoblinKingGameResult | null>(null)
@@ -207,6 +209,7 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
             resetGame()
             setGameState(prev => prev ? startLabyrinthGoblinKing(prev) : prev)
             setGamePhase('playing')
+            startMusic()
           }}
         >
           <div className="flex flex-col gap-3">
@@ -391,8 +394,10 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
           onRestart={() => {
             resetGame()
             setGamePhase('start')
+            stopMusic()
           }}
           onExit={() => {
+            stopMusic()
             window.location.href = '/student/games'
           }}
         />

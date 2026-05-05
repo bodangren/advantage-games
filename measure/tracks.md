@@ -662,12 +662,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Background Music Rollout**
+- [~] **Track: Background Music Rollout**
 *Link: [./measure/tracks/background_music_rollout_20260421/](./measure/tracks/background_music_rollout_20260421/)*
 *Description: Add original background music to playable games and wire it through shared playback.*
 *Priority: High*
 *Type: Feature*
-*Status: New*
+*Status: In Progress - Phase 3 Batch 1 (6 games) + Batch 2 (3 of 5 games) complete. babel-architect and sorcerer-ziggurat are coming-soon with no game components yet.*
 
 ---
 

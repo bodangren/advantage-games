@@ -33,6 +33,10 @@ jest.mock("@/hooks/useSound", () => ({
   }),
 }));
 
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 jest.mock("@/hooks/useDirectionalInput", () => ({
   useDirectionalInput: () => ({
     input: { dx: 0, dy: 0, cast: false },
