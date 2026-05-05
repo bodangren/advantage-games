@@ -19,6 +19,7 @@ import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { calculateXP } from '@/lib/games/xp'
 import { Shield, BookOpen, AlertTriangle, Target, ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react'
 
@@ -45,6 +46,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
 
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('storm-castle-tower')
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
@@ -227,6 +229,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
             const startedState = startGame(gameState!)
             setGameState(startedState)
             setGamePhase("playing")
+            startMusic()
           }}
         >
           <div className="flex flex-col gap-3">
@@ -272,6 +275,7 @@ export function StormCastleTowerGame({ vocabulary, onComplete }: StormCastleTowe
           xp={results.xp}
           accuracy={results.accuracy}
           onRestart={() => {
+            stopMusic()
             resetGame()
             setGamePhase('start')
           }}

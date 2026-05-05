@@ -12,7 +12,6 @@ import { Header } from "@/components/header";
 import { useCurrentLocale, useScopedI18n } from "@/locales/client";
 import { useSession } from "@/hooks/useSession";
 import { useBackgroundMusic } from "@/hooks/useBackgroundMusic";
-import { useGameStore } from "@/store/useGameStore";
 
 export default function MagicDefensePage() {
   const t = useScopedI18n("pages.student.gamesPage");

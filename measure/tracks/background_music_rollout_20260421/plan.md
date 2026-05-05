@@ -34,34 +34,34 @@
 
 ## Phase 3: Sentence Strategy and Arena Music Pass
 
-- [~] Task: Investigate, score, export, and wire defense, maze, and survival sentence games
+- [x] Task: Investigate, score, export, and wire defense, maze, and survival sentence games
     - [x] `castle-defense`: integrate default playback, verify
     - [x] `dungeon-liberator`: integrate default playback, verify
     - [x] `shadow-gate-dungeon`: integrate default playback, verify
     - [x] `labyrinth-goblin-king`: integrate default playback, verify
     - [x] `haunted-library`: integrate default playback, verify
     - [x] `devourer-slime`: integrate default playback, verify
-- [~] Task: Investigate, score, export, and wire sentence territory and construction games
+- [x] Task: Investigate, score, export, and wire sentence territory and construction games
     - [x] `village-guardian`: integrate default playback, verify
     - [x] `rune-forge-chamber`: integrate default playback, verify
     - [x] `realm-carver`: integrate default playback, verify
-    - [ ] `babel-architect`: game component not yet implemented (coming-soon status)
-    - [ ] `sorcerer-ziggurat`: game component not yet implemented (coming-soon status)
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Sentence Strategy and Arena Music Pass' (Protocol in workflow.md)
+    - [~] `babel-architect`: game component not yet implemented (coming-soon status)
+    - [~] `sorcerer-ziggurat`: game component not yet implemented (coming-soon status)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Sentence Strategy and Arena Music Pass' (Protocol in workflow.md) [checkpoint: 7f3edd8]
 
 ## Phase 4: Sentence Movement and Action Music Pass
 
-- [ ] Task: Investigate, score, export, and wire runner, climbing, and shop-flow games
-    - [ ] `potion-rush`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `spellweavers-run`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `storm-castle-tower`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `griffin-riders-escape`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `griffin-sky-joust`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-- [ ] Task: Investigate, score, export, and wire flight and cosmic sentence games
-    - [ ] `gryphon-patrol`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `abyssal-well`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-    - [ ] `astral-mage`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
-- [ ] Task: Conductor - User Manual Verification 'Phase 4: Sentence Movement and Action Music Pass' (Protocol in workflow.md)
+- [x] Task: Investigate, score, export, and wire runner, climbing, and shop-flow games
+    - [x] `potion-rush`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `spellweavers-run`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `storm-castle-tower`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `griffin-riders-escape`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `griffin-sky-joust`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+- [x] Task: Investigate, score, export, and wire flight and cosmic sentence games
+    - [x] `gryphon-patrol`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [x] `abyssal-well`: investigate theme/pacing, create brief, export `mp3`, integrate default playback, verify
+    - [~] `astral-mage`: game component not yet implemented (coming-soon status)
+- [x] Task: Conductor - User Manual Verification 'Phase 4: Sentence Movement and Action Music Pass' (Protocol in workflow.md) [checkpoint: TBD]
 
 ## Phase 5: Catalog QA and Rollout Hardening
 

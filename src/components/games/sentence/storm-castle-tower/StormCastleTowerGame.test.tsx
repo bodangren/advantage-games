@@ -37,6 +37,10 @@ jest.mock('@/hooks/useAccessibilitySettings', () => ({
   }),
 }))
 
+jest.mock('@/hooks/useBackgroundMusic', () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}))
+
 jest.mock('@/lib/games/xp', () => ({
   calculateXP: jest.fn(() => 5),
 }))

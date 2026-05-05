@@ -15,6 +15,7 @@ import { VocabularyItem } from '@/store/useGameStore';
 import { useDirectionalInput } from '@/hooks/useDirectionalInput';
 import { useGameFullscreen } from '@/hooks/useGameFullscreen';
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings';
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic';
 import { GameStartScreen } from '@/components/games/game/GameStartScreen';
 import { GameEndScreen } from '@/components/games/game/GameEndScreen';
 import { Bird, Shield, Target } from 'lucide-react';
@@ -33,6 +34,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
   const [dimensions, setDimensions] = useState({ width: 390, height: 844 });
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen();
   const { getEffectiveTextSize } = useAccessibilitySettings();
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('gryphon-patrol');
   const lastFrameRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
   const { input, consumeCast } = useDirectionalInput();
@@ -97,6 +99,12 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
 
   useEffect(() => {
     if (gameState.status === 'won' || gameState.status === 'lost') {
+      stopMusic();
+    }
+  }, [gameState.status, stopMusic]);
+
+  useEffect(() => {
+    if (gameState.status === 'won' || gameState.status === 'lost') {
       const accuracy = gameState.sentence.length > 0 
         ? gameState.collectedWords.length / gameState.sentence.length 
         : 0;
@@ -121,6 +129,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
     const withEnemies = spawnGryphonPatrolEnemies(initialState);
     setGameState({ ...withEnemies, status: 'playing' });
     lastFrameRef.current = 0;
+    startMusic();
   };
 
   const scale = Math.min(dimensions.width / 390, dimensions.height / 844);

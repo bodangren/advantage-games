@@ -19,6 +19,7 @@ import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { useSound } from '@/hooks/useSound'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { Bird, Shield, Sword } from 'lucide-react'
 
 export type GriffinSkyJoustGameResult = {
@@ -43,6 +44,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
 
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('griffin-sky-joust')
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   const resetGame = useCallback(() => {
@@ -229,6 +231,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
             if (gameState) {
               setGameState(startGame(gameState))
               setGamePhase("playing")
+              startMusic()
             }
           }}
         >
@@ -261,6 +264,7 @@ export function GriffinSkyJoustGame({ vocabulary, onComplete }: GriffinSkyJoustG
           xp={results.xp}
           accuracy={results.accuracy}
           onRestart={() => {
+            stopMusic()
             resetGame()
             setGamePhase('start')
           }}

@@ -37,6 +37,10 @@ jest.mock("@/hooks/useAccessibilitySettings", () => ({
   }),
 }));
 
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 const mockSentences = [
   { term: "The cat sits", translation: "Le chat est assis" },
   { term: "A dog runs", translation: "Un chien court" },

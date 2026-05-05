@@ -18,6 +18,7 @@ import type { VocabularyItem } from '@/store/useGameStore'
 import type { CreatureType, AbyssalWellDifficulty } from '@/lib/games/abyssalWellConfig'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { Flame, BookOpen, AlertTriangle, Target } from 'lucide-react'
@@ -35,6 +36,7 @@ interface AbyssalWellGameProps {
 export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps) {
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('abyssal-well')
   const [gameState, setGameState] = useState<AbyssalWellState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<AbyssalWellGameResult | null>(null)
@@ -243,6 +245,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
             const startedState = startGame(gameState!)
             setGameState(startedState)
             setGamePhase('playing')
+            startMusic()
           }}
         >
           <div className="flex flex-col gap-3">
@@ -288,6 +291,7 @@ export function AbyssalWellGame({ sentences, onComplete }: AbyssalWellGameProps)
           xp={results.xp}
           accuracy={results.accuracy}
           onRestart={() => {
+            stopMusic()
             resetGame()
             setGamePhase('start')
           }}

@@ -17,6 +17,7 @@ import { useSound } from '@/hooks/useSound'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings'
+import { useBackgroundMusic } from '@/hooks/useBackgroundMusic'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { Heart } from 'lucide-react'
@@ -31,6 +32,7 @@ type GamePhase = 'start' | 'playing' | 'ended'
 export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
+  const { start: startMusic, stop: stopMusic } = useBackgroundMusic('griffin-riders-escape')
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
   const [gameState, setGameState] = useState<GriffinRiderState | null>(null)
   const [gamePhase, setGamePhase] = useState<GamePhase>('start')
@@ -174,11 +176,13 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
   const handleStart = useCallback(() => {
     resetGame()
     setGamePhase('playing')
-  }, [resetGame])
+    startMusic()
+  }, [resetGame, startMusic])
 
   const handleRestart = useCallback(() => {
+    stopMusic()
     setGamePhase('start')
-  }, [])
+  }, [stopMusic])
 
   if (!gameState) return null
 

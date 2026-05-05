@@ -49,6 +49,10 @@ jest.mock("@/hooks/useAccessibilitySettings", () => ({
   }),
 }));
 
+jest.mock("@/hooks/useBackgroundMusic", () => ({
+  useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
+}));
+
 const mockVocabulary = [
   { term: "The brave gryphon flies", translation: "กริฟฟอนผู้กล้าหาญบิน" },
   { term: "Watch out for dragons", translation: "ระวังมังกร" },
