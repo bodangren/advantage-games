@@ -147,9 +147,16 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
   useEffect(() => {
     if (gamePhase === 'ended' && results && !hasReportedRef.current) {
       hasReportedRef.current = true
+      stopMusic()
       onComplete(results)
     }
-  }, [gamePhase, results, onComplete])
+  }, [gamePhase, results, onComplete, stopMusic])
+
+  useEffect(() => {
+    return () => {
+      stopMusic()
+    }
+  }, [stopMusic])
 
   const scale = useMemo(() => {
     if (dimensions.width === 0 || dimensions.height === 0) return 1
@@ -240,6 +247,7 @@ export function SpellweaversRunGame({ vocabulary, onComplete }: SpellweaversRunG
           onStart={() => {
             resetGame()
             setGamePhase('playing')
+            startMusic()
           }}
         >
           <div className="flex items-center gap-2">
