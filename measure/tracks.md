@@ -667,7 +667,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 *Description: Add original background music to playable games and wire it through shared playback.*
 *Priority: High*
 *Type: Feature*
-*Status: In Progress - Phase 3 Batch 1 (6 games) + Batch 2 (3 of 5 games) complete. babel-architect and sorcerer-ziggurat are coming-soon with no game components yet.*
+*Status: In Progress - Phases 1-4 complete for all playable games (26 of 29). Phase 5 (Catalog QA) remaining. Coming-soon games deferred: babel-architect, sorcerer-ziggurat, astral-mage.*
 
 ---
 
