@@ -69,8 +69,9 @@
     - [x] Add or update tests around shared asset mapping and representative game integration points
     - [x] Verify no regressions to existing `useSound`-driven effects
     - [x] Confirm coverage remains above threshold for newly introduced audio modules
-- [ ] Task: Execute full manual music verification across the playable catalog
-    - [ ] Run the catalog verification matrix against all 29 games
-    - [ ] Confirm track/theme fit, startup behavior, loop behavior, and cleanup behavior for each game
-    - [ ] Capture follow-up notes for any track requiring a second composition pass
+- [x] Task: Execute full manual music verification across the playable catalog [3ce30a8]
+    - [x] Run the catalog verification matrix against all 29 games
+    - [x] Confirm track/theme fit, startup behavior, loop behavior, and cleanup behavior for each game
+    - [x] Capture follow-up notes for any track requiring a second composition pass
+    - **Fix applied:** Spellweaver's Run was missing music lifecycle calls (startMusic/stopMusic). Fixed and verified.
 - [ ] Task: Conductor - User Manual Verification 'Phase 5: Catalog QA and Rollout Hardening' (Protocol in workflow.md)
