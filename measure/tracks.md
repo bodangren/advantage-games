@@ -5,7 +5,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: VocabularyItem vs SentenceItem Naming Consistency**
-*Link: [./measure/tracks/vocabulary-item-naming-consistency/](./measure/tracks/vocabulary-item-naming-consistency/)*
+*Link: [./measure/archive/vocabulary-item-naming-consistency/](./measure/archive/vocabulary-item-naming-consistency/)*
 *Description: Fix semantic inconsistency where sentence games use VocabularyItem instead of SentenceItem.*
 *Priority: Medium*
 *Type: Chore*
@@ -672,7 +672,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Background Music Rollout**
-*Link: [./measure/tracks/background_music_rollout_20260421/](./measure/tracks/background_music_rollout_20260421/)*
+*Link: [./measure/archive/background_music_rollout_20260421/](./measure/archive/background_music_rollout_20260421/)*
 *Description: Add original background music to playable games and wire it through shared playback.*
 *Priority: High*
 *Type: Feature*
@@ -681,7 +681,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Three-Game Asset Rollout**
-*Link: [./measure/tracks/three_game_asset_rollout_20260421/](./measure/tracks/three_game_asset_rollout_20260421/)*
+*Link: [./measure/archive/three_game_asset_rollout_20260421/](./measure/archive/three_game_asset_rollout_20260421/)*
 *Description: Generate, review, and wire production image assets for Labyrinth of the Goblin King, The Haunted Library, and Gryphon Patrol.*
 *Priority: High*
 *Type: Feature*
@@ -690,7 +690,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 ---
 
 - [x] **Track: Gameplay Usability Bug Fixes**
-*Link: [./measure/tracks/gameplay_usability_bugs_20260430/](./measure/tracks/gameplay_usability_bugs_20260430/)*
+*Link: [./measure/archive/gameplay_usability_bugs_20260430/](./measure/archive/gameplay_usability_bugs_20260430/)*
 *Description: Fix playability, input, progression, route truthfulness, and readable-text bugs found across three gameplay audit passes.*
 *Priority: Critical*
 *Type: Bug*

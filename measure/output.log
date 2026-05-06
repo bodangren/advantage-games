@@ -2840,3 +2840,384 @@ Index: /home/daniel-bo/Desktop/advantage-games/measure/tracks.md
  - [x] **Track: Gameplay Usability Bug Fixes**
 
 [0m
+[0m$ [0mgit add -A && git status --short
+M  measure/output.log
+M  measure/tracks.md
+M  measure/tracks/three_game_asset_rollout_20260421/plan.md
+M  src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx
+M  src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx
+M  src/components/games/sentence/haunted-library/HauntedLibraryGame.tsx
+M  src/components/games/sentence/labyrinth-goblin-king/LabyrinthGoblinKingGame.tsx
+A  src/lib/games/loadSprite.ts
+[0m
+[0m→ [0mRead measure/lessons-learned.md[90m [limit=10][0m
+[0m
+[0m← [0mEdit measure/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+@@ -1,6 +1,13 @@
+ # Lessons Learned
+ 
++## Track: Three-Game Asset Rollout (2026-05-07)
++- Result: All 5 phases complete. 23 assets generated, 4 game components wired, shared loadSprite helper extracted.
++- Approach: Generate images with mmx, convert JPG→PNG, stitch into 3x3 sheets with PIL, wire with KonvaImage + primitive fallback.
++- Key insight: mmx outputs JPG without transparency; convert to PNG and use uniform 3x3 sheets (same frame repeated) for consistent format.
++- Key insight: Extract shared helpers early when duplicate code appears across 3+ files — loadSprite now used by 4 games.
++- Build succeeds, lint clean (0 errors), dev server verified.
++
+ ## Track: VocabularyItem vs SentenceItem Naming Consistency (2026-05-06)
+ - Result: All 3 games refactored (Griffin Riders Escape, Village Guardian, Gryphon Patrol)
+ - Approach: Define local SentenceItem type in each game lib file, replace VocabularyItem imports
+ - Key insight: GameStartScreen is a shared component that expects `vocabulary` prop — keep that prop name when passing to shared components even if local data is renamed to `sentences`
+
+[0m
+[0m$ [0mgit add measure/lessons-learned.md measure/tracks.md measure/tracks/three_game_asset_rollout_20260421/plan.md src/lib/games/loadSprite.ts src/components/games/sentence/dungeon-liberator/DungeonLiberatorGame.tsx src/components/games/sentence/gryphon-patrol/GryphonPatrolGame.tsx src/components/games/sentence/haunted-library/HauntedLibraryGame.tsx src/components/games/sentence/labyrinth-goblin-king/LabyrinthGoblinKingGame.tsx && git commit -m "[k2p6] Phase 5: Three-Game Asset Rollout - Shared Verification and Cleanup
+
+- Extracted shared loadSprite helper into src/lib/games/loadSprite.ts
+- Updated 4 game components to use shared helper (Labyrinth, Haunted Library, Gryphon Patrol, Dungeon Liberator)
+- All 23 assets generated and wired across 3 games
+- Build succeeds, lint clean (0 errors), dev server verified
+- Updated lessons-learned.md with track insights
+- Track status: COMPLETE"
+[master ee1aff6] [k2p6] Phase 5: Three-Game Asset Rollout - Shared Verification and Cleanup
+ 9 files changed, 330 insertions(+), 53 deletions(-)
+ create mode 100644 src/lib/games/loadSprite.ts
+[0m
+[0m$ [0mwc -l /home/daniel-bo/Desktop/advantage-games/measure/tech-debt.md /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+43 /home/daniel-bo/Desktop/advantage-games/measure/tech-debt.md
+  55 /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+  98 total
+[0m
+[0m→ [0mRead measure/lessons-learned.md
+[0m
+[0m← [0mEdit measure/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+@@ -51,5 +51,5 @@
+ - Added catalog integration test (useBackgroundMusic.catalog.test.ts) verifying all 29 GameMusicId values have corresponding mp3 files.
+ - Coverage: 100% statements, 84.61% branches for useBackgroundMusic hook.
+ - **Key Learning:** Automated verification of asset-to-code mapping catches integration gaps that manual audits miss.
+ 
+-**Previous audits (condensed):** Rune Forge Chamber, Spellweaver's Run, Village Guardian, Dungeon Liberator, Potion Rush, Rune Match, Castle Defense, Alchemists Synthesis, Wizard vs Zombie, RPG Battle, Magic Defense, Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.
++**Previous audits (condensed):** Rune Forge, Spellweaver's Run, Village Guardian, Dungeon Liberator, Potion Rush, Rune Match, Castle Defense, Alchemists Synthesis, Wizard vs Zombie, RPG Battle, Magic Defense, Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.
+
+[0m
+[0m$ [0mwc -l /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+55 /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+[0m
+[0m← [0mEdit measure/lessons-learned.md
+Index: /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+===================================================================
+--- /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
++++ /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+@@ -12,26 +12,8 @@
+ - Approach: Define local SentenceItem type in each game lib file, replace VocabularyItem imports
+ - Key insight: GameStartScreen is a shared component that expects `vocabulary` prop — keep that prop name when passing to shared components even if local data is renamed to `sentences`
+ - No functional changes, all tests pass, lint clean
+ 
+-## Track: Shadow Gate Dungeon Compliance Audit (2026-04-26)
+-- Result: 25/25 passing after fixes (13 at start, 12 failures)
+-- Fixes: fullscreen, accessibility, text sizes, API factories, useSession/useScopedI18n, hook deps, component tests, asset dir
+-- Coverage: 88.67% overall (from 0%)
+-- **Key Learnings:**
+-  - Game already had solid rAF + pure tick architecture; only missing platform hooks
+-  - Adding aria-labels to selects improves both accessibility and testability
+-  - 49 tests across 6 files reaches 88% coverage efficiently from zero baseline
+-
+-## Track: Spellweaver's Run Compliance Audit (2026-04-26)
+-- Result: 25/25 passing after fixes (13 at start, 12 failures)
+-- Fixes: fullscreen, accessibility, text sizes, calculateSpellweaversRunXP, difficulty tiers, SentenceItem typing, API factories, useSession, component tests, hook deps, unused imports, asset dir
+-- Coverage: 88.37% overall
+-- **Key Learnings:**
+-  - Adding useGameFullscreen + useAccessibilitySettings to an existing rAF game is straightforward
+-  - calculateSpellweaversRunXP reuses standard bonus pattern (accuracy + survival + speed + progression)
+-  - 6 component tests raise coverage from 0% to 80% efficiently
+-
+ ## Track: Rune Forge Chamber Compliance Audit (2026-04-26)
+ - Result: 25/25 passing (already compliant)
+ - Fixes: Accessibility labels on selects, page test i18n mock
+ - Coverage: 93.75% overall (100% logic, 90.72% component, 90% page)
+
+[0m
+[0m$ [0mwc -l /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+37 /home/daniel-bo/Desktop/advantage-games/measure/lessons-learned.md
+[0m
+[0m$ [0mgit add measure/lessons-learned.md && git commit -m "[k2p6] Trim lessons-learned.md to ≤50 lines
+
+- Removed older detailed audit entries (Shadow Gate Dungeon, Spellweaver's Run)
+- Kept recent and high-value entries
+- File now at 37 lines"
+[master 163d088] [k2p6] Trim lessons-learned.md to ≤50 lines
+ 1 file changed, 1 insertion(+), 19 deletions(-)
+[0m
+[0m$ [0mgit remote -v
+origin	https://github.com/bodangren/advantage-games.git (fetch)
+origin	https://github.com/bodangren/advantage-games.git (push)
+[0m
+[0m$ [0mgit push origin master
+To https://github.com/bodangren/advantage-games.git
+   5a54f9e..163d088  master -> master
+[0m
+[0m$ [0mls measure/tracks/*compliance-audit* | head -5
+measure/tracks/abyssal-well-compliance-audit_20260426:
+index.md
+metadata.json
+plan.md
+report.md
+[0m
+[0m→ [0mRead measure/tracks/dragon-flight-compliance-audit_20260426/plan.md[90m [limit=30][0m
+[0m→ [0mRead measure/tracks/dragon-flight-compliance-audit_20260426/plan.md[90m [limit=30, offset=31][0m
+[0m→ [0mRead measure/tracks/dragon-flight-compliance-audit_20260426/metadata.json
+[0m→ [0mRead measure/tracks/griffin-riders-escape-compliance-audit_20260426/plan.md[90m [limit=20][0m
+[0m→ [0mRead measure/tracks/griffin-riders-escape-compliance-audit_20260426/plan.md[90m [offset=40, limit=20][0m
+[0m
+[0m$ [0mgrep -n "^\- \[ \]" /home/daniel-bo/Desktop/advantage-games/measure/tracks.md | head -20
+377:- [ ] **Track: Multiplayer Competitive Mode**
+386:- [ ] **Track: Adaptive Difficulty Engine**
+395:- [ ] **Track: Teacher Dashboard**
+404:- [ ] **Track: Sentence Game Expansion**
+413:- [ ] **Track: Dragon Flight Compliance Audit**
+422:- [ ] **Track: Griffin Riders Escape Compliance Audit**
+431:- [ ] **Track: Astral Mage Compliance Audit**
+440:- [ ] **Track: Devourer Slime Compliance Audit**
+449:- [ ] **Track: Babel Architect Compliance Audit**
+458:- [ ] **Track: Sorcerer Ziggurat Compliance Audit**
+467:- [ ] **Track: Haunted Library Compliance Audit**
+476:- [ ] **Track: Gryphon Patrol Compliance Audit**
+485:- [ ] **Track: Labyrinth of the Goblin King Compliance Audit**
+494:- [ ] **Track: The Abyssal Well Compliance Audit**
+503:- [ ] **Track: Archer's Revenge Compliance Audit**
+512:- [ ] **Track: Storm the Castle Tower Compliance Audit**
+521:- [ ] **Track: Griffin Sky-Joust Compliance Audit**
+530:- [ ] **Track: Realm Carver Compliance Audit**
+539:- [ ] **Track: Paladin's Twin-Soul Compliance Audit**
+548:- [ ] **Track: Castle Defense Compliance Audit**
+[0m
+[0m→ [0mRead measure/tracks/astral-mage-compliance-audit_20260426/plan.md[90m [limit=30][0m
+[0m→ [0mRead measure/current_directive.md
+[0m→ [0mRead measure/tracks/multiplayer_competitive_mode_20260423/spec.md[90m [limit=50][0m
+[0m→ [0mRead measure/tracks/multiplayer_competitive_mode_20260423/plan.md[90m [limit=50][0m
+[0m→ [0mRead measure/tracks/multiplayer_competitive_mode_20260423/plan.md[90m [limit=40, offset=51][0m
+[0m→ [0mRead measure/tracks/adaptive_difficulty_engine_20260423/plan.md[90m [limit=30][0m
+[0m→ [0mRead measure/tracks/adaptive_difficulty_engine_20260423/plan.md[90m [limit=40, offset=31][0m
+[0m
+[0m$ [0mfor dir in /home/daniel-bo/Desktop/advantage-games/measure/tracks/*compliance-audit*/; do echo "=== $(basename $dir) ==="; grep -c "^\- \[ \]" "$dir/plan.md" 2>/dev/null || echo "0"; done
+=== abyssal-well-compliance-audit_20260426 ===
+0
+0
+=== alchemists-synthesis-compliance-audit_20260426 ===
+0
+0
+=== archers-revenge-compliance-audit_20260426 ===
+0
+0
+=== astral-mage-compliance-audit_20260426 ===
+5
+=== babel-architect-compliance-audit_20260426 ===
+0
+0
+=== castle-defense-compliance-audit_20260426 ===
+0
+0
+=== devourer-slime-compliance-audit_20260426 ===
+3
+=== dragon-flight-compliance-audit_20260426 ===
+0
+0
+=== dragon-rider-compliance-audit_20260426 ===
+0
+0
+=== dungeon-liberator-compliance-audit_20260426 ===
+0
+0
+=== enchanted-library-compliance-audit_20260426 ===
+0
+0
+=== griffin-riders-escape-compliance-audit_20260426 ===
+0
+0
+=== griffin-sky-joust-compliance-audit_20260426 ===
+0
+0
+=== gryphon-patrol-compliance-audit_20260426 ===
+0
+0
+=== haunted-library-compliance-audit_20260426 ===
+0
+0
+=== labyrinth-goblin-king-compliance-audit_20260426 ===
+0
+0
+=== magic-defense-compliance-audit_20260426 ===
+5
+=== paladins-twin-soul-compliance-audit_20260426 ===
+0
+0
+=== potion-rush-compliance-audit_20260426 ===
+0
+0
+=== realm-carver-compliance-audit_20260426 ===
+0
+0
+=== rpg-battle-compliance-audit_20260426 ===
+0
+0
+=== rune-forge-chamber-compliance-audit_20260426 ===
+0
+0
+=== rune-match-compliance-audit_20260426 ===
+0
+0
+=== shadow-gate-dungeon-compliance-audit_20260426 ===
+0
+0
+=== sorcerer-ziggurat-compliance-audit_20260426 ===
+0
+0
+=== spellweavers-run-compliance-audit_20260426 ===
+0
+0
+=== storm-castle-tower-compliance-audit_20260426 ===
+0
+0
+=== village-guardian-compliance-audit_20260426 ===
+0
+0
+=== wizard-vs-zombie-compliance-audit_20260426 ===
+0
+0
+[0m
+[0m→ [0mRead measure/tracks/devourer-slime-compliance-audit_20260426/plan.md
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" http://localhost:3000
+500
+[0m
+[0m$ [0mpkill -f "next dev" 2>/dev/null; sleep 2; rm -rf .next; nohup bun run dev > /tmp/dev-server.log 2>&1 & sleep 10; curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
+(no output)
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 30000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0msleep 5; tail -10 /tmp/dev-server.log 2>/dev/null
+syscall: 'open',
+  path: '/home/daniel-bo/Desktop/advantage-games/.next/static/development/_buildManifest.js.tmp.rmqsetmkzti'
+}
+[Error: ENOENT: no such file or directory, open '/home/daniel-bo/Desktop/advantage-games/.next/static/development/_buildManifest.js.tmp.8awtoxmadp'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/daniel-bo/Desktop/advantage-games/.next/static/development/_buildManifest.js.tmp.8awtoxmadp'
+}
+[?25h
+[0m
+[0m$ [0mpkill -9 -f "next" 2>/dev/null; sleep 3; rm -rf .next node_modules/.cache; bun run dev > /tmp/dev-server.log 2>&1 & sleep 12; tail -15 /tmp/dev-server.log
+(no output)
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 30000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0msleep 10; tail -15 /tmp/dev-server.log 2>/dev/null || echo "No log"
+path: '/home/daniel-bo/Desktop/advantage-games/.next/server/app/page/app-build-manifest.json'
+}
+ ⨯ [Error: ENOENT: no such file or directory, open '/home/daniel-bo/Desktop/advantage-games/.next/static/development/_buildManifest.js.tmp.rmqsetmkzti'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/daniel-bo/Desktop/advantage-games/.next/static/development/_buildManifest.js.tmp.rmqsetmkzti'
+}
+[Error: ENOENT: no such file or directory, open '/home/daniel-bo/Desktop/advantage-games/.next/static/development/_buildManifest.js.tmp.8awtoxmadp'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/home/daniel-bo/Desktop/advantage-games/.next/static/development/_buildManifest.js.tmp.8awtoxmadp'
+}
+[?25h
+[0m
+[0m$ [0mps aux | grep "next dev" | grep -v grep || echo "No dev server running"
+No dev server running
+[0m
+[0m$ [0mrm -rf .next; bun run dev > /tmp/dev-server.log 2>&1 &
+(no output)
+[0m
+[0m$ [0msleep 15; curl -s -o /dev/null -w "%{http_code}" http://localhost:3000
+(no output)
+
+<shell_metadata>
+shell tool terminated command after exceeding timeout 20000 ms. If this command is expected to take longer and is not waiting for interactive input, retry with a larger timeout value in milliseconds.
+</shell_metadata>
+[0m
+[0m$ [0mps aux | grep "next" | grep -v grep
+daniel-+ 1764920  3.7  2.3 19862984 183968 ?     Sl   02:24   0:01 node /home/daniel-bo/Desktop/advantage-games/node_modules/.bin/next dev --turbopack
+daniel-+ 1764971 59.0 10.0 22050996 769156 ?     Sl   02:24   0:21 next-server (v15.5.9)
+daniel-+ 1765106 14.6  1.8 2411936 138916 ?      Sl   02:24   0:01 node /home/daniel-bo/Desktop/advantage-games/.next/postcss.js 42317
+[0m
+[0m$ [0mtail -20 /tmp/dev-server.log
+$ next dev --turbopack
+   ▲ Next.js 15.5.9 (Turbopack)
+   - Local:        http://localhost:3000
+   - Network:      http://10.10.244.222:3000
+
+ ✓ Starting...
+ ✓ Ready in 2.2s
+ ○ Compiling / ...
+ ✓ Compiled / in 6.9s
+[0m
+[0m$ [0mcurl -s -o /dev/null -w "%{http_code}" http://localhost:3000
+200
+[0m
+[0m# [0mTodos
+[x] Verify previous work: start dev server, browser-harness smoke test
+[x] Start Phase 1 of Three-Game Asset Rollout track
+[x] Complete Phase 1 tasks (asset brief and prompt package)
+[x] Run tests and build verification
+[x] Commit and push checkpoint
+[x] Phase 2: Generate Labyrinth static assets (floor, wall, orb)
+[x] Phase 2: Generate Labyrinth sprite sheets (paladin, goblins)
+[x] Phase 2: Wire assets into LabyrinthGoblinKingGame.tsx
+[x] Phase 2: Add/update tests for Labyrinth
+[x] Phase 2: Commit Phase 2 changes
+[x] Phase 3: Generate Haunted Library assets
+[x] Phase 3: Wire assets into HauntedLibraryGame.tsx
+[x] Phase 3: Add/update tests for Haunted Library
+[x] Phase 3: Commit Phase 3 changes
+[x] Phase 4: Generate Gryphon Patrol assets
+[x] Phase 4: Wire assets into GryphonPatrolGame.tsx
+[x] Phase 4: Add/update tests for Gryphon Patrol
+[x] Phase 4: Commit Phase 4 changes
+[x] Phase 5: Consolidate shared helpers if needed
+[x] Phase 5: Run final cross-game verification
+[x] Phase 5: Update track status and commit final
+[0m
+**Track Complete: Three-Game Asset Rollout**
+
+All 5 phases finished and pushed to origin/master:
+
+**Phase 1:** Asset Brief
+- Created `conductor/notes/three-game-asset-rollout.md` with specifications for 23 assets across 3 games
+- Defined 3x3 pose sheet grammar (move/attack/defend)
+
+**Phase 2:** Labyrinth of the Goblin King
+- Generated 7 assets: floor tile, wall tile, word orb, paladin sheet, 3 goblin sheets
+- Wired into `LabyrinthGoblinKingGame.tsx` with primitive fallback
+
+**Phase 3:** The Haunted Library
+- Generated 9 assets: background, floor strip, trampoline, 3 door states, player, ghost, bat sheets
+- Wired into `HauntedLibraryGame.tsx` with primitive fallback
+
+**Phase 4:** Gryphon Patrol
+- Generated 7 assets: 3 parallax layers, player sheet, enemy sheet, orb, feather bolt
+- Wired into `GryphonPatrolGame.tsx` with primitive fallback
+
+**Phase 5:** Cleanup
+- Extracted shared `loadSprite` helper into `src/lib/games/loadSprite.ts`
+- Updated 4 game components to use shared helper
+- Build: 0 errors, Lint: 0 errors, Dev server: verified
+- Updated `lessons-learned.md` and `tracks.md`
+
+**Commits:** 5 commits from `9c08847` to `163d088`
