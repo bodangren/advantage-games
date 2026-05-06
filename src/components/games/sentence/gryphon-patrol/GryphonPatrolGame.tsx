@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Stage, Layer, Rect, Text, Group, Circle, Line } from 'react-konva';
+import { Stage, Layer, Rect, Text, Group, Circle, Line, Image as KonvaImage } from 'react-konva';
+import { withBasePath } from '@/lib/basePath';
 import {
   createInitialGryphonPatrolState, 
   tickGryphonPatrol, 
@@ -41,6 +42,42 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ sentences, diffic
   const lastFrameRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
   const { input, consumeCast } = useDirectionalInput();
+
+  // Asset loading
+  const [assets, setAssets] = useState<{
+    skyTop: HTMLImageElement
+    cloudsMiddle: HTMLImageElement
+    landscapeBottom: HTMLImageElement
+    player: HTMLImageElement
+    enemy: HTMLImageElement
+    orb: HTMLImageElement
+    bolt: HTMLImageElement
+  } | null>(null)
+
+  function loadSprite(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.src = withBasePath(src)
+      img.onload = () => resolve(img)
+      img.onerror = reject
+    })
+  }
+
+  useEffect(() => {
+    const load = async () => {
+      const [skyTop, cloudsMiddle, landscapeBottom, player, enemy, orb, bolt] = await Promise.all([
+        loadSprite('/games/sentence/gryphon-patrol/parallax-sky-top.png'),
+        loadSprite('/games/sentence/gryphon-patrol/parallax-clouds-middle.png'),
+        loadSprite('/games/sentence/gryphon-patrol/parallax-landscape-bottom.png'),
+        loadSprite('/games/sentence/gryphon-patrol/player_gryphon_rider_3x3_pose_sheet.png'),
+        loadSprite('/games/sentence/gryphon-patrol/sky_raider_3x3_pose_sheet.png'),
+        loadSprite('/games/sentence/gryphon-patrol/word-orb.png'),
+        loadSprite('/games/sentence/gryphon-patrol/feather-bolt.png'),
+      ])
+      setAssets({ skyTop, cloudsMiddle, landscapeBottom, player, enemy, orb, bolt })
+    }
+    load()
+  }, [])
 
   useEffect(() => {
     const handleResize = () => {
@@ -163,27 +200,72 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ sentences, diffic
         <Stage width={dimensions.width} height={dimensions.height} scaleX={scale} scaleY={scale}>
           <Layer>
             {/* Parallax Background */}
-            <Rect 
-              width={390} height={844} 
-              fillLinearGradientStartPoint={{ x: 0, y: 0 }}
-              fillLinearGradientEndPoint={{ x: 0, y: 844 }}
-              fillLinearGradientColorStops={[0, '#1a365d', 1, '#2d3748']}
-            />
-
-            {/* Landscape (Wrap-around) */}
-            {[0, 1, 2].map(i => {
-              const x = (i * 1000 - gameState.cameraX * 0.5 + 2000) % 2000;
-              return (
-                <Group key={i} x={x}>
-                   <Line
-                    points={[0, 844, 200, 600, 400, 844, 600, 500, 800, 844, 1000, 844]}
-                    fill="#2d3748"
-                    closed
-                    opacity={0.3}
+            {assets?.skyTop ? (
+              <>
+                {[0, 1].map(i => (
+                  <KonvaImage
+                    key={`sky-${i}`}
+                    x={(i * 512 - gameState.cameraX * 0.1) % 512}
+                    y={0}
+                    width={512}
+                    height={256}
+                    image={assets.skyTop}
                   />
-                </Group>
-              );
-            })}
+                ))}
+              </>
+            ) : (
+              <Rect 
+                width={390} height={844} 
+                fillLinearGradientStartPoint={{ x: 0, y: 0 }}
+                fillLinearGradientEndPoint={{ x: 0, y: 844 }}
+                fillLinearGradientColorStops={[0, '#1a365d', 1, '#2d3748']}
+              />
+            )}
+
+            {/* Clouds Middle Layer */}
+            {assets?.cloudsMiddle && [0, 1].map(i => (
+              <KonvaImage
+                key={`cloud-${i}`}
+                x={(i * 512 - gameState.cameraX * 0.2) % 512}
+                y={100}
+                width={512}
+                height={256}
+                image={assets.cloudsMiddle}
+                opacity={0.7}
+              />
+            ))}
+
+            {/* Landscape Bottom Layer */}
+            {assets?.landscapeBottom ? (
+              <>
+                {[0, 1].map(i => (
+                  <KonvaImage
+                    key={`land-${i}`}
+                    x={(i * 512 - gameState.cameraX * 0.5) % 512}
+                    y={600}
+                    width={512}
+                    height={256}
+                    image={assets.landscapeBottom}
+                  />
+                ))}
+              </>
+            ) : (
+              <>
+                {[0, 1, 2].map(i => {
+                  const x = (i * 1000 - gameState.cameraX * 0.5 + 2000) % 2000;
+                  return (
+                    <Group key={i} x={x}>
+                       <Line
+                        points={[0, 844, 200, 600, 400, 844, 600, 500, 800, 844, 1000, 844]}
+                        fill="#2d3748"
+                        closed
+                        opacity={0.3}
+                      />
+                    </Group>
+                  );
+                })}
+              </>
+            )}
 
             {/* Enemies */}
             {gameState.enemies.map(enemy => {
@@ -195,12 +277,22 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ sentences, diffic
 
               return (
                 <Group key={enemy.id} x={ex} y={enemy.y}>
-                  <Circle
-                    radius={enemy.size / 2}
-                    fill={enemy.isTarget ? "#2ecc71" : "#e74c3c"}
-                    stroke="white"
-                    strokeWidth={2}
-                  />
+                  {assets?.enemy ? (
+                    <KonvaImage
+                      x={-enemy.size / 2}
+                      y={-enemy.size / 2}
+                      width={enemy.size}
+                      height={enemy.size}
+                      image={assets.enemy}
+                    />
+                  ) : (
+                    <Circle
+                      radius={enemy.size / 2}
+                      fill={enemy.isTarget ? "#2ecc71" : "#e74c3c"}
+                      stroke="white"
+                      strokeWidth={2}
+                    />
+                  )}
                   <Text
                     text={enemy.word}
                     x={-50} y={enemy.size / 2 + 5}
@@ -217,7 +309,16 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ sentences, diffic
             {/* Projectiles */}
             {gameState.projectiles.map(proj => {
               const px = (proj.x - gameState.cameraX + 2000) % 2000;
-              return (
+              return assets?.bolt ? (
+                <KonvaImage
+                  key={proj.id}
+                  x={px - proj.size / 2}
+                  y={proj.y - proj.size / 2}
+                  width={proj.size}
+                  height={proj.size}
+                  image={assets.bolt}
+                />
+              ) : (
                 <Rect
                   key={proj.id}
                   x={px - proj.size / 2}
@@ -237,12 +338,22 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ sentences, diffic
               const ox = (orb.x - gameState.cameraX + 2000) % 2000;
               return (
                 <Group key={orb.id} x={ox} y={orb.y}>
-                  <Circle
-                    radius={orb.size / 2}
-                    fill="white"
-                    shadowBlur={10}
-                    shadowColor="white"
-                  />
+                  {assets?.orb ? (
+                    <KonvaImage
+                      x={-orb.size / 2}
+                      y={-orb.size / 2}
+                      width={orb.size}
+                      height={orb.size}
+                      image={assets.orb}
+                    />
+                  ) : (
+                    <Circle
+                      radius={orb.size / 2}
+                      fill="white"
+                      shadowBlur={10}
+                      shadowColor="white"
+                    />
+                  )}
                   <Text
                     text={orb.word}
                     x={-50} y={orb.size / 2 + 5}
@@ -262,20 +373,32 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ sentences, diffic
               y={gameState.player.y}
               opacity={gameState.player.invulnerableTime > 0 ? 0.5 : 1}
             >
-              <Rect 
-                width={gameState.player.size}
-                height={gameState.player.size}
-                fill="#f1c40f"
-                cornerRadius={5}
-              />
-              <Rect 
-                x={-gameState.player.size / 2}
-                y={-gameState.player.size / 2}
-                width={gameState.player.size}
-                height={gameState.player.size}
-                fill="#f1c40f"
-                cornerRadius={5}
-              />
+              {assets?.player ? (
+                <KonvaImage
+                  x={-gameState.player.size / 2}
+                  y={-gameState.player.size / 2}
+                  width={gameState.player.size}
+                  height={gameState.player.size}
+                  image={assets.player}
+                />
+              ) : (
+                <>
+                  <Rect 
+                    width={gameState.player.size}
+                    height={gameState.player.size}
+                    fill="#f1c40f"
+                    cornerRadius={5}
+                  />
+                  <Rect 
+                    x={-gameState.player.size / 2}
+                    y={-gameState.player.size / 2}
+                    width={gameState.player.size}
+                    height={gameState.player.size}
+                    fill="#f1c40f"
+                    cornerRadius={5}
+                  />
+                </>
+              )}
             </Group>
 
             {/* HUD */}

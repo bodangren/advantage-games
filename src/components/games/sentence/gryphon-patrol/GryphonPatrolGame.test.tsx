@@ -21,6 +21,7 @@ jest.mock("react-konva", () => ({
   Circle: (props: any) => <div data-testid="konva-circle" {...props} />,
   Group: ({ children }: any) => <div data-testid="konva-group">{children}</div>,
   Line: (props: any) => <div data-testid="konva-line" {...props} />,
+  Image: (props: any) => <div data-testid="konva-image" {...props} />,
 }));
 
 // Mock hooks
