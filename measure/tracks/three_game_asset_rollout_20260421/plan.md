@@ -2,14 +2,14 @@
 
 ## Phase 1: Asset Brief and Prompt Package
 
-- [ ] Task: Audit the current render trees and target sprite sizes for all three games.
-  - [ ] Confirm the on-canvas target sizes and cropping expectations for Labyrinth of the Goblin King, The Haunted Library, and Gryphon Patrol.
-  - [ ] Identify which placeholder primitives should remain code-rendered for readability or simplicity.
-- [ ] Task: Publish the detailed asset brief in `conductor/notes/three-game-asset-rollout.md`.
-  - [ ] Finalize filenames, asset types, and target dimensions.
-  - [ ] Lock the shared 3x3 `move` / `attack` / `defend` row grammar.
-  - [ ] Capture the visual-review checklist for generated outputs.
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Asset Brief' (Protocol in workflow.md)
+- [x] Task: Audit the current render trees and target sprite sizes for all three games.
+  - [x] Confirm the on-canvas target sizes and cropping expectations for Labyrinth of the Goblin King, The Haunted Library, and Gryphon Patrol.
+  - [x] Identify which placeholder primitives should remain code-rendered for readability or simplicity.
+- [x] Task: Publish the detailed asset brief in `conductor/notes/three-game-asset-rollout.md`.
+  - [x] Finalize filenames, asset types, and target dimensions.
+  - [x] Lock the shared 3x3 `move` / `attack` / `defend` row grammar.
+  - [x] Capture the visual-review checklist for generated outputs.
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Asset Brief' (Protocol in workflow.md)
 
 ## Phase 2: Labyrinth of the Goblin King Assets
 
