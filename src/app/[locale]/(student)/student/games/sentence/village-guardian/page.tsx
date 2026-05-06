@@ -208,7 +208,7 @@ export default function VillageGuardianPage() {
           <Shield className="h-8 w-8 text-primary" />
         </Header>
 
-        <VillageGuardianGame vocabulary={sentences} onComplete={handleComplete} />
+        <VillageGuardianGame sentences={sentences} onComplete={handleComplete} />
       </div>
     </main>
   );

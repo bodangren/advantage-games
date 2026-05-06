@@ -78,7 +78,7 @@ jest.mock('@/locales/client', () => ({
   useScopedI18n: () => (key: string) => key,
 }))
 
-const mockVocabulary = [
+const mockSentences = [
   { term: 'The cat sits', translation: 'Le chat est assis' },
   { term: 'I love books', translation: "J'aime les livres" },
 ]
@@ -95,7 +95,7 @@ describe('VillageGuardianGame', () => {
 
   it('renders the start screen initially', () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     expect(
       screen.getByRole('heading', { name: /village guardian/i }),
@@ -104,7 +104,7 @@ describe('VillageGuardianGame', () => {
 
   it('transitions to playing phase when start is clicked', async () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     const startButton = screen.getByRole('button', {
       name: /defend the village/i,
@@ -116,7 +116,7 @@ describe('VillageGuardianGame', () => {
 
   it('enters fullscreen when game starts', async () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     const startButton = screen.getByRole('button', {
       name: /defend the village/i,
@@ -129,7 +129,7 @@ describe('VillageGuardianGame', () => {
 
   it('exits fullscreen when game ends', async () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     const startButton = screen.getByRole('button', {
       name: /defend the village/i,
@@ -145,7 +145,7 @@ describe('VillageGuardianGame', () => {
 
   it('displays difficulty and opponent selectors on start screen', () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     expect(screen.getByText(/difficulty/i)).toBeInTheDocument()
     expect(screen.getByText(/opponent/i)).toBeInTheDocument()
@@ -153,7 +153,7 @@ describe('VillageGuardianGame', () => {
 
   it('allows changing difficulty', () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     const difficultySelect = screen.getByRole('combobox', { name: /difficulty/i })
     fireEvent.change(difficultySelect, { target: { value: 'hard' } })
@@ -162,7 +162,7 @@ describe('VillageGuardianGame', () => {
 
   it('allows changing opponent type', () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     const opponentSelect = screen.getByRole('combobox', { name: /opponent/i })
     fireEvent.change(opponentSelect, { target: { value: 'dragons' } })
@@ -172,7 +172,7 @@ describe('VillageGuardianGame', () => {
   it('calls onComplete when game ends', async () => {
     const onComplete = jest.fn()
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={onComplete} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={onComplete} />,
     )
     const startButton = screen.getByRole('button', {
       name: /defend the village/i,
@@ -185,7 +185,7 @@ describe('VillageGuardianGame', () => {
 
   it('shows end screen after defeat', async () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     const startButton = screen.getByRole('button', {
       name: /defend the village/i,
@@ -196,7 +196,7 @@ describe('VillageGuardianGame', () => {
 
   it('renders virtual d-pad during gameplay', async () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     const startButton = screen.getByRole('button', {
       name: /defend the village/i,
@@ -210,7 +210,7 @@ describe('VillageGuardianGame', () => {
 
   it('displays game instructions on start screen', () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     expect(
       screen.getByText(/rescue villagers with word bubbles/i),
@@ -222,7 +222,7 @@ describe('VillageGuardianGame', () => {
 
   it('displays controls information on start screen', () => {
     render(
-      <VillageGuardianGame vocabulary={mockVocabulary} onComplete={jest.fn()} />,
+      <VillageGuardianGame sentences={mockSentences} onComplete={jest.fn()} />,
     )
     expect(screen.getByText(/arrow keys/i)).toBeInTheDocument()
     expect(screen.getByText(/touch & drag/i)).toBeInTheDocument()

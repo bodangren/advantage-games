@@ -10,7 +10,7 @@ import {
   type InputState,
 } from '@/lib/games/villageGuardian'
 import { GAME_WIDTH, GAME_HEIGHT, VILLAGE_GUARDIAN_CONFIG } from '@/lib/games/villageGuardianConfig'
-import type { VocabularyItem } from '@/store/useGameStore'
+import type { SentenceItem } from '@/lib/games/villageGuardian'
 import type { Difficulty } from '@/store/useGameStore'
 import type { OpponentType } from '@/lib/games/villageGuardianConfig'
 // rAF-based game loop — no useInterval needed
@@ -29,11 +29,11 @@ export type VillageGuardianGameResult = {
 }
 
 interface VillageGuardianGameProps {
-  vocabulary: VocabularyItem[]
+  sentences: SentenceItem[]
   onComplete: (results: VillageGuardianGameResult) => void
 }
 
-export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianGameProps) {
+export function VillageGuardianGame({ sentences, onComplete }: VillageGuardianGameProps) {
   const [gameState, setGameState] = useState<VillageGuardianState | null>(null)
   const [gamePhase, setGamePhase] = useState<'start' | 'playing' | 'ended'>('start')
   const [results, setResults] = useState<VillageGuardianGameResult | null>(null)
@@ -58,21 +58,21 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
   }, [stopMusic])
 
   const resetGame = useCallback(() => {
-    if (vocabulary.length > 0) {
-      setGameState(createVillageGuardianState(vocabulary, {
+    if (sentences.length > 0) {
+      setGameState(createVillageGuardianState(sentences, {
         difficulty: selectedDifficulty,
         opponentType: selectedOpponent,
       }))
       setResults(null)
       hasReportedRef.current = false
     }
-  }, [vocabulary, selectedDifficulty, selectedOpponent])
+  }, [sentences, selectedDifficulty, selectedOpponent])
 
   useEffect(() => {
-    if (vocabulary.length > 0 && gamePhase === 'start') {
+    if (sentences.length > 0 && gamePhase === 'start') {
       resetGame()
     }
-  }, [vocabulary, gamePhase, resetGame])
+  }, [sentences, gamePhase, resetGame])
 
   useEffect(() => {
     if (gamePhase === 'playing') {
@@ -200,7 +200,7 @@ export function VillageGuardianGame({ vocabulary, onComplete }: VillageGuardianG
         <GameStartScreen
           gameTitle="Village Guardian"
           gameSubtitle="Defend the Innocent"
-          vocabulary={vocabulary}
+          vocabulary={sentences}
           instructions={[
             { step: 1, text: 'Rescue villagers with word bubbles in the correct order to form the sentence.', icon: BookOpen },
             { step: 2, text: 'The translation is shown at the top - find the words!', icon: BookOpen },

@@ -1,5 +1,9 @@
-import type { VocabularyItem } from '@/store/useGameStore'
 import type { Difficulty } from '@/store/useGameStore'
+
+export type SentenceItem = {
+  term: string
+  translation: string
+}
 import type { OpponentType } from './villageGuardianConfig'
 import {
   VILLAGE_GUARDIAN_CONFIG,
@@ -64,13 +68,13 @@ export type VillageGuardianState = {
   difficulty: Difficulty
   opponentType: OpponentType
   level: number
-  vocabulary: VocabularyItem[]
+  sentences: SentenceItem[]
   knight: Knight
   villagers: Villager[]
   trail: TrailSegment[]
   monsters: Monster[]
   sanctuary: Sanctuary
-  currentSentence: VocabularyItem
+  currentSentence: SentenceItem
   words: string[]
   collectedWords: string[]
   targetIndex: number
@@ -110,7 +114,7 @@ function getRandomPosition(rng: () => number, margin: number = 80): Position {
 
 function spawnVillagers(
   words: string[],
-  sentence: VocabularyItem,
+  sentence: SentenceItem,
   rng: () => number
 ): Villager[] {
   const margin = 60
@@ -175,10 +179,10 @@ function spawnMonster(
 }
 
 export function createVillageGuardianState(
-  vocabulary: VocabularyItem[],
+  sentences: SentenceItem[],
   config: VillageGuardianConfig = {}
 ): VillageGuardianState {
-  if (vocabulary.length === 0) {
+  if (sentences.length === 0) {
     throw new Error('Vocabulary cannot be empty')
   }
 
@@ -186,8 +190,8 @@ export function createVillageGuardianState(
   const difficulty = config.difficulty ?? 'normal'
   const opponentType = config.opponentType ?? 'bandits'
 
-  const sentenceIndex = Math.floor(rng() * vocabulary.length)
-  const currentSentence = vocabulary[sentenceIndex]
+  const sentenceIndex = Math.floor(rng() * sentences.length)
+  const currentSentence = sentences[sentenceIndex]
   const words = currentSentence.term.split(' ')
 
   const diffConfig = getDifficultyConfig(difficulty)
@@ -216,7 +220,7 @@ export function createVillageGuardianState(
     difficulty,
     opponentType,
     level: 1,
-    vocabulary,
+    sentences,
     knight,
     villagers,
     trail: [],
@@ -576,7 +580,7 @@ function advanceLevelIfComplete(state: VillageGuardianState): VillageGuardianSta
     const completedIndices = [...state.completedSentenceIndices, state.currentSentenceIndex]
 
     // Check if all sentences are completed
-    if (completedIndices.length >= state.vocabulary.length) {
+    if (completedIndices.length >= state.sentences.length) {
       return {
         ...state,
         status: 'victory',
@@ -589,12 +593,12 @@ function advanceLevelIfComplete(state: VillageGuardianState): VillageGuardianSta
     const diffConfig = getDifficultyConfig(state.difficulty)
 
     // Pick an uncompleted sentence
-    const uncompletedIndices = state.vocabulary
+    const uncompletedIndices = state.sentences
       .map((_, i) => i)
       .filter(i => !completedIndices.includes(i))
 
     const sentenceIndex = uncompletedIndices[Math.floor(rng() * uncompletedIndices.length)]
-    const nextSentence = state.vocabulary[sentenceIndex]
+    const nextSentence = state.sentences[sentenceIndex]
     const nextWords = nextSentence.term.split(' ')
     const wordCount = Math.min(diffConfig.wordCount, nextWords.length)
     const activeWords = nextWords.slice(0, wordCount)
