@@ -12,7 +12,8 @@ import {
   type Lane,
 } from '@/lib/games/griffinRidersEscape'
 import { GAME_WIDTH, GAME_HEIGHT, GRIFFIN_RIDERS_ESCAPE_CONFIG } from '@/lib/games/griffinRidersEscapeConfig'
-import type { VocabularyItem, Difficulty } from '@/store/useGameStore'
+import type { SentenceItem } from '@/lib/games/griffinRidersEscape'
+import type { Difficulty } from '@/store/useGameStore'
 import { useSound } from '@/hooks/useSound'
 import { useDirectionalInput } from '@/hooks/useDirectionalInput'
 import { useGameFullscreen } from '@/hooks/useGameFullscreen'
@@ -23,13 +24,13 @@ import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { Heart } from 'lucide-react'
 
 type GameProps = {
-  vocabulary: VocabularyItem[]
+  sentences: SentenceItem[]
   onComplete?: (results: { accuracy: number; xp: number }) => void
 }
 
 type GamePhase = 'start' | 'playing' | 'ended'
 
-export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
+export function GriffinRidersEscapeGame({ sentences, onComplete }: GameProps) {
   const { containerRef, enterFullscreen, exitFullscreen } = useGameFullscreen()
   const { getEffectiveTextSize } = useAccessibilitySettings()
   const { start: startMusic, stop: stopMusic } = useBackgroundMusic('griffin-riders-escape')
@@ -61,11 +62,11 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
   }, [containerRef])
 
   const resetGame = useCallback(() => {
-    if (vocabulary.length > 0) {
-      setGameState(createGriffinRidersEscapeState(vocabulary, { difficulty: selectedDifficulty }))
+    if (sentences.length > 0) {
+      setGameState(createGriffinRidersEscapeState(sentences, { difficulty: selectedDifficulty }))
       setPlayerVisualX(GAME_WIDTH / 2)
     }
-  }, [vocabulary, selectedDifficulty])
+  }, [sentences, selectedDifficulty])
 
   useEffect(() => {
     if (gamePhase === 'start') resetGame()
@@ -86,7 +87,7 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
 
       setGameState(prev => {
         if (!prev || prev.status !== 'playing') return prev
-        const next = tickGriffinRidersEscape(prev, vocabulary, clampedDelta)
+        const next = tickGriffinRidersEscape(prev, sentences, clampedDelta)
         
         // Detect state changes for feedback
         if (next.lives < prev.lives) {
@@ -114,7 +115,7 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
       cancelAnimationFrame(rafRef.current)
       lastFrameRef.current = 0
     }
-  }, [gamePhase, vocabulary, playSound])
+  }, [gamePhase, sentences, playSound])
 
   // Player movement animation (Lerp)
   useEffect(() => {
@@ -307,7 +308,7 @@ export function GriffinRidersEscapeGame({ vocabulary, onComplete }: GameProps) {
         <GameStartScreen
           gameTitle="Griffin Rider's Escape"
           gameSubtitle="Soar through magical gates to complete the sentence!"
-          vocabulary={vocabulary}
+          vocabulary={sentences}
           instructions={[
             { step: 1, text: 'Swipe left or right to change lanes.' },
             { step: 2, text: 'Fly through the gate with the next word in the sentence.' },

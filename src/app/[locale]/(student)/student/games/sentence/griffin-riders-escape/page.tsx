@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import type { VocabularyItem } from '@/store/useGameStore'
+import type { SentenceItem } from '@/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame'
 import { useCurrentLocale, useScopedI18n } from '@/locales/client'
 import { useSession } from '@/hooks/useSession'
 
@@ -12,19 +12,19 @@ const GriffinRidersEscapeGame = dynamic(
 )
 
 export default function GriffinRidersEscapePage() {
-  const [vocabulary, setVocabulary] = useState<VocabularyItem[]>([])
+  const [sentences, setSentences] = useState<SentenceItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const locale = useCurrentLocale()
   const t = useScopedI18n('pages.student.gamesPage')
   const { data: session } = useSession()
 
   useEffect(() => {
-    async function fetchVocabulary() {
+    async function fetchSentences() {
       try {
         const response = await fetch(`/api/v1/games/griffin-riders-escape/sentences?locale=${locale}`)
         const data = await response.json()
         if (data.sentences) {
-          setVocabulary(data.sentences)
+          setSentences(data.sentences)
         }
       } catch (error) {
         console.error('Failed to fetch sentences:', error)
@@ -33,7 +33,7 @@ export default function GriffinRidersEscapePage() {
       }
     }
 
-    fetchVocabulary()
+    fetchSentences()
   }, [locale])
 
   const handleComplete = async (results: { accuracy: number; xp: number }) => {
@@ -62,7 +62,7 @@ export default function GriffinRidersEscapePage() {
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
       <GriffinRidersEscapeGame
-        vocabulary={vocabulary}
+        sentences={sentences}
         onComplete={handleComplete}
       />
     </div>

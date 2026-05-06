@@ -1,5 +1,10 @@
-import type { VocabularyItem, Difficulty } from '@/store/useGameStore'
+import type { Difficulty } from '@/store/useGameStore'
 import { GRIFFIN_RIDERS_ESCAPE_CONFIG, getDifficultyConfig } from './griffinRidersEscapeConfig'
+
+export type SentenceItem = {
+  term: string
+  translation: string
+}
 
 export type Lane = 'left' | 'center' | 'right'
 
@@ -24,7 +29,7 @@ export type GriffinRiderState = {
   collectedWords: string[]
   targetIndex: number
   objects: WorldObject[]
-  currentSentence: VocabularyItem
+  currentSentence: SentenceItem
   words: string[]
   correctAnswers: number
   totalAttempts: number
@@ -44,18 +49,18 @@ const getLaneFromRng = (rng: () => number): Lane => {
 }
 
 export function createGriffinRidersEscapeState(
-  vocabulary: VocabularyItem[],
+  sentences: SentenceItem[],
   config: { difficulty?: Difficulty; rng?: () => number } = {}
 ): GriffinRiderState {
-  if (vocabulary.length === 0) {
-    throw new Error('Vocabulary cannot be empty')
+  if (sentences.length === 0) {
+    throw new Error('Sentences cannot be empty')
   }
 
   const rng = config.rng ?? Math.random
   const difficulty = config.difficulty ?? 'normal'
 
-  const sentenceIndex = Math.floor(rng() * vocabulary.length)
-  const currentSentence = vocabulary[sentenceIndex]
+  const sentenceIndex = Math.floor(rng() * sentences.length)
+  const currentSentence = sentences[sentenceIndex]
   const words = currentSentence.term.split(' ')
 
   return {
@@ -151,7 +156,7 @@ export function spawnWave(
 
 export function tickGriffinRidersEscape(
   state: GriffinRiderState,
-  vocabulary: VocabularyItem[],
+  sentences: SentenceItem[],
   deltaMs: number,
   rng: () => number = Math.random
 ): GriffinRiderState {

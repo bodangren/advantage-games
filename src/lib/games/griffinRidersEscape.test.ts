@@ -7,9 +7,9 @@ import {
   type GriffinRiderState,
   type Lane,
 } from './griffinRidersEscape'
-import type { VocabularyItem } from '@/store/useGameStore'
+import type { SentenceItem } from './griffinRidersEscape'
 
-const mockVocabulary: VocabularyItem[] = [
+const mockSentences: SentenceItem[] = [
   { term: 'The cat sits', translation: 'แมวนั่ง' },
   { term: 'Dog runs fast', translation: 'หมาวิ่งเร็ว' },
   { term: 'Bird flies high', translation: 'นกบินสูง' },
@@ -19,7 +19,7 @@ const deterministicRng = () => 0.5
 
 describe('createGriffinRidersEscapeState', () => {
   it('should create initial state with default difficulty', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     
     expect(state.status).toBe('playing')
     expect(state.difficulty).toBe('normal')
@@ -38,55 +38,55 @@ describe('createGriffinRidersEscapeState', () => {
   })
 
   it('should create state with specified difficulty', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary, { difficulty: 'hard' })
+    const state = createGriffinRidersEscapeState(mockSentences, { difficulty: 'hard' })
     expect(state.difficulty).toBe('hard')
   })
 
   it('should default to normal difficulty', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     expect(state.difficulty).toBe('normal')
   })
 
   it('should use deterministic rng when provided', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary, { rng: deterministicRng })
+    const state = createGriffinRidersEscapeState(mockSentences, { rng: deterministicRng })
     expect(state.currentSentence).toBeDefined()
     expect(state.words).toEqual(state.currentSentence.term.split(' '))
   })
 
-  it('should throw error for empty vocabulary', () => {
-    expect(() => createGriffinRidersEscapeState([])).toThrow('Vocabulary cannot be empty')
+  it('should throw error for empty sentences', () => {
+    expect(() => createGriffinRidersEscapeState([])).toThrow('Sentences cannot be empty')
   })
 })
 
 describe('switchLane', () => {
   it('should move player left from center', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const next = switchLane(state, 'left')
     expect(next.playerLane).toBe('left')
   })
 
   it('should move player right from center', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const next = switchLane(state, 'right')
     expect(next.playerLane).toBe('right')
   })
 
   it('should not move left from leftmost lane', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const leftState = switchLane(state, 'left')
     const next = switchLane(leftState, 'left')
     expect(next.playerLane).toBe('left')
   })
 
   it('should not move right from rightmost lane', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const rightState = switchLane(state, 'right')
     const next = switchLane(rightState, 'right')
     expect(next.playerLane).toBe('right')
   })
 
   it('should not change state when not playing', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const defeatedState = { ...state, status: 'defeat' as const }
     const next = switchLane(defeatedState, 'left')
     expect(next.playerLane).toBe('center')
@@ -95,7 +95,7 @@ describe('switchLane', () => {
 
 describe('spawnWave', () => {
   it('should spawn obstacle wave', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary, { difficulty: 'hard' })
+    const state = createGriffinRidersEscapeState(mockSentences, { difficulty: 'hard' })
     const next = spawnWave(state, () => 0.1) // Low rng to trigger obstacle
     
     expect(next.objects.length).toBeGreaterThan(0)
@@ -103,7 +103,7 @@ describe('spawnWave', () => {
   })
 
   it('should spawn gate wave with correct word', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const next = spawnWave(state, deterministicRng)
     
     expect(next.objects.length).toBe(3) // 3 lanes
@@ -113,7 +113,7 @@ describe('spawnWave', () => {
   })
 
   it('should not spawn when not playing', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const defeatedState = { ...state, status: 'defeat' as const }
     const next = spawnWave(defeatedState)
     expect(next.objects.length).toBe(0)
@@ -122,27 +122,27 @@ describe('spawnWave', () => {
 
 describe('tickGriffinRidersEscape', () => {
   it('should move objects toward player', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const stateWithObjects = spawnWave(state, deterministicRng)
     const initialZ = stateWithObjects.objects[0].z
     
-    const next = tickGriffinRidersEscape(stateWithObjects, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithObjects, mockSentences, 16)
     expect(next.objects[0].z).toBeLessThan(initialZ)
   })
 
   it('should remove objects that pass behind player', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const stateWithObjects = {
       ...state,
       objects: [{ id: '1', z: -15, lane: 'center' as Lane, type: 'gate' as const, word: 'test', orderIndex: 0 }]
     }
     
-    const next = tickGriffinRidersEscape(stateWithObjects, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithObjects, mockSentences, 16)
     expect(next.objects.length).toBe(0)
   })
 
   it('should detect collision with correct gate', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const targetWord = state.words[state.targetIndex]
     const stateWithObjects = {
       ...state,
@@ -156,7 +156,7 @@ describe('tickGriffinRidersEscape', () => {
       }]
     }
     
-    const next = tickGriffinRidersEscape(stateWithObjects, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithObjects, mockSentences, 16)
     expect(next.score).toBeGreaterThan(0)
     expect(next.correctAnswers).toBe(1)
     expect(next.targetIndex).toBe(1)
@@ -164,7 +164,7 @@ describe('tickGriffinRidersEscape', () => {
   })
 
   it('should detect collision with wrong gate and reduce lives', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const stateWithObjects = {
       ...state,
       objects: [{ 
@@ -177,14 +177,14 @@ describe('tickGriffinRidersEscape', () => {
       }]
     }
     
-    const next = tickGriffinRidersEscape(stateWithObjects, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithObjects, mockSentences, 16)
     expect(next.lives).toBe(2)
     expect(next.combo).toBe(0)
     expect(next.totalAttempts).toBe(1)
   })
 
   it('should detect collision with obstacle and reduce lives', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const stateWithObjects = {
       ...state,
       objects: [{ 
@@ -195,14 +195,14 @@ describe('tickGriffinRidersEscape', () => {
       }]
     }
     
-    const next = tickGriffinRidersEscape(stateWithObjects, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithObjects, mockSentences, 16)
     expect(next.lives).toBe(2)
     expect(next.combo).toBe(0)
     expect(next.totalAttempts).toBe(1)
   })
 
   it('should trigger defeat when lives reach zero', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const stateWithObjects = {
       ...state,
       lives: 1,
@@ -214,13 +214,13 @@ describe('tickGriffinRidersEscape', () => {
       }]
     }
     
-    const next = tickGriffinRidersEscape(stateWithObjects, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithObjects, mockSentences, 16)
     expect(next.status).toBe('defeat')
     expect(next.lives).toBe(0)
   })
 
   it('should trigger victory when all words collected', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const lastIndex = state.words.length - 1
     const stateWithObjects = {
       ...state,
@@ -235,38 +235,38 @@ describe('tickGriffinRidersEscape', () => {
       }]
     }
     
-    const next = tickGriffinRidersEscape(stateWithObjects, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithObjects, mockSentences, 16)
     expect(next.status).toBe('victory')
     expect(next.sentencesCompleted).toBe(1)
   })
 
   it('should spawn new wave when spawn timer exceeds interval', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const stateWithTimer = {
       ...state,
       spawnTimer: 2500 // Exceeds default spawnInterval of 2000
     }
     
-    const next = tickGriffinRidersEscape(stateWithTimer, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithTimer, mockSentences, 16)
     expect(next.objects.length).toBeGreaterThan(0)
     expect(next.spawnTimer).toBe(0)
   })
 
   it('should not process when not playing', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const defeatedState = { ...state, status: 'defeat' as const }
-    const next = tickGriffinRidersEscape(defeatedState, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(defeatedState, mockSentences, 16)
     expect(next).toEqual(defeatedState)
   })
 
   it('should increment gameTime', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
-    const next = tickGriffinRidersEscape(state, mockVocabulary, 16)
+    const state = createGriffinRidersEscapeState(mockSentences)
+    const next = tickGriffinRidersEscape(state, mockSentences, 16)
     expect(next.gameTime).toBe(16)
   })
 
   it('should apply combo multiplier', () => {
-    const state = createGriffinRidersEscapeState(mockVocabulary)
+    const state = createGriffinRidersEscapeState(mockSentences)
     const targetWord = state.words[state.targetIndex]
     const stateWithCombo = {
       ...state,
@@ -281,7 +281,7 @@ describe('tickGriffinRidersEscape', () => {
       }]
     }
     
-    const next = tickGriffinRidersEscape(stateWithCombo, mockVocabulary, 16)
+    const next = tickGriffinRidersEscape(stateWithCombo, mockSentences, 16)
     expect(next.score).toBe(10 + 2 * 2) // 10 + combo * 2
   })
 })

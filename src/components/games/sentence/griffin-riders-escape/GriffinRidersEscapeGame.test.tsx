@@ -64,7 +64,7 @@ jest.mock("@/hooks/useBackgroundMusic", () => ({
   useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
 }));
 
-const mockVocabulary = [
+const mockSentences = [
   { term: "The cat sits", translation: "แมวนั่ง" },
   { term: "Dog runs fast", translation: "หมาวิ่งเร็ว" },
 ];
@@ -76,13 +76,13 @@ describe("GriffinRidersEscapeGame", () => {
   });
 
   it("renders the start screen initially", () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     expect(screen.getByText(/Griffin Rider's Escape/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Start Game/i })).toBeInTheDocument();
   });
 
   it("transitions to playing phase when start is clicked", async () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
     
@@ -91,7 +91,7 @@ describe("GriffinRidersEscapeGame", () => {
 
   it("calls onComplete when game ends", async () => {
     const onComplete = jest.fn();
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} onComplete={onComplete} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} onComplete={onComplete} />);
     
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
@@ -101,7 +101,7 @@ describe("GriffinRidersEscapeGame", () => {
   });
 
   it("enters fullscreen when game starts", async () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
     
@@ -110,7 +110,7 @@ describe("GriffinRidersEscapeGame", () => {
   });
 
   it("exits fullscreen when game ends", async () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
     
@@ -119,7 +119,7 @@ describe("GriffinRidersEscapeGame", () => {
   });
 
   it("displays score with minimum text size", async () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
     
@@ -127,7 +127,7 @@ describe("GriffinRidersEscapeGame", () => {
   });
 
   it("displays translation with minimum text size", async () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
     
@@ -135,7 +135,7 @@ describe("GriffinRidersEscapeGame", () => {
   });
 
   it("renders GameEndScreen with gameId and gameName", async () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
@@ -144,7 +144,7 @@ describe("GriffinRidersEscapeGame", () => {
   });
 
   it("uses medium difficulty by default", async () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
     
@@ -152,7 +152,7 @@ describe("GriffinRidersEscapeGame", () => {
   });
 
   it("schedules multiple gameplay ticks via requestAnimationFrame", async () => {
-    render(<GriffinRidersEscapeGame vocabulary={mockVocabulary} />);
+    render(<GriffinRidersEscapeGame sentences={mockSentences} />);
     const startButton = screen.getByRole("button", { name: /Start Game/i });
     fireEvent.click(startButton);
     
