@@ -1,5 +1,12 @@
 # Lessons Learned
 
+## Track: Three-Game Asset Rollout (2026-05-07)
+- Result: All 5 phases complete. 23 assets generated, 4 game components wired, shared loadSprite helper extracted.
+- Approach: Generate images with mmx, convert JPG→PNG, stitch into 3x3 sheets with PIL, wire with KonvaImage + primitive fallback.
+- Key insight: mmx outputs JPG without transparency; convert to PNG and use uniform 3x3 sheets (same frame repeated) for consistent format.
+- Key insight: Extract shared helpers early when duplicate code appears across 3+ files — loadSprite now used by 4 games.
+- Build succeeds, lint clean (0 errors), dev server verified.
+
 ## Track: VocabularyItem vs SentenceItem Naming Consistency (2026-05-06)
 - Result: All 3 games refactored (Griffin Riders Escape, Village Guardian, Gryphon Patrol)
 - Approach: Define local SentenceItem type in each game lib file, replace VocabularyItem imports

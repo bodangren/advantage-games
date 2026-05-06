@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Stage, Layer, Rect, Circle, Text, Group, Image as KonvaImage } from 'react-konva'
-import { withBasePath } from '@/lib/basePath'
+import { loadSprite } from '@/lib/games/loadSprite'
 import {
   createLabyrinthGoblinKingState,
   tickLabyrinthGoblinKing,
@@ -62,15 +62,6 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
   } | null>(null)
 
   const [animFrame, setAnimFrame] = useState(0)
-
-  function loadSprite(src: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.src = withBasePath(src)
-      img.onload = () => resolve(img)
-      img.onerror = reject
-    })
-  }
 
   useEffect(() => {
     const load = async () => {

@@ -25,21 +25,12 @@ import { VirtualDPad } from '@/components/ui/VirtualDPad'
 import { GameEndScreen } from '@/components/games/game/GameEndScreen'
 import { GameStartScreen } from '@/components/games/game/GameStartScreen'
 import { Shield, Sword, Users, AlertTriangle } from 'lucide-react'
-import { withBasePath } from '@/lib/basePath'
+import { loadSprite } from '@/lib/games/loadSprite'
 
 const SPRITE_SIZE = {
   player: 48,
   prisoner: 40,
   slime: 48,
-}
-
-function loadSprite(src: string): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    img.src = withBasePath(src)
-    img.onload = () => resolve(img)
-    img.onerror = reject
-  })
 }
 
 export type DungeonLiberatorGameResult = {

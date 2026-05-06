@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Stage, Layer, Rect, Text, Group, Circle, Line, Image as KonvaImage } from 'react-konva';
-import { withBasePath } from '@/lib/basePath';
+import { loadSprite } from '@/lib/games/loadSprite';
 import {
   createInitialGryphonPatrolState, 
   tickGryphonPatrol, 
@@ -53,15 +53,6 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ sentences, diffic
     orb: HTMLImageElement
     bolt: HTMLImageElement
   } | null>(null)
-
-  function loadSprite(src: string): Promise<HTMLImageElement> {
-    return new Promise((resolve, reject) => {
-      const img = new Image()
-      img.src = withBasePath(src)
-      img.onload = () => resolve(img)
-      img.onerror = reject
-    })
-  }
 
   useEffect(() => {
     const load = async () => {

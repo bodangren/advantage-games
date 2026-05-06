@@ -680,12 +680,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: Three-Game Asset Rollout**
+- [x] **Track: Three-Game Asset Rollout**
 *Link: [./measure/tracks/three_game_asset_rollout_20260421/](./measure/tracks/three_game_asset_rollout_20260421/)*
 *Description: Generate, review, and wire production image assets for Labyrinth of the Goblin King, The Haunted Library, and Gryphon Patrol.*
 *Priority: High*
 *Type: Feature*
-*Status: In Progress - Phase 1: Asset Brief complete; proceeding to asset generation*
+*Status: ✅ COMPLETE - All 5 phases finished. 23 assets generated, 4 game components wired, shared loadSprite helper extracted.*
 
 ---
 
