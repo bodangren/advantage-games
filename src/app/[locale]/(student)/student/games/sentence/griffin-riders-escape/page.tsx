@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import type { SentenceItem } from '@/components/games/sentence/griffin-riders-escape/GriffinRidersEscapeGame'
+import type { SentenceItem } from '@/lib/games/griffinRidersEscape'
 import { useCurrentLocale, useScopedI18n } from '@/locales/client'
 import { useSession } from '@/hooks/useSession'
 

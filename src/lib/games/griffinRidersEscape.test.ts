@@ -4,7 +4,6 @@ import {
   switchLane,
   spawnWave,
   calculateXP,
-  type GriffinRiderState,
   type Lane,
 } from './griffinRidersEscape'
 import type { SentenceItem } from './griffinRidersEscape'

@@ -30,15 +30,15 @@ describe('Music Catalog Integration', () => {
 
   it('has non-placeholder assets for playable games', () => {
     const placeholderPath = path.join(musicDir, 'placeholder.mp3')
-    const placeholderStats = fs.statSync(placeholderPath)
+    const placeholderSize = fs.statSync(placeholderPath).size
     
     playableGameIds.forEach(gameId => {
       const musicPath = path.join(musicDir, `${gameId}.mp3`)
       const stats = fs.statSync(musicPath)
       
       // Each playable game should have a unique asset (not just a copy of placeholder)
-      // We check that the file exists and has content
       expect(stats.size).toBeGreaterThan(0)
+      expect(stats.size).not.toBe(placeholderSize)
     })
   })
 
