@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { VocabularyItem } from "@/store/useGameStore";
+import type { SentenceItem } from "@/components/games/sentence/gryphon-patrol/GryphonPatrolGame";
 import { Button } from "@/components/ui/button";
 import {
   ChevronLeft,
@@ -43,7 +43,7 @@ type WarningStatus = {
 };
 
 export default function GryphonPatrolPage() {
-  const [vocabList, setVocabList] = useState<VocabularyItem[]>([]);
+  const [sentences, setSentences] = useState<SentenceItem[]>([]);
   const [difficulty, setDifficulty] = useState<Difficulty>("medium");
   const [activeTab, setActiveTab] = useState<"game" | "rankings">("game");
   const [rankings, setRankings] = useState<Record<string, RankingEntry[]>>({});
@@ -80,7 +80,7 @@ export default function GryphonPatrolPage() {
         }
 
         if (data.sentences) {
-          setVocabList(data.sentences);
+          setSentences(data.sentences);
         }
       } catch (error) {
         console.error("Failed to load sentences:", error);
@@ -296,7 +296,7 @@ export default function GryphonPatrolPage() {
             <div className="flex-1 h-full w-full bg-neutral-900 relative">
               <div className="absolute inset-0">
                 <GryphonPatrolGame
-                  vocabList={vocabList}
+                  sentences={sentences}
                   difficulty={difficulty}
                   onComplete={handleComplete}
                 />

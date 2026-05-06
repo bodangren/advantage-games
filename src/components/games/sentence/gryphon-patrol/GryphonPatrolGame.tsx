@@ -11,7 +11,10 @@ import {
   calculateXP,
   GameState 
 } from '@/lib/games/gryphonPatrol';
-import { VocabularyItem } from '@/store/useGameStore';
+export type SentenceItem = {
+  term: string;
+  translation: string;
+};
 import { useDirectionalInput } from '@/hooks/useDirectionalInput';
 import { useGameFullscreen } from '@/hooks/useGameFullscreen';
 import { useAccessibilitySettings } from '@/hooks/useAccessibilitySettings';
@@ -21,14 +24,14 @@ import { GameEndScreen } from '@/components/games/game/GameEndScreen';
 import { Bird, Shield, Target } from 'lucide-react';
 
 export interface GryphonPatrolGameProps {
-  vocabList: VocabularyItem[];
+  sentences: SentenceItem[];
   difficulty: string;
   onComplete: (results: { xp: number; accuracy: number; difficulty: string; score: number }) => void;
 }
 
-const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, difficulty, onComplete }) => {
+const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ sentences, difficulty, onComplete }) => {
   const [gameState, setGameState] = useState<GameState>(() => 
-    createInitialGryphonPatrolState(vocabList[0]?.term?.split(' ') || [])
+    createInitialGryphonPatrolState(sentences[0]?.term?.split(' ') || [])
   );
   
   const [dimensions, setDimensions] = useState({ width: 390, height: 844 });
@@ -125,7 +128,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
   }, [gameState.status, gameState.xp, gameState.score, gameState.collectedWords.length, gameState.sentence.length, gameState.player.hp, gameState.player.maxHp, gameState.time, difficulty, onComplete]);
 
   const handleStart = () => {
-    const initialState = createInitialGryphonPatrolState(vocabList[0]?.term?.split(' ') || []);
+    const initialState = createInitialGryphonPatrolState(sentences[0]?.term?.split(' ') || []);
     const withEnemies = spawnGryphonPatrolEnemies(initialState);
     setGameState({ ...withEnemies, status: 'playing' });
     lastFrameRef.current = 0;
@@ -141,7 +144,7 @@ const GryphonPatrolGame: React.FC<GryphonPatrolGameProps> = ({ vocabList, diffic
           gameTitle="Gryphon Patrol"
           gameSubtitle="Patrol the skies and hunt down the sentence!"
           icon={Bird}
-          vocabulary={vocabList}
+          vocabulary={sentences}
           instructions={[
             { step: 1, text: "Fly using Arrow Keys or WASD", icon: Bird },
             { step: 2, text: "Shoot using Space to reveal words from enemies", icon: Shield },

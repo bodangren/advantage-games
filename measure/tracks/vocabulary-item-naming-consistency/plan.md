@@ -10,13 +10,13 @@
 - [x] Task: Commit changes.
 
 ## Phase 2: Village Guardian
-- [ ] Task: Read current villageGuardian.ts and identify all VocabularyItem usages.
-- [ ] Task: Replace VocabularyItem with SentenceItem.
-- [ ] Task: Rename variables: vocabulary → sentences where semantically correct.
-- [ ] Task: Update villageGuardian.test.ts to use SentenceItem.
-- [ ] Task: Update VillageGuardianGame.tsx component if it references the type.
-- [ ] Task: Run tests and verify coverage.
-- [ ] Task: Commit changes.
+- [x] Task: Read current villageGuardian.ts and identify all VocabularyItem usages.
+- [x] Task: Replace VocabularyItem with SentenceItem.
+- [x] Task: Rename variables: vocabulary → sentences where semantically correct.
+- [x] Task: Update villageGuardian.test.ts to use SentenceItem.
+- [x] Task: Update VillageGuardianGame.tsx component if it references the type.
+- [x] Task: Run tests and verify coverage.
+- [x] Task: Commit changes.
 
 ## Phase 3: Gryphon Patrol
 - [ ] Task: Read current gryphonPatrol.ts to understand current string[] sentence approach.

@@ -53,7 +53,7 @@ jest.mock("@/hooks/useBackgroundMusic", () => ({
   useBackgroundMusic: () => ({ start: jest.fn(), stop: jest.fn(), pause: jest.fn(), isPlaying: false }),
 }));
 
-const mockVocabulary = [
+const mockSentences = [
   { term: "The brave gryphon flies", translation: "กริฟฟอนผู้กล้าหาญบิน" },
   { term: "Watch out for dragons", translation: "ระวังมังกร" },
 ];
@@ -66,13 +66,13 @@ describe("GryphonPatrolGame", () => {
   });
 
   it("renders the start screen initially", () => {
-    render(<GryphonPatrolGame vocabList={mockVocabulary} difficulty="medium" onComplete={mockOnComplete} />);
+    render(<GryphonPatrolGame sentences={mockSentences} difficulty="medium" onComplete={mockOnComplete} />);
     expect(screen.getByText(/Gryphon Patrol/i)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /START PATROL/i })).toBeInTheDocument();
   });
 
   it("transitions to playing phase when start is clicked", async () => {
-    render(<GryphonPatrolGame vocabList={mockVocabulary} difficulty="medium" onComplete={mockOnComplete} />);
+    render(<GryphonPatrolGame sentences={mockSentences} difficulty="medium" onComplete={mockOnComplete} />);
     const startButton = screen.getByRole("button", { name: /START PATROL/i });
     fireEvent.click(startButton);
     
@@ -80,7 +80,7 @@ describe("GryphonPatrolGame", () => {
   });
 
   it("enters fullscreen when game starts", async () => {
-    render(<GryphonPatrolGame vocabList={mockVocabulary} difficulty="medium" onComplete={mockOnComplete} />);
+    render(<GryphonPatrolGame sentences={mockSentences} difficulty="medium" onComplete={mockOnComplete} />);
     const startButton = screen.getByRole("button", { name: /START PATROL/i });
     fireEvent.click(startButton);
     
@@ -89,7 +89,7 @@ describe("GryphonPatrolGame", () => {
   });
 
   it("exits fullscreen when game ends", async () => {
-    render(<GryphonPatrolGame vocabList={mockVocabulary} difficulty="medium" onComplete={mockOnComplete} />);
+    render(<GryphonPatrolGame sentences={mockSentences} difficulty="medium" onComplete={mockOnComplete} />);
     const startButton = screen.getByRole("button", { name: /START PATROL/i });
     fireEvent.click(startButton);
     
@@ -98,7 +98,7 @@ describe("GryphonPatrolGame", () => {
   });
 
   it("uses requestAnimationFrame for game loop", async () => {
-    render(<GryphonPatrolGame vocabList={mockVocabulary} difficulty="medium" onComplete={mockOnComplete} />);
+    render(<GryphonPatrolGame sentences={mockSentences} difficulty="medium" onComplete={mockOnComplete} />);
     const startButton = screen.getByRole("button", { name: /START PATROL/i });
     fireEvent.click(startButton);
     
@@ -107,7 +107,7 @@ describe("GryphonPatrolGame", () => {
   });
 
   it("renders GameEndScreen on victory", async () => {
-    render(<GryphonPatrolGame vocabList={mockVocabulary} difficulty="medium" onComplete={mockOnComplete} />);
+    render(<GryphonPatrolGame sentences={mockSentences} difficulty="medium" onComplete={mockOnComplete} />);
     
     const startButton = screen.getByRole("button", { name: /START PATROL/i });
     fireEvent.click(startButton);
@@ -116,7 +116,7 @@ describe("GryphonPatrolGame", () => {
   });
 
   it("renders GameEndScreen on defeat", async () => {
-    render(<GryphonPatrolGame vocabList={mockVocabulary} difficulty="medium" onComplete={mockOnComplete} />);
+    render(<GryphonPatrolGame sentences={mockSentences} difficulty="medium" onComplete={mockOnComplete} />);
     
     const startButton = screen.getByRole("button", { name: /START PATROL/i });
     fireEvent.click(startButton);
@@ -131,7 +131,7 @@ describe("GryphonPatrolGame", () => {
       return 2;
     });
 
-    render(<GryphonPatrolGame vocabList={mockVocabulary} difficulty="medium" onComplete={mockOnComplete} />);
+    render(<GryphonPatrolGame sentences={mockSentences} difficulty="medium" onComplete={mockOnComplete} />);
     const startButton = screen.getByRole("button", { name: /START PATROL/i });
     fireEvent.click(startButton);
     
