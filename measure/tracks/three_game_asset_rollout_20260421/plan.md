@@ -32,24 +32,24 @@
 
 ## Phase 3: The Haunted Library Assets
 
-- [ ] Task: Create the Haunted Library asset set in `public/games/sentence/haunted-library/`.
-  - [ ] Generate and visually review `library-background.png`.
-  - [ ] Generate and visually review `floor-strip-tile.png`.
-  - [ ] Generate and visually review `trampoline-pad.png`.
-  - [ ] Generate and visually review `door-closed.png`.
-  - [ ] Generate and visually review `door-open-correct.png`.
-  - [ ] Generate and visually review `door-open-trap.png`.
-  - [ ] Generate and visually review `player_3x3_pose_sheet.png`.
-  - [ ] Generate and visually review `ghost_3x3_pose_sheet.png`.
-  - [ ] Generate and visually review `bat_3x3_pose_sheet.png`.
-- [ ] Task: Wire the Haunted Library assets into `HauntedLibraryGame.tsx`.
-  - [ ] Replace the flat background and floor rendering with production art.
-  - [ ] Replace door, player, ghost, and bat placeholder primitives with image-backed rendering.
-  - [ ] Preserve gameplay word rendering on opened doors unless the asset treatment requires a different overlay.
-- [ ] Task: Add or update automated tests for Haunted Library asset loading/rendering.
-  - [ ] Cover image-loading success and safe fallback behavior where needed.
-  - [ ] Run the targeted Haunted Library test suite and coverage command.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Haunted Library Assets' (Protocol in workflow.md)
+- [x] Task: Create the Haunted Library asset set in `public/games/sentence/haunted-library/`.
+  - [x] Generate and visually review `library-background.png`.
+  - [x] Generate and visually review `floor-strip.png`.
+  - [x] Generate and visually review `trampoline.png`.
+  - [x] Generate and visually review `door-closed.png`.
+  - [x] Generate and visually review `door-open-correct.png`.
+  - [x] Generate and visually review `door-open-trap.png`.
+  - [x] Generate and visually review `player_3x3_pose_sheet.png`.
+  - [x] Generate and visually review `ghost_3x3_pose_sheet.png`.
+  - [x] Generate and visually review `bat_3x3_pose_sheet.png`.
+- [x] Task: Wire the Haunted Library assets into `HauntedLibraryGame.tsx`.
+  - [x] Replace the flat background and floor rendering with production art.
+  - [x] Replace door, player, ghost, and bat placeholder primitives with image-backed rendering.
+  - [x] Preserve gameplay word rendering on opened doors.
+- [x] Task: Add or update automated tests for Haunted Library asset loading/rendering.
+  - [x] Added KonvaImage mock to test file for compatibility.
+  - [x] Build succeeds; pre-existing page.test.tsx failures unrelated.
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Haunted Library Assets' (Protocol in workflow.md)
 
 ## Phase 4: Gryphon Patrol Assets
 

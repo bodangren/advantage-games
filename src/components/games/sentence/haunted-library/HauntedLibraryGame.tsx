@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { Stage, Layer, Rect, Text, Group, Circle } from 'react-konva'
+import { Stage, Layer, Rect, Text, Group, Circle, Image as KonvaImage } from 'react-konva'
+import { withBasePath } from '@/lib/basePath'
 import {
   createLibraryState,
   tickLibrary,
@@ -43,6 +44,46 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
   const { input, setVirtualInput } = useDirectionalInput()
   const lastFrameRef = useRef<number>(0)
   const rafRef = useRef<number>(0)
+
+  // Asset loading
+  const [assets, setAssets] = useState<{
+    background: HTMLImageElement
+    floor: HTMLImageElement
+    trampoline: HTMLImageElement
+    doorClosed: HTMLImageElement
+    doorCorrect: HTMLImageElement
+    doorTrap: HTMLImageElement
+    player: HTMLImageElement
+    ghost: HTMLImageElement
+    bat: HTMLImageElement
+  } | null>(null)
+
+  function loadSprite(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.src = withBasePath(src)
+      img.onload = () => resolve(img)
+      img.onerror = reject
+    })
+  }
+
+  useEffect(() => {
+    const load = async () => {
+      const [background, floor, trampoline, doorClosed, doorCorrect, doorTrap, player, ghost, bat] = await Promise.all([
+        loadSprite('/games/sentence/haunted-library/library-background.png'),
+        loadSprite('/games/sentence/haunted-library/floor-strip.png'),
+        loadSprite('/games/sentence/haunted-library/trampoline.png'),
+        loadSprite('/games/sentence/haunted-library/door-closed.png'),
+        loadSprite('/games/sentence/haunted-library/door-open-correct.png'),
+        loadSprite('/games/sentence/haunted-library/door-open-trap.png'),
+        loadSprite('/games/sentence/haunted-library/player_3x3_pose_sheet.png'),
+        loadSprite('/games/sentence/haunted-library/ghost_3x3_pose_sheet.png'),
+        loadSprite('/games/sentence/haunted-library/bat_3x3_pose_sheet.png'),
+      ])
+      setAssets({ background, floor, trampoline, doorClosed, doorCorrect, doorTrap, player, ghost, bat })
+    }
+    load()
+  }, [])
 
   const startGame = useCallback(() => {
     if (sentences.length > 0) {
@@ -176,74 +217,133 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
       <Stage width={GAME_WIDTH} height={GAME_HEIGHT}>
         <Layer>
           {/* Background */}
-          <Rect width={GAME_WIDTH} height={GAME_HEIGHT} fill="#1a1a2e" />
+          {assets?.background ? (
+            <KonvaImage
+              x={0} y={0}
+              width={GAME_WIDTH} height={GAME_HEIGHT}
+              image={assets.background}
+            />
+          ) : (
+            <Rect width={GAME_WIDTH} height={GAME_HEIGHT} fill="#1a1a2e" />
+          )}
           
           {/* Floors */}
           {gameState.floors.map((floor, i) => (
             <React.Fragment key={i}>
-              <Rect
-                x={0}
-                y={floor.y}
-                width={GAME_WIDTH}
-                height={floor.height}
-                fill="#4a4a4a"
-              />
+              {assets?.floor ? (
+                <KonvaImage
+                  x={0}
+                  y={floor.y}
+                  width={GAME_WIDTH}
+                  height={floor.height}
+                  image={assets.floor}
+                />
+              ) : (
+                <Rect
+                  x={0}
+                  y={floor.y}
+                  width={GAME_WIDTH}
+                  height={floor.height}
+                  fill="#4a4a4a"
+                />
+              )}
               {/* Trampolines at edges */}
-              <Rect
-                x={0}
-                y={floor.y - TRAMPOLINE_HEIGHT}
-                width={40}
-                height={TRAMPOLINE_HEIGHT}
-                fill="#ff4500"
-                cornerRadius={[4, 4, 0, 0]}
-              />
-              <Rect
-                x={GAME_WIDTH - 40}
-                y={floor.y - TRAMPOLINE_HEIGHT}
-                width={40}
-                height={TRAMPOLINE_HEIGHT}
-                fill="#ff4500"
-                cornerRadius={[4, 4, 0, 0]}
-              />
+              {assets?.trampoline ? (
+                <>
+                  <KonvaImage
+                    x={0}
+                    y={floor.y - TRAMPOLINE_HEIGHT}
+                    width={40}
+                    height={TRAMPOLINE_HEIGHT}
+                    image={assets.trampoline}
+                  />
+                  <KonvaImage
+                    x={GAME_WIDTH - 40}
+                    y={floor.y - TRAMPOLINE_HEIGHT}
+                    width={40}
+                    height={TRAMPOLINE_HEIGHT}
+                    image={assets.trampoline}
+                  />
+                </>
+              ) : (
+                <>
+                  <Rect
+                    x={0}
+                    y={floor.y - TRAMPOLINE_HEIGHT}
+                    width={40}
+                    height={TRAMPOLINE_HEIGHT}
+                    fill="#ff4500"
+                    cornerRadius={[4, 4, 0, 0]}
+                  />
+                  <Rect
+                    x={GAME_WIDTH - 40}
+                    y={floor.y - TRAMPOLINE_HEIGHT}
+                    width={40}
+                    height={TRAMPOLINE_HEIGHT}
+                    fill="#ff4500"
+                    cornerRadius={[4, 4, 0, 0]}
+                  />
+                </>
+              )}
             </React.Fragment>
           ))}
 
           {/* Doors */}
-          {gameState.doors.map((door) => (
-            <Group key={door.id} x={door.x} y={door.y}>
-              <Rect
-                width={60}
-                height={80}
-                fill={door.isOpen ? (door.isCorrect ? "#22c55e" : "#ef4444") : "#8b4513"}
-                stroke="#5d2e0a"
-                strokeWidth={2}
-                cornerRadius={2}
-              />
-              {door.isOpen && door.word && (
-                <Text
-                  text={door.word}
-                  fontSize={getEffectiveTextSize(16)}
-                  fontStyle="bold"
-                  fill="white"
-                  width={60}
-                  align="center"
-                  y={30}
-                />
-              )}
-            </Group>
-          ))}
+          {gameState.doors.map((door) => {
+            const doorImg = !door.isOpen ? assets?.doorClosed : door.isCorrect ? assets?.doorCorrect : assets?.doorTrap
+            return (
+              <Group key={door.id} x={door.x} y={door.y}>
+                {doorImg ? (
+                  <KonvaImage
+                    width={60}
+                    height={80}
+                    image={doorImg}
+                  />
+                ) : (
+                  <Rect
+                    width={60}
+                    height={80}
+                    fill={door.isOpen ? (door.isCorrect ? "#22c55e" : "#ef4444") : "#8b4513"}
+                    stroke="#5d2e0a"
+                    strokeWidth={2}
+                    cornerRadius={2}
+                  />
+                )}
+                {door.isOpen && door.word && (
+                  <Text
+                    text={door.word}
+                    fontSize={getEffectiveTextSize(16)}
+                    fontStyle="bold"
+                    fill="white"
+                    width={60}
+                    align="center"
+                    y={30}
+                  />
+                )}
+              </Group>
+            )
+          })}
 
           {/* Ghosts */}
           {gameState.ghosts.map((ghost) => (
             <Group key={ghost.id} x={ghost.x} y={ghost.y}>
-              <Circle
-                radius={24}
-                x={24}
-                y={24}
-                fill={ghost.state === 'stunned' ? "rgba(200, 200, 255, 0.4)" : "rgba(100, 150, 255, 0.6)"}
-                stroke={ghost.state === 'stunned' ? "#999" : "#fff"}
-                strokeWidth={1}
-              />
+              {assets?.ghost ? (
+                <KonvaImage
+                  width={48}
+                  height={48}
+                  image={assets.ghost}
+                  opacity={ghost.state === 'stunned' ? 0.5 : 0.8}
+                />
+              ) : (
+                <Circle
+                  radius={24}
+                  x={24}
+                  y={24}
+                  fill={ghost.state === 'stunned' ? "rgba(200, 200, 255, 0.4)" : "rgba(100, 150, 255, 0.6)"}
+                  stroke={ghost.state === 'stunned' ? "#999" : "#fff"}
+                  strokeWidth={1}
+                />
+              )}
               {ghost.state === 'stunned' && (
                 <Text
                   text="ZZZ"
@@ -258,28 +358,49 @@ export function HauntedLibraryGame({ sentences, onComplete }: HauntedLibraryGame
 
           {/* Bats */}
           {gameState.bats.map((bat) => (
-            <Rect
-              key={bat.id}
-              x={bat.x}
-              y={bat.y}
-              width={bat.width}
-              height={bat.height}
-              fill="#ef4444"
-              cornerRadius={16}
-            />
+            assets?.bat ? (
+              <KonvaImage
+                key={bat.id}
+                x={bat.x}
+                y={bat.y}
+                width={bat.width}
+                height={bat.height}
+                image={assets.bat}
+              />
+            ) : (
+              <Rect
+                key={bat.id}
+                x={bat.x}
+                y={bat.y}
+                width={bat.width}
+                height={bat.height}
+                fill="#ef4444"
+                cornerRadius={16}
+              />
+            )
           ))}
 
           {/* Player */}
-          <Rect
-            x={gameState.player.x}
-            y={gameState.player.y}
-            width={gameState.player.width}
-            height={gameState.player.height}
-            fill="#3b82f6"
-            cornerRadius={4}
-            stroke="#fff"
-            strokeWidth={2}
-          />
+          {assets?.player ? (
+            <KonvaImage
+              x={gameState.player.x}
+              y={gameState.player.y}
+              width={gameState.player.width}
+              height={gameState.player.height}
+              image={assets.player}
+            />
+          ) : (
+            <Rect
+              x={gameState.player.x}
+              y={gameState.player.y}
+              width={gameState.player.width}
+              height={gameState.player.height}
+              fill="#3b82f6"
+              cornerRadius={4}
+              stroke="#fff"
+              strokeWidth={2}
+            />
+          )}
         </Layer>
       </Stage>
 
