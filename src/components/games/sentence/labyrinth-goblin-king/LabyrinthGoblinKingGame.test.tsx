@@ -13,6 +13,7 @@ jest.mock("react-konva", () => ({
   Text: (props: Record<string, unknown>) => <div data-testid="konva-text" {...props} />,
   Circle: (props: Record<string, unknown>) => <div data-testid="konva-circle" {...props} />,
   Group: ({ children }: { children: React.ReactNode }) => <div data-testid="konva-group">{children}</div>,
+  Image: (props: Record<string, unknown>) => <div data-testid="konva-image" {...props} />,
 }));
 
 // Mock hooks

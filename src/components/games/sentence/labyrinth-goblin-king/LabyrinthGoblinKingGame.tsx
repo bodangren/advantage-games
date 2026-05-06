@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Stage, Layer, Rect, Circle, Text, Group } from 'react-konva'
+import { Stage, Layer, Rect, Circle, Text, Group, Image as KonvaImage } from 'react-konva'
+import { withBasePath } from '@/lib/basePath'
 import {
   createLabyrinthGoblinKingState,
   tickLabyrinthGoblinKing,
@@ -48,6 +49,54 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
   const rafRef = useRef<number>(0)
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  // Asset loading
+  const [assets, setAssets] = useState<{
+    floor: HTMLImageElement
+    wall: HTMLImageElement
+    orb: HTMLImageElement
+    player: HTMLImageElement
+    goblinScout: HTMLImageElement
+    goblinWarrior: HTMLImageElement
+    goblinElite: HTMLImageElement
+  } | null>(null)
+
+  const [animFrame, setAnimFrame] = useState(0)
+
+  function loadSprite(src: string): Promise<HTMLImageElement> {
+    return new Promise((resolve, reject) => {
+      const img = new Image()
+      img.src = withBasePath(src)
+      img.onload = () => resolve(img)
+      img.onerror = reject
+    })
+  }
+
+  useEffect(() => {
+    const load = async () => {
+      const [floor, wall, orb, player, goblinScout, goblinWarrior, goblinElite] = await Promise.all([
+        loadSprite('/games/sentence/labyrinth-goblin-king/maze-floor-tile.png'),
+        loadSprite('/games/sentence/labyrinth-goblin-king/maze-wall-tile.png'),
+        loadSprite('/games/sentence/labyrinth-goblin-king/word-orb.png'),
+        loadSprite('/games/sentence/labyrinth-goblin-king/paladin_3x3_pose_sheet.png'),
+        loadSprite('/games/sentence/labyrinth-goblin-king/goblin_scout_3x3_pose_sheet.png'),
+        loadSprite('/games/sentence/labyrinth-goblin-king/goblin_warrior_3x3_pose_sheet.png'),
+        loadSprite('/games/sentence/labyrinth-goblin-king/goblin_elite_3x3_pose_sheet.png'),
+      ])
+      setAssets({ floor, wall, orb, player, goblinScout, goblinWarrior, goblinElite })
+    }
+    load()
+  }, [])
+
+  // Animation frames
+  useEffect(() => {
+    if (gamePhase === 'playing') {
+      const interval = setInterval(() => {
+        setAnimFrame(f => (f + 1) % 3)
+      }, 200)
+      return () => clearInterval(interval)
+    }
+  }, [gamePhase])
 
   const resetGame = useCallback(() => {
     if (sentences.length > 0) {
@@ -259,14 +308,30 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
           >
             <Layer>
               <Group scale={{ x: scale, y: scale }} offsetX={0} offsetY={0}>
-                <Rect x={0} y={0} width={GAME_WIDTH} height={GAME_HEIGHT} fill="#1a1a2e" />
+                {assets?.floor ? (
+                  <KonvaImage
+                    x={0} y={0}
+                    width={GAME_WIDTH} height={GAME_HEIGHT}
+                    image={assets.floor}
+                  />
+                ) : (
+                  <Rect x={0} y={0} width={GAME_WIDTH} height={GAME_HEIGHT} fill="#1a1a2e" />
+                )}
 
                 {gameState.maze.map((row, rowIndex) =>
                   row.map((tile, colIndex) => {
                     const x = colIndex * LABYRINTH_CONFIG.tileSize
                     const y = rowIndex * LABYRINTH_CONFIG.tileSize
                     if (tile === 'wall') {
-                      return (
+                      return assets?.wall ? (
+                        <KonvaImage
+                          key={`${rowIndex}-${colIndex}`}
+                          x={x} y={y}
+                          width={LABYRINTH_CONFIG.tileSize}
+                          height={LABYRINTH_CONFIG.tileSize}
+                          image={assets.wall}
+                        />
+                      ) : (
                         <Rect
                           key={`${rowIndex}-${colIndex}`}
                           x={x}
@@ -279,16 +344,7 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
                         />
                       )
                     }
-                    return (
-                      <Rect
-                        key={`${rowIndex}-${colIndex}`}
-                        x={x}
-                        y={y}
-                        width={LABYRINTH_CONFIG.tileSize}
-                        height={LABYRINTH_CONFIG.tileSize}
-                        fill="#2a2a3a"
-                      />
-                    )
+                    return null
                   })
                 )}
 
@@ -297,13 +353,24 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
                   const isTarget = orb.orderIndex === gameState.targetIndex
                   return (
                     <Group key={orb.id}>
-                      <Circle
-                        x={orb.x}
-                        y={orb.y}
-                        radius={LABYRINTH_CONFIG.orbSize / 2}
-                        fill={isTarget ? '#ffd700' : '#4a90d9'}
-                        opacity={0.8}
-                      />
+                      {assets?.orb ? (
+                        <KonvaImage
+                          x={orb.x - LABYRINTH_CONFIG.orbSize / 2}
+                          y={orb.y - LABYRINTH_CONFIG.orbSize / 2}
+                          width={LABYRINTH_CONFIG.orbSize}
+                          height={LABYRINTH_CONFIG.orbSize}
+                          image={assets.orb}
+                          opacity={isTarget ? 1 : 0.7}
+                        />
+                      ) : (
+                        <Circle
+                          x={orb.x}
+                          y={orb.y}
+                          radius={LABYRINTH_CONFIG.orbSize / 2}
+                          fill={isTarget ? '#ffd700' : '#4a90d9'}
+                          opacity={0.8}
+                        />
+                      )}
                       <Text
                         x={orb.x - 30}
                         y={orb.y - 10}
@@ -317,23 +384,47 @@ export function LabyrinthGoblinKingGame({ sentences, onComplete }: LabyrinthGobl
                   )
                 })}
 
-                {gameState.goblins.filter(g => !g.eaten).map(goblin => (
-                  <Circle
-                    key={goblin.id}
-                    x={goblin.x}
-                    y={goblin.y}
-                    radius={LABYRINTH_CONFIG.goblinSize / 2}
-                    fill={goblin.fleeing ? '#4a8cd9' : '#4a8c4a'}
-                  />
-                ))}
+                {gameState.goblins.filter(g => !g.eaten).map(goblin => {
+                  const goblinImg = selectedGoblinType === 'warrior' ? assets?.goblinWarrior : selectedGoblinType === 'elite' ? assets?.goblinElite : assets?.goblinScout
+                  return goblinImg ? (
+                    <KonvaImage
+                      key={goblin.id}
+                      x={goblin.x - LABYRINTH_CONFIG.goblinSize / 2}
+                      y={goblin.y - LABYRINTH_CONFIG.goblinSize / 2}
+                      width={LABYRINTH_CONFIG.goblinSize}
+                      height={LABYRINTH_CONFIG.goblinSize}
+                      image={goblinImg}
+                      opacity={goblin.fleeing ? 0.6 : 1}
+                    />
+                  ) : (
+                    <Circle
+                      key={goblin.id}
+                      x={goblin.x}
+                      y={goblin.y}
+                      radius={LABYRINTH_CONFIG.goblinSize / 2}
+                      fill={goblin.fleeing ? '#4a8cd9' : '#4a8c4a'}
+                    />
+                  )
+                })}
 
-                <Circle
-                  x={gameState.player.x}
-                  y={gameState.player.y}
-                  radius={LABYRINTH_CONFIG.playerSize / 2}
-                  fill={gameState.player.heroicAura ? '#ffd700' : '#c0c0c0'}
-                  opacity={gameState.player.invulnerabilityTime > 0 ? 0.5 : 1}
-                />
+                {assets?.player ? (
+                  <KonvaImage
+                    x={gameState.player.x - LABYRINTH_CONFIG.playerSize / 2}
+                    y={gameState.player.y - LABYRINTH_CONFIG.playerSize / 2}
+                    width={LABYRINTH_CONFIG.playerSize}
+                    height={LABYRINTH_CONFIG.playerSize}
+                    image={assets.player}
+                    opacity={gameState.player.invulnerabilityTime > 0 ? 0.5 : 1}
+                  />
+                ) : (
+                  <Circle
+                    x={gameState.player.x}
+                    y={gameState.player.y}
+                    radius={LABYRINTH_CONFIG.playerSize / 2}
+                    fill={gameState.player.heroicAura ? '#ffd700' : '#c0c0c0'}
+                    opacity={gameState.player.invulnerabilityTime > 0 ? 0.5 : 1}
+                  />
+                )}
 
                 <Rect x={0} y={0} width={GAME_WIDTH} height={40} fill="rgba(0,0,0,0.8)" />
                 <Text
