@@ -4,12 +4,12 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [~] **Track: VocabularyItem vs SentenceItem Naming Consistency**
+- [x] **Track: VocabularyItem vs SentenceItem Naming Consistency**
 *Link: [./measure/tracks/vocabulary-item-naming-consistency/](./measure/tracks/vocabulary-item-naming-consistency/)*
 *Description: Fix semantic inconsistency where sentence games use VocabularyItem instead of SentenceItem.*
 *Priority: Medium*
 *Type: Chore*
-*Status: In Progress*
+*Status: COMPLETE*
 
 ---
 

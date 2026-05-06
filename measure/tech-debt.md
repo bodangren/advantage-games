@@ -4,7 +4,7 @@
 - fullscreen, accessibility, text sizes, calculateXP, difficulty naming, API factories, i18n/session, hook deps, unused imports, component tests, assets.
 
 ## Remaining
-- VocabularyItem[] vs SentenceItem[] naming consistency (Griffin Riders Escape, Gryphon Patrol, Village Guardian).
+- None
 
 ---
 

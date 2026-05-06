@@ -19,17 +19,17 @@
 - [x] Task: Commit changes.
 
 ## Phase 3: Gryphon Patrol
-- [ ] Task: Read current gryphonPatrol.ts to understand current string[] sentence approach.
-- [ ] Task: Decide whether to introduce SentenceItem typing or keep string[] (document decision).
-- [ ] Task: Implement chosen approach.
-- [ ] Task: Update gryphonPatrol.test.ts if needed.
-- [ ] Task: Update GryphonPatrolGame.tsx component if needed.
-- [ ] Task: Run tests and verify coverage.
-- [ ] Task: Commit changes.
+- [x] Task: Read current gryphonPatrol.ts to understand current string[] sentence approach.
+- [x] Task: Decide whether to introduce SentenceItem typing or keep string[] (document decision).
+- [x] Task: Implement chosen approach.
+- [x] Task: Update gryphonPatrol.test.ts if needed.
+- [x] Task: Update GryphonPatrolGame.tsx component if needed.
+- [x] Task: Run tests and verify coverage.
+- [x] Task: Commit changes.
 
 ## Phase 4: Verification & Finalize
-- [ ] Task: Run full test suite to confirm no regressions.
-- [ ] Task: Run lint on all affected files.
-- [ ] Task: Update tracks.md to mark this track complete.
-- [ ] Task: Update tech-debt.md to remove resolved item.
-- [ ] Task: Final commit and push.
+- [x] Task: Run full test suite to confirm no regressions.
+- [x] Task: Run lint on all affected files.
+- [x] Task: Update tracks.md to mark this track complete.
+- [x] Task: Update tech-debt.md to remove resolved item.
+- [x] Task: Final commit and push.

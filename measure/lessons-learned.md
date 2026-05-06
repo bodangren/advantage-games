@@ -1,5 +1,11 @@
 # Lessons Learned
 
+## Track: VocabularyItem vs SentenceItem Naming Consistency (2026-05-06)
+- Result: All 3 games refactored (Griffin Riders Escape, Village Guardian, Gryphon Patrol)
+- Approach: Define local SentenceItem type in each game lib file, replace VocabularyItem imports
+- Key insight: GameStartScreen is a shared component that expects `vocabulary` prop — keep that prop name when passing to shared components even if local data is renamed to `sentences`
+- No functional changes, all tests pass, lint clean
+
 ## Track: Shadow Gate Dungeon Compliance Audit (2026-04-26)
 - Result: 25/25 passing after fixes (13 at start, 12 failures)
 - Fixes: fullscreen, accessibility, text sizes, API factories, useSession/useScopedI18n, hook deps, component tests, asset dir
