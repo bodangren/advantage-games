@@ -2,11 +2,11 @@
 
 ## Phase 1: Data Model & Authentication
 
-- [~] Task: Define teacher/student data model types.
-  - [ ] Create `types/teacher-dashboard.ts` with `Teacher`, `Student`, `Class`, `Assignment`, `StudentProgress` types.
-  - [ ] Include role enum (`teacher`, `student`), enrollment codes, and COPPA-compliant student fields (no email, no last name for under-13).
-  - [ ] Write unit tests for type construction and validation.
-- [ ] Task: Implement authentication store and middleware.
+- [x] Task: Define teacher/student data model types. [cad0a0d]
+  - [x] Create `types/teacher-dashboard.ts` with `Teacher`, `Student`, `Class`, `Assignment`, `StudentProgress` types.
+  - [x] Include role enum (`teacher`, `student`), enrollment codes, and COPPA-compliant student fields (no email, no last name for under-13).
+  - [x] Write unit tests for type construction and validation.
+- [~] Task: Implement authentication store and middleware.
   - [ ] Create `stores/authStore.ts` with Zustand: login, logout, signup, getCurrentUser.
   - [ ] JWT generation/validation utilities in `lib/auth/jwt.ts`.
   - [ ] Next.js middleware for role-based route protection (`/teacher/*` requires teacher role).
