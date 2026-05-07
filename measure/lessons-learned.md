@@ -34,4 +34,11 @@
 - Coverage: 100% statements, 84.61% branches for useBackgroundMusic hook.
 - **Key Learning:** Automated verification of asset-to-code mapping catches integration gaps that manual audits miss.
 
+## Track: Teacher Dashboard - Phase 1 (2026-05-07)
+- Result: Data model types, auth store (Zustand), JWT utilities, login/signup pages with tests
+- Removed Next.js middleware after discovering static export incompatibility
+- Coverage: 96-100% on all new code
+- **Key Learning:** Check `output: export` in next.config.ts before implementing server-side features like middleware
+- **Key Learning:** Use `localStorage` for auth persistence in static export contexts; implement client-side route guards
+
 **Previous audits (condensed):** Rune Forge, Spellweaver's Run, Village Guardian, Dungeon Liberator, Potion Rush, Rune Match, Castle Defense, Alchemists Synthesis, Wizard vs Zombie, RPG Battle, Magic Defense, Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.

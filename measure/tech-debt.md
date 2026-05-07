@@ -41,3 +41,7 @@
 ## Rune Forge Chamber Compliance Audit (2026-04-26)
 - Resolved: accessibility labels, test mocks, lint
 - Remaining: None
+
+## Teacher Dashboard Phase 1 (2026-05-07)
+- Removed Next.js middleware (incompatible with static export output)
+- Client-side route protection needed for /teacher/* routes in future phase
