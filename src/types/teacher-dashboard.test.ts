@@ -5,9 +5,6 @@ import {
   type Assignment,
   type StudentProgress,
   type GameSession,
-  type UserRole,
-  type ClassStatus,
-  type AssignmentStatus,
   isCoppaCompliant,
   generateEnrollmentCode,
 } from './teacher-dashboard';

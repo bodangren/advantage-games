@@ -21,10 +21,6 @@ export default function TeacherSignupPage() {
     e.preventDefault();
     clearError();
 
-    if (password !== confirmPassword) {
-      // This would be caught by the store, but we can pre-validate
-    }
-
     await signup(email, password, displayName, 'teacher');
     
     const state = useAuthStore.getState();

@@ -45,3 +45,4 @@
 ## Teacher Dashboard Phase 1 (2026-05-07)
 - Removed Next.js middleware (incompatible with static export output)
 - Client-side route protection needed for /teacher/* routes in future phase
+- Signup page has confirmPassword field but no server-side validation — add to store in Phase 2
