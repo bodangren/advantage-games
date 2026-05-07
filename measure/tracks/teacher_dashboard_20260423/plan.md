@@ -2,7 +2,7 @@
 
 ## Phase 1: Data Model & Authentication
 
-- [ ] Task: Define teacher/student data model types.
+- [~] Task: Define teacher/student data model types.
   - [ ] Create `types/teacher-dashboard.ts` with `Teacher`, `Student`, `Class`, `Assignment`, `StudentProgress` types.
   - [ ] Include role enum (`teacher`, `student`), enrollment codes, and COPPA-compliant student fields (no email, no last name for under-13).
   - [ ] Write unit tests for type construction and validation.
