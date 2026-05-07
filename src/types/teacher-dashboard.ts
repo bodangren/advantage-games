@@ -80,7 +80,7 @@ export function isCoppaCompliant(student: Student): boolean {
   if (!student.dateOfBirth) return false;
   const age = calculateAge(student.dateOfBirth);
   if (age < 13) {
-    return !student.lastName && !student.email;
+    return !student.lastName && !student.parentEmail;
   }
   return true;
 }
