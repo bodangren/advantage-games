@@ -22,12 +22,12 @@
 
 ## Phase 2: Class Management
 
-- [ ] Task: Implement class CRUD store.
-  - [ ] Create `stores/classStore.ts` with Zustand: createClass, updateClass, archiveClass, getClass, listClasses.
-  - [ ] Enrollment code generation: 8-char alphanumeric, collision-checked.
-  - [ ] Soft delete with 30-day recovery window.
-  - [ ] Write unit tests for all CRUD operations and code generation.
-- [ ] Task: Build class management pages.
+- [x] Task: Implement class CRUD store. [a8abc36]
+  - [x] Create `stores/classStore.ts` with Zustand: createClass, updateClass, archiveClass, getClass, listClasses.
+  - [x] Enrollment code generation: 8-char alphanumeric, collision-checked.
+  - [x] Soft delete with 30-day recovery window.
+  - [x] Write unit tests for all CRUD operations and code generation.
+- [~] Task: Build class management pages.
   - [ ] Create `app/teacher/dashboard/page.tsx` — list of teacher's classes.
   - [ ] Create `app/teacher/class/[id]/page.tsx` — class detail with roster.
   - [ ] Create `app/teacher/class/new/page.tsx` — create class form.
