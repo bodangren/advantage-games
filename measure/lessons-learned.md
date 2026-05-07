@@ -41,4 +41,11 @@
 - **Key Learning:** Check `output: export` in next.config.ts before implementing server-side features like middleware
 - **Key Learning:** Use `localStorage` for auth persistence in static export contexts; implement client-side route guards
 
+## Track: Teacher Dashboard - Phase 2 (2026-05-08)
+- Result: classStore with full CRUD, enrollment codes, soft delete; dashboard/new/detail pages; student enrollment flow with QR codes
+- Coverage: 58 tests passing (21 classStore + 37 component tests)
+- **Key Learning:** Next.js 15 dynamic route params are now Promises — destructure with `params.then(({ id }) => ...)` or React.use()
+- **Key Learning:** `qrcode.react` and similar DOM-dependent libraries need `next/dynamic` with `{ ssr: false }` in static export builds
+- **Key Learning:** `generateStaticParams()` is required for ALL dynamic routes with `output: export`; empty array `[]` won't work, need at least one placeholder
+
 **Previous audits (condensed):** Rune Forge, Spellweaver's Run, Village Guardian, Dungeon Liberator, Potion Rush, Rune Match, Castle Defense, Alchemists Synthesis, Wizard vs Zombie, RPG Battle, Magic Defense, Archer's Revenge, Griffin Sky-Joust, Realm Carver, Paladin's Twin-Soul, Dragon Rider, Storm Castle Tower, Abyssal Well, Labyrinth Goblin King, Gryphon Patrol, Griffin Riders Escape.

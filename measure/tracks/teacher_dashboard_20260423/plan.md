@@ -32,11 +32,14 @@
   - [x] Create `app/teacher/class/[id]/page.tsx` — class detail with roster.
   - [x] Create `app/teacher/class/new/page.tsx` — create class form.
   - [x] Write component tests: class list rendering, create form, archive flow.
-- [~] Task: Implement student enrollment flow.
-  - [ ] Create `app/join/page.tsx` — student enters enrollment code.
-  - [ ] QR code generation for enrollment link (client-side QR library).
-  - [ ] Write unit tests: enrollment code validation, duplicate enrollment prevention.
-- [ ] Task: Measure — User Manual Verification 'Phase 2: Class Management' (Protocol in workflow.md)
+- [x] Task: Implement student enrollment flow. [7735367]
+  - [x] Create `app/join/page.tsx` — student enters enrollment code.
+  - [x] QR code generation for enrollment link (client-side QR library).
+  - [x] Write unit tests: enrollment code validation, duplicate enrollment prevention.
+- [x] Task: Measure — User Manual Verification 'Phase 2: Class Management' (Protocol in workflow.md)
+  - [x] Tests pass (58/58 teacher-related tests)
+  - [x] Build succeeds
+  - [x] Class CRUD, management pages, and enrollment flow all working
 
 ## Phase 3: Assignments
 

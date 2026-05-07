@@ -42,7 +42,8 @@
 - Resolved: accessibility labels, test mocks, lint
 - Remaining: None
 
-## Teacher Dashboard Phase 1 (2026-05-07)
-- Removed Next.js middleware (incompatible with static export output)
-- Client-side route protection needed for /teacher/* routes in future phase
-- Signup page has confirmPassword field but no server-side validation — add to store in Phase 2
+## Teacher Dashboard Phase 2 (2026-05-08)
+- classStore complete with CRUD operations, enrollment codes, soft delete
+- QR code generation works with dynamic import (ssr: false) for qrcode.react
+- Next.js 15 dynamic routes require Promise-based params + generateStaticParams for static export
+- confirmPassword validation still needed in authStore (deferred to Phase 3)
