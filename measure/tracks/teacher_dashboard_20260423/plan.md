@@ -1,6 +1,6 @@
 # Implementation Plan: Teacher Dashboard
 
-## Phase 1: Data Model & Authentication
+## Phase 1: Data Model & Authentication [checkpoint: 9355a47]
 
 - [x] Task: Define teacher/student data model types. [cad0a0d]
   - [x] Create `types/teacher-dashboard.ts` with `Teacher`, `Student`, `Class`, `Assignment`, `StudentProgress` types.
@@ -11,7 +11,7 @@
   - [x] JWT generation/validation utilities in `lib/auth/jwt.ts`.
   - [x] Next.js middleware for role-based route protection (`/teacher/*` requires teacher role).
   - [x] Write unit tests: login flow, token validation, role check, expired token handling.
-- [~] Task: Implement teacher sign-up and login pages.
+- [x] Task: Implement teacher sign-up and login pages. [9355a47]
   - [ ] Create `app/teacher/login/page.tsx` and `app/teacher/signup/page.tsx`.
   - [ ] Email verification stub (logs verification link to console for MVP).
   - [ ] Write component tests: form validation, submit flow, error states.
