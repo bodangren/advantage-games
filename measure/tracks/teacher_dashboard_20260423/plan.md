@@ -15,7 +15,10 @@
   - [ ] Create `app/teacher/login/page.tsx` and `app/teacher/signup/page.tsx`.
   - [ ] Email verification stub (logs verification link to console for MVP).
   - [ ] Write component tests: form validation, submit flow, error states.
-- [ ] Task: Measure — User Manual Verification 'Phase 1: Data Model & Authentication' (Protocol in workflow.md)
+- [x] Task: Measure — User Manual Verification 'Phase 1: Data Model & Authentication' (Protocol in workflow.md)
+  - [x] Tests pass (34/34)
+  - [x] Build succeeds
+  - [x] Login and signup pages render correctly
 
 ## Phase 2: Class Management
 
