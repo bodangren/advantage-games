@@ -6,12 +6,12 @@
   - [x] Create `types/teacher-dashboard.ts` with `Teacher`, `Student`, `Class`, `Assignment`, `StudentProgress` types.
   - [x] Include role enum (`teacher`, `student`), enrollment codes, and COPPA-compliant student fields (no email, no last name for under-13).
   - [x] Write unit tests for type construction and validation.
-- [~] Task: Implement authentication store and middleware.
-  - [ ] Create `stores/authStore.ts` with Zustand: login, logout, signup, getCurrentUser.
-  - [ ] JWT generation/validation utilities in `lib/auth/jwt.ts`.
-  - [ ] Next.js middleware for role-based route protection (`/teacher/*` requires teacher role).
-  - [ ] Write unit tests: login flow, token validation, role check, expired token handling.
-- [ ] Task: Implement teacher sign-up and login pages.
+- [x] Task: Implement authentication store and middleware. [558c0fb]
+  - [x] Create `stores/authStore.ts` with Zustand: login, logout, signup, getCurrentUser.
+  - [x] JWT generation/validation utilities in `lib/auth/jwt.ts`.
+  - [x] Next.js middleware for role-based route protection (`/teacher/*` requires teacher role).
+  - [x] Write unit tests: login flow, token validation, role check, expired token handling.
+- [~] Task: Implement teacher sign-up and login pages.
   - [ ] Create `app/teacher/login/page.tsx` and `app/teacher/signup/page.tsx`.
   - [ ] Email verification stub (logs verification link to console for MVP).
   - [ ] Write component tests: form validation, submit flow, error states.
