@@ -1,13 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import ClassDetailPage from './page';
 import { useAuthStore } from '@/store/authStore';
 import { useClassStore } from '@/store/classStore';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
+  useRouter: jest.fn(),
 }));
 
 // Mock next/link
@@ -27,7 +25,8 @@ describe('ClassDetailPage', () => {
     useClassStore.getState().reset();
     localStorage.clear();
     
-    jest.spyOn(require('next/navigation'), 'useRouter').mockReturnValue({
+    const { useRouter } = jest.requireMock('next/navigation');
+    (useRouter as jest.Mock).mockReturnValue({
       push: pushMock,
     });
   });
@@ -37,7 +36,7 @@ describe('ClassDetailPage', () => {
   });
 
   it('redirects unauthenticated users', () => {
-    render(<ClassDetailPage params={{ id: 'class-1' }} />);
+    render(<ClassDetailPage params={Promise.resolve({ id: 'class-1' })} />);
     expect(pushMock).toHaveBeenCalledWith('/teacher/login');
   });
 
@@ -57,7 +56,7 @@ describe('ClassDetailPage', () => {
       });
     });
 
-    render(<ClassDetailPage params={{ id: 'non-existent' }} />);
+    render(<ClassDetailPage params={Promise.resolve({ id: 'non-existent' })} />);
     
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith('/teacher/dashboard');
@@ -89,7 +88,7 @@ describe('ClassDetailPage', () => {
       });
     });
 
-    render(<ClassDetailPage params={{ id: createdClass.id }} />);
+    render(<ClassDetailPage params={Promise.resolve({ id: createdClass.id })} />);
     
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: 'Test Class Detail' })).toBeInTheDocument();
@@ -126,14 +125,10 @@ describe('ClassDetailPage', () => {
       });
     });
 
-    render(<ClassDetailPage params={{ id: createdClass.id }} />);
+    render(<ClassDetailPage params={Promise.resolve({ id: createdClass.id })} />);
     
     await waitFor(() => {
       expect(pushMock).toHaveBeenCalledWith('/teacher/dashboard');
     });
   });
 });
-
-function act(callback: () => void | Promise<void>) {
-  return require('@testing-library/react').act(callback);
-}

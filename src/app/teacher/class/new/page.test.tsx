@@ -1,13 +1,11 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import CreateClassPage from './page';
 import { useAuthStore } from '@/store/authStore';
 import { useClassStore } from '@/store/classStore';
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
-  useRouter: () => ({
-    push: jest.fn(),
-  }),
+  useRouter: jest.fn(),
 }));
 
 // Mock next/link
@@ -27,7 +25,8 @@ describe('CreateClassPage', () => {
     useClassStore.getState().reset();
     localStorage.clear();
     
-    jest.spyOn(require('next/navigation'), 'useRouter').mockReturnValue({
+    const { useRouter } = jest.requireMock('next/navigation');
+    (useRouter as jest.Mock).mockReturnValue({
       push: pushMock,
     });
   });
@@ -121,7 +120,3 @@ describe('CreateClassPage', () => {
     expect(nameInput).toHaveAttribute('required');
   });
 });
-
-function act(callback: () => void | Promise<void>) {
-  return require('@testing-library/react').act(callback);
-}

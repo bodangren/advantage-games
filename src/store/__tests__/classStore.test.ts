@@ -252,6 +252,70 @@ describe('classStore', () => {
     });
   });
 
+  describe('enrollStudent', () => {
+    it('adds student to class by enrollment code', async () => {
+      const created = await act(async () => {
+        return useClassStore.getState().createClass({
+          name: 'Test Class',
+          teacherId: 'teacher-1',
+        });
+      });
+
+      const enrolled = await act(async () => {
+        return useClassStore.getState().enrollStudent(created.enrollmentCode, 'student-1');
+      });
+
+      expect(enrolled).toBeDefined();
+      expect(enrolled?.students).toContain('student-1');
+    });
+
+    it('rejects invalid enrollment code', async () => {
+      await expect(
+        act(async () => {
+          return useClassStore.getState().enrollStudent('INVALID', 'student-1');
+        })
+      ).rejects.toThrow('Invalid enrollment code');
+    });
+
+    it('rejects duplicate enrollment', async () => {
+      const created = await act(async () => {
+        return useClassStore.getState().createClass({
+          name: 'Test Class',
+          teacherId: 'teacher-1',
+        });
+      });
+
+      await act(async () => {
+        await useClassStore.getState().enrollStudent(created.enrollmentCode, 'student-1');
+      });
+
+      await expect(
+        act(async () => {
+          return useClassStore.getState().enrollStudent(created.enrollmentCode, 'student-1');
+        })
+      ).rejects.toThrow('Student already enrolled');
+    });
+
+    it('rejects enrollment in archived class', async () => {
+      const created = await act(async () => {
+        return useClassStore.getState().createClass({
+          name: 'Test Class',
+          teacherId: 'teacher-1',
+        });
+      });
+
+      await act(async () => {
+        await useClassStore.getState().archiveClass(created.id);
+      });
+
+      await expect(
+        act(async () => {
+          return useClassStore.getState().enrollStudent(created.enrollmentCode, 'student-1');
+        })
+      ).rejects.toThrow('Class is not active');
+    });
+  });
+
   describe('localStorage persistence', () => {
     it('loads classes from localStorage on init', async () => {
       // Pre-populate localStorage

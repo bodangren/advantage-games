@@ -10,6 +10,7 @@ export interface ClassState {
   listClasses: (teacherId: string) => Class[];
   updateClass: (id: string, data: Partial<Pick<Class, 'name'>>) => Promise<Class | undefined>;
   archiveClass: (id: string) => Promise<Class | undefined>;
+  enrollStudent: (enrollmentCode: string, studentId: string) => Promise<Class | undefined>;
   reset: () => void;
   clearError: () => void;
 }
@@ -156,6 +157,53 @@ export const useClassStore = create<ClassState>((set, get) => {
         return updatedClass;
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Failed to update class';
+        set({ error: errorMessage, isLoading: false });
+        throw new Error(errorMessage);
+      }
+    },
+
+    enrollStudent: async (enrollmentCode: string, studentId: string) => {
+      set({ isLoading: true, error: null });
+      
+      try {
+        if (!enrollmentCode || !studentId) {
+          throw new Error('Enrollment code and student ID are required');
+        }
+
+        const state = get();
+        const classIndex = state.classes.findIndex(
+          c => c.enrollmentCode === enrollmentCode.toUpperCase()
+        );
+        
+        if (classIndex === -1) {
+          throw new Error('Invalid enrollment code');
+        }
+
+        const existingClass = state.classes[classIndex];
+        
+        if (existingClass.status !== 'active') {
+          throw new Error('Class is not active');
+        }
+
+        if (existingClass.students.includes(studentId)) {
+          throw new Error('Student already enrolled');
+        }
+
+        const updatedClass: Class = {
+          ...existingClass,
+          students: [...existingClass.students, studentId],
+          updatedAt: new Date(),
+        };
+
+        const updatedClasses = [...state.classes];
+        updatedClasses[classIndex] = updatedClass;
+        
+        saveClasses(updatedClasses);
+        set({ classes: updatedClasses, isLoading: false });
+        
+        return updatedClass;
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to enroll student';
         set({ error: errorMessage, isLoading: false });
         throw new Error(errorMessage);
       }

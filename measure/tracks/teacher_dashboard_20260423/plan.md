@@ -27,12 +27,12 @@
   - [x] Enrollment code generation: 8-char alphanumeric, collision-checked.
   - [x] Soft delete with 30-day recovery window.
   - [x] Write unit tests for all CRUD operations and code generation.
-- [~] Task: Build class management pages.
-  - [ ] Create `app/teacher/dashboard/page.tsx` — list of teacher's classes.
-  - [ ] Create `app/teacher/class/[id]/page.tsx` — class detail with roster.
-  - [ ] Create `app/teacher/class/new/page.tsx` — create class form.
-  - [ ] Write component tests: class list rendering, create form, archive flow.
-- [ ] Task: Implement student enrollment flow.
+- [x] Task: Build class management pages. [091badb]
+  - [x] Create `app/teacher/dashboard/page.tsx` — list of teacher's classes.
+  - [x] Create `app/teacher/class/[id]/page.tsx` — class detail with roster.
+  - [x] Create `app/teacher/class/new/page.tsx` — create class form.
+  - [x] Write component tests: class list rendering, create form, archive flow.
+- [~] Task: Implement student enrollment flow.
   - [ ] Create `app/join/page.tsx` — student enters enrollment code.
   - [ ] QR code generation for enrollment link (client-side QR library).
   - [ ] Write unit tests: enrollment code validation, duplicate enrollment prevention.
