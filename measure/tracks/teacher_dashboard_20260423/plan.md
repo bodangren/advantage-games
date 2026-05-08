@@ -50,11 +50,13 @@
   - [x] Write unit tests for all assignment operations and duplication.
   - [x] Tests pass (24/24)
   - [x] Build succeeds
-- [ ] Task: Build assignment creation UI.
-  - [ ] Create `app/teacher/class/[id]/assignments/new/page.tsx` — assignment creation form.
-  - [ ] Game/pack picker with search and preview.
-  - [ ] Difficulty tier selector.
-  - [ ] Write component tests: form validation, game/pack selection, submission.
+- [x] Task: Build assignment creation UI.
+  - [x] Create `app/teacher/class/[id]/assignments/new/page.tsx` — assignment creation form.
+  - [x] Game/pack picker with search and preview.
+  - [x] Difficulty tier selector.
+  - [x] Write component tests: form validation, game/pack selection, submission.
+  - [x] Tests pass (11/11)
+  - [x] Build succeeds
 - [ ] Task: Build student assignment view.
   - [ ] Integrate assignment badges into existing student home screen.
   - [ ] "Due" badge for upcoming assignments, "Completed" badge for finished ones.
