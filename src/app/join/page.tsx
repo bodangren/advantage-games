@@ -11,7 +11,7 @@ import { useAuthStore } from '@/store/authStore';
 
 export default function JoinClassPage() {
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user } = useAuthStore();
   const { enrollStudent, isLoading, error, clearError } = useClassStore();
   const [enrollmentCode, setEnrollmentCode] = useState('');
   const [success, setSuccess] = useState(false);
@@ -44,7 +44,7 @@ export default function JoinClassPage() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold">Join a Class</CardTitle>
           <CardDescription>
-            Enter your teacher's enrollment code to join their class
+              Enter your teacher&apos;s enrollment code to join their class
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -53,7 +53,7 @@ export default function JoinClassPage() {
               <div className="text-green-500 text-5xl mb-4">✓</div>
               <h3 className="text-xl font-semibold mb-2">Success!</h3>
               <p className="text-muted-foreground">
-                You've successfully joined the class.
+                You&apos;ve successfully joined the class.
               </p>
               <p className="text-sm text-muted-foreground mt-2">
                 Redirecting to home...

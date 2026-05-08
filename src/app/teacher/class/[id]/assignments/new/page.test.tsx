@@ -66,7 +66,9 @@ describe('NewAssignmentClient', () => {
       expect(screen.getByRole('heading', { name: 'Create Assignment' })).toBeInTheDocument();
     });
     
-    expect(screen.getByText('for Test Class')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('for Test Class')).toBeInTheDocument();
+    });
     expect(screen.getByLabelText(/Assignment Title/)).toBeInTheDocument();
     expect(screen.getByText(/Select Games/)).toBeInTheDocument();
     expect(screen.getByText(/Difficulty Tier/)).toBeInTheDocument();

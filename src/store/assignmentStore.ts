@@ -122,6 +122,7 @@ export const useAssignmentStore = create<AssignmentState>((set, get) => {
       );
     },
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     listByStudent: (studentId: string) => {
       // For MVP, return all active assignments since we don't track per-student assignment data yet
       return get().assignments.filter(a => a.status === 'active');

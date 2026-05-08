@@ -11,7 +11,7 @@ import { useClassStore } from '@/store/classStore';
 export default function TeacherDashboardPage() {
   const router = useRouter();
   const { user, isAuthenticated } = useAuthStore();
-  const { classes, listClasses, archiveClass } = useClassStore();
+  const { listClasses, archiveClass } = useClassStore();
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -50,7 +50,7 @@ export default function TeacherDashboardPage() {
           <Card>
             <CardContent className="py-12 text-center">
               <p className="text-muted-foreground mb-4">
-                You haven't created any classes yet.
+                You haven&apos;t created any classes yet.
               </p>
               <Button asChild>
                 <Link href="/teacher/class/new">Create Your First Class</Link>

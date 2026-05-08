@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -58,18 +58,18 @@ export default function NewAssignmentClient({ params }: NewAssignmentClientProps
   const [classId, setClassId] = useState<string>('');
   const [title, setTitle] = useState('');
   const [selectedGames, setSelectedGames] = useState<string[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedPacks, setSelectedPacks] = useState<string[]>([]);
   const [difficultyTier, setDifficultyTier] = useState('medium');
   const [dueDate, setDueDate] = useState('');
   const [maxAttempts, setMaxAttempts] = useState(1);
   const [gameSearch, setGameSearch] = useState('');
 
-  // Resolve params promise
-  params.then(({ id }) => {
-    if (classId !== id) {
+  useEffect(() => {
+    params.then(({ id }) => {
       setClassId(id);
-    }
-  });
+    });
+  }, [params]);
 
   if (!isAuthenticated) {
     router.push('/teacher/login');

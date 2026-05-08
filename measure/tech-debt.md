@@ -47,3 +47,10 @@
 - QR code generation works with dynamic import (ssr: false) for qrcode.react
 - Next.js 15 dynamic routes require Promise-based params + generateStaticParams for static export
 - confirmPassword validation still needed in authStore (deferred to Phase 3)
+
+## Teacher Dashboard Phase 3 — Code Review (2026-05-08)
+- **Resolved**: Fixed `params.then()` in render body in NewAssignmentClient (now in useEffect)
+- **Resolved**: 7 lint warnings fixed across 4 files (unused vars, unescaped entities)
+- **Resolved**: Test updated to wait for async classData resolution after useEffect fix
+- **Remaining**: Minor act() warning in NewAssignmentClient tests (state update in async useEffect)
+- **Remaining**: authStore login always creates Teacher user (mock MVP behavior, needs real auth)
