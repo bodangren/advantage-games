@@ -41,13 +41,15 @@
   - [x] Build succeeds
   - [x] Class CRUD, management pages, and enrollment flow all working
 
-## Phase 3: Assignments
+## Phase 3: Assignments [IN PROGRESS]
 
-- [ ] Task: Implement assignment store.
-  - [ ] Create `stores/assignmentStore.ts` with Zustand: create, update, delete, listByClass, listByStudent.
-  - [ ] Assignment properties: title, game IDs, pack IDs, difficulty tier, due date, max attempts.
-  - [ ] Duplicate assignment across classes functionality.
-  - [ ] Write unit tests for all assignment operations and duplication.
+- [x] Task: Implement assignment store.
+  - [x] Create `stores/assignmentStore.ts` with Zustand: create, update, delete, listByClass, listByStudent.
+  - [x] Assignment properties: title, game IDs, pack IDs, difficulty tier, due date, max attempts.
+  - [x] Duplicate assignment across classes functionality.
+  - [x] Write unit tests for all assignment operations and duplication.
+  - [x] Tests pass (24/24)
+  - [x] Build succeeds
 - [ ] Task: Build assignment creation UI.
   - [ ] Create `app/teacher/class/[id]/assignments/new/page.tsx` — assignment creation form.
   - [ ] Game/pack picker with search and preview.
