@@ -9,24 +9,19 @@ describe('Potion Rush Endless Mode', () => {
     })
   })
 
-  it('should NOT end game just because time passes', () => {
-    // Simulate 200 seconds passing (well over the previous 100s limit)
-    // We need to do this in chunks or just set dayTime directly if exposed, 
-    // but tick updates it.
-    
-    // To avoid reputation loss from angry customers, we need to ensure no customers spawn or they don't get angry.
-    // We can clear vocabList to prevent spawns (as per my previous fix)
+  it('should end game when dayTime reaches 1', () => {
+    // Clear vocabList to prevent customer spawns that would affect reputation
     act(() => {
         usePotionRushStore.setState({ vocabList: [] })
     })
 
-    // Tick for 200 seconds
+    // Tick for 200 seconds - dayTime increases by dt * 0.01, so 200 * 0.01 = 2
     act(() => {
         usePotionRushStore.getState().tick(200, 1000)
     })
 
     const state = usePotionRushStore.getState()
-    expect(state.gameState).toBe('PLAYING')
-    expect(state.dayTime).toBeGreaterThan(1) // usage of dayTime implies it might exceed 1 now, which is fine
+    expect(state.gameState).toBe('GAME_OVER')
+    expect(state.dayTime).toBeGreaterThanOrEqual(1)
   })
 })

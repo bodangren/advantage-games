@@ -52,6 +52,7 @@ export interface LeaveMessage {
 export interface StateUpdateMessage {
   type: MessageType.STATE_UPDATE;
   payload: {
+    roomCode?: string;
     gameState: GameState;
     timestamp: number;
   };
