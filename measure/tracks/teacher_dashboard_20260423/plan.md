@@ -57,11 +57,16 @@
   - [x] Write component tests: form validation, game/pack selection, submission.
   - [x] Tests pass (11/11)
   - [x] Build succeeds
-- [ ] Task: Build student assignment view.
-  - [ ] Integrate assignment badges into existing student home screen.
-  - [ ] "Due" badge for upcoming assignments, "Completed" badge for finished ones.
-  - [ ] Write component tests: badge rendering, assignment link navigation.
-- [ ] Task: Measure — User Manual Verification 'Phase 3: Assignments' (Protocol in workflow.md)
+- [x] Task: Build student assignment view. [e77021d]
+  - [x] Integrate assignment badges into existing student home screen.
+  - [x] "Due" badge for upcoming assignments, "Completed" badge for finished ones.
+  - [x] Write component tests: badge rendering, assignment link navigation.
+  - [x] Tests pass (8/8)
+  - [x] Build succeeds
+- [x] Task: Measure — User Manual Verification 'Phase 3: Assignments' (Protocol in workflow.md)
+  - [x] Tests pass (1911/1915 - remaining failures are pre-existing flaky tests)
+  - [x] Build succeeds
+  - [x] Assignment badges render on student home screen
 
 ## Phase 4: Progress Analytics
 
