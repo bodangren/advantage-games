@@ -11,6 +11,11 @@ jest.mock('next/link', () => {
   return Link
 })
 
+// Mock assignment store
+jest.mock('@/store/assignmentStore', () => ({
+  useAssignmentStore: jest.fn((selector) => selector({ assignments: [] })),
+}))
+
 describe('MainMenu', () => {
   it('renders the title and game options', () => {
     render(<MainMenu />)
@@ -27,7 +32,7 @@ describe('MainMenu', () => {
     expect(hrefs).toEqual(expect.arrayContaining(playableGames.map((game) => game.href)))
   })
 
-  it('includes a Play Now link for Enchanted Library', () => {
+  it('includes a Start Game link for Enchanted Library', () => {
     render(<MainMenu />)
 
     const links = screen.getAllByRole('link', { name: /Start Game/i })

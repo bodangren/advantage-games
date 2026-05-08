@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { gameCards } from '@/lib/gameCards'
+import { AssignmentBadgeWrapper } from '@/components/assignments/AssignmentBadgeWrapper'
 
 export default function MainMenu() {
   return (
@@ -31,6 +32,7 @@ export default function MainMenu() {
                 )}
               >
                 <div className="relative w-full overflow-hidden border-b border-border bg-secondary">
+                  <AssignmentBadgeWrapper gameId={game.id} />
                   <Image
                     src={game.cover}
                     alt={`${game.title} cover`}
