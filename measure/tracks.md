@@ -374,7 +374,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Multiplayer Competitive Mode**
+- [x] **Track: Multiplayer Competitive Mode**
 *Link: [./measure/archive/multiplayer_competitive_mode_20260423/](./measure/archive/multiplayer_competitive_mode_20260423/)*
 *Description: Real-time multiplayer competitive mode where 2-4 players compete in vocabulary/sentence games simultaneously. Room-based matchmaking, live score tracking, and round-based progression.*
 *Priority: High*
