@@ -698,7 +698,7 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ## Upcoming Tracks
 
-- [ ] **Track: Competitive Multiplayer Mode** *Link: [./archive/competitive_multiplayer_20260425/](./archive/competitive_multiplayer_20260425/)*
+- [x] **Track: Competitive Multiplayer Mode** *Link: [./archive/competitive_multiplayer_20260425/](./archive/competitive_multiplayer_20260425/)*
 - [ ] **Track: Teacher Dashboard v2** *Link: [./tracks/teacher_dashboard_v2_20260425/](./tracks/teacher_dashboard_v2_20260425/)*
 - [ ] **Track: Sentence Game Expansion v2** *Link: [./tracks/sentence_game_expansion_v2_20260425/](./tracks/sentence_game_expansion_v2_20260425/)*
 - [ ] **Track: Accessibility Layer** *Link: [./tracks/accessibility_layer_20260425/](./tracks/accessibility_layer_20260425/)*
