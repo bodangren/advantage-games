@@ -428,8 +428,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Astral Mage Compliance Audit**
-*Link: [./measure/tracks/astral-mage-compliance-audit_20260426/](./measure/tracks/astral-mage-compliance-audit_20260426/)*
+- [x] **Track: Astral Mage Compliance Audit**
+*Link: [./measure/archive/astral-mage-compliance-audit_20260426/](./measure/archive/astral-mage-compliance-audit_20260426/)*
 *Description: Compliance audit for Astral Mage against the 25 shared game specifications.*
 *Priority: Medium*
 *Type: Chore*
@@ -446,8 +446,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Babel Architect Compliance Audit**
-*Link: [./measure/tracks/babel-architect-compliance-audit_20260426/](./measure/tracks/babel-architect-compliance-audit_20260426/)*
+- [x] **Track: Babel Architect Compliance Audit**
+*Link: [./measure/archive/babel-architect-compliance-audit_20260426/](./measure/archive/babel-architect-compliance-audit_20260426/)*
 *Description: Compliance audit for Babel Architect against the 25 shared game specifications.*
 *Priority: Medium*
 *Type: Chore*
@@ -455,8 +455,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Sorcerer Ziggurat Compliance Audit**
-*Link: [./measure/tracks/sorcerer-ziggurat-compliance-audit_20260426/](./measure/tracks/sorcerer-ziggurat-compliance-audit_20260426/)*
+- [x] **Track: Sorcerer Ziggurat Compliance Audit**
+*Link: [./measure/archive/sorcerer-ziggurat-compliance-audit_20260426/](./measure/archive/sorcerer-ziggurat-compliance-audit_20260426/)*
 *Description: Compliance audit for Sorcerer Ziggurat against the 25 shared game specifications.*
 *Priority: Medium*
 *Type: Chore*
@@ -473,8 +473,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Gryphon Patrol Compliance Audit**
-*Link: [./measure/tracks/gryphon-patrol-compliance-audit_20260426/](./measure/tracks/gryphon-patrol-compliance-audit_20260426/)*
+- [x] **Track: Gryphon Patrol Compliance Audit**
+*Link: [./measure/archive/gryphon-patrol-compliance-audit_20260426/](./measure/archive/gryphon-patrol-compliance-audit_20260426/)*
 *Description: Compliance audit for Gryphon Patrol against the 25 shared game specifications.*
 *Priority: Medium*
 *Type: Chore*
@@ -536,8 +536,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Paladin's Twin-Soul Compliance Audit**
-*Link: [./measure/tracks/paladins-twin-soul-compliance-audit_20260426/](./measure/tracks/paladins-twin-soul-compliance-audit_20260426/)*
+- [x] **Track: Paladin's Twin-Soul Compliance Audit**
+*Link: [./measure/archive/paladins-twin-soul-compliance-audit_20260426/](./measure/archive/paladins-twin-soul-compliance-audit_20260426/)*
 *Description: Compliance audit for Paladin's Twin-Soul against the 25 shared game specifications.*
 *Priority: Medium*
 *Type: Chore*
@@ -563,8 +563,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Magic Defense Compliance Audit**
-*Link: [./measure/tracks/magic-defense-compliance-audit_20260426/](./measure/tracks/magic-defense-compliance-audit_20260426/)*
+- [x] **Track: Magic Defense Compliance Audit**
+*Link: [./measure/archive/magic-defense-compliance-audit_20260426/](./measure/archive/magic-defense-compliance-audit_20260426/)*
 *Description: Compliance audit for Magic Defense against the 25 shared game specifications.*
 *Priority: Medium*
 *Type: Chore*
@@ -608,8 +608,8 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Alchemists Synthesis Compliance Audit**
-*Link: [./measure/tracks/alchemists-synthesis-compliance-audit_20260426/](./measure/tracks/alchemists-synthesis-compliance-audit_20260426/)*
+- [x] **Track: Alchemists Synthesis Compliance Audit**
+*Link: [./measure/archive/alchemists-synthesis-compliance-audit_20260426/](./measure/archive/alchemists-synthesis-compliance-audit_20260426/)*
 *Description: Compliance audit for Alchemists Synthesis against the 25 shared game specifications.*
 *Priority: Medium*
 *Type: Chore*
