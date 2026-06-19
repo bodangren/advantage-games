@@ -28,3 +28,7 @@ All vocabulary/sentence games follow the `vocab-game-builder` skill patterns:
 - Track-based development via measure
 
 Reference existing games for patterns: Dragon Flight, Wizard vs Zombie, Rune Match, Potion Rush, Dungeon Liberator.
+
+## Automation Supervisor
+
+Do NOT modify measure/automation-supervisor.py. This file is centrally managed and hardlinked across all projects.
